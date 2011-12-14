@@ -1,0 +1,17 @@
+    CLINT extends a growing literature of debugging and software engineering tools for Software Defined Networks.
+    
+    Some efforts have focused on developing explicit debuggers; none, however, focus on multilayer bugs manifest in the network operating system itself.
+    Canini et al.~\cite{canini} develop symbolic execution techniques to help developers debug control applications; this work is complementary to ours in that we focus on the bugs in the SDN stack itself, not the development of control applications. 
+    At the other end of the SDN stack, Anteater~\cite{anteater} is a static checker that takes a snapshot of the FIB of each switch, any SNMP updates, and other control sessions (\eg{} for GRE or VLAN) and detects when the network violates user-specified invariants.
+    Anteater thus serves to detect problems that manifest entirely within the physical network; it cannot detect errors that manifest across the layers of the SDN stack, such as mismatches between switch state in the NOM and the state stored in the physical FIB.
+    Also focusing on the physical layer, OFRewind~\cite{ofrewind} develops record and replay techniques for OpenFlow networks to help administrators localize bugs by allowing them to step through sequences of events that led up to a buggy configuration.
+     \justine{flowchecker}
+
+    Rather than  discovering bugs, other work focuses on helping control application developers avoid deploying buggy application code in the first place. 
+    Frenetic~\cite{frenetic} presents a language-based approach, helping control application developers avoid avoid writing common classes of bugs, such as `composition erros' where one flow entry overrides another.
+    Reitblatt et al.~\cite{consistentupdates}  develop a methodology for consistent network updates, such that new routes or policies pushed by the control application never result in transient, buggy routing configurations.
+    Thus, every packet or flow traversing the network is guaranteed that all switches it traverses will forward according to either the new routing policy or the old one (and never that some switches will use the old policy while others use the new one). 
+
+    More generally, projects such as Pip~\cite{pip}, X-Trace~\cite{xtrace}, and d$^3$s~\cite{d3s} develop techniques for debugging distributed systems in general.
+    We demonstrate with CLINT that by taking advantage of domain-specific knowledge of SDN -- \eg{} loop-free networks and consistent abstract representations of network state at many layers -- we can provide more comprehensive tools for a more limited domain. 
+

@@ -3,10 +3,11 @@
 \usepackage{url}
 %\usepackage{usenix,epsfig,endnotes}
 %\usepackage{fullpage} 
-\setlength{\textheight}{9.5in}
 %\setlength{\textwidth}{6.75in}
 %\setlength{\oddsidemargin}{-.125in}
 \usepackage{graphicx}
+
+\usepackage{natbib}
 %\usepackage{subfigure}
 %\usepackage{ifpdf}
 %\usepackage{multicol}
@@ -19,7 +20,9 @@
 \newcommand{\eg}{{\it e.g.}}
 \newcommand{\etc}{{\it etc.}}
 \newcommand{\eat}[1]{}
-%\renewcommand\bibname{}
+
+\usepackage[usenames,dvipsnames]{color}
+\newcommand{\justine}[1]{{\color{ForestGreen}\bf JS: {#1}}}
 
 %\setlength\topmargin{0in}
 %\usepackage{verbatim}
@@ -29,10 +32,10 @@
 
 % TODO: split this file into multiple .tex's
 
-\title{Debugging Software Defined Networks\vspace{-25pt}}
+\title{Debugging Software Defined Networks with CLINT\vspace{-25pt}}
 
 \author{Colin Scott and Justine Sherry\thanks{In collaboration with Andi
-Wundsam and Scott Shenker}\vspace{-15pt}}
+Wundsam and Scott Shenker}}
 
 %        \begin{multicols}{2}{{\it Draft - Please do not distribute.}}\\
         
@@ -40,7 +43,6 @@ Wundsam and Scott Shenker}\vspace{-15pt}}
 \date{}
 \begin{document}
     \maketitle
-    \thispagestyle{empty}
 % Outline:
 %
 %1 Problem formulation
@@ -62,120 +64,27 @@ Wundsam and Scott Shenker}\vspace{-15pt}}
 %4 Any special needs for the project?
 
 \abstract{
-This is the bestest paper evar.
+{\it
+    Software-defined networking (SDN) simplifies network management
+    by presenting a global, abstract model of network state to 
+    management applications, hiding the low-level details of 
+    individual switch configurations.
+    However, by providing administrators with virtualized abstractions, debugging
+    system errors becomes considerably more difficult, as bugs may be 
+    present in the control application, the virtualization in the network operating system, 
+    the physical switch implementations, or the mappings between any of these layers.
+    In this paper, we present CLINT, a multilayer debugger for software defined
+    networks. CLINT takes advantage of clean interfaces between layers of the SDN stack by i    nterposing between each layer to check for 
+    violations of expected invariants from each component of the network controller.
+    Using bug reports from production SDN deployments, we demonstrate that
+    CLINT can detect and isolate many real problems that encumber networks today.
 }
+\justine{Am I right that CLINT doesn't yet handle the inter-controller stuff? I know you wrote a basic replicated controller, but not sure if you have any checks yet. Anyway, if so, we should mention that too...}
+}
+
 \section{Introduction}
-Software-defined networking (SDN) simplifies network management by presenting a
-global, abstract model of network state to management applications, hiding
-the low-level details of individual switch configurations. However, in some ways this abstraction does
-its job too well: by hiding the details of actual network behavior, debugging
-system errors becomes considerably more difficult.
-For our class project, we plan to build a debugger for software-defined networks to
-simplify the detection, isolation, and repair of errors at all layers of
-the network management stack.
-
-%We begin by providing an overview of the software-defined network (SDN)
-%architecture. 
-Unlike in a traditional network, where each switch and router is independently responsible for
-its own forwarding decisions, failure recovery, and access control, all management
-decisions in a SDN are made by a logically-centralized controller. When a
-switch observes a packet for which it does not have a forwarding rule,
-it forwards the packet to a controller running a ``network operating system''
-(NOS). The NOS, which maintains the global model of the network, updates its representation
-of the switch's state, and then notifies a network management application of the event.
-Finally, the management application decides how to handle the packet, and informs the NOS
-and the switch of the new policy.
-
-This modularity gives rise to three classes of system errors: \\
-\noindent {\bf Semantic mismatches.} 
-Each layer of of the architecture maintains a different model of the network state: the
-switches maintain rules in TCAMs, the NOS represents the switches
-in a graph-like data structure, and the network application operates on 
-a virtualized version of this graph. It should be
-the case that there is always a one-to-one mapping between the state at all
-layers, but this does not always hold in practice.
-
-\noindent {\bf Inconsistency between switches and controllers}.
-Software-defined networks are extremely dynamic distributed systems.
-For example, switches may suddenly disconnect and reconnect to a controller, causing inconsistent state
-within the NOS.
-
-\noindent {\bf Inconsistency between controllers}. In production-quality SDNs,
-the NOS is distributed amongst many servers to achieve fault-tolerance
-and scalability. Like in any system with distributed control, controllers may
-act on inconsistent state in case of race-conditions or failures.
-
-An SDN debugger must be general enough to address all of the above problems, and provide programmers
-with the ability to (i) detect that a problem exists, (ii) identify the layer / component / line of code
-responsible for the problem, and (iii) reproduce the execution that triggered the error.
-
-In general, distributed systems debugging techniques lie somewhere on a spectrum between
-{\it static checking} and {\it interactive replay}. Our first goal is to find
-the point on this spectrum most appropriate for SDN. 
-
-\noindent {\bf Static-checkers} \cite{Anteater} excel at {\it detecting} that problems
-     exist. However, SDNs are far too dynamic for pure static checking; one would
-     essentially need to take snapshots at every state change. Moreover,
-     knowing {\it that} a problem exists does not necessarily help isolate its
-     cause.
-
-\noindent {\bf Tracing frameworks} \cite{x-trace} excel at pinpointing the cause of an
-error. However, the space of possible traces is intractable, so it can be very
-difficult to produce the input that causes the error to arise in the first
-place.
-
-\noindent {\bf Interactive debuggers} facilitate intuition and shorten the
-      debugging process. However, true interactivity is extremely difficult to
-      obtain in a distributed system. 
-	%That said, there may be hope with SDN:
-      %the controller can simply refrain from installing flow rules in the switches
-      %such that {\it all } packets are sent to the
-      %centralized controller. Nevertheless, an interactive debugger would still
-      %have difficulty detecting problems and reproducing problematic
-      %executions. Moreover, 
-      Moreover, while interactive debuggers are
-      well-suited for sequential
-      computations, networks are inherently event-based.
-
-Although distributed systems debugging is well explored,
- software-defined networks differ in a number of ways.
-
-	First, distributed system designers model inter-node communication as a black box, whose failure modes are an independent class of failures from the system itself.
-	Thus, distributed systems makes guarantees that hold only ``when the network recovers from partition.''
-	In SDN, however, the failed system {\it is} the network: loss of
-    communication and system failure are one and the same. This implies an
-    entirely different class of failure-modes.
-
-	Second, SDN provides significant domain-specific context to inform the debugging process.
-	The  SDN architecture provides well-defined interfaces whose correct interactions can be verified; \eg{} that the state of a switch and the state of its representation in the NOS should be consistent.
-	Further, networking itself requires specific properties of the the network graph, the state of the switches, \etc{}; for example, the network graph should always be acyclic.
-	These domain-specific invariants do not need to be specified by the programmer, but instead should be ``baked-in'' to the SDN debugging process.
-
-%\item Distributed systems literature models the network as a
-%``black-box"; we say something like, ''{\it when} the network recovers from partition, we
-%can make such-and-such guarantees about the system. Until then, all bets are
-%off''. In our environment, the network {\it is}  the distributed system that we are
-%trying to debug, and we cannot simply wait for communication to recover; An
-%SDN debuger must address an entirely different class of failure-modes.
-%\vspace{-8pt}
-%\item Unlike a general distributed system, all interactions in SDNs proceed
-%through well-defined interfaces. This effectively constrains the problem
-%space.
-%\vspace{-8pt}
-%\item An SDN debugger can apply a set of invariants, e.g. ``routing loops
-%should never exist'', that do need not be
-%specified by the programmer.
-%\vspace{-8pt}
-%\end{enumerate}
-
-We plan to achieve two milestones during the quarter. First, in order to
-''smoke-test'' our debugger, we will set up a real SDN using POX \cite{POX}, an SDN controller framework in Python.
-The current POX however only runs on a single server.
-In order to capture consistency errors as well as semantic mismatches, we plan to augment POX
-with a simple distribution mechanism such that multiple servers can concurrently control the
-network. We plan to have this implemented by Oct. 20th. Second, 
-by the end of the semester, we will have designed and built the
-debugger itself, and evaluated its use on a range of network applications. We intend to submit to SIGCOMM 2012.
+    \label{sec:intro}
+    \input{introduction}
 
 \section{Nicira Bug Reports}
 
@@ -204,15 +113,18 @@ Two forms of evalution:
 \item Did our system find bugs in third-party applications?
 \end{enumerate}
 
-\section{Related work}
+\section{Discussion and Future Work}
+    \label{sec:future_work}
+    \input{future_work}
 
-Other people did related things.
+\section{Related work}
+\label{sec:related_work}
+\input{related_work}
 
 \section{Conclusion}
 
 We debugged all the things!
 
-\scriptsize
 \bibliographystyle{abbrv}
 \bibliography{bib}
 
