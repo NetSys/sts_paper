@@ -75,8 +75,10 @@ Wundsam and Scott Shenker}}
     present in the control application, the virtualization in the network operating system, 
     the physical switch implementations, or the mappings between any of these layers.
     In this paper, we present CLINT, a multilayer debugger for software defined
-    networks. CLINT takes advantage of clean interfaces between layers of the SDN stack by i    nterposing between each layer to check for 
-    violations of expected invariants from each component of the network controller.
+    networks. 
+    CLINT interposes between layers of the SDN stack to check for violations of expected
+    invariants from each component of the network controller, detecting subtle, cross-layer bugs 
+    and pinpointing the component responsible for causing the error. 
     Using bug reports from production SDN deployments, we demonstrate that
     CLINT can detect and isolate many real problems that encumber networks today.
 }
