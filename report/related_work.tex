@@ -1,10 +1,11 @@
     CLINT extends a growing literature of debugging and software engineering tools for Software Defined Networks.
     
-    Some efforts have focused on developing explicit debuggers; none, however, focus on multilayer bugs manifest in the network operating system itself.
-    Canini et al.~\cite{canini} develop symbolic execution techniques to help developers debug control applications; this work is complementary to ours in that we focus on the bugs in the SDN stack itself, not the development of control applications. 
+    Some efforts have focused on developing explicit debuggers\andi{What's an explicit debugger?}; none, however, focus on multilayer bugs manifest in the network operating system itself. \andi{Maybe highlight that
+    we do \emph{pervasive} debugging through the SDN stack. Ctrls apps \emph{are} part of this. But only part.}
+    Canini et al.~\cite{canini} develop symbolic execution techniques to help developers debug control applications; this work is complementary to ours \andi{different approach: fuzzing vs. symbolic execution. Pervasiness} in that we focus on the bugs in the SDN stack itself, not the development of control applications. 
     At the other end of the SDN stack, Anteater~\cite{anteater} is a static checker that takes a snapshot of the FIB of each switch, any SNMP updates, and other control sessions (\eg{} for GRE or VLAN) and detects when the network violates user-specified invariants.
-    Anteater thus serves to detect problems that manifest entirely within the physical network; it cannot detect errors that manifest across the layers of the SDN stack, such as mismatches between switch state in the NOM and the state stored in the physical FIB.
-    Also focusing on the physical layer, OFRewind~\cite{ofrewind} develops record and replay techniques for OpenFlow networks to help administrators localize bugs by allowing them to step through sequences of events that led up to a buggy configuration.
+    Anteater thus serves to detect problems that manifest entirely within the physical network; it cannot detect errors that manifest across the layers of the SDN stack, such as mismatches between switch state in the NOM and the state stored in the physical FIB \andi{Devil's advocate: When a problem does not manifest in the physical network, should you care about it? Maybe the important aspect is that it doesn't help you zoom in on the cause of the failure, because it doesn't understand the stack above.}.
+    Also focusing on the physical layer \andi{Maybe use physical network, or substrate layer. Physical Layer sounds like OSI-1, which is *not* what OFRewind (or anybody else) here is doing.}, OFRewind~\cite{ofrewind} develops record and replay techniques for OpenFlow networks to help administrators localize bugs by allowing them to step through sequences of events that led up to a buggy configuration.
      \justine{flowchecker}
 
     Rather than  discovering bugs, other work focuses on helping control application developers avoid deploying buggy application code in the first place. 
