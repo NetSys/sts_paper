@@ -23,6 +23,7 @@
 
 \usepackage[usenames,dvipsnames]{color}
 \newcommand{\justine}[1]{{\color{ForestGreen}\bf JS: {#1}}}
+\newcommand{\andi}[1]{{\color{blue}\bf AW: {#1}}}
 
 %\setlength\topmargin{0in}
 %\usepackage{verbatim}
@@ -34,7 +35,7 @@
 
 \title{Debugging Software Defined Networks with CLINT\vspace{-25pt}}
 
-\author{Colin Scott and Justine Sherry\thanks{In collaboration with Andi
+\author{Colin Scott and Justine Sherry\thanks{In collaboration with Andreas
 Wundsam and Scott Shenker}}
 
 %        \begin{multicols}{2}{{\it Draft - Please do not distribute.}}\\
@@ -68,13 +69,15 @@ Wundsam and Scott Shenker}}
     Software-defined networking (SDN) simplifies network management
     by presenting a global, abstract model of network state to 
     management applications, hiding the low-level details of 
-    individual switch configurations.
+    individual switch configurations. \andi{More important than abstract: logically centralized model, 
+    \ldots isolating the control logic from the distribution of control-plane state in the network\ldots}
     However, by providing administrators with virtualized abstractions, debugging
     system errors becomes considerably more difficult, as bugs may be 
     present in the control application, the virtualization in the network operating system, 
-    the physical switch implementations, or the mappings between any of these layers.
+    the physical switch implementations, or the mappings between any of these layers. \andi{Distance to the metal: Difficult to correlated failure
+    occurrence and responsible fault through multiple layers of abstraction}.
     In this paper, we present CLINT, a multilayer debugger for software defined
-    networks. CLINT takes advantage of clean interfaces between layers of the SDN stack by i    nterposing between each layer to check for 
+    networks. CLINT takes advantage of clean interfaces between layers of the SDN stack by interposing between each layer to check for 
     violations of expected invariants from each component of the network controller.
     Using bug reports from production SDN deployments, we demonstrate that
     CLINT can detect and isolate many real problems that encumber networks today.
