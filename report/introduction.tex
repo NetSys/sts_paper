@@ -90,3 +90,11 @@ Further, networking itself requires specific properties of the the network graph
 These domain-specific invariants do not need to be specified by the programmer, but instead should be ``baked-in'' to the SDN debugging process.
 
 CLINT does\ldots
+
+This work makes to research contributions. First, it provides the first
+published view into the types and relative severity of problems seen in production SDN deployments. In particular, by
+examining bug reports from Onix, we show that bugs {\it within} the platform
+itself, especially those caused by inconsistencies between distinct control server
+instances, pose a significant problem for operators of software-defined
+networks. Second, we present two methodologies for ameliorating the difficulty of
+detecting and isolating such errors: cross-layer analysis, and dynamic invariant checking.
