@@ -73,7 +73,11 @@ place.
 Although distributed systems debugging is well explored,
  software-defined networks differ in a number of ways.
 
-        \justine{How does this come across in CLINT?}
+        \justine{How does this come across in CLINT?} \colin{Right now, it
+        doesn't. However, when we start dealing with consistency bugs, we will
+        need to treat the switches as a first class entity in the distributed
+        system. In particular, we will need to make sure that they support
+        vector clocks to be able to infer a global ordering of events.}
 	First, distributed system designers model inter-node communication as a black box, whose failure modes are an independent class of failures from the system itself.
 	Thus, distributed systems makes guarantees that hold only ``when the network recovers from partition.''
 	In SDN, however, the failed system {\it is} the network: loss of

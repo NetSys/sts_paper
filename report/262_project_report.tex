@@ -24,6 +24,7 @@
 \usepackage[usenames,dvipsnames]{color}
 \newcommand{\justine}[1]{{\color{ForestGreen}\bf JS: {#1}}}
 \newcommand{\andi}[1]{{\color{blue}\bf AW: {#1}}}
+\newcommand{\colin}[1]{{\color{Red}\bf CS: {#1}}}
 
 %\setlength\topmargin{0in}
 %\usepackage{verbatim}
@@ -31,12 +32,10 @@
 %\usepackage[small]{caption}
 \usepackage{times}
 
-% TODO: split this file into multiple .tex's
-
-\title{Debugging Software Defined Networks with CLINT\vspace{-25pt}}
+\title{CLINT: Cross-layer Debugging for the Software-Defined Networking Stack\vspace{-25pt}}
 
 \author{Colin Scott and Justine Sherry\thanks{In collaboration with Andreas
-Wundsam and Scott Shenker}}
+Wundsam, Teemu Koponen, and Scott Shenker}}
 
 %        \begin{multicols}{2}{{\it Draft - Please do not distribute.}}\\
         
@@ -83,6 +82,11 @@ Wundsam and Scott Shenker}}
     CLINT can detect and isolate many real problems that encumber networks today.
 }
 \justine{Am I right that CLINT doesn't yet handle the inter-controller stuff? I know you wrote a basic replicated controller, but not sure if you have any checks yet. Anyway, if so, we should mention that too...}
+\colin{It would be really cool to run the inter-controller stuff by Monday,
+mostly just because it makes the problem space way more interesting. We
+should be able to just run your application on top of the replicated
+controller and call it good.  Of course, we'll see
+what happens between now and then.}
 }
 
 \section{Introduction}
@@ -91,13 +95,17 @@ Wundsam and Scott Shenker}}
 
 \section{Nicira Bug Reports}
 
-Teemu is a bamf.
+Teemu is a bamf. Let's hope his bug reports come in by Monday.
 
 \section{Approach}
 
-Key insights.
+Key insights. We argue that invariants are the right way to think about this
+problem. Delta over Anteater: need to detect dynamic configuration bugs.
+OpenFlow networks are typically quite dynamic compared to traditional static
+(campus) networks. Also need cross-layer debugger (correspondance checks) to isolate where the bug is,
+and verify that
 
-\section{Implementation}
+\section{Architecture}
 
 Details that aren't ultimately that important.
 
@@ -109,16 +117,19 @@ Details that aren't ultimately that important.
 
 \section{Evaluation}
 
-Two forms of evalution:
+Three forms of evaluation:
 
 \begin{enumerate}
 \item Does our system capture the bugs described by Nicira?
 \item Did our system find bugs in third-party applications?
+\item Is the overhead of our system reasonable? For now, just a graph that
+shows how long it takes to run Anteater in the fuzzer loop. Graphs look
+pretty.
 \end{enumerate}
 
 \section{Discussion and Future Work}
-    \label{sec:future_work}
-    \input{future_work}
+\label{sec:future_work}
+\input{future_work}
 
 \section{Related work}
 \label{sec:related_work}
