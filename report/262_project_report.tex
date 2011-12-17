@@ -38,30 +38,11 @@
 Wundsam, Teemu Koponen, and Scott Shenker}}
 
 %        \begin{multicols}{2}{{\it Draft - Please do not distribute.}}\\
-        
 %\author{Paper \#69, 14 Pages}
+
 \date{}
 \begin{document}
     \maketitle
-% Outline:
-%
-%1 Problem formulation
-%  1.1 Why is the problem important/relevant?
-%  1.2 What are the main challenges in solving the problem?
-%
-%2 Approach
-%  2.1 What is your approach? Briefly describe it
-%  2.2 How is you approach different/similar from/to related work? You
-%      don't need to be exhaustive here.
-%
-%3 Deliverables/milestones
-%   3.1 What do you plan to accomplish by the end of the semester? What are the
-%   metrics of success?
-%   3.2 Do you plan to work on the project past the end of the semester?, and
-%   if yes, what do you hope to accomplish by the end?
-%   3.3 Specify measurable milestones by Oct. 26th
-%  
-%4 Any special needs for the project?
 
 \abstract{
 {\it
@@ -90,42 +71,24 @@ what happens between now and then.}
 }
 
 \section{Introduction}
-    \label{sec:intro}
-    \input{introduction}
+\label{sec:intro}
+\input{introduction}
 
 \section{Nicira Bug Reports}
-
-Teemu is a bamf. Let's hope his bug reports come in by Monday.
+\label{sec:bug_reports}
+\input{bug_reports}
 
 \section{Approach}
-
-Key insights. We argue that invariants are the right way to think about this
-problem. Delta over Anteater: need to detect dynamic configuration bugs.
-OpenFlow networks are typically quite dynamic compared to traditional static
-(campus) networks. Also need cross-layer debugger (correspondance checks) to isolate where the bug is,
-and verify that
+\label{sec:approach}
+\input{approach}
 
 \section{Architecture}
-
-Details that aren't ultimately that important.
-
-\begin{enumerate}
-\item Fuzzer
-\item Invariant Checks
-\item Correspondance Checks
-\end{enumerate}
+\label{sec:architecture}
+\input{architecture}
 
 \section{Evaluation}
-
-Three forms of evaluation:
-
-\begin{enumerate}
-\item Does our system capture the bugs described by Nicira?
-\item Did our system find bugs in third-party applications?
-\item Is the overhead of our system reasonable? For now, just a graph that
-shows how long it takes to run Anteater in the fuzzer loop. Graphs look
-pretty.
-\end{enumerate}
+\label{sec:evaluation}
+\input{evaluation}
 
 \section{Discussion and Future Work}
 \label{sec:future_work}
