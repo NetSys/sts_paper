@@ -47,10 +47,10 @@ In general, distributed systems debugging techniques lie somewhere on a spectrum
 the point on this spectrum most appropriate for SDN. 
 
 \noindent {\bf Static-checkers} \cite{anteater} excel at {\it detecting} that problems
-     exist. However, SDNs are far too dynamic for pure static checking; one would
-     essentially need to take snapshots at every state change. Moreover,
-     knowing {\it that} a problem exists does not necessarily help isolate its
-     cause.
+exist. However, SDNs are far too dynamic for pure static checking; one would
+essentially need to take snapshots at every state change. Moreover,
+knowing {\it that} a problem exists does not necessarily help isolate its
+cause.
 
 \noindent {\bf Tracing frameworks} \cite{x-trace} excel at pinpointing the cause of an
 error. However, the space of possible traces is intractable, so it can be very
@@ -58,36 +58,35 @@ difficult to produce the input that causes the error to arise in the first
 place.
 
 \noindent {\bf Interactive debuggers} facilitate intuition and shorten the
-      debugging process. However, true interactivity is extremely difficult to
-      obtain in a distributed system. 
+debugging process. However, true interactivity is extremely difficult to
+obtain in a distributed system. 
 	%That said, there may be hope with SDN:
       %the controller can simply refrain from installing flow rules in the switches
       %such that {\it all } packets are sent to the
       %centralized controller. Nevertheless, an interactive debugger would still
       %have difficulty detecting problems and reproducing problematic
       %executions. Moreover, 
-      Moreover, while interactive debuggers are
-      well-suited for sequential
-      computations, networks are inherently event-based.
+Moreover, while interactive debuggers are
+well-suited for sequential
+computations, networks are inherently event-based.
 
 Although distributed systems debugging is well explored,
- software-defined networks differ in a number of ways.
+software-defined networks differ in a number of ways.
 
         \justine{How does this come across in CLINT?} \colin{Right now, it
         doesn't. However, when we start dealing with consistency bugs, we will
         need to treat the switches as a first class entity in the distributed
         system. In particular, we will need to make sure that they support
         vector clocks to be able to infer a global ordering of events.}
-	First, distributed system designers model inter-node communication as a black box, whose failure modes are an independent class of failures from the system itself.
-	Thus, distributed systems makes guarantees that hold only ``when the network recovers from partition.''
-	In SDN, however, the failed system {\it is} the network: loss of
-    communication and system failure are one and the same. This implies an
-    entirely different class of failure-modes.
+First, distributed system designers model inter-node communication as a black box, whose failure modes are an independent class of failures from the system itself.
+Thus, distributed systems makes guarantees that hold only ``when the network recovers from partition.''
+In SDN, however, the failed system {\it is} the network: loss of
+communication and system failure are one and the same. This implies an
+entirely different class of failure-modes.
 
-	Second, SDN provides significant domain-specific context to inform the debugging process.
-	The  SDN architecture provides well-defined interfaces whose correct interactions can be verified; \eg{} that the state of a switch and the state of its representation in the NOS should be consistent.
-	Further, networking itself requires specific properties of the the network graph, the state of the switches, \etc{}; for example, the network graph should always be acyclic.
-	These domain-specific invariants do not need to be specified by the programmer, but instead should be ``baked-in'' to the SDN debugging process.
+Second, SDN provides significant domain-specific context to inform the debugging process.
+The  SDN architecture provides well-defined interfaces whose correct interactions can be verified; \eg{} that the state of a switch and the state of its representation in the NOS should be consistent.
+Further, networking itself requires specific properties of the the network graph, the state of the switches, \etc{}; for example, the network graph should always be acyclic.
+These domain-specific invariants do not need to be specified by the programmer, but instead should be ``baked-in'' to the SDN debugging process.
 
-        CLINT does\ldots
-
+CLINT does\ldots
