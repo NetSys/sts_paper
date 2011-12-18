@@ -1,5 +1,6 @@
-
-\colin{Maybe some floof about the proliferation SDN?}
+Software-defined networking is an emerging paradigm for managing the
+configuration of network devices. Primarily because of its flexibility and ease of use, SDN is
+quickly becoming widely adopted in both industry and academia. \colin{Fluff!}
 
 In a traditional network, each switch and router is independently responsible for
 its own forwarding decisions, failure recovery, and access control. In
@@ -7,10 +8,11 @@ contrast, all control-plane decisions in a software-defined network are made by
 a logically-centralized controller. When a
 switch observes a packet that does not match a forwarding rule, 
 it relays the packet to a control server running a ``network operating system''
-(NOS). The NOS first updates its model of the global network configuration.
-It then notifies one or more hosted control applications of the event. Finally, the
-control
-application decides how to handle the packet, informs the NOS of the decision,
+(NOS). The `device-driver` layer of the NOS first updates its model of the global network configuration.
+The virtualization layer then translates this change into an abstract 
+representation of the network state to hide the details of the switch. Next, one or more hosted control
+applications are notified of the event. Lastly, the
+control application decides how to handle the packet, informs the NOS of the decision,
 and the NOS pushes the new configuration to the network.
 
 \colin{needs rewrite begin}
