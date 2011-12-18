@@ -15,10 +15,16 @@ applications are notified of the event. Lastly, the
 control application decides how to handle the packet, informs the NOS of the decision,
 and the NOS pushes the new configuration to the network.
 
-\colin{needs rewrite begin}
+These abstractions give rise to three classes of system errors. We describe these in turn.
 
-This modularity gives rise to a class of system errors which do not exist in
-traditional networks: {\it semantic mismatches} \colin{Better name?}. Each layer of the architecture
+\noindent {\it Dynamic misconfigurations.} Many traditional networks are statically configured.
+As a result, a single verification of the network state can detect most potential bugs. 
+In contrast, software-defined networks may change state quite rapidly. For verification to be
+effective in this environment, checks must be run across the configuration space of the control
+ application. Moreover, there exist system executions resulting in error conditions that will never 
+detected by a static checker. \colin{TODO: describe Justine's cool overlapping flow entries example}
+
+\noindent {\it Correspondance violations.}  Each layer of the SDN architecture
 maintains its own model of the network state; the switches maintain forwarding
 rules in TCAMs, the NOS represents the state of the switches in a graph-like data
 structure, and the control application typically operates on 
@@ -26,41 +32,44 @@ a virtualized version of that graph. In theory, each layer's model should eventu
 converge to a point where there is a one-to-one mapping 
 between the other layers' models, but this does not always hold in practice.
 
-Semantic mismatches may manifest themlselves in one of two ways.
-
-\justine{is our goal to detect transient errors? it seems like detecting and 
-resolving transient errors is a good goal for a second project} \colin{Agreed.
-Both transient and persistent errors are important
-problems. But you go about dealing with them in very different ways. Not sure
-if the  distinction is valuable here (there are a million different
-distinctions we could make...)}
-
-\noindent {\it Transient errors} may be triggered by a particular ordering of
-events in the system. For example, if the NOS pushes out a new forwarding policy
-which involves multiple switches, in-flight packets may enter a
-temporary forwarding loop while each of the switches converge on the new policy.
-\colin{More examples? Would be nice to have an example that depends on the
-order in which packets arrive.} Although the SDN stack does eventually converge to
-a consistent view of the network, such errors may present a significant
-impedance to smooth operation if such errors occur often. 
-
-\colin{Need a word to describe isolation of a bug to a particular control
-server, re: replication. `cross-component` seems way too ill-defined to me.
-e.g., is an object a component of the system? A method? A variable? etc. }
-
-\noindent {\it Persistent errors} may be caused by software bugs and
-byzantine hardware failures. Software bugs are particularly common in
-production software-defined network deplyoments, for two reasons. First, the
+This class of errors is particularly pernicious, as the 
 virtualization layer of the NOS is often quite complex. Consider for example
 that an entire datacenter network supporting 10s of thousands of hosts may be
 treated as a single logical switch. When the control application makes a
 configuration change to the logical switch, the NOS needs to carefully map this
-configuration onto mulitple physical switches along the path. Second,
-production SDN deployments distribute the NOS across multiple servers to achieve fault-tolerance
+configuration onto mulitple physical switches along the path.
+
+\noindent {\it Consistency violations.}
+
+Production SDN deployments distribute the NOS across multiple servers to achieve fault-tolerance
 and scalability. Distributed control gives rise to the same types of coordination
 and consistency bugs that affect general distributed systems.
 
-\colin{needs rewrite end}
+Consistency errors may be transient or persistent. Consider the following example of a transient
+consistency error: if the NOS pushes out a new forwarding policy
+which involves multiple switches, in-flight packets may enter a
+temporary forwarding loop while each of the switches converge on the new policy.
+The visible effects of transient errors may differ significantly from persistent errors.
+With consistent errors, a software-bug may prevent the network from ever converging to a consistent
+state. \colin{TODO: example}
+
+\colin{More examples? Would be nice to have an example that depends on the
+order in which packets arrive.} 
+
+%Although the SDN stack does eventually converge to
+%a consistent view of the network, such errors may present a significant
+%impedance to smooth operation if such errors occur often. 
+
+%\justine{is our goal to detect transient errors? it seems like detecting and 
+%resolving transient errors is a good goal for a second project} \colin{Agreed.
+%Both transient and persistent errors are important
+%problems. But you go about dealing with them in very different ways. Not sure
+%if the  distinction is valuable here (there are a million different
+%distinctions we could make...)}
+
+\colin{Need a word to describe isolation of a bug to a particular control
+server, re: replication. `cross-component` seems way too ill-defined to me.
+e.g., is an object a component of the system? A method? A variable? etc. }
 
 Based on discussions with developers of a network operating system
 \cite{Nicira}, we argue that there is a serious need for systematic troubleshooting
