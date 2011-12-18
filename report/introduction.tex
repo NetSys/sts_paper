@@ -28,6 +28,13 @@ between the other layers' models, but this does not always hold in practice.
 
 Semantic mismatches may manifest themlselves in one of two ways.
 
+\justine{is our goal to detect transient errors? it seems like detecting and 
+resolving transient errors is a good goal for a second project} \colin{Agreed.
+Both transient and persistent errors are important
+problems. But you go about dealing with them in very different ways. Not sure
+if the  distinction is valuable here (there are a million different
+distinctions we could make...)}
+
 \noindent {\it Transient errors} may be triggered by a particular ordering of
 events in the system. For example, if the NOS pushes out a new forwarding policy
 which involves multiple switches, in-flight packets may enter a
@@ -36,6 +43,9 @@ temporary forwarding loop while each of the switches converge on the new policy.
 order in which packets arrive.} Although the SDN stack does eventually converge to
 a consistent view of the network, such errors may present a significant
 impedance to smooth operation if such errors occur often. 
+
+\colin{Need a word to describe isolation of a bug to a particular control
+server, re: replication}
 
 \noindent {\it Persistent errors} may be caused by software bugs and
 byzantine hardware failures. Software bugs are particularly common in
@@ -96,7 +106,12 @@ general distributed systems..}
 %system. In particular, we will need to make sure that they support
 %vector clocks to be able to infer a global ordering of events.}
 %
+% \justine{wait, is this a debugging technique or something you would do to
+% stop consistency bugs from happening?}
+% \colin{Vector clocks are a debugging technique. Without them, you have no way
+% to reason about causation (the order in which events occur)}
 %
+% \justine{I would say that the second here is the most important insight}
 %Second, SDN provides significant domain-specific context to inform the debugging process.
 %The  SDN architecture provides well-defined interfaces whose correct interactions can be verified; \eg{} that the state of a switch and the state of its representation in the NOS should be consistent.
 %Further, networking itself requires specific properties of the the network graph, the state of the switches, \etc{}; for example, the network graph should always be acyclic.
