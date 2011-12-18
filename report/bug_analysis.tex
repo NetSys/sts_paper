@@ -1,36 +1,32 @@
 
-In this section we provide an analysis of the classes of errors observed in
-production-grade software-defined networks. We base our analysis on conversations with
+In this section we provide a taxonomy of common failure modes observed in
+software-defined networks. We base our analysis on conversations with
 researchers at Nicira~\cite{nicira}, a startup focused on developing a network operating
 system for production SDN deployments~\cite{onix}.
 
 \begin{figure}[t]
     \centering
     \begin{tabular}{ccc}
-    \hspace{-5pt}\includegraphics[width=.9in]{../diagrams/bugs/loop.pdf}&
-    \includegraphics[width=.9in]{../diagrams/bugs/dead_end.pdf}&
-    \includegraphics[width=.9in]{../diagrams/bugs/routing_inconsistency.pdf}\\
-    {\bf (i) Loop}&{\bf (ii) Dead End}&{\bf (iii) Inconsistency}\\
+    \hspace{-5pt}\includegraphics[width=1.3in]{../diagrams/bugs/loop.pdf}&
+    \includegraphics[width=1.3in]{../diagrams/bugs/dead_end.pdf}& \\
+    {\bf (i) Loop}&{\bf (ii) Dead End}& \\
+    \includegraphics[width=1.3in]{../diagrams/bugs/partition.pdf}&
+    \includegraphics[width=1.3in]{../diagrams/bugs/routing_inconsistency.pdf}\\
+     {\bf (iii) Partition}&{\bf (iv) Inconsistency}
     \end{tabular}
-    \caption[]{\label{fig:invariantviolations} Selected classes of physical network errors detectable with static
-    checking.\vspace{-10pt}} 
+    \caption[]{\label{fig:generic_errors} Generic errors observed in
+    networks.\vspace{-10pt}} 
 \end{figure}
 
-\colin{Insert diagrams on bugs that we can catch but Anteater can't}
 
-What kind of bugs do we want to analyze? Well I guess we start with static
-bugs that Anteater can detect. Useful for providing background common error
-conditions seen in networks. 
-
+Figure \ref{fig:generic_errors} depicts such
+errors. 
 Well, loops are these things where packets go in a circle and never come out.
 Their bad because they cause the traffic stuck in the loop to never go
 through. They're also bad because they congest the routers in the loop, and
 therefore affect unrelated traffic. Really bad at layer 2, where there are no
 ttls.
 
-Ok. Then there are partitions. In most cases, every host in the network should
-be able to reach every other host in the network. If there exists no route to
-one host, 
 
 Blackholes are a related problem. Traffic may arrive at a dead end,
 
@@ -38,6 +34,11 @@ Maybe talk about routing consistency? Simplest invariant is `No packet can
 arrive at a web server without passing through a firewall`. If re-distributing
 load across ingress switches, in-flight packets might get the web server
 without passing through a firewall.
+
+We note that some error conditions may not manifest themselves in the same way
+as a normal network. Network partitions for example. Most OpenFlow networks
+don't keep default routes -- the FIBs are sparse. By checking the FIBs alone,
+you won't find .
 
 Ok, now for the interesting bugs. Start with Justine's flow overlap bug.
 
