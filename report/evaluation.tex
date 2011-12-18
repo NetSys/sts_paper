@@ -1,3 +1,13 @@
+    Our current implementation includes
+
+    \subsection{Next Steps}
+        The previously described experiments show that our implementation of \projectname{} (1) can detect errors like forwarding loops that manifest entirely in the physical network (by using Anteater), (2) can detect physical network errors that manifest as the result of a specific sequence of flows to reach the network controller (by using \projectname{}'s network fuzzer), and (3) imposes reasonable performance requirements to analyze the SDN stack for these errors.
+        To complete this analysis, we are working with engineers at Nicira Networks to obtain in-depth bug reports describing errors encountered by real SDN deployments.
+        In future work, we plan to replicate these bugs in our SDN testbed and investigate whether \projectname{} can detect them.
+        In addition, we are working with researchers at the International Computer Science Institute (ICSI) to obtain copies of their own SDN control applications from their research, and apply \projectname{} to their implementations to investigate whether \projectname{} can detect any new bugs.
+
+        Longer term, as the \projectname{} implementation matures to include multi-layer correspondence checks and cross-controller consistency checks (as described in \S\ref{sec:design}), we will apply \projectname{} to a broader class of bugs and see what fraction of Nicira bug reports \projectname{} can capture, and what kinds of new bugs it detects in control applications from ICSI. 
+
 Three forms of evaluation:
 
 \subsection{Did our system find bugs in third-party applications?}
