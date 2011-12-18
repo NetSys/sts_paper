@@ -22,6 +22,8 @@ between the other layers' models, but this does not always hold in practice.
 
 Semantic mismatches may manifest themlselves in one of two ways.
 
+\justine{is our goal to detect transient errors? it seems like detecting and 
+resolving transient errors is a good goal for a second project}
 \noindent {\it Transient errors} may be triggered by a particular ordering of
 events in the system. For example, if the NOS pushes a new forwarding policy
 to the network which involves multiple switches, in-flight packets may enter a
@@ -55,6 +57,9 @@ In this work we present a new technique for debugging the software-defined
 netwoking stack: cross-layer analysis. Our prototype system, CLINT, interposes 
 on the layers of the SDN stack to enable isolated invariant checking of individual
 components.
+\justine{I agree with your statement earlier that replication/consistency is a more
+interesting set of bugs. If we say `multicomponent' or 'cross component' or do you think
+that will encompass both insights?}
 
 An SDN debugger must be general enough to address all of the above problems, and provide programmers
 with the ability to (i) detect that a problem exists, (ii) identify the layer / component / line of code
@@ -96,12 +101,14 @@ essentially need to take snapshots at every state change. Moreover,
                     need to treat the switches as a first class entity in the distributed
                     system. In particular, we will need to make sure that they support
                     vector clocks to be able to infer a global ordering of events.}
+                    \justine{wait, is this a debugging technique or something you would do to stop consistency bugs from happening?}
                     First, distributed system designers model inter-node communication as a black box, whose failure modes are an independent class of failures from the system itself.
                     Thus, distributed systems makes guarantees that hold only ``when the network recovers from partition.''
                     In SDN, however, the failed system {\it is} the network: loss of
                     communication and system failure are one and the same. This implies an
                     entirely different class of failure-modes.
 
+                    \justine{I would say that the second here is the most important insight}
                     Second, SDN provides significant domain-specific context to inform the debugging process.
                     The  SDN architecture provides well-defined interfaces whose correct interactions can be verified; \eg{} that the state of a switch and the state of its representation in the NOS should be consistent.
                     Further, networking itself requires specific properties of the the network graph, the state of the switches, \etc{}; for example, the network graph should always be acyclic.
@@ -115,4 +122,4 @@ essentially need to take snapshots at every state change. Moreover,
                     itself, especially those caused by inconsistencies between distinct control server
                     instances, pose a significant problem for operators of software-defined
                     networks. Second, we present two methodologies for ameliorating the difficulty of
-                    detecting and isolating such errors: cross-layer analysis, and dynamic invariant checking.
+                    detecting and isolating such errors: cross-layer\justine{cross-component?} analysis, and dynamic invariant checking.

@@ -34,7 +34,7 @@
 %\usepackage[small]{caption}
 \usepackage{times}
 
-\title{CLINT: Cross-layer Debugging for the Software-Defined Networking Stack\vspace{-25pt}}
+\title{CLINT: Cross-Component Debugging for the Software-Defined Networking Stack\vspace{-25pt}}
 
 \author{Colin Scott and Justine Sherry\thanks{In collaboration with Andreas
 Wundsam, Teemu Koponen, and Scott Shenker}}
@@ -51,29 +51,31 @@ Wundsam, Teemu Koponen, and Scott Shenker}}
 \colin{I think `distributed debugging of consistency and virtualization
 errors` is a much more compelling pitch than `cross-layer invariant
 checking`. Of course, we haven't got that far yet...}
+\justine{agreed}
 
 {\it
-    Software-defined networking (SDN) simplifies network management
-    by isolating control logic from the distribution of control-plane state in the
-    physical network. By abstracting away the details of network
-    configuration however, debugging errors in a software-defined network is
-    considerably difficult. Besides the control logic itself, bugs
-    may manifest themselves in virtualization logic, distribution logic,
+    In Software-Defined Networks, forwarding decisions are made 
+    by a logically centralized control application running on top of a `network operating system'
+    at one or several replicated
+    network controllers.
+    The SDN model simplifies network management
+    by isolating control logic in the control application from the distribution of control-plane state in the
+    physical network. 
+    However, by abstracting away the details of network
+    configuration, debugging errors in a software-defined network is
+    difficult. 
+    Bugs
+    may manifest not only in the control application, but in any of the layers that translate the control
+    application to a physical configuration of switches: virtualization logic, distribution logic,
     network devices, or the mappings between any of these layers
     in the SDN platform. This increased `distance to the metal` makes it
     difficult for network operators to
     isolate the cause of errors to any particular layer of abstraction. In this paper
     we present CLINT, a cross-layer debugger for software-defined
-    networks. CLINT interposes on the layers of the SDN stack to enable
+    networks. CLINT interposes on the layers of the SDN stack, both within a single controller and between replicated controllers,  to enable
     isolated invariant checking of individual components. Using bug reports from a production SDN deployment, we demonstrate that
-    CLINT can detect and isolate many real problems in large-scale networks today.
+    CLINT can detect and isolate many real problems in large-scale production networks today.
 }
-\justine{Am I right that CLINT doesn't yet handle the inter-controller stuff? I know you wrote a basic replicated controller, but not sure if you have any checks yet.}
-\colin{It would be really cool to run the inter-controller stuff by Monday,
-mostly because it makes the problem space way more interesting. We
-should be able to just run your application on top of the replicated
-controller and call it good.  Of course, two days is not a large amount of
-time in any case...}
 }
 
 \section{Introduction}
