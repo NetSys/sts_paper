@@ -31,7 +31,7 @@ order in which packets arrive.} Although the SDN stack does eventually converge 
 a consistent view of the network, such errors may present a significant
 impedance to smooth operation if such errors occur often. 
 
-\noindent {\bf Persistent errors} may be caused by software bugs and
+\noindent {\it Persistent errors} may be caused by software bugs and
 byzantine hardware failures. Software bugs are particularly common in
 production software-defined network deplyoments, for two reasons. First, the
 virtualization layer of the NOS is often quite complex. Consider for example
@@ -44,7 +44,7 @@ and scalability. Distributed control gives rise to the same types of coordinatio
 and consistency bugs that affect general distributed systems.
 
 From our experience talking to developers of software-defined networks
-~cite{Nicira}, we find that there is a serious need for systematic troubleshooting
+\cite{Nicira}, we find that there is a serious need for systematic troubleshooting
 tools and techniques for the software-defined networking stack. When a problem occurs,
 operators often resort to ad-hoc troubleshooting techniques such as traceroute or ping.
 If these techniques fail to isolate the problem, operators often resort to
