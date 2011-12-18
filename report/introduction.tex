@@ -1,17 +1,23 @@
 Software-defined networking is an emerging paradigm for managing the
 configuration of network devices. Primarily because of its flexibility and ease of use, SDN is
-quickly becoming widely adopted in both industry and academia. \colin{Fluff!}
-
+quickly becoming widely adopted in both industry~\cite{bigswitch, nicirahomepage} and academia~\cite{nox, pox, ethane}. 
 In a traditional network, each switch and router is independently responsible for
 its own forwarding decisions, failure recovery, and access control. In
 contrast, all control-plane decisions in a software-defined network are made by
-a logically-centralized controller. When a
+a logically-centralized controller (which may be replicated across multiple control servers). 
+The controller pushes forwarding decisions to `dumb' 
+switches who simply store a bitmask of the packet header and the associated forwarding decision and apply it 
+to later packets. 
+
+
+Modern controllers are architected with a three layer approach: a Network Operating System (NOS) manages switch state, keeping track of which switches are members of the network and pushing forwarding decisions to the switches; a virtualization layer wraps the switch state in a programmable abstraction for administrator configuration; and a control application, written by a network administrator, expresses the administrator's network requirements in terms of the virtualization layer abstraction.
+ When a
 switch observes a packet that does not match a forwarding rule, 
-it relays the packet to a control server running a ``network operating system''
-(NOS). The `device-driver` layer of the NOS first updates its model of the global network configuration.
+it relays the packet to a control server running an NOS. 
+The NOS first updates its model of the global network configuration.
 The virtualization layer then translates this change into an abstract 
-representation of the network state in order to hide low-level details. Next, one or more hosted control
-applications are notified of the event. Lastly, the
+representation of the network state, for example, in generating object representations of each switch whose configuration will be replicated by the NOS on to the physical network. After the virtualization layer is updated, one or more hosted control
+applications are notified of the event. Lastly, a
 control application decides how to handle the packet, informs the NOS of the decision,
 and the NOS pushes the new configuration to the network.
 
@@ -19,13 +25,14 @@ These abstractions give rise to three classes of system errors. We describe thes
 
 \noindent {\it Dynamic misconfigurations.} Many traditional networks are statically configured.
 As a result, a single verification of the state of the network can catch most potential bugs. 
-In contrast, software-defined networks typically state quite rapidly. For verification to be
+In contrast, software-defined networks typically change state quite rapidly, creating new FIB entries on the arrival of each new flow.  For verification to be
 effective in this environment, checks must span set of possible output configurations for a given control
 application.
 
+\eat{ Discuss this later.
 Moreover, there exist system executions in SDNs which result in error conditions that will never 
 detected by a static checker. \colin{TODO: describe Justine's cool overlapping flow entries example}
-
+}
 \noindent {\it Correspondance violations.}  Each layer of the SDN architecture
 maintains its own model of the network state; the switches maintain forwarding
 rules in TCAMs, the NOS represents the state of the switches in a graph-like data
@@ -34,6 +41,7 @@ a virtualized version of that graph. In theory, each layer's model should eventu
 converge to a point where there is a one-to-one mapping 
 between the other layers' models, but this does not always hold in practice.
 
+\eat{
 This class of errors is particularly pernicious, as the 
 virtualization layer of the NOS is often quite complex. Consider for example
 that an entire datacenter network supporting 10s of thousands of hosts may be
@@ -41,25 +49,20 @@ treated as a single logical switch. When the control application makes a
 configuration change to the logical switch, the NOS needs to carefully map this
 configuration onto mulitple physical switches along the path. Any mismapping in this
 process may prevent the network from ever behaving exactly as the application intended.
-
+}
 \noindent {\it Consistency violations.} Production SDN deployments distribute the NOS
  across multiple servers to achieve fault-tolerance
 and scalability. Distributed control gives rise to the same types of coordination
-and consistency bugs that affect general distributed systems. \colin{Even in a single-controller
-topology, there are still consistency violations between the controller and the switches. We don't
-normally think of the network as a first-class entity in the distributed system, but in our case it
-is!}
-
+and consistency bugs that affect general distributed systems. 
+\eat{ Section 2.
 We note that two distinct classes of consistency violations occur in SDNs.
 Transient consistency violations depend on the ordering of events in the system. For example,
 if the  NOS pushes out a new forwarding policy
 which involves multiple switches, in-flight packets may enter a
 temporary forwarding loop while each of the switches converge on the new policy.
-\colin{Would be nice to have an example that depends on the
-order in which packets arrive.} 
 The effects of transient
 consistency violations are noticeable distinct from persistent violations. Conder for example, \colin{some example}
-
+}
 %Although the SDN stack does eventually converge to
 %a consistent view of the network, such errors may present a significant
 %impedance to smooth operation if such errors occur often. 
@@ -74,39 +77,42 @@ consistency violations are noticeable distinct from persistent violations. Conde
 \colin{Need a word to describe isolation of a bug to a particular control
 server, re: replication. `cross-component` seems way too ill-defined to me.
 e.g., is an object a component of the system? A method? A variable? etc. }
+\justine{Let's just say cross-server and cross-layer?}
 
-Based on discussions with developers of a network operating system
-\cite{Nicira}, we argue that there is a serious need for systematic troubleshooting
-tools and techniques for the SDN stack. When a problem occurs,
+
+We present an overview of typical bugs encountered in large-scale, production SDNs in Section~\ref{sec:bugs}.
+We derived these classifications based on bugs reports and discussions with engineers at Nicira Networks~\cite{nicira}, 
+a major SDN start-up;
+to the best of our knowledge this is the first publication of such data in the research community.
+When encountering one of these problems,
 operators currently use ad-hoc troubleshooting tools such as ping or traceroute.
 If these techniques fail to isolate the problem, operators often resort to
 manually gathering log files from each layer of the system and painstakingly
 correlating the effects of a bug to identify its root cause.
 
-In this work we present two new techniques for debugging the SDN stack:
-dynamic invariant checking and cross-layer correlation. Our prototype system,
-\projectname{}, demonstrates that these techniques are effective at detecting and
-isolating common errors in SDN deployments.
-
-Our goal in designing \projectname{} has been to provide a comprehensive solution to
-troubleshooting bugs in the SDN stack. To this end, we
-leverage existing techniques whenever possible. We utilize a static dataplane invariant
-checker \cite{anteater} to detect bugs in any single configuration of the
+To simplify the debugging process, we present \projectname{}, a comprehensive debugger for the SDN stack.
+To this end, \projectname{} leverages existing techniques wherever possible, while improving the state of affairs
+with three new techniques for SDN debugging. We utilize a static physical network invariant
+checker~\cite{anteater} to detect bugs in any single configuration of the
 physical network. To capture the dynamic nature of software-defined networks,
-we also support a range of input generation techniques including fuzzing, tracing, record and
+we build off of a range of input generation techniques including fuzzing, tracing, record and
 replay, and symbolic execution for effective exploration of a given control
-application's configuration space. Finally, we leverage the layered nature of the
-SDN stack to enable semantic checks of the network configuration \colin{by
-`semantic`, I mean `the network should do what the application tells it to`.
-Need to reword.} as
-well as fine-grained root-cause analysis.
+application's configuration space. 
+As a comprehensive solution, \projectname{} builds off of these existing techniques to present
+ three new techniques for SDN debugging:
 
-\colin{Quick discussion of related work? Especially relation to debuggers for
-general distributed systems..}
+\noindent {\it Dynamic invariant checking}:  Because the arrival of each new flow may update a FIB entry in a switch,
+ new bugs may
+manifest at any time, dependent on the flows that have traversed the network. \projectname{} `fuzzes' the network with 
+test traffic in multiple rounds to test multiple network configurations.
 
-%Although distributed systems debugging is well explored,
-%software-defined networks differ in a number of ways.
-%
+\noindent {\it Cross-layer correlation}: Mistranslations between layers of the SDN stack can create bugs, some which
+may even be undetectable by looking at raw FIB entries. \projectname{} walks the data structures representing network state
+at each layer of the NOS to ensure consistency.
+
+\noindent {\it Cross-server verification}: Managing a network with replicated servers makes a complex distributed system (managing the state at hundreds or thousands of switches) even more complex, as even the management layer itself may become inconsistent
+\projectname{}...\justine{colin, you're going to have to say something here}
+
 %
 %First, distributed system designers model inter-node communication as a black box, whose failure modes are an independent class of failures from the system itself.
 %Thus, distributed systems makes guarantees that hold only ``when the network recovers from partition.''
@@ -135,6 +141,9 @@ This paper makes two research contributions. First, it provides the first
 analysis of common system errors seen in production SDN deployments. In
 particular, through discussions with Nicira we show that bugs {\it within} the platform
 itself pose a significant problem for developers and operators of software-defined
-networks. Second, we present two methodologies for ameliorating the difficulty of
-troubleshooting such errors: dynamic invariant checking and cross-layer
-correlation.
+networks. Second, we present \projectname{}, a comprehensive debugger to detect and isolate bugs in SDNs.
+\projectname{} provides three novel methodologies for ameliorating the difficulty of
+troubleshooting such errors: dynamic invariant checking, cross-layer
+correlation, and cross-server verification.
+
+The rest of this paper is organized as follows. In \S\ref{sec:bugs}, we present an overview of common bugs encountered by users of production SDN deployments. In \S\ref{sec:approach}, we present our approach to detecting and isolating these bugs with \projectname{}. In \S\ref{sec:architecture}, we present the architecture of \projectname{}, and in \S\ref{sec:evaluation} we discuss our implementation of \projectname{} and evaluate it. Finally, in \S\ref{sec:future_work} we discuss our plans for future work, in \S\ref{sec:related_work} we discuss related work, and in \S\ref{sec:conclusion} we conclude.

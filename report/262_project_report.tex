@@ -34,7 +34,7 @@
 %\usepackage[small]{caption}
 \usepackage{times}
 
-\title{\projectname{}: Cross-Layer Debugging for the Software-Defined Networking Stack\vspace{-25pt}}
+\title{\projectname{}: Cross-Layer Debugging for the \\ Software-Defined Networking Stack\vspace{-25pt}}
 
 \author{Colin Scott and Justine Sherry\thanks{In collaboration with Andreas
 Wundsam, Teemu Koponen, and Scott Shenker}}
@@ -47,12 +47,6 @@ Wundsam, Teemu Koponen, and Scott Shenker}}
     \maketitle
 
 \abstract{
-
-\colin{I think `distributed debugging of consistency and virtualization
-errors` is a much more compelling pitch than `cross-layer invariant
-checking`. Of course, we haven't got that far yet...}
-\justine{agreed}
-
 {\it
     Software-defined networking (SDN) simplifies network management
     by providing a `network operating system` for control applications, which effectively isolates
@@ -60,12 +54,12 @@ checking`. Of course, we haven't got that far yet...}
     physical network. However, by abstracting away the details of network
     configuration, debugging errors in a software-defined network is
     considerably difficult. Bugs may manifest not only in the control application,
-    but in any of the abstraction layers that translate control decisions to 
+    but in any of the layers of abstraction that translate control decisions to 
     changes in the physical network: virtualization logic, distribution logic,
     network devices, or the mappings between any of these layers.
     This increased `distance to the metal` makes it
     difficult for network operators to
-    isolate the cause of errors to any particular layer of abstraction. In this paper
+    isolate the cause of errors. In this paper
     we present \projectname{}, a cross-layer debugger for software-defined
     networks. \projectname{} interposes on the layers of the SDN stack, both within a single
     control server and between distributed controllers, to enable
@@ -78,7 +72,7 @@ checking`. Of course, we haven't got that far yet...}
 \input{introduction}
 
 \section{Failure mode analysis}
-\label{sec:bug_analysis}
+\label{sec:bugs}
 \input{bug_analysis}
 
 \section{Approach}
@@ -102,7 +96,7 @@ checking`. Of course, we haven't got that far yet...}
 \input{related_work}
 
 \section{Conclusion}
-
+\label{sec:conclusion}
 We debugged all the things!
 
 \bibliographystyle{abbrv}
