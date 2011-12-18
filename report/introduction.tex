@@ -1,15 +1,19 @@
 
-\colin{Maybe some floof about the proliferation SDN?}\justine{agreed}
+\colin{Maybe some floof about the proliferation SDN?}
 
-Unlike in a traditional network, where each switch and router is independently responsible for
-its own forwarding decisions, failure recovery, and access control, all management
-decisions in a software-defined network are made by a logically-centralized controller. When a
+In a traditional network, each switch and router is independently responsible for
+its own forwarding decisions, failure recovery, and access control. In
+contrast, all control-plane decisions in a software-defined network are made by
+a logically-centralized controller. When a
 switch observes a packet that does not match a forwarding rule, 
 it relays the packet to a control server running a ``network operating system''
-(NOS). The NOS begins updating its model of the global network configuration.
-The NOS then notifies one or more network management applications of the event. Finally, the management
+(NOS). The NOS first updates its model of the global network configuration.
+It then notifies one or more hosted control applications of the event. Finally, the
+control
 application decides how to handle the packet, informs the NOS of the decision,
-and the NOS pushes the new configuration to the switch.\justine{explicitly name the layers of the NOS}
+and the NOS pushes the new configuration to the network.
+
+\colin{needs rewrite begin}
 
 This modularity gives rise to a class of system errors which do not exist in
 traditional networks: {\it semantic mismatches} \colin{Better name?}. Each layer of the architecture
@@ -22,12 +26,10 @@ between the other layers' models, but this does not always hold in practice.
 
 Semantic mismatches may manifest themlselves in one of two ways.
 
-\justine{is our goal to detect transient errors? it seems like detecting and 
-resolving transient errors is a good goal for a second project}
 \noindent {\it Transient errors} may be triggered by a particular ordering of
-events in the system. For example, if the NOS pushes a new forwarding policy
-to the network which involves multiple switches, in-flight packets may enter a
-temporary forwarding loop while the switches converge on the new policy.
+events in the system. For example, if the NOS pushes out a new forwarding policy
+which involves multiple switches, in-flight packets may enter a
+temporary forwarding loop while each of the switches converge on the new policy.
 \colin{More examples? Would be nice to have an example that depends on the
 order in which packets arrive.} Although the SDN stack does eventually converge to
 a consistent view of the network, such errors may present a significant
@@ -45,81 +47,63 @@ production SDN deployments distribute the NOS across multiple servers to achieve
 and scalability. Distributed control gives rise to the same types of coordination
 and consistency bugs that affect general distributed systems.
 
-From our experience talking to developers of software-defined networks
-\cite{Nicira}, we find that there is a serious need for systematic troubleshooting
-tools and techniques for the software-defined networking stack. When a problem occurs,
-operators often resort to ad-hoc troubleshooting techniques such as traceroute or ping.
+\colin{needs rewrite end}
+
+Based on discussions with developers of a network operating system
+\cite{Nicira}, we argue that there is a serious need for systematic troubleshooting
+tools and techniques for the SDN stack. When a problem occurs,
+operators currently use ad-hoc troubleshooting tools such as ping or traceroute.
 If these techniques fail to isolate the problem, operators often resort to
-manually examining log files from each layer of the system, and painstakingly
-correlating the effects of the bug to identify the root cause of a problem.
+manually gathering log files from each layer of the system and painstakingly
+correlating the effects of a bug to identify its root cause.
 
-In this work we present a new technique for debugging the software-defined
-netwoking stack: cross-layer analysis. Our prototype system, CLINT, interposes 
-on the layers of the SDN stack to enable isolated invariant checking of individual
-components.
-\justine{I agree with your statement earlier that replication/consistency is a more
-interesting set of bugs. If we say `multicomponent' or 'cross component' or do you think
-that will encompass both insights?}
+In this work we present two new techniques for debugging the SDN stack:
+dynamic invariant checking and cross-layer correlation. Our prototype system,
+CLINT, demonstrates that these techniques are effective at detecting and
+isolating common errors in SDN deployments.
 
-An SDN debugger must be general enough to address all of the above problems, and provide programmers
-with the ability to (i) detect that a problem exists, (ii) identify the layer / component / line of code
-responsible for the problem, and (iii) reproduce the execution that triggered the error.
+Our goal in designing CLINT has been to provide a comprehensive solution to
+troubleshooting bugs in the SDN stack. To this end, we
+leverage existing techniques whenever possible. We utilize a static dataplane invariant
+checker \cite{anteater} to detect bugs in any single configuration of the
+physical network. To capture the dynamic nature of software-defined networks,
+we also support a range of input generation techniques including fuzzing, tracing, record and
+replay, and symbolic execution for effective exploration of a given control
+application's configuration space. Finally, we leverage the layered nature of the
+SDN stack to enable semantic checks of the network configuration \colin{by
+`semantic`, I mean `the network should do what the application tells it to`.
+Need to reword.} as
+well as fine-grained root-cause analysis.
 
-In general, distributed systems debugging techniques lie somewhere on a spectrum between
-{\it static checking} and {\it interactive replay}. Our first goal is to find
-the point on this spectrum most appropriate for SDN. 
+\colin{Quick discussion of related work? Especially relation to debuggers for
+general distributed systems..}
 
-\noindent {\bf Static-checkers} \cite{anteater} excel at {\it detecting} that problems
-exist. However, SDNs are far too dynamic for pure static checking; one would
-essentially need to take snapshots at every state change. Moreover,
-            knowing {\it that} a problem exists does not necessarily help isolate its
-            cause.
+%Although distributed systems debugging is well explored,
+%software-defined networks differ in a number of ways.
+%
+%
+%First, distributed system designers model inter-node communication as a black box, whose failure modes are an independent class of failures from the system itself.
+%Thus, distributed systems makes guarantees that hold only ``when the network recovers from partition.''
+%In SDN, however, the failed system {\it is} the network: loss of
+%communication and system failure are one and the same. This implies an
+%entirely different class of failure-modes.
+%
+%\justine{How does this come across in CLINT?} \colin{Right now, it
+%doesn't. However, when we start dealing with consistency bugs, we will
+%need to treat the switches as a first class entity in the distributed
+%system. In particular, we will need to make sure that they support
+%vector clocks to be able to infer a global ordering of events.}
+%
+%
+%Second, SDN provides significant domain-specific context to inform the debugging process.
+%The  SDN architecture provides well-defined interfaces whose correct interactions can be verified; \eg{} that the state of a switch and the state of its representation in the NOS should be consistent.
+%Further, networking itself requires specific properties of the the network graph, the state of the switches, \etc{}; for example, the network graph should always be acyclic.
+%These domain-specific invariants do not need to be specified by the programmer, but instead should be ``baked-in'' to the SDN debugging process.
 
-            \noindent {\bf Tracing frameworks} \cite{x-trace} excel at pinpointing the cause of an
-            error. However, the space of possible traces is intractable, so it can be very
-            difficult to produce the input that causes the error to arise in the first
-            place.
-
-            \noindent {\bf Interactive debuggers} facilitate intuition and shorten the
-            debugging process. However, true interactivity is extremely difficult to
-            obtain in a distributed system. 
-            %That said, there may be hope with SDN:
-            %the controller can simply refrain from installing flow rules in the switches
-            %such that {\it all } packets are sent to the
-            %centralized controller. Nevertheless, an interactive debugger would still
-            %have difficulty detecting problems and reproducing problematic
-            %executions. Moreover, 
-            Moreover, while interactive debuggers are
-            well-suited for sequential
-            computations, networks are inherently event-based.
-
-            Although distributed systems debugging is well explored,
-            software-defined networks differ in a number of ways.
-
-            \justine{How does this come across in CLINT?} \colin{Right now, it
-                doesn't. However, when we start dealing with consistency bugs, we will
-                    need to treat the switches as a first class entity in the distributed
-                    system. In particular, we will need to make sure that they support
-                    vector clocks to be able to infer a global ordering of events.}
-                    \justine{wait, is this a debugging technique or something you would do to stop consistency bugs from happening?}
-                    First, distributed system designers model inter-node communication as a black box, whose failure modes are an independent class of failures from the system itself.
-                    Thus, distributed systems makes guarantees that hold only ``when the network recovers from partition.''
-                    In SDN, however, the failed system {\it is} the network: loss of
-                    communication and system failure are one and the same. This implies an
-                    entirely different class of failure-modes.
-
-                    \justine{I would say that the second here is the most important insight}
-                    Second, SDN provides significant domain-specific context to inform the debugging process.
-                    The  SDN architecture provides well-defined interfaces whose correct interactions can be verified; \eg{} that the state of a switch and the state of its representation in the NOS should be consistent.
-                    Further, networking itself requires specific properties of the the network graph, the state of the switches, \etc{}; for example, the network graph should always be acyclic.
-                    These domain-specific invariants do not need to be specified by the programmer, but instead should be ``baked-in'' to the SDN debugging process.
-
-                    CLINT does\ldots
-
-                    This work makes to research contributions. First, it provides the first
-                    published view into the types and relative severity of problems seen in production SDN deployments. In particular, by
-                    examining bug reports from Onix, we show that bugs {\it within} the platform
-                    itself, especially those caused by inconsistencies between distinct control server
-                    instances, pose a significant problem for operators of software-defined
-                    networks. Second, we present two methodologies for ameliorating the difficulty of
-                    detecting and isolating such errors: cross-layer\justine{cross-component?} analysis, and dynamic invariant checking.
+This work makes two research contributions. First, it provides the first
+analysis of common system errors seen in production SDN deployments. In
+particular, through discussions with Nicira we show that bugs {\it within} the platform
+itself pose a significant problem for developers and operators of software-defined
+networks. Second, we present two methodologies for ameliorating the difficulty of
+troubleshooting such errors: dynamic invariant checking and cross-layer
+correlation.
