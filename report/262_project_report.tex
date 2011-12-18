@@ -34,7 +34,7 @@
 %\usepackage[small]{caption}
 \usepackage{times}
 
-\title{\projectname{}: Cross-Component Debugging for the Software-Defined Networking Stack\vspace{-25pt}}
+\title{\projectname{}: Cross-Layer Debugging for the Software-Defined Networking Stack\vspace{-25pt}}
 
 \author{Colin Scott and Justine Sherry\thanks{In collaboration with Andreas
 Wundsam, Teemu Koponen, and Scott Shenker}}
@@ -54,25 +54,21 @@ checking`. Of course, we haven't got that far yet...}
 \justine{agreed}
 
 {\it
-    In Software-Defined Networks, forwarding decisions are made 
-    by a logically centralized control application running on top of a `network operating system'
-    at one or several replicated
-    network controllers.
-    The SDN model simplifies network management
-    by isolating control logic in the control application from the distribution of control-plane state in the
-    physical network. 
-    However, by abstracting away the details of network
+    Software-defined networking (SDN) simplifies network management
+    by providing a `network operating system` for control applications which effectively isolates
+    control logic from the distribution of control-plane state in the
+    physical network. However, by abstracting away the details of network
     configuration, debugging errors in a software-defined network is
-    difficult. 
-    Bugs
-    may manifest not only in the control application, but in any of the layers that translate the control
-    application to a physical configuration of switches: virtualization logic, distribution logic,
-    network devices, or the mappings between any of these layers
-    in the SDN platform. This increased `distance to the metal` makes it
+    considerably difficult. Bugs may manifest not only in the control application,
+    but in any of the abstraction layers that translate control decisions to 
+    changes in the physical network: virtualization logic, distribution logic,
+    network devices, or the mappings between any of these layers.
+    This increased `distance to the metal` makes it
     difficult for network operators to
     isolate the cause of errors to any particular layer of abstraction. In this paper
     we present \projectname{}, a cross-layer debugger for software-defined
-    networks. \projectname{} interposes on the layers of the SDN stack, both within a single controller and between replicated controllers,  to enable
+    networks. \projectname{} interposes on the layers of the SDN stack, both within a single
+    control server and between replicated controllers, to enable
     isolated invariant checking of individual components. Using bug reports from a production SDN deployment, we demonstrate that
     \projectname{} can detect and isolate many real problems in large-scale production networks today.
 }
