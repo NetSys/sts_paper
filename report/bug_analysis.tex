@@ -2,7 +2,8 @@
 In this section we provide a taxonomy of common failure modes observed in
 software-defined networks. We base our analysis on conversations with
 researchers at Nicira~\cite{nicira}, a startup focused on developing a network operating
-system for production SDN deployments~\cite{onix}.
+system for production SDN deployments~\cite{onix}. To the best of our
+knowledge 
 
 \begin{figure}[t]
     \centering
@@ -27,8 +28,10 @@ some nodes in the network are not able to reach every other node. Finally, routi
 inconsistencies (iv) cause packets to be treated under multiple, conflicting policies as
 they traverse the network. 
 
+\eat{
 \colin{Mention errors specific to OpenFlow? \eg overlapping flow entries. I
 suppose that is really a form of routing inconsistency}
+}
 
 In addition to generic network problems, error conditions exist which are
 specific to the semantics of a particular control application. For example, a network
