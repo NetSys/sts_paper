@@ -1,33 +1,44 @@
+    We plan to continue developing \projectname{} with the eventual aim of publication; we plan to 
+submit to SIGCOMM 2012. 
+    Our plans for future work include the following:
 
-This project is only in its beginnings. There are a number of research
-avenues we would to explore in the near future:
+    {\bf Detailed Bug Report Analysis.} Pending CTO permission, we've recently
+     been granted access to raw bug reports from Nicira users running Onix in production. 
+     We'd like to use this data to answer questions about commonly encountered SDN bugs: 
+     Of the bug classifications developed in S\ref{sec:bugs}, which are the most common?    
+     When administrators trace down the root cause of the bugs, where in the SDN stack are
+     bugs most prevalent?
 
-\begin{itemize}
-\item Analysis of bug reports would be really nice!
-\item Right now we just simluate the network. Would be cool to emulate it.
-Perhaps even run the debugger in a live network.
-\item Virtualization bugs are really hard to deal with. We haven't yet evaluated
-our correspondence checks on a real virtualized application.
-\item Consistency errors in multi-server deployments are extremeley
-pernicious. Let's focus our efforts on these. Initial idea: treat network
-devices as a first class entity in the distrbuted system. Make sure they
-support transactions, vector clocks, \etc.
-\item Explore reactive troubleshooting techniques, \eg launching traceroutes
-when a problem occurs in a live network. Also, X-Trace might be complementary
-to static invariant checks. 
-\item Make it easier for application developers to specifiy invariants.
-\colin{Actually, JRex and Brighten are much better at that sort of thing than
-we are.}
-\item I think it would be really cool to build a fully interactive debugger
-for a live system (think gdb). Rough idea: empty the flow entries of all switches so that
-all packets go the controller. for each PacketIn event, allow the developer to
-step through the code, examine variables, change variables, change code on the
-fly, and then push the packet back down the next hop.
-\item Right now the input generator is just a fuzzer. Let's explore more
-sophisticated techniques, \eg high-fidelity tracing, symbolic execution, \etc.
-\item Transient errors are very different than persistent errors. Both are
-important problems. But you attack those two problems very differently. Can we
-automatically distinguish the two? That is, can we infer whether a bug is
-triggered by a certain order of events in the system, versus a systematic bug
-with the NOS state machine?
-\end{itemize}
+    {\bf Build and Evaluate Correspondence Checker.} Our existing implementation does not
+    include the cross-layer correspondence checker described in \S\ref{sec:architecture}.
+
+    {\bf Design, Build, and Evaluate Consistency Debugger.} We built a distributed controller for
+    POX, but have yet to design and build a consistency debugger to detect and resolve bugs
+    resulting from replication.~\footnote{We're interested in combining this with techniques to make
+    programming consistency better by treating the whole network as a distributed system, \eg{} adding
+    vector clocks to switches and deploying updates as transactions.}
+
+    {\bf Improved input generator.} Our current implementation of the input generator is
+    a random ``fuzzer.'' The fuzzer randomly explores the state space of possible flows, but
+    we believe that more sophisticated techniques (high-fideity tracing, symbolic execution) can help
+    us target input flows to more efficiently explore the space of possible bug-generating inputs. 
+
+    {\bf Run on a real, rather than simulated network.} Our evaluation ran on a real POX implementation,
+    but the physical network controlled by POX was a simulated, rather than real network.
+
+    {\bf Distinguish between transient and persistent errors.}  Transient errors are very different than persistent errors. Both are
+    important problems. But you attack those two problems very differently. Can we
+    automatically distinguish the two? That is, can we infer whether a bug is
+    triggered by a certain order of events in the system, versus a systematic bug
+    with the NOS state machine?
+
+    {\bf Reactive trobleshooting techniques.} \projectname{} passively monitors state of the 
+    components of the SDN, but it could benefit from reactive techniques like issuing traceroutes
+    when a bug is first detected; this supplemental information can aid in the debugging process.
+
+    {\bf Better tools for administrators.} We plan to develop two techniques to help administrators use
+    the debugger. First, we plan to allow them to specify their own, custom invariants (deployment-specific policies)
+     included with the standard invariants (\eg{} loops, dead ends).
+    Second, enabling and interactive debugging process, allowing administrators to step by step monitor
+    packets traversing the network and inspect FIB entries and network state at each hop.
+
