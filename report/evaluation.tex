@@ -26,7 +26,7 @@
     Anteater is capable of detecting loops, dead-ends, network partitions, and consistency violations.
     Our modifications to Anteater include adapting it to check FIB entries from a simulated network run under POX and integrating it with our input generator to run Anteater iteratively.
    
-    We evaluated the performance of our iteratively run invariant checks by running our implemntation over various network topologies with sizes scaling from five switches to 250, a full mesh network (with each node connected to $n - 1$ other nodes), and a randomly generated topology with each node randomly connected to 5 or 8 other nodes.
+    We evaluated the performance of our iteratively run invariant checks by running our implementation over various network topologies with sizes scaling from five switches to 250, a full mesh network (with each node connected to $n - 1$ other nodes), and a randomly generated topology with each node randomly connected to 5 or 8 other nodes.
     We ran the invariant checker with rounds of 100 inputs from the input generator, with invariant checks run after every fifth input (for a total of 20 runs of the invariant checker).
     The time for the invariant checker to evaluate the network is plotted in Figure~\ref{fig:anteatertime}.
    

@@ -21,7 +21,7 @@ vector clocks to switches and deploying updates as transactions.}
 
 {\bf Improved input generator.} Our current implementation of the input generator is
 a naive `fuzzer.' The fuzzer randomly explores the state space of possible flows, but
-we believe that more sophisticated techniques (\eg{} high-fideity tracing, symbolic execution) can help
+we believe that more sophisticated techniques (\eg{} high-fidelity tracing, symbolic execution) can help
 us target input flows to more efficiently explore the space of possible bug-generating inputs. 
 
 {\bf Run on a real, rather than simulated network.} Our evaluation ran on a real POX implementation,
@@ -36,7 +36,7 @@ automatically distinguish the two? That is, can we infer whether a bug is
 triggered by a certain order of events in the system, versus a systematic bug
 with the NOS state machine?
 
-{\bf Reactive trobleshooting techniques.} \projectname{} passively monitors state of the 
+{\bf Reactive troubleshooting techniques.} \projectname{} passively monitors state of the 
 components of the SDN, but it could benefit from reactive techniques like issuing traceroutes
 when a bug is first detected; this supplemental information can aid in the debugging process.
 

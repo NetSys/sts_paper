@@ -31,11 +31,11 @@ they traverse the network.
 
 In addition to generic network problems, error conditions exist which are
 specific to the semantics of a particular control application. For example, a network
-hosting web traffic may wish to guarentee that no incoming packet arrives
+hosting web traffic may wish to guarantee that no incoming packet arrives
 at a web server without first passing through a firewall. If a hardware
-failure occurs, in-flight packet might violate this guarentee. As another
+failure occurs, in-flight packet might violate this guarantee. As another
 example, a load-balancing application may strive to ensure that no link
-remains at full utliization more than 1\% of the time. If a sudden burst of
+remains at full utilization more than 1\% of the time. If a sudden burst of
 traffic enters the network, the application may be temporarily incapable
 satisfying its constraints. 
 
@@ -52,7 +52,7 @@ physical network, causing packets to be misrouted or lost.
 However, noticing these errors in traditional networks often requires human involvement: our first challenge 
 with \projectname{} is to classify these errors in terms of the mechanisms that \projectname{} must use and
 understand to detect them independently.
-Based on the Nicira reports, we classified each type of failure as one of three categories: physical misconfigurations (\S\ref{sec:dynamicmisconf}), correspondence violations (\S\ref{sec:correspond}), and consistency violations (\S\ref{sec:consistency}).
+Based on the Nicira reports, we classified each type of failure as one of three categories: physical misconfiguration (\S\ref{sec:dynamicmisconf}), correspondence violations (\S\ref{sec:correspond}), and consistency violations (\S\ref{sec:consistency}).
 
 
 \subsection{Physical Misconfiguration}
@@ -70,7 +70,7 @@ low rates of configuration change, OpenFlow-based SDNs often have FIB entries ge
 Thus, for traditional networks, a single verification of the
 state of the network can catch most potential bugs. 
 In contrast, software-defined networks can be more dynamic, and typically blur
-the distiction between forwarding and auxiliary configuration.
+the distinction between forwarding and auxiliary configuration.
 
 For verification to be effective in this environment, static verification must
 must span a larger set of possible output configurations for a given control
