@@ -8,56 +8,51 @@ SDN breaks this coupling and enables the control plane decision logic to evolve
 independently of the forwarding. Additionally, it introduces the notion of a
 Network Operating System (NOS) that provides a centralized view of the network
 state to applications and enables them to specify the intended behavior on top
-of higher level abstractions.
-
-Primarily because of its flexibility and ease of use, SDN
+of higher level abstractions. Primarily because of its flexibility and ease of use, SDN
 is quickly becoming widely adopted in both industry~\cite{nicirahomepage,
 bigswitch} and academia~\cite{nox, pox, ethane}.
 
-Modern OpenFlow controllers are often architected with a three layer approach
-that follows the NOS approach outlined above: a Network Operating System (NOS)
-layer manages switch state, keeping track of which switches are members of the
-network and pushing forwarding decisions to the switches; a virtualization layer
-wraps the switch state in a programmable abstraction for administrator
-configuration; and a control application, written by a network administrator,
-expresses the administrator's network requirements in terms of the
-virtualization layer abstraction. When a switch observes a packet that does not
-match a forwarding rule, it relays the packet to a control server running an
-NOS. The NOS first updates its model of the global network configuration. The
-virtualization layer then translates this change into an abstract representation
-of the network state, for example, in generating object representations of each
-switch whose configuration will be replicated by the NOS on to the physical
-network. After the virtualization layer is updated, one or more hosted control
-applications are notified of the event. Lastly, a control application decides
-how to handle the packet, informs the NOS of the decision, and the NOS pushes
-the new configuration to the network. \andi{We need a figure here that
+Modern SDN controllers are architected with a three layer approach: the NOS
+layer is responsible for tracking switch state and pushing configuration
+changes to the switches themselves; a virtualization layer
+wraps the state of the network in a programmable abstraction; and a control
+application written by network administrators 
+expresses the network behavior in terms of the virtualization layer abstraction.
+When a switch observes a packet that does not match a forwarding rule, it relays the
+packet to the NOS layer of a control server.
+The NOS then updates its model of the global network configuration. The
+virtualization layer translates this change into its own network model. 
+Finally, one or more hosted control applications are notified of the event, a
+control decision is made, the NOS is informed of the decision, and the NOS
+pushes the new configuration to the network.
+\eat{ Agreed, but maybe not in the intro
+\andi{We need a figure here that
 illustrates the chain of events.}
+}
 
-This structured approach isolates the control applications from the specifics
-and hardware details of the underlying network. It also decouples the control
-forwarding decision logic from the mechanism of distributing the state in the
-network. This facilitates a more concise, side-effect free spefication of
-intedended application behavior. Ideally, each application is reduced to a
+This structured approach isolates control applications from the specifics
+of the underlying network. This facilitates a concise specification of
+intedended network behavior. Ideally, each application is reduced to a
 state-less, side-effect free function $f(view) \rightarrow configuration$, that is
-cleanly specified and easy to validate.
+easy to validate.
 
-However, this simplification comes at a price. The complex platform
-and the multiple indirections and abstractions increase the 'distance to
-the metal'. This makes it difficult to correlate observed low-level behavior
-(e.g., a specific forwarding rule in a switch) with its high-level specification
-(a forwarding decision specified in terms of a virtual topology.) Also, the
+However, this simplification comes at a price. The 
+many indirections and abstractions in the platform increase the application's 'distance to
+the metal', making it difficult to correlate observed low-level behavior
+(\eg{} a specific forwarding rule in a switch) with its high-level specification
+(a forwarding decision specified in terms of a virtual topology.) In addition, the
 complexity of the NOS itself gives rise to bugs of there own that can be
 difficult to localize and troubleshoot. 
 
-We now discuss three classes of errors that can be introduced in turn:
+The SDN platform gives rise to at least three classes of errors:
 
-\noindent {\it Dynamic misconfigurations.} Many traditional networks employ static configuration
-for access control and management, and only dynamically configure forwarding.
-As a result, a single verification of the state of the network can catch most potential bugs. 
-In contrast, software-defined networks can be more dynamic, and blur the distiction between configuration
-and forwarding state. They may, e.g., perform an admission check and peform a forwarding decission, 
-thus creating new FIB entries, on the arrival of each new flow.  For verification to be
-effective in this environment, checks must span set of possible output configurations for a given control
+\noindent {\it Dynamic misconfigurations.} Many traditional networks exhibit
+low rates of configuration change. Consequently, a single verification of the
+state of the network can catch most potential bugs. 
+In contrast, software-defined networks can be more dynamic, and typically blur
+the distiction between forwarding and auxiliary configuration.
+For verification to be effective in this environment, static verification must
+must span a larger set of possible output configurations for a given control
 application.
 
 \eat{ Discuss this later.
@@ -67,7 +62,7 @@ detected by a static checker. \colin{TODO: describe Justine's cool overlapping f
 \noindent {\it Correspondence violations.}  Each layer of the SDN architecture
 maintains its own model of the network state; the switches maintain forwarding
 rules in TCAMs, the NOS represents the state of the switches in a graph-like data
-structure, and control applications typically operate on 
+structure, and control applications operate on 
 a virtualized version of that graph. In theory, each layer's model should eventually
 converge to a point where there is a one-to-one mapping 
 between the other layers' models, but this does not always hold in practice.
@@ -81,10 +76,12 @@ configuration change to the logical switch, the NOS needs to carefully map this
 configuration onto multiple physical switches along the path. Any mismapping in this
 process may prevent the network from ever behaving exactly as the application intended.
 }
-\noindent {\it Distribution Consistency violations.} Production SDN deployments distribute the NOS
+
+\noindent {\it Consistency violations.} Production SDN deployments distribute the NOS
  across multiple servers to achieve fault-tolerance
-and scalability. Distributed control gives rise to the same types of coordination
+and scalability. Distributed control gives rise to the same classes of coordination
 and consistency bugs that affect general distributed systems. 
+
 \eat{ Section 2.
 We note that two distinct classes of consistency violations occur in SDNs.
 Transient consistency violations depend on the ordering of events in the system. For example,
@@ -105,20 +102,19 @@ consistency violations are noticeable distinct from persistent violations. Conde
 %if the  distinction is valuable here (there are a million different
 %distinctions we could make...)}
 
-
-We present an overview of typical bugs encountered in large-scale, production SDNs in Section~\ref{sec:bugs}.
-We derived these classifications based on bugs reports and discussions with engineers at Nicira Networks~\cite{nicira}, 
-a major SDN start-up;
-to the best of our knowledge this is the first publication of such data in the research community.
-When encountering one of these problems,
+Based on bug reports and discussions at a major SDN start-up; we find that
+there is a serious need for system troubleshooting techniques for the SDN
+stack. When encountering one of these problems,
 operators currently use ad-hoc troubleshooting tools such as ping or traceroute.
 If these techniques fail to isolate the problem, operators often resort to
 manually gathering log files from each layer of the system and painstakingly
 correlating the effects of a bug to identify its root cause.
 
 To simplify the debugging process, we present \projectname{}, a comprehensive debugger for the SDN stack.
-To this end, \projectname{} leverages existing techniques wherever possible, while improving the state of affairs
-with three new techniques for SDN debugging. We utilize a static physical network invariant
+\projectname{} leverages existing techniques wherever possible, and improves the state of affairs
+with two new techniques for SDN debugging.
+
+\eat{We utilize a static physical network invariant
 checker~\cite{anteater} to detect bugs in any single configuration of the
 physical network. To capture the dynamic nature of software-defined networks,
 we build off of a range of input generation techniques including fuzzing, tracing, record and
@@ -126,21 +122,26 @@ replay, and symbolic execution for effective exploration of a given control
 application's configuration space. 
 As a comprehensive solution, \projectname{} builds off of these existing techniques to present
  three new techniques for SDN debugging:
+}
 
 \noindent {\it Dynamic invariant checking}:  Because the arrival of each new flow may update a FIB entry in a switch,
- new bugs may
-manifest at any time, dependent on the flows that have traversed the network. \projectname{} `fuzzes' the network with 
+ errors may be dependent on the flows that have previously traversed the network. \projectname{} `fuzzes' the network with 
 test traffic in multiple rounds to test multiple network configurations.
 
 \noindent {\it Cross-layer correlation}: Mistranslations between layers of the SDN stack can create bugs, some which
-may even be undetectable by looking at raw FIB entries. \projectname{} walks the data structures representing network state
-at each layer of the NOS to ensure consistency.
+may be undetectable by looking at raw FIB entries. \projectname{}
+translates between between each abstraction layers' representation of the
+network state to verify a correspondence between the application's intentions
+and the physical configuration.
 
+\eat{ If we want three contributions, mention isolated testing (per-layer
+verification)
 \noindent {\it Distributed controller fuzzing}: When a network is controlled by a distributed controllers, consistency
 errors can arise. \projectname{} enables the detection of such errors, by spawning multiple instance of controller
 applications and replaying inputs, while fuzzing the timing of state distribution events between the controllers. When forwarding
 configuration computed by the controllers changes in response to a timing change, this is an indication of a consistency
 bug in the controllers.
+}
 
 \eat{
 forwarding 
@@ -187,7 +188,7 @@ troubleshooting such errors: dynamic invariant checking, cross-layer
 correlation, and cross-server verification.
 }
 
-The rest of this paper is organized as follows. In \S\ref{sec:bugs}, we present an overview of common bugs
+The rest of this paper is organized as follows. In \S\ref{sec:bug_analysis}, we present an overview of common bugs
 encountered by users of production SDN deployments. In \S\ref{sec:approach}, we present our approach to
 detecting and isolating these bugs. In \S\ref{sec:architecture}, we present the
 architecture of our implementation, \projectname{}, and in
