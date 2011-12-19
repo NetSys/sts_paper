@@ -1,9 +1,21 @@
 
+In the previous section we described common error conditions observed in
+software-defined networks. In this section we present techniques for
+addressing 
+analyze the causes of such
+errors, and present techniques for addressing isolating and
+
 Key insights. We argue that invariants are the right way to think about this
 problem. Delta over Anteater: need to detect dynamic configuration bugs.
 OpenFlow networks are typically quite dynamic compared to traditional static
 (campus) networks. Also need cross-layer debugger (correspondance checks) to isolate where the bug is,
 and verify that the network is doing what the application tells it to.
 
+
+
+We note that some error conditions may not manifest themselves in the same way
+as a normal network. Network partitions for example. Most OpenFlow networks
+don't keep default routes -- the FIBs are sparse. By checking the FIBs alone,
+you won't find .
 
 

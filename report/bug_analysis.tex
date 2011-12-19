@@ -18,32 +18,32 @@ system for production SDN deployments~\cite{onix}.
     networks.\vspace{-10pt}} 
 \end{figure}
 
+Figure \ref{fig:generic_errors} depicts a set of errors which are
+common to all networks. Loops (i) are a particularly common problem which
+can result in significant packet loss and congestion. Dead ends, or
+`blackholes` (ii) prevent packets entering the network from reaching their
+final destination. Network partitions (iii) are a related problem where
+some nodes in the network are not able to reach every other node. Finally, routing
+inconsistencies (iv) cause packets to be treated under multiple, conflicting policies as
+they traverse the network. 
 
-Figure \ref{fig:generic_errors} depicts such
-errors. 
-Well, loops are these things where packets go in a circle and never come out.
-Their bad because they cause the traffic stuck in the loop to never go
-through. They're also bad because they congest the routers in the loop, and
-therefore affect unrelated traffic. Really bad at layer 2, where there are no
-ttls.
+\colin{Mention errors specific to OpenFlow? \eg overlapping flow entries. I
+suppose that is really a form of routing inconsistency}
 
+In addition to generic network problems, error conditions exist which are
+specific to the semantics of a particular control application. For example, a network
+hosting web traffic may wish to guarentee that no incoming packet arrives
+at a web server without first passing through a firewall. If a hardware
+failure occurs, in-flight packet might violate this guarentee. As another
+example, a load-balancing application may strive to ensure that no link
+remains at full utliization more than 1\% of the time. If a sudden burst of
+traffic enters the network, the application may be temporarily incapable
+satisfying its constraints. 
 
-Blackholes are a related problem. Traffic may arrive at a dead end,
-
-Maybe talk about routing consistency? Simplest invariant is `No packet can
-arrive at a web server without passing through a firewall`. If re-distributing
-load across ingress switches, in-flight packets might get the web server
-without passing through a firewall.
-
-We note that some error conditions may not manifest themselves in the same way
-as a normal network. Network partitions for example. Most OpenFlow networks
-don't keep default routes -- the FIBs are sparse. By checking the FIBs alone,
-you won't find .
-
-Ok, now for the interesting bugs. Start with Justine's flow overlap bug.
-
-Then go on to virtualization bugs. These are pretty severe, by the way.
-Semantic mismatches, yahdah yahdah.
-
-Then consistency. 9 in 10 systems researchers agree, PAXOS is hard.
+Finally, a class of errors exists where the network does not behave as the
+control application intends it to. A perfectly correct control application may
+tell the NOS to route to traffic destined for a particular destination
+out a particular egress, for example. A bug in the NOS itself, or a byzantine
+failure in a network device might cause some traffic to leave an incorrect
+egress.
 
