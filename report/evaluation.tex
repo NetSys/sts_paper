@@ -1,3 +1,12 @@
+
+    \begin{figure}[t]
+        \hspace{-10pt}
+        \includegraphics[width=3.25in]{graph}
+        \caption[]{\label{fig:anteatertime} Execution time to run invariant checker over full mesh and randomly generated network topologies of 5 to 250 nodes.} 
+    \end{figure}
+
+
+
     We are building an implementation of CLINT to debug SDN networks running the POX network operating system~\cite{pox}.
     
     POX is an implementation of the NOX network operating system built in Python.
@@ -11,25 +20,17 @@
 
     The current implementation of CLINT supports two features outlined in \S\ref{sec:architecture}, a traffic and topology `fuzzer' for input generation, and an invariant checker to detect bugs that manifest in the physical network.
     Our invariant checker is an extension of the Anteater~\cite{anteater} network debugger.
-    In future work, we plan to develop a correspondence checker to do cross-layer and cross-controller analysis.
-
-    We evaluated the existing features of \projectname{}.
-
-
-    \begin{figure}[t]
-        \hspace{-10pt}
-        \includegraphics[width=3.25in]{graph}
-        \caption[]{\label{fig:loop} Our lovely graph showing that execution time
-        is not too bad\vspace{-10pt}} 
-    \end{figure}
-
-    Two orthogonal ways to ameliorate the overhead. First, you could intellegintly choose
-    when to run Anteater, so that you don't have to run it for every possible
-    configuration, while still getting good coverage of the
-    configuration space. Second, you could make Anteater faster, perhaps by only
-    getting `best-effort` exploration of the invariant checks rather than
-    full-blown proofs that the invariant holds. Also, Brighten mentioned that the
-    current version of Anteater runs significantly faster.
+    In future work, we plan to develop a correspondence checker to do cross-layer and cross-controller analysis over the improved version of POX that we developed this semester.
+    
+    \projectname{}'s physical network invariant checker is an extended deployment of Anteater~\cite{anteater}, which is extensively evaluated in the Anteater paper.
+    Anteater is capable of detecting loops, dead-ends, network partitions, and consistency violations.
+    Our modifications to Anteater include adapting it to check FIB entries from a simulated network run under POX and integrating it with our input generator to run Anteater iteratively.
+   
+    We evaluated the performance of our iteratively run invariant checks by running our implemntation over various network topologies with sizes scaling from five switches to 250, a full mesh network (with each node connected to $n - 1$ other nodes), and a randomly generated topology with each node randomly connected to 5 or 8 other nodes.
+    We ran the invariant checker with rounds of 100 inputs from the input generator, with invariant checks run after every fifth input (for a total of 20 runs of the invariant checker).
+    The time for the invariant checker to evaluate the network is plotted in Figure~\ref{fig:anteatertime}.
+   
+    \justine{Colin, can you bullshit something here? I have no idea what to say.} 
 
     \subsection{Next Steps}
         The previously described experiments show that our implementation of \projectname{} (1) can detect errors like forwarding loops that manifest entirely in the physical network (by using Anteater), (2) can detect physical network errors that manifest as the result of a specific sequence of flows to reach the network controller (by using \projectname{}'s network fuzzer), and (3) imposes reasonable performance requirements to analyze the SDN stack for these errors.
