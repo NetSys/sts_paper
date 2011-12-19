@@ -6,9 +6,6 @@ Canini et al.~\cite{canini} develop symbolic execution techniques to identify
 common cases where application developer's assumptions about the behavior of
 their application may not hold. This work is complementary to ours in
 that we focus on the bugs in the SDN stack itself, not control applications.
-In future work, we plan to leverage symbolic execution in our
-input generator to more efficiently explore the configuration space
-of control applications.
 
 Focusing on the physical network, Anteater~\cite{anteater} is a static checker that
 detects invariant violations in the configuration of switches and routers.
@@ -33,7 +30,7 @@ for OpenFlow networks. The replay
 mechanism of OFRewind allows network operators to step through sequences of
 events that led up to an error condition. OFRewind is a `live' version of our
 simulator's input generator. We plan to take a similar approach when we apply
-our debugger to live deployments.  \justine{TODO: flowchecker}
+our debugger to live deployments. 
 
 Another line of work aims to prevent bugs from being introduced in the first
 place. Frenetic~\cite{frenetic} presents a language-based approach to building
@@ -41,7 +38,7 @@ robust SDN applications. By providing a specialized programming model, Frenetic 
 bugs, such `composition errors' where installed flow entries override eachother.
 Reitblatt et al.~\cite{consistentupdates} develop a technique for ensuring
 consistent routing updates, such that all switches in the network either route
-a given packet under the new configuration, or under the old configuration,
+a given packet under the new configuration or under the old configuration,
 but not both. This mechanism would resolve common causes for routing consistency 
 invariant violations.
 
