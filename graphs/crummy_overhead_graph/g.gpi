@@ -22,6 +22,6 @@ set output "graph.eps"
 set ylabel "Runtime (usr + sys)"
 set xlabel "Number of Switches in Topology"
 
-plot 'run_time.anteater_once' using 1:2 with lines lw 12 t 'Full Mesh, Run Once', 'run_time.default_topology' using 1:2 with lines lw 12 lt 7 t 'Full Mesh, Run Iteratively', 'run_time.random_topo_d5' using 1:2 with lines lw 12 lt 3 t 'Random Topology (d=5), Run Iteratively'
+plot 'run_time.default_topology' using 1:2 with lines lw 12 lt 7 t 'Full Mesh (Iterative)', 'run_time.random_topo_d5' using 1:2 with lines lw 12 lt 3 t 'Random Topology (d=5) (Iterative)', 'run_time.random_topo_d8' using 1:2 with lines lw 12 lt 4 t 'Random Topology (d=8) (Iterative)', 'run_time.anteater_once' using 1:2 with lines lt 1 lw 12 t 'Full Mesh, Run Once' 
 
 
