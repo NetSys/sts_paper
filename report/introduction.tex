@@ -1,7 +1,7 @@
 Software-defined networking (SDN) is an emerging paradigm that redefines
-the structure of the network control plane for increased flexilibity and
+the structure of the network control plane for increased flexibility and
 simplified management. In traditional networks, data-plane forwarding is
-typcially coupled to control-plane decision making; in addition to forwarding
+typically coupled to control-plane decision making; in addition to forwarding
 packets, each switch and router independently computes routing, failure
 recovery, and access control decisions through distributed coordination protocols.
 SDN breaks this coupling and enables the control plane decision logic to evolve
@@ -32,7 +32,7 @@ illustrates the chain of events.}
 
 This structured approach isolates control applications from the specifics
 of the underlying network. This facilitates a concise specification of
-intedended network behavior. Ideally, each application is reduced to a
+intended network behavior. Ideally, each application is reduced to a
 state-less, side-effect free function $f(view) \rightarrow configuration$, that is
 easy to validate.
 
@@ -43,64 +43,6 @@ the metal', making it difficult to correlate observed low-level behavior
 (a forwarding decision specified in terms of a virtual topology.) In addition, the
 complexity of the NOS itself gives rise to bugs of there own that can be
 difficult to localize and troubleshoot. 
-
-The SDN platform gives rise to at least three classes of errors:
-
-\noindent {\it Dynamic misconfigurations.} Many traditional networks exhibit
-low rates of configuration change. Consequently, a single verification of the
-state of the network can catch most potential bugs. 
-In contrast, software-defined networks can be more dynamic, and typically blur
-the distiction between forwarding and auxiliary configuration.
-For verification to be effective in this environment, static verification must
-must span a larger set of possible output configurations for a given control
-application.
-
-\eat{ Discuss this later.
-Moreover, there exist system executions in SDNs which result in error conditions that will never 
-detected by a static checker. \colin{TODO: describe Justine's cool overlapping flow entries example}
-}
-\noindent {\it Correspondence violations.}  Each layer of the SDN architecture
-maintains its own model of the network state; the switches maintain forwarding
-rules in TCAMs, the NOS represents the state of the switches in a graph-like data
-structure, and control applications operate on 
-a virtualized version of that graph. In theory, each layer's model should eventually
-converge to a point where there is a one-to-one mapping 
-between the other layers' models, but this does not always hold in practice.
-
-\eat{
-This class of errors is particularly pernicious, as the 
-virtualization layer of the NOS is often quite complex. Consider for example
-that an entire datacenter network supporting 10s of thousands of hosts may be
-treated as a single logical switch. When the control application makes a
-configuration change to the logical switch, the NOS needs to carefully map this
-configuration onto multiple physical switches along the path. Any mismapping in this
-process may prevent the network from ever behaving exactly as the application intended.
-}
-
-\noindent {\it Consistency violations.} Production SDN deployments distribute the NOS
- across multiple servers to achieve fault-tolerance
-and scalability. Distributed control gives rise to the same classes of coordination
-and consistency bugs that affect general distributed systems. 
-
-\eat{ Section 2.
-We note that two distinct classes of consistency violations occur in SDNs.
-Transient consistency violations depend on the ordering of events in the system. For example,
-if the  NOS pushes out a new forwarding policy
-which involves multiple switches, in-flight packets may enter a
-temporary forwarding loop while each of the switches converge on the new policy.
-The effects of transient
-consistency violations are noticeable distinct from persistent violations. Conder for example, \colin{some example}
-}
-%Although the SDN stack does eventually converge to
-%a consistent view of the network, such errors may present a significant
-%impedance to smooth operation if such errors occur often. 
-
-%\justine{is our goal to detect transient errors? it seems like detecting and 
-%resolving transient errors is a good goal for a second project} \colin{Agreed.
-%Both transient and persistent errors are important
-%problems. But you go about dealing with them in very different ways. Not sure
-%if the  distinction is valuable here (there are a million different
-%distinctions we could make...)}
 
 Based on bug reports and discussions at a major SDN start-up; we find that
 there is a serious need for system troubleshooting techniques for the SDN
