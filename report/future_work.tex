@@ -3,5 +3,31 @@ This project is only in its beginnings. There are a number of research
 avenues we would to explore in the near future:
 
 \begin{itemize}
-\item Foo bar
+\item Analysis of bug reports would be really nice!
+\item Right now we just simluate the network. Would be cool to emulate it.
+Perhaps even run the debugger in a live network.
+\item Virtualization bugs are really hard to deal with. We haven't yet evaluated
+our correspondence checks on a real virtualized application.
+\item Consistency errors in multi-server deployments are extremeley
+pernicious. Let's focus our efforts on these. Initial idea: treat network
+devices as a first class entity in the distrbuted system. Make sure they
+support transactions, vector clocks, \etc.
+\item Explore reactive troubleshooting techniques, \eg launching traceroutes
+when a problem occurs in a live network. Also, X-Trace might be complementary
+to static invariant checks. 
+\item Make it easier for application developers to specifiy invariants.
+\colin{Actually, JRex and Brighten are much better at that sort of thing than
+we are.}
+\item I think it would be really cool to build a fully interactive debugger
+for a live system (think gdb). Rough idea: empty the flow entries of all switches so that
+all packets go the controller. for each PacketIn event, allow the developer to
+step through the code, examine variables, change variables, change code on the
+fly, and then push the packet back down the next hop.
+\item Right now the input generator is just a fuzzer. Let's explore more
+sophisticated techniques, \eg high-fidelity tracing, symbolic execution, \etc.
+\item Transient errors are very different than persistent errors. Both are
+important problems. But you attack those two problems very differently. Can we
+automatically distinguish the two? That is, can we infer whether a bug is
+triggered by a certain order of events in the system, versus a systematic bug
+with the NOS state machine?
 \end{itemize}
