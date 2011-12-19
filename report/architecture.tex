@@ -1,14 +1,22 @@
-\colin{Frame these components as `features we found useful` through specific examples of
+
+In this section we describe our prototype debugger, CLINT. CLINT embodies the
+debugging techniques described in the previous section. In particular, CLINT
+consists of three main components: configuration exploration
+(\ref{sec:configuration_exploration}), invariant checks
+(\ref{sec:invariant_checks}, and cross-layer correlation
+(\ref{sec:cross_layer_correlation}).
+
+\colin{Should frame these components as `features we found useful` through specific examples of
 bugs they helped us find}
 
 \begin{figure}[t]
     \hspace{-10pt}
     \includegraphics[width=3.25in]{../diagrams/architecture/Architecture_simplified.pdf}
-    \caption[]{\label{fig:basicarch} CLINT's architecture.\colin{This diagram
-    is way too hard to read at this size...}  \vspace{-10pt}} 
+    \caption[]{\label{fig:basicarch} CLINT's architecture. \vspace{-10pt}} 
 \end{figure}
 
-\subsection{Input generator}
+\subsection{Configuration Exploration}
+\label{sec:configuration_exploration}
 
 High level goal of input generator is to explore the configuration space of
 the application. As we move along, feed these output configurations to
@@ -36,8 +44,8 @@ but it would be easy}
 \colin{Say something about order-independence. That's what makes the input
 generator more than just a mechanism to explore the (static) configuration space}
 
-
 \subsection{Invariant Checks}
+\label{sec:invariant_checks}
 
 At a high level, we essentially run Anteater in a loop. Fuzz, then detect, the
 repeat. This helps us i. Explore the entire (static) configuration space of the control
@@ -53,9 +61,8 @@ Particular invariant checks include loop detection, blackhole detection, and
 network partition detection. \colin{Maybe routing consistency too, if we
 figure out what exactly it means}. 
 
-\subsection{Correspondance Checks}
-
-\colin{Realistically, we're not going to have this by Monday}
+\subsection{Cross-layer Correlation}
+\label{sec:cross_layer_correlation}
 
 At a high level, correspondence checks serve two purposes. First, they help
 you isolate the cause of a bug to one particular layer. Second, they ensure
@@ -80,3 +87,4 @@ multiple controllers, it must be the case that either: i. The partitioning of
 responsibilities betweem the controllers is disjoint, or ii. There is a
 correspondance between the controllers' views of the network.
 
+\colin{Virtualization isn't actually a part of POX yet...}
