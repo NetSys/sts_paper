@@ -1,0 +1,27 @@
+#set terminal aqua 1 fsize 32
+#set terminal postscript "Times-Roman" 24
+set terminal postscript enhanced color "Helvetica" 24
+#set terminal postscript eps color "Helvetica" 18
+#set key bottom right
+#set key width 3
+#set size ratio 0.5
+set lmargin 6
+set tmargin 0
+set bmargin 2
+set rmargin 1
+set key top left Left reverse
+set grid
+#set xrange [1:250]
+#set xtics (.5,1,2,4,8)
+#set yrange [.00001:1]
+#set ytics (.00001,.0001,.001,.01, .1, 1)
+#set log x
+#set log y
+set output "graph.eps"
+
+set ylabel "Runtime (usr + sys)"
+set xlabel "Number of Switches in Topology"
+
+plot 'run_time.anteater_once' using 1:2 with lines lw 12 t 'Full Mesh, Run Once', 'run_time.default_topology' using 1:2 with lines lw 12 lt 7 t 'Full Mesh, Run Iteratively', 'run_time.random_topo_d5' using 1:2 with lines lw 12 lt 3 t 'Random Topology (d=5), Run Iteratively'
+
+

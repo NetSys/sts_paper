@@ -13,23 +13,12 @@
     Our invariant checker is an extension of the Anteater~\cite{anteater} network debugger.
     In future work, we plan to develop a correspondence checker to do cross-layer and cross-controller analysis.
 
-    We evaluated the existing features of \projectname{} by testing it to check for invariant violations in the physical network (\S\ref{sec:invariantdetection}), using the fuzzer to detect errors that manifest depending on the order of flows and configuration of the network topology (\S\ref{sec:fuzztest}), and by stress-testing \projectname{} against large topologies to quantify the overhead imposed by running \projectname{} in iteration over large topologies (\S\ref{sec:overhead}). 
-    \subsection{Invariant Detection}
+    We evaluated the existing features of \projectname{}.
 
-    \subsection{Fuzzing}
-
-        
-    \subsection{System Overhead}
-
-    There is already a nice evaluation of Anteater. Something like 400 seconds for
-    a large network.
-
-    Now we're running Anteater in a
-    loop. Is this going to take rediculously long? We hope not.
 
     \begin{figure}[t]
-        \centering
-        \includegraphics[width=3in]{../graphs/mock_overhead_graph.jpg}
+        \hspace{-10pt}
+        \includegraphics[width=3.25in]{graph}
         \caption[]{\label{fig:loop} Our lovely graph showing that execution time
         is not too bad\vspace{-10pt}} 
     \end{figure}

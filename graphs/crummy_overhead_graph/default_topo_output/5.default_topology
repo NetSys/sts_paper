@@ -1,0 +1,3004 @@
+DEBUG:nom_l2_switch_controller:nom_l2_switch_controller booting...
+DEBUG:nom_trap.fuzzer:Starting FUZZER over a test topology of size 5
+Exception RuntimeError: 'maximum recursion depth exceeded in __subclasscheck__' in <type 'exceptions.AttributeError'> ignored
+DEBUG:openflow.switch_impl:Receive hello switch#0
+DEBUG:openflow.switch_impl:Send hello switch#0 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     5 switch#0
+DEBUG:openflow.switch_impl:Barrier request switch#0 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     9
+INFO:openflow.of_01:[Con 1/0] Connected to 00-00-00-00-00-00
+Exception RuntimeError: 'maximum recursion depth exceeded in __subclasscheck__' in <type 'exceptions.AttributeError'> ignored
+DEBUG:openflow.switch_impl:Receive hello switch#1
+DEBUG:openflow.switch_impl:Send hello switch#1 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     15 switch#1
+DEBUG:openflow.switch_impl:Barrier request switch#1 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     19
+INFO:openflow.of_01:[Con 2/1] Connected to 00-00-00-00-00-01
+Exception RuntimeError: 'maximum recursion depth exceeded in __subclasscheck__' in <type 'exceptions.AttributeError'> ignored
+DEBUG:openflow.switch_impl:Receive hello switch#2
+DEBUG:openflow.switch_impl:Send hello switch#2 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     25 switch#2
+DEBUG:openflow.switch_impl:Barrier request switch#2 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     29
+INFO:openflow.of_01:[Con 3/2] Connected to 00-00-00-00-00-02
+Exception RuntimeError: 'maximum recursion depth exceeded in __subclasscheck__' in <type 'exceptions.AttributeError'> ignored
+DEBUG:openflow.switch_impl:Receive hello switch#3
+DEBUG:openflow.switch_impl:Send hello switch#3 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     35 switch#3
+DEBUG:openflow.switch_impl:Barrier request switch#3 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     39
+INFO:openflow.of_01:[Con 4/3] Connected to 00-00-00-00-00-03
+Exception RuntimeError: 'maximum recursion depth exceeded in __subclasscheck__' in <type 'exceptions.AttributeError'> ignored
+DEBUG:openflow.switch_impl:Receive hello switch#4
+DEBUG:openflow.switch_impl:Send hello switch#4 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     45 switch#4
+DEBUG:openflow.switch_impl:Barrier request switch#4 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     49
+INFO:openflow.of_01:[Con 5/4] Connected to 00-00-00-00-00-04
+INFO:topology:<MockOpenFlowSwitch 00-00-00-00-00-00> joined
+INFO:topology:<MockOpenFlowSwitch 00-00-00-00-00-01> joined
+INFO:topology:<MockOpenFlowSwitch 00-00-00-00-00-02> joined
+INFO:topology:<MockOpenFlowSwitch 00-00-00-00-00-03> joined
+INFO:topology:<MockOpenFlowSwitch 00-00-00-00-00-04> joined
+DEBUG:nom_trap:addListener called, handler=<bound method nom_l2_switch_controller._handle_topology_SwitchJoin of <pox.nom_l2_switch_controller.nom_l2_switch_controller.nom_l2_switch_controller object at 0x1032c5890>>
+DEBUG:nom_l2_switch_controller:Switch Join! <pox.topology.topology.SwitchJoin object at 0x101187610> 
+INFO:topology:<pox.nom_l2_switch_controller.nom_l2_switch_controller.LearningSwitch object at 0x101187890> joined
+DEBUG:nom_l2_switch_controller:Switch Join! <pox.topology.topology.SwitchJoin object at 0x101187610> 
+INFO:topology:<pox.nom_l2_switch_controller.nom_l2_switch_controller.LearningSwitch object at 0x1011878d0> joined
+DEBUG:nom_l2_switch_controller:Switch Join! <pox.topology.topology.SwitchJoin object at 0x101187610> 
+INFO:topology:<pox.nom_l2_switch_controller.nom_l2_switch_controller.LearningSwitch object at 0x101187910> joined
+DEBUG:nom_l2_switch_controller:Switch Join! <pox.topology.topology.SwitchJoin object at 0x101187610> 
+INFO:topology:<pox.nom_l2_switch_controller.nom_l2_switch_controller.LearningSwitch object at 0x101187950> joined
+DEBUG:nom_l2_switch_controller:Switch Join! <pox.topology.topology.SwitchJoin object at 0x101187610> 
+INFO:topology:<pox.nom_l2_switch_controller.nom_l2_switch_controller.LearningSwitch object at 0x101187990> joined
+DEBUG:nom_trap.fuzzer:event handler registered <class 'pox.topology.topology.SwitchJoin'> <bound method nom_l2_switch_controller._handle_topology_SwitchJoin of <pox.nom_l2_switch_controller.nom_l2_switch_controller.nom_l2_switch_controller object at 0x1032c5890>>
+DEBUG:core:nom_l2_switch_controller ready
+DEBUG:core:POX 0.0.0 going up...
+DEBUG:core:Running on CPython (2.6.1/Jun 24 2010 21:47:49)
+DEBUG:nom_trap.fuzzer:going up event!
+DEBUG:nom_trap.fuzzer:Starting fuzz loop
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.of_01:[Con 3/2] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.of_01:[Con 4/3] disconnecting
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10118d7d0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:02 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10118dbd0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:06 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.of_01:[Con 1/0] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.switch_impl:Receive hello switch#3
+DEBUG:openflow.switch_impl:Send hello switch#3 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     59 switch#3
+DEBUG:openflow.switch_impl:Barrier request switch#3 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     63
+INFO:openflow.of_01:[Con 6/3] Connected to 00-00-00-00-00-03
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x101185ed0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:06 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x101198310>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0e unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.of_01:[Con 2/1] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.of_01:[Con 6/3] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.switch_impl:Receive hello switch#0
+DEBUG:openflow.switch_impl:Send hello switch#0 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     73 switch#0
+DEBUG:openflow.switch_impl:Barrier request switch#0 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     77
+INFO:openflow.of_01:[Con 7/0] Connected to 00-00-00-00-00-00
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.switch_impl:Receive hello switch#2
+DEBUG:openflow.switch_impl:Send hello switch#2 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     83 switch#2
+DEBUG:openflow.switch_impl:Barrier request switch#2 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     87
+INFO:openflow.of_01:[Con 8/2] Connected to 00-00-00-00-00-02
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x101185650>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:09 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10118d790>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:14 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10118d910>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:02 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.of_01:[Con 7/0] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.of_01:[Con 8/2] disconnecting
+DEBUG:nom_trap.fuzzer_entities:Snapshotting FIBs...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#0.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#1.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#2.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#4.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#3.fib...
+DEBUG:nom_trap.fuzzer_entities:Generating contraints...
+DEBUG:nom_trap.fuzzer_entities:/Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/utils/jruby-1.6.5/bin/jruby -I /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/build/lib/Ruby /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/loop-detector.rb manifest.xml
+DEBUG:nom_trap.fuzzer_entities:Invoking solver...
+DEBUG:nom_trap.fuzzer_entities:make -f /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/scripts/Makefile.solve BC_SRCS=lc-base.bc
+INFO:nom_trap.fuzzer_entities:Invariant check result: sat
+DEBUG:nom_trap.fuzzer_entities:Cleaning up files...
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.switch_impl:Receive hello switch#2
+DEBUG:openflow.switch_impl:Send hello switch#2 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     99 switch#2
+DEBUG:openflow.switch_impl:Barrier request switch#2 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     103
+INFO:openflow.of_01:[Con 9/2] Connected to 00-00-00-00-00-02
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x101183750>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0c unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x101198850>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:14 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.of_01:[Con 9/2] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.switch_impl:Receive hello switch#1
+DEBUG:openflow.switch_impl:Send hello switch#1 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     113 switch#1
+DEBUG:openflow.switch_impl:Barrier request switch#1 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     117
+INFO:openflow.of_01:[Con 10/1] Connected to 00-00-00-00-00-01
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x101183f10>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:07 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.of_01:[Con 10/1] disconnecting
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x101198ed0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:13 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.of_01:[Con 5/4] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.switch_impl:Receive hello switch#0
+DEBUG:openflow.switch_impl:Send hello switch#0 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     127 switch#0
+DEBUG:openflow.switch_impl:Barrier request switch#0 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     131
+INFO:openflow.of_01:[Con 11/0] Connected to 00-00-00-00-00-00
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.switch_impl:Receive hello switch#2
+DEBUG:openflow.switch_impl:Send hello switch#2 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     137 switch#2
+DEBUG:openflow.switch_impl:Barrier request switch#2 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     141
+INFO:openflow.of_01:[Con 12/2] Connected to 00-00-00-00-00-02
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.switch_impl:Receive hello switch#3
+DEBUG:openflow.switch_impl:Send hello switch#3 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     147 switch#3
+DEBUG:openflow.switch_impl:Barrier request switch#3 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     151
+INFO:openflow.of_01:[Con 13/3] Connected to 00-00-00-00-00-03
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10118df50>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:04 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119a710>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0a unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.of_01:[Con 11/0] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.of_01:[Con 12/2] disconnecting
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119aa10>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0f unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer_entities:Snapshotting FIBs...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#0.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#1.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#2.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#4.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#3.fib...
+DEBUG:nom_trap.fuzzer_entities:Generating contraints...
+DEBUG:nom_trap.fuzzer_entities:/Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/utils/jruby-1.6.5/bin/jruby -I /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/build/lib/Ruby /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/loop-detector.rb manifest.xml
+DEBUG:nom_trap.fuzzer_entities:Invoking solver...
+DEBUG:nom_trap.fuzzer_entities:make -f /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/scripts/Makefile.solve BC_SRCS=lc-base.bc
+INFO:nom_trap.fuzzer_entities:Invariant check result: sat
+DEBUG:nom_trap.fuzzer_entities:Cleaning up files...
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.of_01:[Con 13/3] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.switch_impl:Receive hello switch#1
+DEBUG:openflow.switch_impl:Send hello switch#1 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     163 switch#1
+DEBUG:openflow.switch_impl:Barrier request switch#1 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     167
+INFO:openflow.of_01:[Con 14/1] Connected to 00-00-00-00-00-01
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.switch_impl:Receive hello switch#2
+DEBUG:openflow.switch_impl:Send hello switch#2 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     173 switch#2
+DEBUG:openflow.switch_impl:Barrier request switch#2 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     177
+INFO:openflow.of_01:[Con 15/2] Connected to 00-00-00-00-00-02
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.switch_impl:Receive hello switch#4
+DEBUG:openflow.switch_impl:Send hello switch#4 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     183 switch#4
+DEBUG:openflow.switch_impl:Barrier request switch#4 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     187
+INFO:openflow.of_01:[Con 16/4] Connected to 00-00-00-00-00-04
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x101187690>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:06 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119c2d0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:12 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.of_01:[Con 14/1] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.of_01:[Con 15/2] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.of_01:[Con 16/4] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.switch_impl:Receive hello switch#2
+DEBUG:openflow.switch_impl:Send hello switch#2 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     197 switch#2
+DEBUG:openflow.switch_impl:Barrier request switch#2 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     201
+INFO:openflow.of_01:[Con 17/2] Connected to 00-00-00-00-00-02
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.switch_impl:Receive hello switch#3
+DEBUG:openflow.switch_impl:Send hello switch#3 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     207 switch#3
+DEBUG:openflow.switch_impl:Barrier request switch#3 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     211
+INFO:openflow.of_01:[Con 18/3] Connected to 00-00-00-00-00-03
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x101198150>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0a unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.of_01:[Con 17/2] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.of_01:[Con 18/3] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.switch_impl:Receive hello switch#1
+DEBUG:openflow.switch_impl:Send hello switch#1 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     219 switch#1
+DEBUG:openflow.switch_impl:Barrier request switch#1 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     223
+INFO:openflow.of_01:[Con 19/1] Connected to 00-00-00-00-00-01
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119af10>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:05 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.switch_impl:Receive hello switch#2
+DEBUG:openflow.switch_impl:Send hello switch#2 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     231 switch#2
+DEBUG:openflow.switch_impl:Barrier request switch#2 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     235
+INFO:openflow.of_01:[Con 20/2] Connected to 00-00-00-00-00-02
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.switch_impl:Receive hello switch#3
+DEBUG:openflow.switch_impl:Send hello switch#3 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     241 switch#3
+DEBUG:openflow.switch_impl:Barrier request switch#3 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     245
+INFO:openflow.of_01:[Con 21/3] Connected to 00-00-00-00-00-03
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.switch_impl:Receive hello switch#4
+DEBUG:openflow.switch_impl:Send hello switch#4 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     251 switch#4
+DEBUG:openflow.switch_impl:Barrier request switch#4 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     255
+INFO:openflow.of_01:[Con 22/4] Connected to 00-00-00-00-00-04
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119a150>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:13 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer_entities:Snapshotting FIBs...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#0.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#1.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#2.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#4.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#3.fib...
+DEBUG:nom_trap.fuzzer_entities:Generating contraints...
+DEBUG:nom_trap.fuzzer_entities:/Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/utils/jruby-1.6.5/bin/jruby -I /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/build/lib/Ruby /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/loop-detector.rb manifest.xml
+DEBUG:nom_trap.fuzzer_entities:Invoking solver...
+DEBUG:nom_trap.fuzzer_entities:make -f /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/scripts/Makefile.solve BC_SRCS=lc-base.bc
+INFO:nom_trap.fuzzer_entities:Invariant check result: sat
+DEBUG:nom_trap.fuzzer_entities:Cleaning up files...
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.of_01:[Con 20/2] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.of_01:[Con 21/3] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.switch_impl:Receive hello switch#0
+DEBUG:openflow.switch_impl:Send hello switch#0 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     263 switch#0
+DEBUG:openflow.switch_impl:Barrier request switch#0 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     267
+INFO:openflow.of_01:[Con 23/0] Connected to 00-00-00-00-00-00
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119a410>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:13 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.of_01:[Con 19/1] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.of_01:[Con 22/4] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.switch_impl:Receive hello switch#2
+DEBUG:openflow.switch_impl:Send hello switch#2 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     275 switch#2
+DEBUG:openflow.switch_impl:Barrier request switch#2 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     279
+INFO:openflow.of_01:[Con 24/2] Connected to 00-00-00-00-00-02
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.switch_impl:Receive hello switch#3
+DEBUG:openflow.switch_impl:Send hello switch#3 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     285 switch#3
+DEBUG:openflow.switch_impl:Barrier request switch#3 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     289
+INFO:openflow.of_01:[Con 25/3] Connected to 00-00-00-00-00-03
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119cfd0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0e unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.of_01:[Con 23/0] disconnecting
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119e8d0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0e unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.of_01:[Con 24/2] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.switch_impl:Receive hello switch#0
+DEBUG:openflow.switch_impl:Send hello switch#0 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     299 switch#0
+DEBUG:openflow.switch_impl:Barrier request switch#0 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     303
+INFO:openflow.of_01:[Con 26/0] Connected to 00-00-00-00-00-00
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.switch_impl:Receive hello switch#4
+DEBUG:openflow.switch_impl:Send hello switch#4 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     309 switch#4
+DEBUG:openflow.switch_impl:Barrier request switch#4 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     313
+INFO:openflow.of_01:[Con 27/4] Connected to 00-00-00-00-00-04
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119e310>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:04 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119f0d0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0d unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119f450>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:11 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.of_01:[Con 26/0] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.of_01:[Con 25/3] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.switch_impl:Receive hello switch#1
+DEBUG:openflow.switch_impl:Send hello switch#1 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     325 switch#1
+DEBUG:openflow.switch_impl:Barrier request switch#1 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     329
+INFO:openflow.of_01:[Con 28/1] Connected to 00-00-00-00-00-01
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119cb10>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:13 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer_entities:Snapshotting FIBs...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#0.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#1.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#2.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#4.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#3.fib...
+DEBUG:nom_trap.fuzzer_entities:Generating contraints...
+DEBUG:nom_trap.fuzzer_entities:/Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/utils/jruby-1.6.5/bin/jruby -I /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/build/lib/Ruby /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/loop-detector.rb manifest.xml
+DEBUG:nom_trap.fuzzer_entities:Invoking solver...
+DEBUG:nom_trap.fuzzer_entities:make -f /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/scripts/Makefile.solve BC_SRCS=lc-base.bc
+INFO:nom_trap.fuzzer_entities:Invariant check result: sat
+DEBUG:nom_trap.fuzzer_entities:Cleaning up files...
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.switch_impl:Receive hello switch#0
+DEBUG:openflow.switch_impl:Send hello switch#0 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     337 switch#0
+DEBUG:openflow.switch_impl:Barrier request switch#0 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     341
+INFO:openflow.of_01:[Con 29/0] Connected to 00-00-00-00-00-00
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119edd0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:03 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119ff50>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:06 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119fd50>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:12 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.of_01:[Con 28/1] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.switch_impl:Receive hello switch#2
+DEBUG:openflow.switch_impl:Send hello switch#2 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     353 switch#2
+DEBUG:openflow.switch_impl:Barrier request switch#2 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     357
+INFO:openflow.of_01:[Con 30/2] Connected to 00-00-00-00-00-02
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.switch_impl:Receive hello switch#3
+DEBUG:openflow.switch_impl:Send hello switch#3 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     363 switch#3
+DEBUG:openflow.switch_impl:Barrier request switch#3 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     367
+INFO:openflow.of_01:[Con 31/3] Connected to 00-00-00-00-00-03
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119e890>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:04 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119eb90>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0f unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119e150>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:12 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.of_01:[Con 30/2] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.of_01:[Con 31/3] disconnecting
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119cb90>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:12 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.of_01:[Con 27/4] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.switch_impl:Receive hello switch#1
+DEBUG:openflow.switch_impl:Send hello switch#1 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     381 switch#1
+DEBUG:openflow.switch_impl:Barrier request switch#1 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     385
+INFO:openflow.of_01:[Con 32/1] Connected to 00-00-00-00-00-01
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.switch_impl:Receive hello switch#3
+DEBUG:openflow.switch_impl:Send hello switch#3 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     391 switch#3
+DEBUG:openflow.switch_impl:Barrier request switch#3 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     395
+INFO:openflow.of_01:[Con 33/3] Connected to 00-00-00-00-00-03
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119e4d0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:01 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer_entities:Snapshotting FIBs...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#0.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#1.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#2.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#4.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#3.fib...
+DEBUG:nom_trap.fuzzer_entities:Generating contraints...
+DEBUG:nom_trap.fuzzer_entities:/Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/utils/jruby-1.6.5/bin/jruby -I /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/build/lib/Ruby /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/loop-detector.rb manifest.xml
+DEBUG:nom_trap.fuzzer_entities:Invoking solver...
+DEBUG:nom_trap.fuzzer_entities:make -f /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/scripts/Makefile.solve BC_SRCS=lc-base.bc
+INFO:nom_trap.fuzzer_entities:Invariant check result: sat
+DEBUG:nom_trap.fuzzer_entities:Cleaning up files...
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.of_01:[Con 33/3] disconnecting
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119c910>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:05 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.of_01:[Con 29/0] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.of_01:[Con 32/1] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.switch_impl:Receive hello switch#3
+DEBUG:openflow.switch_impl:Send hello switch#3 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     405 switch#3
+DEBUG:openflow.switch_impl:Barrier request switch#3 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     409
+INFO:openflow.of_01:[Con 34/3] Connected to 00-00-00-00-00-03
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.switch_impl:Receive hello switch#4
+DEBUG:openflow.switch_impl:Send hello switch#4 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     415 switch#4
+DEBUG:openflow.switch_impl:Barrier request switch#4 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     419
+INFO:openflow.of_01:[Con 35/4] Connected to 00-00-00-00-00-04
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.of_01:[Con 34/3] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.of_01:[Con 35/4] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.switch_impl:Receive hello switch#1
+DEBUG:openflow.switch_impl:Send hello switch#1 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     425 switch#1
+DEBUG:openflow.switch_impl:Barrier request switch#1 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     429
+INFO:openflow.of_01:[Con 36/1] Connected to 00-00-00-00-00-01
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119cb50>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:07 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.switch_impl:Receive hello switch#3
+DEBUG:openflow.switch_impl:Send hello switch#3 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     437 switch#3
+DEBUG:openflow.switch_impl:Barrier request switch#3 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     441
+INFO:openflow.of_01:[Con 37/3] Connected to 00-00-00-00-00-03
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119a250>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:05 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.of_01:[Con 37/3] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.switch_impl:Receive hello switch#2
+DEBUG:openflow.switch_impl:Send hello switch#2 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     449 switch#2
+DEBUG:openflow.switch_impl:Barrier request switch#2 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     453
+INFO:openflow.of_01:[Con 38/2] Connected to 00-00-00-00-00-02
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.switch_impl:Receive hello switch#4
+DEBUG:openflow.switch_impl:Send hello switch#4 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     459 switch#4
+DEBUG:openflow.switch_impl:Barrier request switch#4 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     463
+INFO:openflow.of_01:[Con 39/4] Connected to 00-00-00-00-00-04
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119c490>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0b unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer_entities:Snapshotting FIBs...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#0.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#1.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#2.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#4.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#3.fib...
+DEBUG:nom_trap.fuzzer_entities:Generating contraints...
+DEBUG:nom_trap.fuzzer_entities:/Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/utils/jruby-1.6.5/bin/jruby -I /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/build/lib/Ruby /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/loop-detector.rb manifest.xml
+DEBUG:nom_trap.fuzzer_entities:Invoking solver...
+DEBUG:nom_trap.fuzzer_entities:make -f /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/scripts/Makefile.solve BC_SRCS=lc-base.bc
+INFO:nom_trap.fuzzer_entities:Invariant check result: sat
+DEBUG:nom_trap.fuzzer_entities:Cleaning up files...
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.of_01:[Con 39/4] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.switch_impl:Receive hello switch#4
+DEBUG:openflow.switch_impl:Send hello switch#4 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     471 switch#4
+DEBUG:openflow.switch_impl:Barrier request switch#4 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     475
+INFO:openflow.of_01:[Con 40/4] Connected to 00-00-00-00-00-04
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119a950>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0a unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x101198150>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:14 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.switch_impl:Receive hello switch#3
+DEBUG:openflow.switch_impl:Send hello switch#3 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     485 switch#3
+DEBUG:openflow.switch_impl:Barrier request switch#3 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     489
+INFO:openflow.of_01:[Con 41/3] Connected to 00-00-00-00-00-03
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119ae90>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:05 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x101198a10>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0b unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.of_01:[Con 38/2] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.of_01:[Con 41/3] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.of_01:[Con 40/4] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.switch_impl:Receive hello switch#0
+DEBUG:openflow.switch_impl:Send hello switch#0 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     499 switch#0
+DEBUG:openflow.switch_impl:Barrier request switch#0 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     503
+INFO:openflow.of_01:[Con 42/0] Connected to 00-00-00-00-00-00
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119fb90>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:04 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10118d5d0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:07 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.switch_impl:Receive hello switch#2
+DEBUG:openflow.switch_impl:Send hello switch#2 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     513 switch#2
+DEBUG:openflow.switch_impl:Barrier request switch#2 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     517
+INFO:openflow.of_01:[Con 43/2] Connected to 00-00-00-00-00-02
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.switch_impl:Receive hello switch#3
+DEBUG:openflow.switch_impl:Send hello switch#3 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     523 switch#3
+DEBUG:openflow.switch_impl:Barrier request switch#3 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     527
+INFO:openflow.of_01:[Con 44/3] Connected to 00-00-00-00-00-03
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.switch_impl:Receive hello switch#4
+DEBUG:openflow.switch_impl:Send hello switch#4 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     533 switch#4
+DEBUG:openflow.switch_impl:Barrier request switch#4 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     537
+INFO:openflow.of_01:[Con 45/4] Connected to 00-00-00-00-00-04
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x101198090>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:05 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x101183f10>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:10 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer_entities:Snapshotting FIBs...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#0.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#1.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#2.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#4.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#3.fib...
+DEBUG:nom_trap.fuzzer_entities:Generating contraints...
+DEBUG:nom_trap.fuzzer_entities:/Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/utils/jruby-1.6.5/bin/jruby -I /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/build/lib/Ruby /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/loop-detector.rb manifest.xml
+DEBUG:nom_trap.fuzzer_entities:Invoking solver...
+DEBUG:nom_trap.fuzzer_entities:make -f /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/scripts/Makefile.solve BC_SRCS=lc-base.bc
+INFO:nom_trap.fuzzer_entities:Invariant check result: sat
+DEBUG:nom_trap.fuzzer_entities:Cleaning up files...
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.of_01:[Con 42/0] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.of_01:[Con 36/1] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.of_01:[Con 44/3] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.of_01:[Con 45/4] disconnecting
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x101183750>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:09 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.switch_impl:Receive hello switch#0
+DEBUG:openflow.switch_impl:Send hello switch#0 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     549 switch#0
+DEBUG:openflow.switch_impl:Barrier request switch#0 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     553
+INFO:openflow.of_01:[Con 46/0] Connected to 00-00-00-00-00-00
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.switch_impl:Receive hello switch#1
+DEBUG:openflow.switch_impl:Send hello switch#1 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     559 switch#1
+DEBUG:openflow.switch_impl:Barrier request switch#1 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     563
+INFO:openflow.of_01:[Con 47/1] Connected to 00-00-00-00-00-01
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.switch_impl:Receive hello switch#4
+DEBUG:openflow.switch_impl:Send hello switch#4 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     569 switch#4
+DEBUG:openflow.switch_impl:Barrier request switch#4 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     573
+INFO:openflow.of_01:[Con 48/4] Connected to 00-00-00-00-00-04
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119f550>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:04 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x1011856d0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:05 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.of_01:[Con 47/1] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.of_01:[Con 43/2] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.switch_impl:Receive hello switch#3
+DEBUG:openflow.switch_impl:Send hello switch#3 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     583 switch#3
+DEBUG:openflow.switch_impl:Barrier request switch#3 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     587
+INFO:openflow.of_01:[Con 49/3] Connected to 00-00-00-00-00-03
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10118dd50>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:04 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x1011a2310>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0e unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.of_01:[Con 49/3] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.switch_impl:Receive hello switch#1
+DEBUG:openflow.switch_impl:Send hello switch#1 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     597 switch#1
+DEBUG:openflow.switch_impl:Barrier request switch#1 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     601
+INFO:openflow.of_01:[Con 50/1] Connected to 00-00-00-00-00-01
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x101185f10>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:05 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x1011a2a50>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:13 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.switch_impl:Receive hello switch#2
+DEBUG:openflow.switch_impl:Send hello switch#2 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     611 switch#2
+DEBUG:openflow.switch_impl:Barrier request switch#2 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     615
+INFO:openflow.of_01:[Con 51/2] Connected to 00-00-00-00-00-02
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x1011856d0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:03 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x101183650>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:06 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x101183c50>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0c unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer_entities:Snapshotting FIBs...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#0.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#1.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#2.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#4.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#3.fib...
+DEBUG:nom_trap.fuzzer_entities:Generating contraints...
+DEBUG:nom_trap.fuzzer_entities:/Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/utils/jruby-1.6.5/bin/jruby -I /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/build/lib/Ruby /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/loop-detector.rb manifest.xml
+DEBUG:nom_trap.fuzzer_entities:Invoking solver...
+DEBUG:nom_trap.fuzzer_entities:make -f /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/scripts/Makefile.solve BC_SRCS=lc-base.bc
+INFO:nom_trap.fuzzer_entities:Invariant check result: sat
+DEBUG:nom_trap.fuzzer_entities:Cleaning up files...
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.of_01:[Con 46/0] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.of_01:[Con 51/2] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.switch_impl:Receive hello switch#3
+DEBUG:openflow.switch_impl:Send hello switch#3 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     627 switch#3
+DEBUG:openflow.switch_impl:Barrier request switch#3 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     631
+INFO:openflow.of_01:[Con 52/3] Connected to 00-00-00-00-00-03
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10118db50>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:05 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10118de90>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:10 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119ab50>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:11 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.of_01:[Con 50/1] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.of_01:[Con 52/3] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.switch_impl:Receive hello switch#0
+DEBUG:openflow.switch_impl:Send hello switch#0 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     643 switch#0
+DEBUG:openflow.switch_impl:Barrier request switch#0 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     647
+INFO:openflow.of_01:[Con 53/0] Connected to 00-00-00-00-00-00
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.switch_impl:Receive hello switch#2
+DEBUG:openflow.switch_impl:Send hello switch#2 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     653 switch#2
+DEBUG:openflow.switch_impl:Barrier request switch#2 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     657
+INFO:openflow.of_01:[Con 54/2] Connected to 00-00-00-00-00-02
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.switch_impl:Receive hello switch#3
+DEBUG:openflow.switch_impl:Send hello switch#3 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     663 switch#3
+DEBUG:openflow.switch_impl:Barrier request switch#3 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     667
+INFO:openflow.of_01:[Con 55/3] Connected to 00-00-00-00-00-03
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10118dc50>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:01 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119c050>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:12 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.of_01:[Con 53/0] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.of_01:[Con 54/2] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.switch_impl:Receive hello switch#1
+DEBUG:openflow.switch_impl:Send hello switch#1 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     677 switch#1
+DEBUG:openflow.switch_impl:Barrier request switch#1 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     681
+INFO:openflow.of_01:[Con 56/1] Connected to 00-00-00-00-00-01
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119c8d0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:08 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.of_01:[Con 48/4] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.switch_impl:Receive hello switch#2
+DEBUG:openflow.switch_impl:Send hello switch#2 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     689 switch#2
+DEBUG:openflow.switch_impl:Barrier request switch#2 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     693
+INFO:openflow.of_01:[Con 57/2] Connected to 00-00-00-00-00-02
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119a9d0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:06 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119e590>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:10 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer_entities:Snapshotting FIBs...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#0.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#1.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#2.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#4.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#3.fib...
+DEBUG:nom_trap.fuzzer_entities:Generating contraints...
+DEBUG:nom_trap.fuzzer_entities:/Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/utils/jruby-1.6.5/bin/jruby -I /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/build/lib/Ruby /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/loop-detector.rb manifest.xml
+DEBUG:nom_trap.fuzzer_entities:Invoking solver...
+DEBUG:nom_trap.fuzzer_entities:make -f /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/scripts/Makefile.solve BC_SRCS=lc-base.bc
+INFO:nom_trap.fuzzer_entities:Invariant check result: sat
+DEBUG:nom_trap.fuzzer_entities:Cleaning up files...
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.of_01:[Con 57/2] disconnecting
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119e0d0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:05 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119e350>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0d unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.of_01:[Con 55/3] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.switch_impl:Receive hello switch#0
+DEBUG:openflow.switch_impl:Send hello switch#0 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     707 switch#0
+DEBUG:openflow.switch_impl:Barrier request switch#0 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     711
+INFO:openflow.of_01:[Con 58/0] Connected to 00-00-00-00-00-00
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119a5d0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:02 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x101198050>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:06 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.of_01:[Con 58/0] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.of_01:[Con 56/1] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.switch_impl:Receive hello switch#2
+DEBUG:openflow.switch_impl:Send hello switch#2 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     721 switch#2
+DEBUG:openflow.switch_impl:Barrier request switch#2 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     725
+INFO:openflow.of_01:[Con 59/2] Connected to 00-00-00-00-00-02
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.switch_impl:Receive hello switch#4
+DEBUG:openflow.switch_impl:Send hello switch#4 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     731 switch#4
+DEBUG:openflow.switch_impl:Barrier request switch#4 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     735
+INFO:openflow.of_01:[Con 60/4] Connected to 00-00-00-00-00-04
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119a710>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:12 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.of_01:[Con 59/2] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.of_01:[Con 60/4] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.switch_impl:Receive hello switch#3
+DEBUG:openflow.switch_impl:Send hello switch#3 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     743 switch#3
+DEBUG:openflow.switch_impl:Barrier request switch#3 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     747
+INFO:openflow.of_01:[Con 61/3] Connected to 00-00-00-00-00-03
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119afd0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0d unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.switch_impl:Receive hello switch#1
+DEBUG:openflow.switch_impl:Send hello switch#1 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     755 switch#1
+DEBUG:openflow.switch_impl:Barrier request switch#1 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     759
+INFO:openflow.of_01:[Con 62/1] Connected to 00-00-00-00-00-01
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.switch_impl:Receive hello switch#2
+DEBUG:openflow.switch_impl:Send hello switch#2 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     765 switch#2
+DEBUG:openflow.switch_impl:Barrier request switch#2 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     769
+INFO:openflow.of_01:[Con 63/2] Connected to 00-00-00-00-00-02
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.switch_impl:Receive hello switch#4
+DEBUG:openflow.switch_impl:Send hello switch#4 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     775 switch#4
+DEBUG:openflow.switch_impl:Barrier request switch#4 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     779
+INFO:openflow.of_01:[Con 64/4] Connected to 00-00-00-00-00-04
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119ee90>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:09 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer_entities:Snapshotting FIBs...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#0.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#1.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#2.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#4.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#3.fib...
+DEBUG:nom_trap.fuzzer_entities:Generating contraints...
+DEBUG:nom_trap.fuzzer_entities:/Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/utils/jruby-1.6.5/bin/jruby -I /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/build/lib/Ruby /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/loop-detector.rb manifest.xml
+DEBUG:nom_trap.fuzzer_entities:Invoking solver...
+DEBUG:nom_trap.fuzzer_entities:make -f /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/scripts/Makefile.solve BC_SRCS=lc-base.bc
+INFO:nom_trap.fuzzer_entities:Invariant check result: sat
+DEBUG:nom_trap.fuzzer_entities:Cleaning up files...
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.of_01:[Con 62/1] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.of_01:[Con 61/3] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.switch_impl:Receive hello switch#0
+DEBUG:openflow.switch_impl:Send hello switch#0 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     787 switch#0
+DEBUG:openflow.switch_impl:Barrier request switch#0 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     791
+INFO:openflow.of_01:[Con 65/0] Connected to 00-00-00-00-00-00
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.of_01:[Con 65/0] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.of_01:[Con 64/4] disconnecting
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x101198450>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0a unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.switch_impl:Receive hello switch#0
+DEBUG:openflow.switch_impl:Send hello switch#0 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     799 switch#0
+DEBUG:openflow.switch_impl:Barrier request switch#0 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     803
+INFO:openflow.of_01:[Con 66/0] Connected to 00-00-00-00-00-00
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.switch_impl:Receive hello switch#1
+DEBUG:openflow.switch_impl:Send hello switch#1 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     809 switch#1
+DEBUG:openflow.switch_impl:Barrier request switch#1 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     813
+INFO:openflow.of_01:[Con 67/1] Connected to 00-00-00-00-00-01
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.switch_impl:Receive hello switch#3
+DEBUG:openflow.switch_impl:Send hello switch#3 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     819 switch#3
+DEBUG:openflow.switch_impl:Barrier request switch#3 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     823
+INFO:openflow.of_01:[Con 68/3] Connected to 00-00-00-00-00-03
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x101198810>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:07 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.of_01:[Con 67/1] disconnecting
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x1011a2610>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:03 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.of_01:[Con 66/0] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.of_01:[Con 68/3] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.switch_impl:Receive hello switch#1
+DEBUG:openflow.switch_impl:Send hello switch#1 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     833 switch#1
+DEBUG:openflow.switch_impl:Barrier request switch#1 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     837
+INFO:openflow.of_01:[Con 69/1] Connected to 00-00-00-00-00-01
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119f810>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:06 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x1011a2890>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0c unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer_entities:Snapshotting FIBs...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#0.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#1.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#2.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#4.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#3.fib...
+DEBUG:nom_trap.fuzzer_entities:Generating contraints...
+DEBUG:nom_trap.fuzzer_entities:/Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/utils/jruby-1.6.5/bin/jruby -I /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/build/lib/Ruby /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/loop-detector.rb manifest.xml
+DEBUG:nom_trap.fuzzer_entities:Invoking solver...
+DEBUG:nom_trap.fuzzer_entities:make -f /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/scripts/Makefile.solve BC_SRCS=lc-base.bc
+INFO:nom_trap.fuzzer_entities:Invariant check result: sat
+DEBUG:nom_trap.fuzzer_entities:Cleaning up files...
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.of_01:[Con 69/1] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.switch_impl:Receive hello switch#0
+DEBUG:openflow.switch_impl:Send hello switch#0 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     847 switch#0
+DEBUG:openflow.switch_impl:Barrier request switch#0 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     851
+INFO:openflow.of_01:[Con 70/0] Connected to 00-00-00-00-00-00
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.switch_impl:Receive hello switch#3
+DEBUG:openflow.switch_impl:Send hello switch#3 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     857 switch#3
+DEBUG:openflow.switch_impl:Barrier request switch#3 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     861
+INFO:openflow.of_01:[Con 71/3] Connected to 00-00-00-00-00-03
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119fdd0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0b unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x1011a41d0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0f unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.of_01:[Con 70/0] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.of_01:[Con 63/2] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.of_01:[Con 71/3] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.switch_impl:Receive hello switch#0
+DEBUG:openflow.switch_impl:Send hello switch#0 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     871 switch#0
+DEBUG:openflow.switch_impl:Barrier request switch#0 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     875
+INFO:openflow.of_01:[Con 72/0] Connected to 00-00-00-00-00-00
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.switch_impl:Receive hello switch#1
+DEBUG:openflow.switch_impl:Send hello switch#1 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     881 switch#1
+DEBUG:openflow.switch_impl:Barrier request switch#1 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     885
+INFO:openflow.of_01:[Con 73/1] Connected to 00-00-00-00-00-01
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.switch_impl:Receive hello switch#2
+DEBUG:openflow.switch_impl:Send hello switch#2 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     891 switch#2
+DEBUG:openflow.switch_impl:Barrier request switch#2 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     895
+INFO:openflow.of_01:[Con 74/2] Connected to 00-00-00-00-00-02
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x1011a2c90>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:07 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.of_01:[Con 74/2] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.switch_impl:Receive hello switch#3
+DEBUG:openflow.switch_impl:Send hello switch#3 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     903 switch#3
+DEBUG:openflow.switch_impl:Barrier request switch#3 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     907
+INFO:openflow.of_01:[Con 75/3] Connected to 00-00-00-00-00-03
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119ea90>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:07 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119efd0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0e unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.of_01:[Con 72/0] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.switch_impl:Receive hello switch#2
+DEBUG:openflow.switch_impl:Send hello switch#2 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     917 switch#2
+DEBUG:openflow.switch_impl:Barrier request switch#2 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     921
+INFO:openflow.of_01:[Con 76/2] Connected to 00-00-00-00-00-02
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x1011a2950>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:05 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119a5d0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0a unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer_entities:Snapshotting FIBs...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#0.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#1.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#2.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#4.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#3.fib...
+DEBUG:nom_trap.fuzzer_entities:Generating contraints...
+DEBUG:nom_trap.fuzzer_entities:/Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/utils/jruby-1.6.5/bin/jruby -I /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/build/lib/Ruby /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/loop-detector.rb manifest.xml
+DEBUG:nom_trap.fuzzer_entities:Invoking solver...
+DEBUG:nom_trap.fuzzer_entities:make -f /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/scripts/Makefile.solve BC_SRCS=lc-base.bc
+INFO:nom_trap.fuzzer_entities:Invariant check result: sat
+DEBUG:nom_trap.fuzzer_entities:Cleaning up files...
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.of_01:[Con 75/3] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.switch_impl:Receive hello switch#4
+DEBUG:openflow.switch_impl:Send hello switch#4 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     931 switch#4
+DEBUG:openflow.switch_impl:Barrier request switch#4 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     935
+INFO:openflow.of_01:[Con 77/4] Connected to 00-00-00-00-00-04
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119a850>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:09 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.of_01:[Con 73/1] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.of_01:[Con 77/4] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.switch_impl:Receive hello switch#3
+DEBUG:openflow.switch_impl:Send hello switch#3 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     943 switch#3
+DEBUG:openflow.switch_impl:Barrier request switch#3 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     947
+INFO:openflow.of_01:[Con 78/3] Connected to 00-00-00-00-00-03
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.of_01:[Con 76/2] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.switch_impl:Receive hello switch#0
+DEBUG:openflow.switch_impl:Send hello switch#0 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     953 switch#0
+DEBUG:openflow.switch_impl:Barrier request switch#0 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     957
+INFO:openflow.of_01:[Con 79/0] Connected to 00-00-00-00-00-00
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.of_01:[Con 78/3] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.switch_impl:Receive hello switch#4
+DEBUG:openflow.switch_impl:Send hello switch#4 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     963 switch#4
+DEBUG:openflow.switch_impl:Barrier request switch#4 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     967
+INFO:openflow.of_01:[Con 80/4] Connected to 00-00-00-00-00-04
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119a250>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:13 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.switch_impl:Receive hello switch#2
+DEBUG:openflow.switch_impl:Send hello switch#2 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     975 switch#2
+DEBUG:openflow.switch_impl:Barrier request switch#2 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     979
+INFO:openflow.of_01:[Con 81/2] Connected to 00-00-00-00-00-02
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.switch_impl:Receive hello switch#3
+DEBUG:openflow.switch_impl:Send hello switch#3 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     985 switch#3
+DEBUG:openflow.switch_impl:Barrier request switch#3 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     989
+INFO:openflow.of_01:[Con 82/3] Connected to 00-00-00-00-00-03
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119c0d0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:04 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119c290>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:12 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer_entities:Snapshotting FIBs...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#0.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#1.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#2.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#4.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#3.fib...
+DEBUG:nom_trap.fuzzer_entities:Generating contraints...
+DEBUG:nom_trap.fuzzer_entities:/Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/utils/jruby-1.6.5/bin/jruby -I /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/build/lib/Ruby /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/loop-detector.rb manifest.xml
+DEBUG:nom_trap.fuzzer_entities:Invoking solver...
+DEBUG:nom_trap.fuzzer_entities:make -f /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/scripts/Makefile.solve BC_SRCS=lc-base.bc
+INFO:nom_trap.fuzzer_entities:Invariant check result: sat
+DEBUG:nom_trap.fuzzer_entities:Cleaning up files...
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.of_01:[Con 79/0] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.of_01:[Con 81/2] disconnecting
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10118dc50>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:12 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.switch_impl:Receive hello switch#0
+DEBUG:openflow.switch_impl:Send hello switch#0 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1001 switch#0
+DEBUG:openflow.switch_impl:Barrier request switch#0 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1005
+INFO:openflow.of_01:[Con 83/0] Connected to 00-00-00-00-00-00
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10118d5d0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:14 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.of_01:[Con 83/0] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.switch_impl:Receive hello switch#1
+DEBUG:openflow.switch_impl:Send hello switch#1 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1013 switch#1
+DEBUG:openflow.switch_impl:Barrier request switch#1 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1017
+INFO:openflow.of_01:[Con 84/1] Connected to 00-00-00-00-00-01
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.switch_impl:Receive hello switch#2
+DEBUG:openflow.switch_impl:Send hello switch#2 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1023 switch#2
+DEBUG:openflow.switch_impl:Barrier request switch#2 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1027
+INFO:openflow.of_01:[Con 85/2] Connected to 00-00-00-00-00-02
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.of_01:[Con 85/2] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.of_01:[Con 80/4] disconnecting
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119cb10>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:07 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.switch_impl:Receive hello switch#2
+DEBUG:openflow.switch_impl:Send hello switch#2 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1035 switch#2
+DEBUG:openflow.switch_impl:Barrier request switch#2 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1039
+INFO:openflow.of_01:[Con 86/2] Connected to 00-00-00-00-00-02
+DEBUG:nom_trap.fuzzer_entities:Snapshotting FIBs...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#0.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#1.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#2.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#4.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#3.fib...
+DEBUG:nom_trap.fuzzer_entities:Generating contraints...
+DEBUG:nom_trap.fuzzer_entities:/Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/utils/jruby-1.6.5/bin/jruby -I /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/build/lib/Ruby /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/loop-detector.rb manifest.xml
+DEBUG:nom_trap.fuzzer_entities:Invoking solver...
+DEBUG:nom_trap.fuzzer_entities:make -f /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/scripts/Makefile.solve BC_SRCS=lc-base.bc
+INFO:nom_trap.fuzzer_entities:Invariant check result: sat
+DEBUG:nom_trap.fuzzer_entities:Cleaning up files...
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.of_01:[Con 84/1] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.switch_impl:Receive hello switch#4
+DEBUG:openflow.switch_impl:Send hello switch#4 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1045 switch#4
+DEBUG:openflow.switch_impl:Barrier request switch#4 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1049
+INFO:openflow.of_01:[Con 87/4] Connected to 00-00-00-00-00-04
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119cb10>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0a unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x101198050>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:10 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x101198ad0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:12 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.of_01:[Con 86/2] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.of_01:[Con 82/3] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.of_01:[Con 87/4] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.switch_impl:Receive hello switch#1
+DEBUG:openflow.switch_impl:Send hello switch#1 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1061 switch#1
+DEBUG:openflow.switch_impl:Barrier request switch#1 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1065
+INFO:openflow.of_01:[Con 88/1] Connected to 00-00-00-00-00-01
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.switch_impl:Receive hello switch#2
+DEBUG:openflow.switch_impl:Send hello switch#2 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1071 switch#2
+DEBUG:openflow.switch_impl:Barrier request switch#2 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1075
+INFO:openflow.of_01:[Con 89/2] Connected to 00-00-00-00-00-02
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x101183690>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0b unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.of_01:[Con 88/1] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.of_01:[Con 89/2] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.switch_impl:Receive hello switch#4
+DEBUG:openflow.switch_impl:Send hello switch#4 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1083 switch#4
+DEBUG:openflow.switch_impl:Barrier request switch#4 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1087
+INFO:openflow.of_01:[Con 90/4] Connected to 00-00-00-00-00-04
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.of_01:[Con 90/4] disconnecting
+DEBUG:nom_trap.fuzzer_entities:Snapshotting FIBs...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#0.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#1.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#2.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#4.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#3.fib...
+DEBUG:nom_trap.fuzzer_entities:Generating contraints...
+DEBUG:nom_trap.fuzzer_entities:/Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/utils/jruby-1.6.5/bin/jruby -I /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/build/lib/Ruby /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/loop-detector.rb manifest.xml
+DEBUG:nom_trap.fuzzer_entities:Invoking solver...
+DEBUG:nom_trap.fuzzer_entities:make -f /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/scripts/Makefile.solve BC_SRCS=lc-base.bc
+INFO:nom_trap.fuzzer_entities:Invariant check result: sat
+DEBUG:nom_trap.fuzzer_entities:Cleaning up files...
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.switch_impl:Receive hello switch#0
+DEBUG:openflow.switch_impl:Send hello switch#0 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1093 switch#0
+DEBUG:openflow.switch_impl:Barrier request switch#0 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1097
+INFO:openflow.of_01:[Con 91/0] Connected to 00-00-00-00-00-00
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.switch_impl:Receive hello switch#2
+DEBUG:openflow.switch_impl:Send hello switch#2 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1103 switch#2
+DEBUG:openflow.switch_impl:Barrier request switch#2 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1107
+INFO:openflow.of_01:[Con 92/2] Connected to 00-00-00-00-00-02
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119ca50>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:03 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x1011857d0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0b unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.switch_impl:Receive hello switch#1
+DEBUG:openflow.switch_impl:Send hello switch#1 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1117 switch#1
+DEBUG:openflow.switch_impl:Barrier request switch#1 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1121
+INFO:openflow.of_01:[Con 93/1] Connected to 00-00-00-00-00-01
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.switch_impl:Receive hello switch#4
+DEBUG:openflow.switch_impl:Send hello switch#4 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1127 switch#4
+DEBUG:openflow.switch_impl:Barrier request switch#4 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1131
+INFO:openflow.of_01:[Con 94/4] Connected to 00-00-00-00-00-04
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x101185f10>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:01 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119f810>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:11 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.of_01:[Con 94/4] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.switch_impl:Receive hello switch#3
+DEBUG:openflow.switch_impl:Send hello switch#3 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1141 switch#3
+DEBUG:openflow.switch_impl:Barrier request switch#3 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1145
+INFO:openflow.of_01:[Con 95/3] Connected to 00-00-00-00-00-03
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119f6d0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:01 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x101187750>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:08 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x1011876d0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0a unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.of_01:[Con 91/0] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.of_01:[Con 93/1] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.of_01:[Con 95/3] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.switch_impl:Receive hello switch#4
+DEBUG:openflow.switch_impl:Send hello switch#4 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1157 switch#4
+DEBUG:openflow.switch_impl:Barrier request switch#4 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1161
+INFO:openflow.of_01:[Con 96/4] Connected to 00-00-00-00-00-04
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119fd90>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0a unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x1011a4750>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:14 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.switch_impl:Receive hello switch#0
+DEBUG:openflow.switch_impl:Send hello switch#0 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1171 switch#0
+DEBUG:openflow.switch_impl:Barrier request switch#0 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1175
+INFO:openflow.of_01:[Con 97/0] Connected to 00-00-00-00-00-00
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.switch_impl:Receive hello switch#3
+DEBUG:openflow.switch_impl:Send hello switch#3 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1181 switch#3
+DEBUG:openflow.switch_impl:Barrier request switch#3 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1185
+INFO:openflow.of_01:[Con 98/3] Connected to 00-00-00-00-00-03
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119f410>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0a unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119fe10>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:10 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer_entities:Snapshotting FIBs...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#0.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#1.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#2.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#4.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#3.fib...
+DEBUG:nom_trap.fuzzer_entities:Generating contraints...
+DEBUG:nom_trap.fuzzer_entities:/Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/utils/jruby-1.6.5/bin/jruby -I /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/build/lib/Ruby /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/loop-detector.rb manifest.xml
+DEBUG:nom_trap.fuzzer_entities:Invoking solver...
+DEBUG:nom_trap.fuzzer_entities:make -f /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/scripts/Makefile.solve BC_SRCS=lc-base.bc
+INFO:nom_trap.fuzzer_entities:Invariant check result: sat
+DEBUG:nom_trap.fuzzer_entities:Cleaning up files...
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.of_01:[Con 97/0] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.switch_impl:Receive hello switch#1
+DEBUG:openflow.switch_impl:Send hello switch#1 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1195 switch#1
+DEBUG:openflow.switch_impl:Barrier request switch#1 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1199
+INFO:openflow.of_01:[Con 99/1] Connected to 00-00-00-00-00-01
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119f390>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0d unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x101185f90>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:11 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.of_01:[Con 99/1] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.of_01:[Con 96/4] disconnecting
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x1011835d0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:10 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.of_01:[Con 92/2] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.of_01:[Con 98/3] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.switch_impl:Receive hello switch#1
+DEBUG:openflow.switch_impl:Send hello switch#1 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1211 switch#1
+DEBUG:openflow.switch_impl:Barrier request switch#1 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1215
+INFO:openflow.of_01:[Con 100/1] Connected to 00-00-00-00-00-01
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.switch_impl:Receive hello switch#4
+DEBUG:openflow.switch_impl:Send hello switch#4 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1221 switch#4
+DEBUG:openflow.switch_impl:Barrier request switch#4 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1225
+INFO:openflow.of_01:[Con 101/4] Connected to 00-00-00-00-00-04
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x101198750>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:06 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x101198dd0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:12 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.switch_impl:Receive hello switch#3
+DEBUG:openflow.switch_impl:Send hello switch#3 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1235 switch#3
+DEBUG:openflow.switch_impl:Barrier request switch#3 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1239
+INFO:openflow.of_01:[Con 102/3] Connected to 00-00-00-00-00-03
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10118df10>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:05 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119ca90>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:11 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.of_01:[Con 100/1] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.switch_impl:Receive hello switch#2
+DEBUG:openflow.switch_impl:Send hello switch#2 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1249 switch#2
+DEBUG:openflow.switch_impl:Barrier request switch#2 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1253
+INFO:openflow.of_01:[Con 103/2] Connected to 00-00-00-00-00-02
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10118da50>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0b unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119cd90>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0f unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119c8d0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:12 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer_entities:Snapshotting FIBs...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#0.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#1.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#2.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#4.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#3.fib...
+DEBUG:nom_trap.fuzzer_entities:Generating contraints...
+DEBUG:nom_trap.fuzzer_entities:/Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/utils/jruby-1.6.5/bin/jruby -I /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/build/lib/Ruby /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/loop-detector.rb manifest.xml
+DEBUG:nom_trap.fuzzer_entities:Invoking solver...
+DEBUG:nom_trap.fuzzer_entities:make -f /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/scripts/Makefile.solve BC_SRCS=lc-base.bc
+INFO:nom_trap.fuzzer_entities:Invariant check result: sat
+DEBUG:nom_trap.fuzzer_entities:Cleaning up files...
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.of_01:[Con 103/2] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.of_01:[Con 101/4] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.switch_impl:Receive hello switch#0
+DEBUG:openflow.switch_impl:Send hello switch#0 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1265 switch#0
+DEBUG:openflow.switch_impl:Barrier request switch#0 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1269
+INFO:openflow.of_01:[Con 104/0] Connected to 00-00-00-00-00-00
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119af90>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:02 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.of_01:[Con 102/3] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.switch_impl:Receive hello switch#1
+DEBUG:openflow.switch_impl:Send hello switch#1 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1277 switch#1
+DEBUG:openflow.switch_impl:Barrier request switch#1 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1281
+INFO:openflow.of_01:[Con 105/1] Connected to 00-00-00-00-00-01
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.switch_impl:Receive hello switch#2
+DEBUG:openflow.switch_impl:Send hello switch#2 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1287 switch#2
+DEBUG:openflow.switch_impl:Barrier request switch#2 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1291
+INFO:openflow.of_01:[Con 106/2] Connected to 00-00-00-00-00-02
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x101198c50>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:06 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.of_01:[Con 104/0] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.switch_impl:Receive hello switch#3
+DEBUG:openflow.switch_impl:Send hello switch#3 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1299 switch#3
+DEBUG:openflow.switch_impl:Barrier request switch#3 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1303
+INFO:openflow.of_01:[Con 107/3] Connected to 00-00-00-00-00-03
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10118d5d0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:07 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119e5d0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0e unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.of_01:[Con 105/1] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.of_01:[Con 106/2] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.switch_impl:Receive hello switch#1
+DEBUG:openflow.switch_impl:Send hello switch#1 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1313 switch#1
+DEBUG:openflow.switch_impl:Barrier request switch#1 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1317
+INFO:openflow.of_01:[Con 108/1] Connected to 00-00-00-00-00-01
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119aed0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:06 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer_entities:Snapshotting FIBs...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#0.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#1.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#2.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#4.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#3.fib...
+DEBUG:nom_trap.fuzzer_entities:Generating contraints...
+DEBUG:nom_trap.fuzzer_entities:/Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/utils/jruby-1.6.5/bin/jruby -I /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/build/lib/Ruby /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/loop-detector.rb manifest.xml
+DEBUG:nom_trap.fuzzer_entities:Invoking solver...
+DEBUG:nom_trap.fuzzer_entities:make -f /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/scripts/Makefile.solve BC_SRCS=lc-base.bc
+INFO:nom_trap.fuzzer_entities:Invariant check result: sat
+DEBUG:nom_trap.fuzzer_entities:Cleaning up files...
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.of_01:[Con 108/1] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.of_01:[Con 107/3] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.switch_impl:Receive hello switch#0
+DEBUG:openflow.switch_impl:Send hello switch#0 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1325 switch#0
+DEBUG:openflow.switch_impl:Barrier request switch#0 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1329
+INFO:openflow.of_01:[Con 109/0] Connected to 00-00-00-00-00-00
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.switch_impl:Receive hello switch#4
+DEBUG:openflow.switch_impl:Send hello switch#4 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1335 switch#4
+DEBUG:openflow.switch_impl:Barrier request switch#4 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1339
+INFO:openflow.of_01:[Con 110/4] Connected to 00-00-00-00-00-04
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x101198a10>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:04 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.of_01:[Con 109/0] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.of_01:[Con 110/4] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.switch_impl:Receive hello switch#1
+DEBUG:openflow.switch_impl:Send hello switch#1 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1347 switch#1
+DEBUG:openflow.switch_impl:Barrier request switch#1 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1351
+INFO:openflow.of_01:[Con 111/1] Connected to 00-00-00-00-00-01
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.switch_impl:Receive hello switch#2
+DEBUG:openflow.switch_impl:Send hello switch#2 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1357 switch#2
+DEBUG:openflow.switch_impl:Barrier request switch#2 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1361
+INFO:openflow.of_01:[Con 112/2] Connected to 00-00-00-00-00-02
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.switch_impl:Receive hello switch#3
+DEBUG:openflow.switch_impl:Send hello switch#3 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1367 switch#3
+DEBUG:openflow.switch_impl:Barrier request switch#3 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1371
+INFO:openflow.of_01:[Con 113/3] Connected to 00-00-00-00-00-03
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119eb90>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:06 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x1011a2cd0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0a unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.of_01:[Con 111/1] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.of_01:[Con 112/2] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.switch_impl:Receive hello switch#0
+DEBUG:openflow.switch_impl:Send hello switch#0 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1381 switch#0
+DEBUG:openflow.switch_impl:Barrier request switch#0 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1385
+INFO:openflow.of_01:[Con 114/0] Connected to 00-00-00-00-00-00
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119e710>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:10 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.of_01:[Con 114/0] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.of_01:[Con 113/3] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.switch_impl:Receive hello switch#1
+DEBUG:openflow.switch_impl:Send hello switch#1 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1393 switch#1
+DEBUG:openflow.switch_impl:Barrier request switch#1 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1397
+INFO:openflow.of_01:[Con 115/1] Connected to 00-00-00-00-00-01
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.switch_impl:Receive hello switch#4
+DEBUG:openflow.switch_impl:Send hello switch#4 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1403 switch#4
+DEBUG:openflow.switch_impl:Barrier request switch#4 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1407
+INFO:openflow.of_01:[Con 116/4] Connected to 00-00-00-00-00-04
+DEBUG:nom_trap.fuzzer_entities:Snapshotting FIBs...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#0.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#1.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#2.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#4.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#3.fib...
+DEBUG:nom_trap.fuzzer_entities:Generating contraints...
+DEBUG:nom_trap.fuzzer_entities:/Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/utils/jruby-1.6.5/bin/jruby -I /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/build/lib/Ruby /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/loop-detector.rb manifest.xml
+DEBUG:nom_trap.fuzzer_entities:Invoking solver...
+DEBUG:nom_trap.fuzzer_entities:make -f /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/scripts/Makefile.solve BC_SRCS=lc-base.bc
+INFO:nom_trap.fuzzer_entities:Invariant check result: sat
+DEBUG:nom_trap.fuzzer_entities:Cleaning up files...
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.of_01:[Con 115/1] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.switch_impl:Receive hello switch#0
+DEBUG:openflow.switch_impl:Send hello switch#0 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1413 switch#0
+DEBUG:openflow.switch_impl:Barrier request switch#0 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1417
+INFO:openflow.of_01:[Con 117/0] Connected to 00-00-00-00-00-00
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x1011a2950>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:14 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.of_01:[Con 117/0] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.of_01:[Con 116/4] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-02>
+DEBUG:openflow.switch_impl:Receive hello switch#2
+DEBUG:openflow.switch_impl:Send hello switch#2 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1425 switch#2
+DEBUG:openflow.switch_impl:Barrier request switch#2 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1429
+INFO:openflow.of_01:[Con 118/2] Connected to 00-00-00-00-00-02
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.switch_impl:Receive hello switch#3
+DEBUG:openflow.switch_impl:Send hello switch#3 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1435 switch#3
+DEBUG:openflow.switch_impl:Barrier request switch#3 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1439
+INFO:openflow.of_01:[Con 119/3] Connected to 00-00-00-00-00-03
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x10119c3d0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0b unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x1011a43d0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0f unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.of_01:[Con 119/3] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.switch_impl:Receive hello switch#0
+DEBUG:openflow.switch_impl:Send hello switch#0 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1449 switch#0
+DEBUG:openflow.switch_impl:Barrier request switch#0 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1453
+INFO:openflow.of_01:[Con 120/0] Connected to 00-00-00-00-00-00
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.switch_impl:Receive hello switch#1
+DEBUG:openflow.switch_impl:Send hello switch#1 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1459 switch#1
+DEBUG:openflow.switch_impl:Barrier request switch#1 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1463
+INFO:openflow.of_01:[Con 121/1] Connected to 00-00-00-00-00-01
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x1011a4cd0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:02 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x1011a6150>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:07 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x1011a4b90>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:09 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-00>
+DEBUG:openflow.of_01:[Con 120/0] disconnecting
+INFO:nom_trap.fuzzer:Crashing switch <MockOpenFlowSwitch 00-00-00-00-00-01>
+DEBUG:openflow.of_01:[Con 121/1] disconnecting
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-03>
+DEBUG:openflow.switch_impl:Receive hello switch#3
+DEBUG:openflow.switch_impl:Send hello switch#3 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1475 switch#3
+DEBUG:openflow.switch_impl:Barrier request switch#3 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1479
+INFO:openflow.of_01:[Con 122/3] Connected to 00-00-00-00-00-03
+INFO:nom_trap.fuzzer:Rebooting switch <MockOpenFlowSwitch 00-00-00-00-00-04>
+DEBUG:openflow.switch_impl:Receive hello switch#4
+DEBUG:openflow.switch_impl:Send hello switch#4 
+DEBUG:openflow.switch_impl:Reply features request of xid ofp_features_request
+  header: 
+    version: 1
+    type:    5 (OFPT_FEATURES_REQUEST)
+    length:  8
+    xid:     1485 switch#4
+DEBUG:openflow.switch_impl:Barrier request switch#4 ofp_barrier_request
+  header: 
+    version: 1
+    type:    18 (OFPT_BARRIER_REQUEST)
+    length:  8
+    xid:     1489
+INFO:openflow.of_01:[Con 123/4] Connected to 00-00-00-00-00-04
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x1011a28d0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:0f unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer:triggering a random event
+DEBUG:nom_l2_switch_controller:PacketIn_handler! packet_in_event: <pox.openflow.PacketIn object at 0x1011a2ed0>
+DEBUG:nom_l2_switch_controller:port for 00:00:00:00:00:11 unknown -- flooding
+DEBUG:openflow.switch_impl:Packet out
+DEBUG:nom_trap.fuzzer_entities:Snapshotting FIBs...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#0.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#1.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#2.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#4.fib...
+DEBUG:nom_trap.fuzzer_entities:writing out switch#3.fib...
+DEBUG:nom_trap.fuzzer_entities:Generating contraints...
+DEBUG:nom_trap.fuzzer_entities:/Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/utils/jruby-1.6.5/bin/jruby -I /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/build/lib/Ruby /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/loop-detector.rb manifest.xml
+DEBUG:nom_trap.fuzzer_entities:Invoking solver...
+DEBUG:nom_trap.fuzzer_entities:make -f /Users/justine/Documents/work/sdn_debugger/pox-debugger/pox/lib/anteater/src/tools/scripts/Makefile.solve BC_SRCS=lc-base.bc
+INFO:nom_trap.fuzzer_entities:Invariant check result: sat
+DEBUG:nom_trap.fuzzer_entities:Cleaning up files...
+
+real	1m14.433s
+user	2m54.069s
+sys	0m11.546s
