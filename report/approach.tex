@@ -1,21 +1,70 @@
 
 In the previous section we described common error conditions observed in
-software-defined networks. In this section we present techniques for
-addressing 
-analyze the causes of such
-errors, and present techniques for addressing isolating and
+software-defined networks. In this section we present two techniques for
+detecting their occurence (\ref{sec:detection}) and one insight useful for isolating their cause
+(\ref{sec:isolation}).
 
-Key insights. We argue that invariants are the right way to think about this
-problem. Delta over Anteater: need to detect dynamic configuration bugs.
-OpenFlow networks are typically quite dynamic compared to traditional static
-(campus) networks. Also need cross-layer debugger (correspondance checks) to isolate where the bug is,
-and verify that the network is doing what the application tells it to.
+\subsection{Detection}
+\label{sec:detection}
 
+Many of the error conditions described in the previous section can be detected
+by analyzing a static snapshot of the network state. For example, Anteater \cite{anteater}
+showed that all of the generic errors shown in Figure
+\ref{fig:generic_errors} can be detected in traditional networks by invoking a
+SAT solver on constraint formulas derived from routers' forwarding tables.
 
+There are two differences between traditional networks and the SDN environment
+which imply that static analysis alone is insufficient. The most important
+difference is that OpenFlow switches typcially do not have default forwarding
+rules; flow entries are often installed on-demand by the controller
+whenever unmatched packets arrive at the switch. Although loops (i) and
+routing inconsitencies (iv) can still be detected in sparse forwarding tables,
+network partitions \colin{Routing partitions, not physical partitions} (ii) and dead ends (iii) cannot. A related difference is that
+SDN controllers tend to make frequent changes to network devices, implying that the
+configuration space is far too large to be verified with a single analysis of
+the network state.
 
-We note that some error conditions may not manifest themselves in the same way
-as a normal network. Network partitions for example. Most OpenFlow networks
-don't keep default routes -- the FIBs are sparse. By checking the FIBs alone,
-you won't find .
+To enable invariant checks for the SDN environment, we have developed a
+technique we call {\it dynamic invariant checking}. The basic idea is to
+explore the entire configuration space of the control application, invoking
+invariant checks at well-chosen intervals. In this way, dead ends (iii) can be
+detected by waiting for the controller to install flow entries for all
+switches along the path for a particular flow. In a similar way, network
+partitions (ii) can be detected by generating flows for all pairs of nodes in
+the network. \colin{Maybe mention that the configuration space should be tractable,
+since the virtualized NOM is intentionally simple?}
 
+\colin{Justine had a very interesting question: are there failure modes in
+{\it installed} OpenFlow entries that would not be detectable by
+Anteater? Her particular example turned out to fall under routing inconsistency,
+but I'm interested in pursuing this line of reasoning later on}
 
+Checking invariants in the dataplane does not suffice to detect all failure modes. In
+particular, even if the physical network passes invariant checks, it may not behave as
+the control application intends it to. Consider for example, a bug in the
+virtualization layer of the NOS which causes ACL rules to be placed
+incorrectly along the virtual path between hosts in a datacenter.
+
+To capture this failure mode, we have developed a technique we call `cross-layer
+correlation`. Essentially, this involves translating the
+virtualized representation of the network state to physical flow entries
+independently from the system's translation logic. If
+there is not a one-to-one correspondance between the derived network
+state and the true network state, we warn the user of a possible
+correspondence error.
+
+\colin{We could talk a bit about system-wide analysis just so that we have
+three techniques. If we do, the notion of order-independence is particularly
+important.}
+
+\subsection{Isolation}
+\label{sec:isolation}
+
+To aide developers in finding the root cause of a detected error, we note that
+the modularity of the SDN stack works to our advantage. Because the interfaces
+between the layers are well-defined, and the representation of the 
+of the network state is known a priori, each layer can effectively be tested in
+isolation. Conceptually, the debugger generates a set of hypotheses about
+where the cause of the error may reside. It then successively prunes these
+hypotheses by running invariant checks on each layer's representation of the
+network.
