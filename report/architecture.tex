@@ -3,7 +3,7 @@ In this section we describe our prototype debugger and network simulator, \proje
 \projectname{} embodies the debugging techniques described in the previous section.
 In particular, \projectname{} consists of three main components: configuration exploration
 (\ref{sec:configuration_exploration}), invariant checks
-(\ref{sec:invariant_checks}, and cross-layer correlation
+(\ref{sec:invariant_checks}), and cross-layer correlation
 (\ref{sec:cross_layer_correlation}).
 
 \eat{
@@ -29,30 +29,34 @@ they are interacting with real network devices. The behavior of the
 switches is then mimicked by objects in the same process. We found that
 simulation was useful for finding and isolating bugs, since system execution
 can be easily logged and deterministically replayed. In the future, we plan to
-emulate each network device in a separate process to reproduce the distributed
+emulate each network device in a separate process to reproduce the concurrent
 nature of software-defined networks.
 
 After an initial network topology has been populated, \projectname{}
 generates semi-random packets and delivers them to switches at the border of
-the network. The NOS is notified of these packets, the control application
-makes a control decision which is logged and delivered to the NOS, which then
-potentially pushes a configuration change to the mock switch objects. We found
+the network. As in normal execution, the NOS is notified of these packets, a
+control decision is made, and a configuration change is potentially pushed 
+to the mock switch objects. We found
 that semi-random packet generation suffices to effectively explore the
 configuration space of the application. In the future, we plan to explore more
 principled input generation, such as trace-driven execution, or symbolic
-execution. \colin{Citations?}
+execution. 
 
 The execution of \projectname{} proceeds in logical rounds. In each round 
-a set of events are generated, including randomly-generated incoming packets,
-switch crashes, controller crashes, and packet drops. Before the end of 
+a set of events including randomly-generated incoming packets,
+switch crashes, controller crashes, and packet drops are generated. Before the end of 
 each round, the user is given the opportunity to interactively choose the order
 in which the events are executed for that round. We found this useful when we
 had a particular failure case in mind, and wanted to easily reproduce the
 order of events which lead up to the failure.
-\colin{TODO: not quite built yet, but it would be easy}
 
+\eat{
+\colin{TODO: not quite built yet, but it would be easy}
+}
+\eat{
 \colin{Say something about order-independence. That's what makes the input
 generator more than just a mechanism to explore the (static) configuration space}
+}
 
 \subsection{Invariant Checks}
 \label{sec:invariant_checks}
@@ -62,13 +66,13 @@ infer the behavior of the system under a variety of circumstances. The invariant
 checking component of \projectname{} serves to verify the correctness of the
 observed system behavior during execution.
 
-We leverage Anteater \cite{anteater}, a static checker for the network
+We leverage Anteater \cite{anteater}, a static checker for network
 dataplanes, to detect the generic failure modes described in Section \ref{sec:bug_analysis}.
 At the end of each logical round, we give the user the option of invoking
 Anteater's invariant checks. A static snapshot of the mock switches' state is
-then taken, translated into RIB format, and fed through Anteater. We found
-that combingin Anteater with configuration exploration of network
-configuration was significantly more effective at detecting errors than Anteater alone.
+then taken, translated into RIB format, and fed through Anteater. In our
+experience, combining Anteater with configuration exploration is significantly
+more effective at detecting errors than Anteater alone.
 
 In addition to the four generic failure modes described in Section
 \ref{sec:bug_analysis}, Aneater also allows the user to specify
@@ -81,9 +85,9 @@ we plan to explore the use of this capability.
 Invariant checking alone does not suffice to detect all possible failure
 modes. The NOS itself may fail to configure the physical network in a way that
 captures the intended behavior of the control-application. The cross-layer correlation
-component of \projectname{} serves to such failure-modes. 
+component of \projectname{} serves to capture such failure-modes. 
 
-This component of the system translates the
+Cross-layer correlation involves translating
 virtualized representation of the network state to a physical flow table
 representation for simulated network elements. It then checks whether there is
 there is a one-to-one correspondance between the derived network
@@ -91,11 +95,9 @@ state and the true network state.
 
 It should be noted that bugs may exist in the correlation component itself,
 especially if the mapping between the virtual and physical network is quite
-complex. Nonetheless, we argue that it's far easier to perform this
-translation {\it outside} of the system than it is to verify code within the
+complex. Nonetheless, we argue that performing this
+translation {\it outside} of the system is far more robust than verifying code within the
 virtualization layer itself.
-
-\colin{Virtualization isn't actually a part of POX yet...}
 
 \eat{
 Consistency checks are a subclass of correspondance checks. If you're running
