@@ -64,8 +64,8 @@ too maybe}
 To aide developers in finding the root cause of a detected error, we note that
 the modularity of the SDN stack works to our advantage. Because the interfaces
 between the layers are well-defined, and the representation of the 
-of the network state is known \apriori, each layer can be effectively tested in
-isolation. Conceptually, the debugger generates a set of hypotheses about
+of the network state is known \apriori, each layer can be tested in
+isolation. Conceptually, the debugger component of the NOS generates a set of hypotheses about
 where the cause of the error may reside. It then successively prunes these
 hypotheses by running invariant checks on each layer's representation of the
-network until one hypothesis remains..
+network until one hypothesis remains.
