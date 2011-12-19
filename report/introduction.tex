@@ -1,22 +1,16 @@
-Software-defined networking (SDN) is an emerging paradigm that seeks to redefine
+Software-defined networking (SDN) is an emerging paradigm that redefines
 the structure of the network control plane for increased flexilibity and
-simplified management. Traditional packet-switched networks typically couple
-data-plane forwarding and control-plane decision making. Each switch and router
-both forwards packets and independently decides on the forwarding, failure
-recovery, and access control, partially coordinated by distributed protocols.
+simplified management. In traditional networks, data-plane forwarding is
+typcially coupled to control-plane decision making; in addition to forwarding
+packets, each switch and router independently computes routing, failure
+recovery, and access control decisions through distributed coordination protocols.
 SDN breaks this coupling and enables the control plane decision logic to evolve
 independently of the forwarding. Additionally, it introduces the notion of a
 Network Operating System (NOS) that provides a centralized view of the network
 state to applications and enables them to specify the intended behavior on top
 of higher level abstractions.
 
-In OpenFlow~\cite{openflow}, a popular emerging SDN implementation, all
-control-plane decisions are made by a logically-centralized
-controller\footnote{In practice, the controller is typically sharded and/or
-replicated across multiple control servers for scalability and durability}. The
-controller pushes forwarding decisions to `dumb' switches who simply store a
-bitmask of the packet header and the associated forwarding decision and apply it
-to later packets. Primarily because of its flexibility and ease of use, OpenFlow
+Primarily because of its flexibility and ease of use, SDN
 is quickly becoming widely adopted in both industry~\cite{nicirahomepage,
 bigswitch} and academia~\cite{nox, pox, ethane}.
 
