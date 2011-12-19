@@ -50,23 +50,7 @@ Wundsam, Teemu Koponen, and Scott Shenker}}
 
 \abstract{
 {\it
-    Software-defined networking (SDN) simplifies network management
-    by providing a `network operating system` for control applications, which effectively isolates
-    control logic from the distribution of control-plane state in the
-    physical network. However, by abstracting away the details of network
-    configuration, debugging errors in a software-defined network is
-    considerably difficult. Bugs may manifest not only in the control application,
-    but in any of the layers of abstraction that translate control decisions to 
-    changes in the physical network: virtualization logic, distribution logic,
-    network devices, or the mappings between any of these layers.
-    This increased `distance to the metal` makes it
-    difficult for network operators to
-    isolate the cause of errors. In this paper
-    we present \projectname{}, a cross-layer debugger for software-defined
-    networks. \projectname{} interposes on the layers of the SDN stack, both within a single
-    control server and between distributed controllers, to enable
-    isolated invariant checking of individual components. Using bug reports from a production SDN deployment, we demonstrate that
-    \projectname{} can detect and isolate many real problems in large-scale production networks today.
+\input{abstract}
 }
 
 \section{Introduction}
