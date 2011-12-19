@@ -1,45 +1,55 @@
 
-In this section we describe our prototype debugger, CLINT. CLINT embodies the
-debugging techniques described in the previous section. In particular, CLINT
-consists of three main components: configuration exploration
+In this section we describe our prototype debugger and network simulator, \projectname{}.
+\projectname{} embodies the debugging techniques described in the previous section.
+In particular, \projectname{} consists of three main components: configuration exploration
 (\ref{sec:configuration_exploration}), invariant checks
 (\ref{sec:invariant_checks}, and cross-layer correlation
 (\ref{sec:cross_layer_correlation}).
 
+\eat{
 \colin{Should frame these components as `features we found useful` through specific examples of
 bugs they helped us find}
+}
 
 \begin{figure}[t]
     \hspace{-10pt}
     \includegraphics[width=3.25in]{../diagrams/architecture/Architecture_simplified.pdf}
-    \caption[]{\label{fig:basicarch} CLINT's architecture. \vspace{-10pt}} 
+    \caption[]{\label{fig:basicarch} \projectname{}'s architecture. \vspace{-10pt}} 
 \end{figure}
 
 \subsection{Configuration Exploration}
 \label{sec:configuration_exploration}
 
-High level goal of input generator is to explore the configuration space of
-the application. As we move along, feed these output configurations to
-Anteater to check for static invariant violations.
+The execution of \projectname{} begins with traffic generation designed to explore the configuration
+space of a given control application. 
 
-\colin{Mention simulation vs. emulation vs. live deployment. Right now we just
-have simulation. By running in a single process, we get a global ordering of
-events in the system. Later, we'll generalize to truly distributed systems
-(at best, can only get a partial ordering of events)}
+\projectname{} currently simulates the behavior a physical network in a single-threaded process.
+In particular, the NOS and hosted control application are given the illusion that
+they are interacting with real network devices. The behavior of the
+switches is then mimicked by objects in the same process. We found that
+simulation was useful for finding and isolating bugs, since system execution
+can be easily logged and deterministically replayed. In the future, we plan to
+emulate each network device in a separate process to reproduce the distributed
+nature of software-defined networks.
 
-Right now our system just generates random packets. Later, could be taken from a trace, or
-more intellegently chosen (\ie symbolic execution).
+After an initial network topology has been populated, \projectname{}
+generates semi-random packets and delivers them to switches at the border of
+the network. The NOS is notified of these packets, the control application
+makes a control decision which is logged and delivered to the NOS, which then
+potentially pushes a configuration change to the mock switch objects. We found
+that semi-random packet generation suffices to effectively explore the
+configuration space of the application. In the future, we plan to explore more
+principled input generation, such as trace-driven execution, or symbolic
+execution. \colin{Citations?}
 
-Need the replay to be deterministic in order to make it easy to replay the execution
-and find the bug.
-
-Execution proceeds in logical rounds. Each round consists of a series of
-randomly chosen packet generation events, switch crashes, controller crashes,
-packet deliveries, or packet drops. At the end of reach round, we allow the user to
-interactively choose the order in which events are executed for that round. We
-found this useful for easily reproducing error conditions that a programmer
-might have had in mind. \colin{TODO: interactivity isn't actually built yet,
-but it would be easy}
+The execution of \projectname{} proceeds in logical rounds. In each round 
+a set of events are generated, including randomly-generated incoming packets,
+switch crashes, controller crashes, and packet drops. Before the end of 
+each round, the user is given the opportunity to interactively choose the order
+in which the events are executed for that round. We found this useful when we
+had a particular failure case in mind, and wanted to easily reproduce the
+order of events which lead up to the failure.
+\colin{TODO: not quite built yet, but it would be easy}
 
 \colin{Say something about order-independence. That's what makes the input
 generator more than just a mechanism to explore the (static) configuration space}
@@ -47,44 +57,50 @@ generator more than just a mechanism to explore the (static) configuration space
 \subsection{Invariant Checks}
 \label{sec:invariant_checks}
 
-At a high level, we essentially run Anteater in a loop. Fuzz, then detect, the
-repeat. This helps us i. Explore the entire (static) configuration space of the control
-application, and ii. also lets us catch bugs that wouldn't otherwise be
-catcheable by Anteater alone. Note that Fuzzer + Anteater is strictly better than Anteater alone.
+The purpose of the configuration exploration module of \projectname{} was to
+infer the behavior of the system under a variety of circumstances. The invariant
+checking component of \projectname{} serves to verify the correctness of the
+observed system behavior during execution.
 
-We use Anteater ~\cite{anteater}! Anteater checks static configurations. We take a snapshot of
-the simulated network's state at points specified by the user of the input
-generator. Then we feed that snapshot to Anteater, and check whether our
-invariants hold.
+We leverage Anteater \cite{anteater}, a static checker for the network
+dataplanes, to detect the generic failure modes described in Section \ref{sec:bug_analysis}.
+At the end of each logical round, we give the user the option of invoking
+Anteater's invariant checks. A static snapshot of the mock switches' state is
+then taken, translated into RIB format, and fed through Anteater. We found
+that combingin Anteater with configuration exploration of network
+configuration was significantly more effective at detecting errors than Anteater alone.
 
-Particular invariant checks include loop detection, blackhole detection, and
-network partition detection. \colin{Maybe routing consistency too, if we
-figure out what exactly it means}. 
+In addition to the four generic failure modes described in Section
+\ref{sec:bug_analysis}, Aneater also allows the user to specify
+application-specific invariants with a domain-specific language. In the future
+we plan to explore the use of this capability.
 
 \subsection{Cross-layer Correlation}
 \label{sec:cross_layer_correlation}
 
-At a high level, correspondence checks serve two purposes. First, they help
-you isolate the cause of a bug to one particular layer. Second, they ensure
-that the network is doing what the application tells it to.
+Invariant checking alone does not suffice to detect all possible failure
+modes. The NOS itself may fail to configure the physical network in a way that
+captures the intended behavior of the control-application. The cross-layer correlation
+component of \projectname{} serves to such failure-modes. 
 
-In some sense, it's a global invariant that ``The network should do what the
-application tells it to''. In order to verify that this invariant holds, it
-does not suffice to check each layer individually. There must be a {\it
-correspondance} between each layers' view of the network state.
+This component of the system translates the
+virtualized representation of the network state to a physical flow table
+representation for simulated network elements. It then checks whether there is
+there is a one-to-one correspondance between the derived network
+state and the true network state.
 
-Check this by translating between each of the layers' representation of the
-network state, and verify that there is a one-to-one mapping. 
+It should be noted that bugs may exist in the correlation component itself,
+especially if the mapping between the virtual and physical network is quite
+complex. Nonetheless, we argue that it's far easier to perform this
+translation {\it outside} of the system than it is to verify code within the
+virtualization layer itself.
 
-Virtualization makes this particularly important.
+\colin{Virtualization isn't actually a part of POX yet...}
 
-We need to make sure that the translations themselves aren't buggy too! But we
-argue that it's far easier to verify corresponance {\it outside} of the system
-than it is to write correct code within the virtualization layer itself.
-
+\eat{
 Consistency checks are a subclass of correspondance checks. If you're running
 multiple controllers, it must be the case that either: i. The partitioning of
 responsibilities betweem the controllers is disjoint, or ii. There is a
 correspondance between the controllers' views of the network.
+}
 
-\colin{Virtualization isn't actually a part of POX yet...}
