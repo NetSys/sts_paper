@@ -54,7 +54,7 @@ correlating the effects of a bug to identify its root cause.
 
 To simplify the debugging process, we present \projectname{}, a comprehensive debugger for the SDN stack.
 \projectname{} leverages existing techniques wherever possible, and improves the state of affairs
-with two new techniques for SDN debugging.
+with three new techniques for SDN debugging.
 
 \eat{We utilize a static physical network invariant
 checker~\cite{anteater} to detect bugs in any single configuration of the
@@ -75,6 +75,13 @@ may be undetectable by looking at raw FIB entries. \projectname{}
 translates between between each abstraction layers' representation of the
 network state to verify a correspondence between the application's intentions
 and the physical configuration.
+
+\noindent {\it Inconsistency reproduction}: Production software-defined
+networks run multiple control servers to achieve scalability and
+fault-tolerance. Distributed control gives rise to the same set of coordination
+and consistency problems seen in general distributed systems. To capture these
+errors, we have designed a preliminary mechanism to capture and reproduce
+inconsistencies in the network.
 
 \eat{ If we want three contributions, mention isolated testing (per-layer
 verification)
@@ -129,6 +136,7 @@ networks. Second, we present \projectname{}, a comprehensive debugger to detect 
 troubleshooting such errors: dynamic invariant checking, cross-layer
 correlation, and cross-server verification.
 }
+
 
 The rest of this paper is organized as follows. In \S\ref{sec:bug_analysis}, we present an overview of common bugs
 encountered by users of production SDN deployments. In \S\ref{sec:approach}, we present our approach to
