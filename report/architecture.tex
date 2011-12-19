@@ -28,7 +28,7 @@ In particular, the NOS and hosted control application are given the illusion tha
 they are interacting with real network devices. The behavior of the
 switches is then mimicked by objects in the same process. We found that
 simulation was useful for finding and isolating bugs, since system execution
-can be easily logged and deterministically replayed. In the future, we plan to
+can be easily logged and deterministic ally replayed. In the future, we plan to
 emulate each network device in a separate process to reproduce the concurrent
 nature of software-defined networks.
 
@@ -107,10 +107,31 @@ correspondence between the controllers' views of the network.
 }
 
 \subsection{Eventually Consistent NOM}
+
+Consistency errors in topologies with multiple control servers are perhaps
+the most pernicious failure mode observed in software-defined networks. To
+easily replicate and debug such errors, \projectname{} simulates replicated
+control in the POX network operating system platform \cite{pox}. Our approach
+is similar to distributed control is similar to Onix \cite{onix}: we define a
+network object model (NOM) which is a generic, well-defined representation of
+the network state. To reproduce inconsistencies, the NOM itself is stored in a
+centralized location, while the replicated or sharded control servers keep
+copies of the NOM in a local cache. When a controller makes a modification to
+the NOM, the change is written through to the central store, and each of the
+other controllers' caches are invalidated concurrently in an eventually
+consistent manner.
+
+Producing consistency errors inside of a simulator has two advantages. First,
+it makes it very easy to produce common error conditions, as the global
+execution of the system is totally-ordered and deterministic. Second, the user
+can user can examine and manually change the system at any time throughout
+execution. We are excited to explore the use of this mechanism in diagnosing
+consistency errors reported in live networks. 
+
 \begin{figure}[t]
     \hspace{-10pt}
     \includegraphics[width=3.25in]{eventually_consistent_nom}
-    \caption[]{\label{fig:split_db_nom} Eventually cosnstent NOM from our implementation of a distributed POX controller.} 
+    \caption[]{\label{fig:split_db_nom} Eventually consistent NOM from our implementation of a distributed POX controller.} 
 \end{figure}
 
 
