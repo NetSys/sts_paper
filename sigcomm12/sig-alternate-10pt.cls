@@ -731,7 +731,7 @@
     \vskip 1.5em               % Vertical space after author.
    \end{center}}
  \dimen0=\ht\@acmtitlebox
- %\advance\dimen0 by -12.75pc\relax % Increased space for title box -- KBT %%JUSTINE
+ \advance\dimen0 by -12.75pc\relax % Increased space for title box -- KBT
  \unvbox\@acmtitlebox
  \ifdim\dimen0<0.0pt\relax\vskip-\dimen0\fi}
 
@@ -1315,8 +1315,8 @@
 \bibindent=0em
 \def\thebibliography#1{% 
 \ifnum\addauflag=0\addauthorsection\global\addauflag=1\fi
-     {%    <=== OPTIONAL ARGUMENT ADDED HERE
-        {} % was uppercased but this affects pdf bookmarks (SP/GM October 2004)
+     \section[References]{%    <=== OPTIONAL ARGUMENT ADDED HERE
+        {References} % was uppercased but this affects pdf bookmarks (SP/GM October 2004)
           {\vskip -9pt plus 1pt} % GM Nov. 2006 / GM July 2000 (for somewhat tighter spacing) 
          \@mkboth{{\refname}}{{\refname}}%
      }%
@@ -1655,8 +1655,6 @@
     \gdef\GOfrench{\aeguill@GOfrench \aeguills}%
   \fi
   }
-
-\renewcommand\refname{}
 
 \endinput
 %
