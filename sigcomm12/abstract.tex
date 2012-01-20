@@ -1,20 +1,17 @@
-%Software-defined networking (SDN) restructures the network control plane
-%by introducing a `network operating system` (NOS). The NOS provides
-%a logically centralized view of the network on top of which control
-%applications can operate. This enables a more structured approach to
-%networking, facilitates concise specification of intended behavior,
-%and decouples the control logic from the distribution of control-plane
-%state in the physical network.  However, the additional complexity
-%introduced by the NOS can also increase the difficulties of debugging
-%network problems; correlating the high level specification
-%of intended behavior and its physical manifestation through multiple
-%layers of indirection can be highly challenging. Additionally, bugs may manifest not only
-%in the control application, but in any of the layers of abstraction
-%that translate control decisions to changes in the physical network:
-%virtualization logic, distribution logic, network devices, or the mappings
-%between any of these layers. In this paper we present \projectname{},
-%a cross-layer debugger for software-defined networks. \projectname{}
-%interposes on the layers of the SDN stack to enable isolated invariant
-%checking of individual components. Using bug reports from a production
-%SDN deployment, we demonstrate that \projectname{} can detect and isolate
-%many real problems in large-scale production networks today.
+Software-defined networking (SDN) enables a structured approach to
+networking: the SDN platform shields control logic from the complexities of
+state distribution, and may additionally provide a
+virtualized view of the underlying network state to enable highly concise
+specifications of intended behavior. In hiding complexity from control logic
+however, the task of troubleshooting errors becomes
+considerably more difficult. Besides bugs in the control logic, technically
+correct applications can be affected by bugs in the platform itself. Moreover, application
+developers have limited visibility into how their control decisions are translated through
+multiple layers of indirection down to individual configuration changes
+in network devices themselves, making the process of isolating the root cause
+of errors painstaking if not impossible. In this paper we argue that by
+checking for a simple invariant, {\em correspondence} between abstraction
+layers, the troubleshooting process can be greatly improved. We present \projectname{},
+a cross-layer debugger built around the notion of correspondence checking. We
+demonstrate that \projectname{} is able to track the causes of virtualization
+and consistency bugs similar those observed in production SDN deployments.
