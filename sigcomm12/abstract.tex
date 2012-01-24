@@ -1,17 +1,16 @@
-Software-defined networking (SDN) enables a structured approach to
-networking: the SDN platform shields control logic from the complexities of
-state distribution, and may additionally provide a
-virtualized view of the underlying network state to enable highly concise
-specifications of intended behavior. In hiding complexity from control logic
-however, the task of troubleshooting errors becomes
-considerably more difficult. Besides bugs in the control logic, technically
-correct applications can be affected by bugs in the platform itself. Moreover, application
-developers have limited visibility into how their control decisions are translated through
-multiple layers of indirection down to individual configuration changes
-in network devices themselves, making the process of isolating the root cause
-of errors painstaking if not impossible. In this paper we argue that by
-checking for a simple invariant, {\em correspondence} between abstraction
-layers, the troubleshooting process can be greatly improved. We present \projectname{},
-a cross-layer debugger built around the notion of correspondence checking. We
-demonstrate that \projectname{} is able to track the causes of virtualization
-and consistency bugs similar those observed in production SDN deployments.
+Software-defined networking (SDN) is a structured approach to
+building network control planes, providing a general-purpose
+platform on which control logic can be deployed. The SDN
+platform shields higher-level control logic from the
+complexities of state distribution and the details of
+physical forwarding. The platform may additionally provide a
+virtualized view of the underlying network state to enable
+highly concise specifications of intended behavior. While the SDN platform
+makes writing control logic easier, it also 
+complicates the task of troubleshooting errors;
+it is painstaking to isolate the root cause of errors when there are multiple
+levels of indirection between the high-level control logic and the low-level
+switch configurations. We propose to facilitate troubleshooting in SDN networks by
+checking for {\em correspondence} between abstraction
+layers. We demonstrate that such a system, called \projectname{}, is able to help locate
+virtualization and consistency problems that may arise in SDN deployments.

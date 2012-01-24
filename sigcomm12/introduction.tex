@@ -1,4 +1,3 @@
-
 \begin{itemize}
 \item Status quo is to painstakingly look at logs. 
 \item SDN provides layers of abstraction.
@@ -12,3 +11,85 @@
 \item Failures and updates are what make consistency hard! Normal running conditions are pretty tame.
 
 \end{itemize}
+
+Software-defined networking (SDN) is an emerging paradigm that redefines
+the structure of the network control plane for increased flexibility and
+simplified management. In traditional networks, data-plane forwarding is
+typically coupled to control-plane decision making; in addition to forwarding
+packets, each switch and router independently computes routing, failure
+recovery, and access control decisions through distributed coordination protocols.
+SDN breaks this coupling and enables the control plane decision logic to evolve
+independently of the forwarding. Additionally, it introduces the notion of a
+Network Operating System (NOS) that provides a centralized view of the network
+state to applications and enables them to specify the intended behavior on top
+of higher level abstractions. Primarily because of its flexibility and ease of use, SDN
+is quickly becoming widely adopted in both industry~\cite{nicirahomepage,
+bigswitch} and academia~\cite{nox, pox, ethane}.
+
+Modern SDN controllers are architected with a three layer approach: the NOS
+layer is responsible for tracking switch state and pushing configuration
+changes to the switches themselves; a virtualization layer
+wraps the state of the network in a programmable abstraction; and a control
+application written by network administrators 
+expresses the network behavior in terms of the virtualization layer abstraction.
+When a switch observes a packet that does not match a forwarding rule, it relays the
+packet to the NOS layer of a control server.
+The NOS then updates its model of the global network configuration. The
+virtualization layer translates this change into its own network model. 
+Finally, one or more hosted control applications are notified of the event, a
+control decision is made, the NOS is informed of the decision, and the NOS
+pushes the new configuration to the network.
+
+This structured approach isolates control applications from the specifics
+of the underlying network. This facilitates a concise specification of
+intended network behavior. Ideally, each application is reduced to a
+state-less, side-effect free function $f(view) \rightarrow configuration$, that is
+easy to validate.
+
+However, this simplification comes at a price. The 
+many indirections and abstractions in the platform increase the application's 'distance to
+the metal', making it difficult to correlate observed low-level behavior
+(\eg{} a specific forwarding rule in a switch) with its high-level specification
+(a forwarding decision specified in terms of a virtual topology.) In addition, the
+complexity of the NOS itself gives rise to bugs of there own that can be
+difficult to localize and troubleshoot. 
+
+When encountering one of these problems, operators currently use ad-hoc troubleshooting
+tools such as ping or traceroute. If these techniques fail to isolate the problem, operators often resort to
+manually gathering log files from each layer of the system and painstakingly
+correlating the effects of a bug to identify its root cause.
+
+In this paper we seek to improve on this state of affairs. While previous work
+has sought to debug data-plane ~\cite{anteater} and application-level ~\cite{canini}
+errors, we observe that no general mechanism exists for troubleshooting errors
+in the SDN platform itself. And, by the way, most of the complexity in the SDN architecture is in the platform,
+so this is a really important aspect of the problem space to focus on.
+
+We observe that correct behavior of the platform can be described with a
+simple invariant: there should always be a correspondence between the policies 
+given by the application and the underlying behavior of the physical network.
+Most errors in platform result in a violation of this correspondence.
+Our approach therefore proceeds as follows: we begin by assuming that the 
+control application is correct. We then provide a mechanism for translating
+the application's abstract view of the network state to a corresponding
+state of the physical network state. Finally, we take a snapshot of the actual
+state of the network, and report any discrepancies to the user.
+
+This mechanism is useful for detecting errors occurring at any particular point
+in time. To ensure correctness throughout the entire execution of the system,
+the correspondence check must be run multiple times. We therefore provide a
+simulator which models the behavior of the production network. This simulator
+can be used by operators to reproduce bugs they find in production. In the
+simulated environment, users can control the timing and injection of events in the system, track the behavior of errors over
+time, and ultimately trace the cause of the error to a particular component or
+interaction in the distributed system. Oh yeah, and by the way, there will
+almost always by violations of correspondence in the network, since its a
+distributed system.
+
+The rest of this paper is organized as follows. In \S\ref{sec:bug_analysis},
+we present an overview of Software-Defined Networking, including an analysis
+of the classes of errors that manifest themselves as a result of the SDN architecture.
+In \S\ref{sec:approach}, we present our approach to
+detecting and isolating these bugs. In \S\ref{sec:evaluation} we evaluate \projectname{}.
+Finally, in \S\ref{sec:related_work} we discuss related work, and in \S\ref{sec:conclusion} we conclude.
+
