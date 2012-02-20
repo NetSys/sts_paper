@@ -7,6 +7,7 @@
 %\setlength{\textwidth}{6.75in}
 %\setlength{\oddsidemargin}{-.125in}
 \usepackage{graphicx}
+\usepackage{enumerate}
 %\usepackage{subfigure}
 %\usepackage{ifpdf}
 %\usepackage{multicol}
@@ -165,23 +166,24 @@ Ideally, it should always be the case that $\Omega^{view} = \Omega^{physical}$.
 In practice however, there are often miscorrespondences between the two. Some
 of these miscorrespondences are innocuous; networks are distributed systems,
 and there are inevitable delays between updates in $G^{view}$ and the
-corresponding changes in $G^{physical}$. Some miscorrespondences however are
+corresponding changes in $G^{physical}$. Other miscorrespondences are
 due to critical bugs in the SDN platform. In general, the SDN platform is a
 highly complex piece of software; it must deal with hardware-faults,
 communication delays, and complex mapping functions $f_{V}$ and $f_{E}$. 
-Moreover, production networks often contain $10's$ of thousands of
-forwarding devices. In such an environment, the SDN control program must be
+Moreover, production networks may contain  $10's$ of thousands of
+forwarding devices. In such an environment, the control program must be
 replicated across multiple servers to ensure scalability and fault-tolerance. 
 The SDN platform must ensure that the view $G^{view}$ remains consistent
-between all replicas, despite server failures and communication delays.
+between all replicas, despite server failures, communication delays, and
+message re-orderings.
 
 \section{Proposal}
 
-I propose to design and built a mechanism for checking 
+I propose to design and build a mechanism for checking 
 correspondence between $\Omega^{view}$ and $\Omega^{physical}$.
 I plan to leverage techniques from model-checking \cite{symbolicmodel}.
 In particular, my initial design will follow the approach in \cite{Anteater}:
-\begin{enumerate}
+\begin{enumerate}[i.]
 \item Take a distributed snapshot of $G^{physical}$ \cite{distributedsnapshots}
 \item Translate the routing tables of $V_{fwd}^{physical}$ into boolean
 formulas
