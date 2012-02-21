@@ -120,15 +120,13 @@ G^{physical} = (V^{physical}, E^{physical})
 Note that the mapping between $G^{view}$ and $G^{physical}$ is not
 necessarily one-to-one; the SDN platform may virtualize the view
 such that a single member of $V_{fwd}^{view}$ maps to multiple members of
-$V_{fwd}^{physical}$.
-
-A common pattern is to map a single forwarding element $v \in V_{fwd}^{view}$ to
+$V_{fwd}^{physical}$. A common pattern is to map a single forwarding element $v \in V_{fwd}^{view}$ to
 an entire physical network $V_{fwd}^{physical}$. Figure \ref{fig:view_and_physical}
 depicts an example. In the example, $V_{fwd}^{view} = \{ Switch \}$, and
 $Switch$ maps onto:
 \begin{align*}
-V_{fwd}^{physical} = \{ vswitch_1, vswitch_2, vswitch_3, \\
-vswitch_4, TOR_1 TOR_2, Gateway \}
+\{ vswitch_1, vswitch_2, vswitch_3,  vswitch_4, \\
+TOR_1 TOR_2, Gateway \} = V_{fwd}^{physical} 
 \end{align*}
 
 \begin{figure}[t]
@@ -152,8 +150,8 @@ $E_{access}^{view}$ and $E_{access}^{physical}$.
 
 \section{Problem Statement}
 
-It should always be the case that there is a correpondence between
-$\Omega^{view}$ and $\Omega^{physical}$, {\it viz.}:
+It should always be the case that 
+$\Omega^{view} \sim \Omega^{physical}$. Formally:
 \begin{align*}
 \forall_{h} \forall_{e \in E_{access}^{view}} \Omega^{view}(h,e) =
 \Omega^{physical}(encap(h),\hat{e}) 
@@ -172,7 +170,7 @@ $G^{physical}$. Moreover, production networks may contain  $10's$ of thousands o
 forwarding devices. In such an environment, the control program must be
 replicated across multiple servers to handle the load and ensure
 fault-tolerance. The SDN platform must ensure that $G^{view}$ remains consistent
-between all replicas, despite server failures, communication delays, and
+between all replicas despite server failures, communication delays, and
 message re-orderings.
 
 \section{Proposal}
@@ -185,7 +183,7 @@ In particular, my initial design is roughly as follows:
 \item Take a distributed snapshot of $G^{physical}$ \cite{distributedsnapshots}
 \item Translate the routing tables of $V_{fwd}^{physical}$ into tranformation
 functions $\Psi^{physical}$
-\item Feed symbolic packets $h_s$ through each access link $e \in E_{access}$
+\item Feed a symbolic packet $h_s$ through each access link $e \in E_{access}$
 \item Track the progress of $h_s$ through the network, thereby computing
 $\Omega^{view}$
 \item Do the same for $G^{view}$
@@ -193,7 +191,7 @@ $\Omega^{view}$
 \begin{align*}
  \{ (h,e) |\text{ } h \in H, e \in E^{view}_{access} \sim
  E^{physical}_{access}, \\
- \Omega^{view}(h,e) \neq  \Omega^{physical}(h,e) \}
+ \Omega^{view}(h,e) \neq  \Omega^{physical}(encap(h),e) \}
 \end{align*}
 \end{enumerate}
 
