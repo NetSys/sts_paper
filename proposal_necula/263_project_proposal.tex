@@ -41,49 +41,23 @@ Wundsam and Scott Shenker}\vspace{-15pt}}
 \begin{document}
     \maketitle
     \thispagestyle{empty}
-% Outline:
-%
-%1 Problem formulation
-%  1.1 Why is the problem important/relevant?
-%  1.2 What are the main challenges in solving the problem?
-%
-%2 Approach
-%  2.1 What is your approach? Briefly describe it
-%  2.2 How is you approach different/similar from/to related work? You
-%      don't need to be exhaustive here.
-%
-%3 Deliverables/milestones
-%   3.1 What do you plan to accomplish by the end of the semester? What are the
-%   metrics of success?
-%   3.2 Do you plan to work on the project past the end of the semester?, and
-%   if yes, what do you hope to accomplish by the end?
-%   3.3 Specify measurable milestones by Oct. 26th
-%  
-%4 Any special needs for the project?
 \section{Background}
 
-In software-defined networking (SDN), computer networks are represented
-as an abstract graph called a `view`: 
+\subsection{Model}
+
+Computer networks can be represented as directed graphs:
 \begin{align*}
-G^{view} = (V^{view}, E^{view})
+G = (V, E)
 \end{align*}
 
-An example view is depicted in Figure \ref{fig:app_view}. Forwarding elements are
-represented as internal vertices:
+Forwarding elements are represented as internal vertices:
 \begin{align*}
-V_{fwd}^{view} = \{ v \in V^{view} |\text{ } degree(v) > 1 \}
+V_{fwd} = \{ v \in V |\text{ } degree(v) > 1 \}
 \end{align*}
-
-\begin{figure}[t]
-    \hspace{-10pt}
-    \includegraphics[width=3.25in]{../diagrams/necula_views/app_view.pdf}
-    \caption[]{\label{fig:app_view} Example view. A single switch connects 
-    four hosts and the rest of the Internet (modeled as a single vertex).} 
-\end{figure}
 
 End-hosts are represented as edge vertices:
 \begin{align*}
-V_{host}^{view} = \{ v \in V^{view} |\text{ } degree(v) = 1 \}
+V_{host} = \{ v \in V |\text{ } degree(v) = 1 \}
 \end{align*}
 
 End-hosts send and receive packets. A packet's source and destination,
@@ -94,13 +68,16 @@ h \in \{0,1\}^L = H
 where $L$ is the number of bits in
 the header \cite{HeaderSpace}.
 
-Upon receiving a packet, forwarding elements apply a transformation function:
+Upon receiving a packet, forwarding elements apply a transformation function
+\footnote{We assume unicast forwarding for the purposes of this proposal}:
 \begin{align*}
-T: (H_x \times E) \rightarrow (H_x \times E_{\emptyset})
+T: (H \times E) \rightarrow (H \times E_{\emptyset})
 \end{align*}
-where $`x`$ denotes a wildcard bit, and $H_x = \{0,1,x\}^L$. We use $`\Psi`$ to denote the collection of all transfer functions.
-Note that forwarding elements may rewrite fields of a packet header before passing it along. Forwarding elements may also drop packets,
-in which case $T(.) = (.,\{\})$.
+Note that forwarding elements may rewrite fields of a packet header before passing it along.
+Forwarding elements may also drop packets, in which case $T(.) = (.,\{\})$.
+
+We use $`\Psi`$ to denote the collection of all transfer functions present in
+the network at a particular point in time.
 
 In this model, network traversal is simply a composition of transformation
 functions. For example, if a header $h$ enters the network through edge
@@ -109,71 +86,92 @@ $e$, its state after $k$ hops will be:
 \Phi^k(h,e) = \Psi(\Psi(\dots \Psi(h,e)\dots))
 \end{align*}
 
-In SDN, control programs specify the behavior of the network by defining
-$\Psi^{view}$.
+Only end-hosts can insert new packets into the network \footnote{We ignore
+control and diagnostic traffic for the purposes of this proposal}. The access links
+of end-hosts are therefore the only entry and exit points for packets:
+\begin{align*}
+E_{access} = \{ (v_1,v_2) \in E |\text{ } v_1 \in V_{host} \vee v_2 \in V_{host} \}
+\end{align*}
 
-$G^{view}$ is simply a data-structure maintained by the SDN platform
-(a software layer underneath the control program). The role of the platform
-is to map $\Psi^{view}$ to
+The externally visible behavior of the network is expressed as a relation between
+packets originating from end-hosts and the packets' final locations:
+\begin{align*}
+\Omega: (H \times E_{access}) \rightarrow (H \times E_{\emptyset}) \\
+\Omega(h,e) = \Phi^{\infty}(h,e)
+\end{align*}
+
+\subsection{Software-defined Networks}
+
+Software-defined Networking (SDN) is a paradigm for controlling network behavior.
+The SDN platform maintains a data-structure representing the global state of the
+network. We refer to this data-structure as the `view`:
+\begin{align*}
+G^{view} = (V^{view},E^{view})
+\end{align*}
+
+Control programs running on top of the SDN platform configure the network by
+defining $\Psi^{view}$. The role of the platform is then to map $\Psi^{view}$ to
 routing entries in the underlying forwarding elements of the
 physical network. The physical network is also a graph:
 \begin{align*}
-G^{physical} = (V^{physical}, E^{physical}) \\
-V_{fwd}^{physical} =  \{ v \in V^{physical} |\text{ } degree(v) > 1 \} \\
-V_{host}^{physical} =  \{ v \in V^{physical} |\text{ } degree(v) = 1 \}
+G^{physical} = (V^{physical}, E^{physical}) 
 \end{align*}
 
 Note that the mapping between $G^{view}$ and $G^{physical}$ is not
 necessarily one-to-one; the SDN platform may virtualize the view
 such that a single member of $V_{fwd}^{view}$ maps to multiple members of
-$V_{fwd}^{physical}$. In general, the mapping from $G^{view}$ to
-$G^{physical}$ can be represented as two functions:
-\begin{align*}
-f_{V} : V^{view} \rightarrow \mathcal{P}(V^{physical}) \\
-f_{E} : E^{view} \rightarrow \mathcal{P}(E^{physical})
-\end{align*}
+$V_{fwd}^{physical}$.
 
 A common pattern is to map a single forwarding element $v \in V_{fwd}^{view}$ to
-an entire physical network $V_{fwd}^{physical}$. Figure \ref{fig:physical_view} depicts such a network.
-As we will see later on, it is important to note that there is still a one-to-one correspondence
-between $V_{host}^{view}$ and $V_{host}^{physical}$, as well as between the hosts' corresponding
-access links, which we denote with:
+an entire physical network $V_{fwd}^{physical}$. Figure \ref{fig:view_and_physical}
+depicts an example. In the example, $V_{fwd}^{view} = \{ Switch \}$, and
+$Switch$ maps onto:
 \begin{align*}
-E_{access}^{view} = \{ (e_1,e_2) \in E^{view} |\text{ } e_1 \in V_{host}^{view} \} \\
-E_{access}^{physical} = \{ (e_1,e_2) \in E^{physical} |\text{ } e_1 \in V_{host}^{physical} \}
-\end{align*}
-
-Only end-hosts can insert new packets into the network. The
-externally visible behavior of the network is therefore
-the final location of all packet headers originating from an end-host:
-\begin{align*}
-\Omega: (H_{x} \times E_{access}) \rightarrow (H_{x} \times E_{\emptyset}) \\
-\Omega(h,e) = \Phi^{\infty}(h,e)
+V_{fwd}^{physical} = \{ vswitch_1, vswitch_2, vswitch_3, \\
+vswitch_4, TOR_1 TOR_2, Gateway \}
 \end{align*}
 
 \begin{figure}[t]
-    \hspace{-10pt}
+\hspace{-10pt}
+\begin{tabular}{c}
+    $G^{view}$ \\
+    \includegraphics[width=3.25in]{../diagrams/necula_views/app_view.pdf}  \\
+    $G^{physical}$ \\
     \includegraphics[width=3.25in]{../diagrams/necula_views/physical_view.pdf}
-    \caption[]{\label{fig:physical_view} Example physical network. The four
-    hosts from Figure \ref{fig:app_view} are each connected to a v-switch,
-    which are in turn connected to top-of-rack switches, which are in turn
-    connected to a single gateway router connected to the Internet.}
+\end{tabular}
+\caption[]{\label{fig:view_and_physical} Example correspondence between
+$G^{view}$ and $G^{physical}$. In the view a single switch connects 
+four hosts and the rest of the Internet (modeled as a single vertex).
+This single switch is mapped onto four v-switches, two top-of-rack switches 
+and one gatway router in the physical network.}
 \end{figure}
+
+As we will see later on, it is important to note that there is still a one-to-one correspondence
+between $V_{host}^{view}$ and $V_{host}^{physical}$, as well as between
+$E_{access}^{view}$ and $E_{access}^{physical}$.
 
 \section{Problem Statement}
 
-Ideally, it should always be the case that $\Omega^{view} = \Omega^{physical}$.
+It should always be the case that there is a correpondence between
+$\Omega^{view}$ and $\Omega^{physical}$, {\it viz.}:
+\begin{align*}
+\forall_{h} \forall_{e \in E_{access}} \Omega^{view}(h,e) =
+\Omega^{physical}(encap(h),\hat{e})
+\end{align*}
+where $encap$ is a function from packets in $G^{view}$ to packets in
+$G^{physical}$, and $e \sim \hat{e}$.
+
 In practice however, there are often miscorrespondences between the two. Some
 of these miscorrespondences are innocuous; networks are distributed systems,
 and there are inevitable delays between updates in $G^{view}$ and the
 corresponding changes in $G^{physical}$. Other miscorrespondences are
 due to critical bugs in the SDN platform. In general, the SDN platform is a
 highly complex piece of software; it must deal with hardware-faults,
-communication delays, and complex mapping functions $f_{V}$ and $f_{E}$. 
-Moreover, production networks may contain  $10's$ of thousands of
+communication delays, and complex mapping functions  between $G^{view}$ and
+$G^{physical}$. Moreover, production networks may contain  $10's$ of thousands of
 forwarding devices. In such an environment, the control program must be
-replicated across multiple servers to ensure scalability and fault-tolerance. 
-The SDN platform must ensure that the view $G^{view}$ remains consistent
+replicated across multiple servers to handle the load and ensure
+fault-tolerance. The SDN platform must ensure that $G^{view}$ remains consistent
 between all replicas, despite server failures, communication delays, and
 message re-orderings.
 
@@ -181,15 +179,17 @@ message re-orderings.
 
 I propose to design and build a mechanism for checking 
 correspondence between $\Omega^{view}$ and $\Omega^{physical}$.
-I plan to leverage techniques from model-checking \cite{symbolicmodel}.
-In particular, my initial design will follow the approach in \cite{Anteater}:
+I plan to leverage techniques from model-checking and symbolic execution \cite{symbolicmodel}.
+In particular, my initial design is roughly as follows:
 \begin{enumerate}[i.]
 \item Take a distributed snapshot of $G^{physical}$ \cite{distributedsnapshots}
-\item Translate the routing tables of $V_{fwd}^{physical}$ into boolean
-formulas
+\item Translate the routing tables of $V_{fwd}^{physical}$ into tranformation
+functions $\Psi^{physical}$
+\item Feed symbolic packets $h_s$ through each access link $e \in E_{access}$
+\item Track the progress of $h_s$ through the network, thereby computing
+$\Omega^{view}$
 \item Do the same for $G^{view}$
-\item Feed the boolean formulas to a SAT solver to identify
-counterexamples:
+\item Identify counterexamples:
 \begin{align*}
  \{ (h,e) |\text{ } h \in H, e \in E^{view}_{access} \sim
  E^{physical}_{access}, \\
@@ -197,7 +197,7 @@ counterexamples:
 \end{align*}
 \end{enumerate}
 
-I will implement my correspondence checker on top of the POX control platform
+I will implement my correspondence checker within the POX control platform
 \cite{POX}.
 I plan to submit this work, along with other aspects of my SDN debugger, to
 OSDI 2012.
@@ -207,5 +207,4 @@ OSDI 2012.
 \bibliography{bib}
 
 %\input{appendix}
-
 \end{document}
