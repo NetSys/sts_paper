@@ -155,11 +155,11 @@ $E_{access}^{view}$ and $E_{access}^{physical}$.
 It should always be the case that there is a correpondence between
 $\Omega^{view}$ and $\Omega^{physical}$, {\it viz.}:
 \begin{align*}
-\forall_{h} \forall_{e \in E_{access}} \Omega^{view}(h,e) =
-\Omega^{physical}(encap(h),\hat{e})
+\forall_{h} \forall_{e \in E_{access}^{view}} \Omega^{view}(h,e) =
+\Omega^{physical}(encap(h),\hat{e}) 
 \end{align*}
 where $encap$ is a function from packets in $G^{view}$ to packets in
-$G^{physical}$, and $e \sim \hat{e}$.
+$G^{physical}$, and $e \sim \hat{e} \in E_{access}^{physical}$.
 
 In practice however, there are often miscorrespondences between the two. Some
 of these miscorrespondences are innocuous; networks are distributed systems,
