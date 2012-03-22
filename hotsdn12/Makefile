@@ -1,6 +1,6 @@
 all:
 	pdflatex hotsdn12.tex	
-	#bibtex 262_project_report.aux
+	bibtex hotsdn12.aux
 	pdflatex hotsdn12.tex	
 	pdflatex hotsdn12.tex	
 
