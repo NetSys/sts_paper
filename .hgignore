@@ -1,7 +1,16 @@
 syntax: glob
+.DS_Store
+buildinfo.tex
+._*
 *.aux
 *.bbl
 *blg
+*.cookie
+*.d
+*.fls
 *log
+*.make
 *pdf
+*.swp
+*.temp
 *bak
