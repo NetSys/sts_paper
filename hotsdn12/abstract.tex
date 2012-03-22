@@ -1,0 +1,16 @@
+Software-defined networking (SDN) is a structured approach to
+building network control planes, providing a general-purpose
+platform on which control logic can be deployed. The SDN
+platform shields higher-level control logic from the
+complexities of state distribution and the details of
+physical forwarding. The platform may additionally provide a
+virtualized view of the underlying network state to enable
+highly concise specifications of intended behavior. While the SDN platform
+makes writing control logic easier, it also 
+complicates the task of troubleshooting errors;
+it is painstaking to isolate the root cause of errors when there are multiple
+levels of indirection between the high-level control logic and the low-level
+switch configurations. We propose to facilitate troubleshooting in SDN networks by
+checking for {\em correspondence} between abstraction
+layers. We demonstrate that such a system, called \projectname{}, is able to help locate
+virtualization and consistency problems that may arise in SDN deployments.
