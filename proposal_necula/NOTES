@@ -16,3 +16,5 @@ http://db.cs.berkeley.edu/papers/hotdep10-fts-dts.pdf
 
 Conference on distributed langues somewhere here: 
 https://twitter.com/#!/joe_hellerstein
+
+ALLOY: given constraints (relations), finds structures that satisfy them.
