@@ -5,8 +5,9 @@
 
 git_revision=$(hg tip | head -1 | awk -F ' ' '{ print substr($2,0,11) }')
 date=$(date)
+diff=$(hg diff | wc -l)
 #echo "\\large Rev ${git_revision}" >buildinfo.tex
-if ! hg diff --quiet >/dev/null ; then
+if [ $diff -gt 0 ]; then
     changed_tag="{\\color{red}{(Uncommitted!)}}"
 else
     changed_tag=""
