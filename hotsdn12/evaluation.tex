@@ -1,11 +1,10 @@
 \begin{itemize}
-
-\item Caveat: not evaluating on a commercial code base, (since NOX doesn't have layering, and we don't have access to Onix)
-
-\item Is it general enough? $\Rightarrow$ walk through failure cases described in Section 2, and show how debugger helps with them
-
-\item Does it find bugs? $\Rightarrow$ run on third party application (Murphy's code?)
-
-\item Does it have reasonable overhead? $\Rightarrow$ Graph of performance for interactive test harness use
+\item Use case 1: network operator doesn't know anything about SDN.
+    \begin{itemize}
+    \item Sees packet loss
+    \item Runs correspondence checking, and there aren't loops in his policy
+    \item Call up Nicira! WTF man, this is your fault.
+    \en
+\item Use case 2: datacenter operator receives customer complaint.
 
 \end{itemize}
