@@ -1,11 +1,48 @@
 \begin{itemize}
-\item High level description: correspondence + test harness
-\item Walk through a normal transient miscorrespondence case
-\item Walk through a pernicious transient miscorrespondence case
-\item Walk through a persistent miscorrespondence case
-\begin{itemize}
-  \item throughout examples, explain how test harness et. el. are useful
+\item What does it mean for the platform to be correct? Well, the platform
+should implement the application's policies!
+\item More formally: the virtual graph should correspond to the physical
+graph.
+    \begin{itemize}
+    \item Assume application is correct.
+    \item SDN stack is just graphs, all the way up.
+    \item Not a one-to-one mapping for the network, but the hosts are respresented all the way
+    up.
+    \item Take snapshot of those graphs.
+    \item Compute Omega for all layers.
+        \begin{itemize}
+        \item Convert flow tables into abstract transformation functions.
+        \item Feed symbolic packet to each access link to generate
+        propogation graph.
+        \item Leaves of the propogation graph represent transitive closure of
+        transformation functions.
+        \item Don't care about intermediate propogation nodes, only final
+        location.
+        \end{itemize}
+    \item Comparing Omegas yields inconsistencies, including which layers
+    they appear in.
+    \end{itemize}
+\item This tells you the general cause of the of the error (not detailed
+debugging info)
+\item If you're just looking for who to blame, all you need is correspondence
+checking!
+\item Correspondence checking only tells you behavior at one point in time.
+Also, there will almost always be inconsitencies, due to delays, failures,
+\etc.
+\item \colin{new subsection here?} If you're looking for something more than just ``where is the problem'', need a record and replay mechanism to capture the time axis.
+    \begin{itemize}
+    \item Since proactive, just need snapshots of production routing tables,
+    link state events, and controller state events.
+    \item Feed into simulated model of production network. 
+    \item simulator enables deterministic ``time-travel''.
+    \item determinstic ``time-travel'' enables a debugging loop. We tell you
+    the component, you put in more printfs, rinse and repeat until bug is found.
+    \item Insight: punt to human intuition. Differentiate between harmful and
+    harmless inconsitencies by playing forward in time, exluding extraneous
+    external events.
+    \item \colin{Mention that model checking could help here?}
+    \end{itemize}
 \end{itemize}
-\item Implementation details
 
-\end{itemize}
+\colin{Concern: redundant with next section! Shouldn't go into too much detail
+here}
