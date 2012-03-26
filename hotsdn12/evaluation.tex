@@ -1,10 +1,27 @@
 \begin{itemize}
 \item Use case 1: network operator doesn't know anything about SDN.
     \begin{itemize}
-    \item Sees packet loss
+    \item Host A can't talk to host B.
     \item Runs correspondence checking, and there aren't loops in his policy
     \item Call up Nicira! WTF man, this is your fault.
-    \en
+    \end{itemize}
 \item Use case 2: datacenter operator receives customer complaint.
-
+    \begin{itemize}
+    \item Customer complains about high packet loss.
+    \item Operator feeds in current production snapshot to simulator, verifies that loops
+    exist.
+    \item Operator backs up to last major code revision, and verifies no
+    loops.
+    \item Operator steps through execution until loops are found.
+    \item At each time step, runs correspondence.
+    \item Isolates the events that matter.
+    \item Plays them forward to differentiate harmless from harmful.
+    \item Isolates to the virtualization layer.
+    \item Puts in log statements, re-runs through debugger
+    \item eventually finds one line of code that caused the problem.
+    \end{itemize}
+\item \colin{New subsection} Back-of-envelope calculation of HSA runtime,
+space overhead of logging routing tables.
+\item Discussion of realistic mapping between simulated environment and
+production environment?
 \end{itemize}
