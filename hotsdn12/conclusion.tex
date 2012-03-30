@@ -1,7 +1,12 @@
 \begin{itemize}
-\item Correspondence is the right way to think about this problem! 
-\item In particular, major improvement to raw log analysis... isolates to a
-correct layer, allows determinstic replay, 
-\item Our use-cases support this conclusion.
-\item Future work. 
+\item We observed that troubleshooting eventually consistent systems boils down to
+``seeing through the noise'' of inconsistencies
+\item We present two techniques to help see through noise
+    \begin{itemize}
+    \item Correspondence checking as general notion of correctness yields isolation to a
+    system component
+    \item Record/Replay + Simulator as ``time-machine'' yields isolation of important vs.
+    noisy events. Focus on corner-cases.
+    \end{itemize}
+\item Our use-case supports our argument
 \end{itemize}

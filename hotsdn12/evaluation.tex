@@ -1,27 +1,47 @@
 \begin{itemize}
 \item Use case 1: network operator doesn't know anything about SDN.
     \begin{itemize}
-    \item Host A can't talk to host B.
-    \item Runs correspondence checking, and there aren't loops in his policy
-    \item Call up Nicira! WTF man, this is your fault.
+    \item Rackspace operator doesn’t know much about SDN stack! Just pays for
+    her GUI
+    \item isolation violation between tenant A and tenant B!
+    \item Runs correspondence checking, and there are indeed inconsistencies!
+    \item Call up Nicira!
     \end{itemize}
-\item Use case 2: datacenter operator receives customer complaint.
+\item Use case 2: datacenter operator receives complaint from that customer!
     \begin{itemize}
-    \item Customer complains about high packet loss.
-    \item Operator feeds in current production snapshot to simulator, verifies that loops
-    exist.
-    \item Operator backs up to last major code revision, and verifies no
-    loops.
-    \item Operator steps through execution until loops are found.
-    \item At each time step, runs correspondence.
+    \item Operator feeds in current production snapshot to simulator, verifies
+    isolation violation.
+    \item Operator backs up to last major code revision, and verifies 
+    isolation.
+    \item Operator steps through execution until first point in time when
+    isolation is broken again
+    \item Isolates to virualization layer
     \item Isolates the events that matter.
-    \item Plays them forward to differentiate harmless from harmful.
-    \item Isolates to the virtualization layer.
+    \item Plays them forward to differentiate ephemeral from persistent.
     \item Puts in log statements, re-runs through debugger
     \item eventually finds one line of code that caused the problem.
+    \item pushes change to production
     \end{itemize}
-\item \colin{New subsection} Back-of-envelope calculation of HSA runtime,
-space overhead of logging routing tables.
-\item Discussion of realistic mapping between simulated environment and
-production environment?
+\item Potential use case 3: library of corner cases as integration test /
+burn-in test:
+    \begin{itemize}
+    \item Simulator gives complete control over network
+    \item Unlike code tests, which exercise code branches, simulator exercises
+    the network!
+    \item Gather library of corner-cases that have caused other controllers to
+    topple
+    \end{itemize}
+\item \colin{New subsection} Graph of simulation scalability (\# of switches
+vs. time to push packet through network)
+\item Back-of-envelope calculation of HSA runtime, space overhead of logging routing tables.
+    \begin{itemize}
+    \item Peynam's conjecture is that HSA runtime scales quadratically with \#
+    of wilcard expression.  See Section 6.3 of
+    \url{http://stanford.edu/~kazemian/hsa.pdf}
+    \item They ran loop detection on Stanford backbone (medium network) in ~10
+    minutes.
+    \end{itemize}
+\item How do you validate the simulator? Is it sufficiently complex to
+capture real-world bugs? Conversely, if I catch a failure mode in the
+simulator, will my fix work in the production network?
 \end{itemize}

@@ -1,6 +1,6 @@
 \begin{itemize}
-\item SDN abstractions hide details (on purpose!). They don't decrease
-complexity though!
+\item Goal of SDN is to hide complexity from operator. (not removing
+complexity though!) 
 \item $\rightarrow$ SDN platform is complex (distributed system! replicated controllers,
 virtualization, multiple-tenants, failures, churn...)
 \item $\rightarrow$ platform bugs are common
@@ -10,13 +10,38 @@ virtualization, multiple-tenants, failures, churn...)
 \item Status quo is to painstakingly look at logs. Some work on NOX (NICE), static
 analysis of dataplane (Anteater, HSA) but nothing for the general
 (Nicira-scale) SDN platform.
+    \begin{itemize}
+    \item Logs are static (non-interactive, only capture a single execution)
+    \item Often at wrong level of granularity
+    \item Distributed across time and space
+    \end{itemize}
+\item We're taking the ``painstakingly'' out of the picture
 \item A new programming language abstraction wouldn't fly without a troubleshooting
 mechanism!
 \item $\rightarrow$ analogously, adoption of SDN programming model depends on usability of its
 debugging paradigm  \colin{</ why it's important>}
-\item We present a principled approach to finding safety violations: correctness iff correspondence \colin{</ how we
-solve it>}. This augments logs -- finds the needle in the haystack, handles
-global ordering, \etc.
+\item We observe that in an eventually consistent system like SDN,
+troubleshooting essentially boils down to ``seeing through the noise'' of
+inconsistencies
+\item We present techniques (that go beyond logging) to make it easier for
+developers to ``see through the noise''
+    \begin{itemize}
+    \item Isolation to a particular layer:
+        \begin{itemize}
+        \item We leverage the structure of SDN (graphs all the way up) to
+        enable a general notion of platform correctness: correspondence.
+        \item $\rightarrow$ enables isolation without forcing the developer to
+        instrument layers or define invariants
+        \end{itemize}
+    \item Isolation to particular events:
+        \begin{itemize}
+        \item Simulator enables ``time travel''
+        \item $\rightarrow$ easy way to differentiate ephemeral from persistent inconsistencies
+        \item Simulator enables fine-grained control over events
+        \item $\rightarrow$ filter out extraneous external events -- focus only on relevant
+        events
+        \end{itemize}
+    \end{itemize}
 \end{itemize}
 
 The rest of this paper is organized as follows. In \S\ref{sec:overview},

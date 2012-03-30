@@ -26,23 +26,24 @@ graph.
 debugging info)
 \item If you're just looking for who to blame, all you need is correspondence
 checking!
-\item Correspondence checking only tells you behavior at one point in time.
+\item For SDN developers though, need a bit more. Correspondence checking only tells you behavior at one point in time.
 Also, there will almost always be inconsitencies, due to delays, failures,
 \etc.
-\item \colin{new subsection here?} If you're looking for something more than just ``where is the problem'', need a record and replay mechanism to capture the time axis.
+\item \colin{new subsection here?} need a record / replay / simulate mechanism to capture the time axis.
     \begin{itemize}
     \item Since proactive, just need snapshots of production routing tables,
     link state events, and controller state events.
-    \item Feed into simulated model of production network. 
-    \item simulator enables deterministic ``time-travel''.
-    \item determinstic ``time-travel'' enables a debugging loop. We tell you
-    the component, you put in more printfs, rinse and repeat until bug is found.
-    \item Insight: punt to human intuition. Differentiate between harmful and
-    harmless inconsitencies by playing forward in time, exluding extraneous
-    external events.
+    \item Feed ``before-bug'' or ``after-bug'' state into simulated model of production network. 
+    \item simulator enables deterministic ``time-travel'' and nice debugging
+    loop.
+        \begin{itemize}
+        \item We tell you the component where the problem manifests
+        \item you put in more printfs
+        \item If you want, induce failures, delays, drops, etc.
+        \item you play forward in time, to help you find which events matter
+        \item rinse and repeat until bug is found.
+        \end{itemize}
     \item \colin{Mention that model checking could help here?}
     \end{itemize}
 \end{itemize}
 
-\colin{Concern: redundant with next section! Shouldn't go into too much detail
-here}
