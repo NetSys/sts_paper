@@ -17,7 +17,7 @@ in headerspace analysis~\cite{hsa}.
 
 Formally, each layer of the SDN stack can be represented as a graph,
 $G = (V, E)$. Packets are series of bits, $h \in \{0,1\}^L = H$,
-where $L$ is the number of bits in the header. Upon receiving a packet,
+where $L$ is the maximum number of bits in the header. Upon receiving a packet,
 forwarding elements apply a transformation function \footnote{We assume unicast forwarding for clarity}
 \footnote{Note that forwarding elements may rewrite fields of a packet header
 before passing it along. Forwarding elements may also drop packets.} \\
