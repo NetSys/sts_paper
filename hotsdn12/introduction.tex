@@ -1,5 +1,5 @@
 The SDN platform's $raison\text{ }d'\hat{e}tre$ is to 
-hide complexity from control applications. Modern controllers perform
+hide complexity from control applications. Modern platforms perform
 replication, resource arbitration, failure recovery, and network 
 virtualization on the control application's behalf. 
 
@@ -7,19 +7,19 @@ Despite the abstractions provided by the SDN programming model,
 software-defined networks are no less complex than traditional networks. The architectural goal of SDN is
 simply to push complexity from the control application onto the underlying platform.
 
-SDN control platforms are prone to bugs as a result of their complexity. Bugs in the
+SDN platform software is prone to bugs as a result of this complexity. Bugs in the
 platform present an architectural tension: troubleshooting requires
 access to precisely the same details hidden by the platform's abstractions.
 When an application developer 
 encounters erratic behavior in the network, they must trace their
 policy specification through multiple layers of abstraction
 preceding changes in the physical network: virtualization logic,
-distribution logic, and network devices. The error's root cause
+distribution logic, and network devices. Moreover, the error's root cause
 may manifest in any of these layers, not just the control application.
 
 As it stands, the SDN platform provides meager support for troubleshooting.
 The predominant troubleshooting method is log analysis: manually
-specifying log statements at relevent points throughout the system,
+specifying log statements at relevant points throughout the system,
 collecting, gathering, and ordering distributed log files, and analyzing the
 results {\it post-hoc} when a error is encountered in production. Besides its
 apparent tediousness, this approach is lacking in several ways: logs events
@@ -29,10 +29,10 @@ use. \colin{</ why it's hard>}
 
 Recent work has contributed much-needed improvements to this state of affairs. 
 NICE applies concolic execution and model checking to SDN control
-applications, thereby automating testing and catching bugs before
+applications, thereby automating the testing process and catching bugs before
 they are deployed~\cite{nice}. Aneater~\cite{anteater} and HSA~\cite{hsa}
 introduce mechanisms for checking static invariants in the dataplane.
-Nevertheless, no troubleshooting mechanism exists yet for the SDN platform itself.
+Nonetheless, no principled troubleshooting mechanism exists yet for the SDN platform itself.
 
 New operating system abstractions face an arduous path towards adoption
 without sound troubleshooting mechanisms. Analogously, the success of the
@@ -40,11 +40,10 @@ SDN programming model depends heavily on the utility of its troubleshooting
 paradigm. Our goal in this paper is to work towards a useful
 troubleshooting mechanism for the SDN platform. \colin{</ why it's important>}
 
-We observe that in eventually-consistent systems such as sofware-defined networks,
-transient inconsistencies are an inevitable property of the system.
-Consequently, the process of troubleshooting errors essentially boils down to
-identifying relevant events amongst a clamor of inconsistencies and diagnostic
-information.
+We observe that in eventually-consistent systems such as software-defined networks,
+transient inconsistencies are an inevitable state-of-affairs.
+In such an environment, the process of troubleshooting errors essentially boils down to
+identifying relevant events among a clamor of diagnostic information.
 
 We present two mechanisms designed to make it easier for operators and
 developers to ``see through the noise'' of diagnostic information. The first,
@@ -54,9 +53,9 @@ correctness. Correspondence checking allows troubleshooters to isolate the cause
 an inconsistency to a particular layer without needing to define invariants or
 instrument third-party code. Our second
 mechanism, simulated replay analysis, allows troubleshooters 
-to differentiating ephemeral from persisent inconsistencies by steering the
+to differentiate ephemeral from persistent inconsistencies by steering the
 execution of the system forward and backward in time, filtering out extraneous
-external events, and inducing uncommon events such as failures. \colin{</ what we did>}
+external events, and inducing uncommon events. \colin{</ what we did>}
 
 The rest of this paper is organized as follows. In \S\ref{sec:overview},
 we present an overview of the SDN stack and its failure modes.
