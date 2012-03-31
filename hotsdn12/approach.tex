@@ -1,27 +1,66 @@
+In this section we present two mechanisms based on the principle of ``seeing
+through the noise''. Correspondence checking allows troubleshooters to isolate
+the cause of inconsistencies to a particular layer. Simulated replay analysis 
+allows troubleshooters to isolate relevent events throughout the system
+execution. We provide the details of these techniques below. 
+
+\subsection{Correspondence Checking}
+
+The sole task of the application layer is to specify network
+policies. The platform is left to translate these high-level policies
+into changes in the physical network.
+
+Platform correctness can therefore be expressed as a simple invariant:
+the state of the application layer should correspond to the state of the
+physical network. We check this invariant by applying the virtual packet notation pioneered
+in headerspace analysis~\cite{hsa}. 
+
+Formally, each layer of the SDN stack can be represented as a graph,
+$G = (V, E)$. Packets are series of bits, $h \in \{0,1\}^L = H$,
+where $L$ is the number of bits in the header. Upon receiving a packet,
+forwarding elements apply a transformation function \footnote{We assume unicast forwarding for clarity}
+\footnote{Note that forwarding elements may rewrite fields of a packet header
+before passing it along. Forwarding elements may also drop packets.} \\
+$T: (H \times E) \rightarrow (H \times E_{\emptyset})$
+
+We use $`\Psi`$ to denote the collection of all transfer functions present in
+the network at a particular point in time. In this model, network traversal is simply a composition of transformation
+functions. For example, if a header $h$ enters the network through edge
+$e$, its state after $k$ hops will be:
+\begin{align*}
+\Phi^k(h,e) = \Psi(\Psi(\dots \Psi(h,e)\dots))
+\end{align*}
+
+The externally visible behavior of the network can be expressed as a the
+transitive closure of $\Phi$:
+\begin{align*}
+\Omega: (H \times E_{access}) \rightarrow (H \times E_{\emptyset}) \\
+\Omega(h,e) = \Phi^{\infty}(h,e)
+\end{align*}
+Here, $E_{access}$ respresents access links adjacent to end-hosts.
+
+In SDN, it should always be the case that 
+$\Omega^{view} \sim \Omega^{physical}$. Formally:
+\begin{align*}
+\forall_{h} \forall_{e \in E_{access}^{view}} \Omega^{view}(h,e) =
+\Omega^{physical}(encap(h),e) 
+\end{align*}
+where $encap$ is a function from packets in $G^{view}$ to packets in
+$G^{physical}$. Note that the mapping between $G^{view}$ and $G^{physical}$ is not
+necessarily one-to-one. Hosts are represented at all layers however, hence
+$E_{access}^{view} \sim E_{access}^{physical}$ is a bijection.
+
+To check correspondence in SDN, we begin by taking a causally consistent
+snapshot~\cite{Chandy:1985:DSD:214451.214456} of the physical network. The routing
+tables of forwarding elements can then be translated into transformation functions.
+Finally, we feed a symbolic packet $x^L$ to each access link of the network in
+order to generate
+a propagation graph representing all possible paths taken by a packet injected
+at the access link. The leaves of the propogation graph represent $\Omega$. We
+can verify correspodence in SDN by generating propogation graphs for all SDN layers,
+and comparing the leaves.
+
 \begin{itemize}
-\item What does it mean for the platform to be correct? Well, the platform
-should implement the application's policies!
-\item More formally: the virtual graph should correspond to the physical
-graph.
-    \begin{itemize}
-    \item Assume application is correct.
-    \item SDN stack is just graphs, all the way up.
-    \item Not a one-to-one mapping for the network, but the hosts are respresented all the way
-    up.
-    \item Take snapshot of those graphs.
-    \item Compute Omega for all layers.
-        \begin{itemize}
-        \item Convert flow tables into abstract transformation functions.
-        \item Feed symbolic packet to each access link to generate
-        propogation graph.
-        \item Leaves of the propogation graph represent transitive closure of
-        transformation functions.
-        \item Don't care about intermediate propogation nodes, only final
-        location.
-        \end{itemize}
-    \item Comparing Omegas yields inconsistencies, including which layers
-    they appear in.
-    \end{itemize}
 \item This tells you the general cause of the of the error (not detailed
 debugging info)
 \item If you're just looking for who to blame, all you need is correspondence
