@@ -4,10 +4,13 @@ replication, resource arbitration, failure recovery, and network
 virtualization on the control application's behalf. 
 
 Despite the abstractions provided by the SDN programming model,
-software-defined networks are no less complex than traditional networks. The architectural goal of SDN is
-simply to push complexity from the control application onto the underlying platform.
+software-defined networks are no less complex than traditional networks.
+The architectural goal of SDN is
+simply to push complexity from the control application onto
+the underlying platform.
 
-SDN platform software is prone to bugs as a result of this complexity. Bugs in the
+SDN platform software is prone to bugs as a result of this complexity.
+Bugs in the
 platform present an architectural tension: troubleshooting requires
 access to precisely the same details hidden by the platform's abstractions.
 When operators encounters erratic behavior in their network, the error's root
@@ -41,17 +44,20 @@ SDN programming model depends heavily on the utility of its troubleshooting
 paradigm. Our goal in this paper is to work towards a useful
 troubleshooting mechanism for the SDN platform. \colin{</ why it's important>}
 
-We observe that in eventually-consistent systems such as software-defined networks,
-transient inconsistencies are an inevitable state-of-affairs.
-In such an environment, the process of troubleshooting errors is not just
-about listing inconsistencies, but also identifying which are related to
-serious problems, nad which are harmlessly ephemeral.
+We observe that in eventually-consistent systems such as software-defined
+networks, transient inconsistencies are an inevitable state-of-affairs.
+In such an environment, it does not suffice for troubleshooting tools to
+simply enumerate inconsistencies; they should also aid the developer
+in identifying which are related to serious problems, and which are
+harmlessly ephemeral. \colin{We're being a bit loose with the term
+``inconsistency''}
 
 We present two mechanisms designed to make it easier for operators and
 developers to ``see through the noise'' of diagnostic information. The first,
 cross-layer correspondence checking, leverages the structure of the SDN
 architecture to enable a general and verifiable notion of platform
-correctness. Correspondence checking allows troubleshooters to isolate the cause of 
+correctness. Correspondence checking allows troubleshooters to isolate the
+cause of 
 an inconsistency to a particular layer without needing to define invariants or
 instrument third-party code. Our second
 mechanism, simulated replay analysis, allows troubleshooters 
