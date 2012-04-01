@@ -45,9 +45,35 @@ into the ingress switch, and the packet is forwarded along.
 
 \subsection{Platform Failure Modes}
 
+Here we provide a taxonomy of common failure modes observed in
+production SDN platforms.
+
 \begin{itemize}
 \item Taxonomy of failure modes introduced by these abstractions (Google Doc),
 and why they're hard to debug.
 \item Fence-post: we focus on platform bugs. This is complementary to work on
 application debugging (NICE) and dataplane debugging (Anteater, HSA).
 \end{itemize}
+
+\colin{The following snippet from our class report is far too verbose, and does not reflect any of our
+latest thinking from the google doc.}
+
+Correspondence errors are particularly pernicious, as the 
+virtualization translation layer of the platform is often quite complex. Consider for example
+that an entire datacenter network supporting 10s of thousands of hosts may be
+treated as a single logical switch. When the control application makes a
+configuration change to the logical switch, the NOS needs to carefully map this
+configuration onto multiple physical switches along the path. Any mismapping in this
+process may prevent the network from ever behaving exactly as the application intended.
+
+Production SDN deployments distribute the NOS  across multiple servers to achieve fault-tolerance
+and scalability. Distributed control gives rise to the same classes of coordination
+and consistency bugs that affect general distributed systems. 
+
+We note that two distinct classes of consistency violations occur in SDNs.
+Transient consistency violations depend on the ordering of events in the system. For example,
+if the  NOS pushes out a new forwarding policy
+which involves multiple switches, in-flight packets may enter a
+temporary forwarding loop while each of the switches converge on the new policy.
+The effects of transient
+consistency violations are noticeably distinct from persistent violations.
