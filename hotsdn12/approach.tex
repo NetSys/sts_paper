@@ -1,7 +1,7 @@
 In this section we present two mechanisms based on the principle of ``seeing
 through the noise''. Correspondence checking allows troubleshooters to isolate
 the cause of inconsistencies to a particular layer. Simulated replay analysis 
-allows troubleshooters to isolate relevent events throughout the system
+allows troubleshooters to isolate relevant events throughout the system
 execution. We provide the details of these techniques below. 
 
 \subsection{Correspondence Checking}
@@ -37,7 +37,7 @@ transitive closure of $\Phi$:
 \Omega: (H \times E_{access}) \rightarrow (H \times E_{\emptyset}) \\
 \Omega(h,e) = \Phi^{\infty}(h,e)
 \end{align*}
-Here, $E_{access}$ respresents access links adjacent to end-hosts.
+Here, $E_{access}$ represents access links adjacent to end-hosts.
 
 In SDN, it should always be the case that 
 $\Omega^{view} \sim \Omega^{physical}$. Formally:
@@ -56,33 +56,46 @@ tables of forwarding elements can then be translated into transformation functio
 Finally, we feed a symbolic packet $x^L$ to each access link of the network in
 order to generate
 a propagation graph representing all possible paths taken by a packet injected
-at the access link. The leaves of the propogation graph represent $\Omega$. We
-can verify correspodence in SDN by generating propogation graphs for all SDN layers,
+at the access link. The leaves of the propagation graph represent $\Omega$. We
+can verify correspondence in SDN by generating propagation graphs for all SDN layers,
 and comparing the leaves.
 
-\begin{itemize}
-\item This tells you the general cause of the of the error (not detailed
-debugging info)
-\item If you're just looking for who to blame, all you need is correspondence
-checking!
-\item For SDN developers though, need a bit more. Correspondence checking only tells you behavior at one point in time.
-Also, there will almost always be inconsitencies, due to delays, failures,
-\etc.
-\item \colin{new subsection here?} need a record / replay / simulate mechanism to capture the time axis.
-    \begin{itemize}
-    \item Since proactive, just need snapshots of production routing tables,
-    link state events, and controller state events.
-    \item Feed ``before-bug'' or ``after-bug'' state into simulated model of production network. 
-    \item simulator enables deterministic ``time-travel'' and nice debugging
-    loop.
-        \begin{itemize}
-        \item We tell you the component where the problem manifests
-        \item you put in more printfs
-        \item If you want, induce failures, delays, drops, etc.
-        \item you play forward in time, to help you find which events matter
-        \item rinse and repeat until bug is found.
-        \end{itemize}
-    \item \colin{Mention that model checking could help here?}
-    \end{itemize}
-\end{itemize}
+\subsection{Simulated Replay Analysis}
+
+For many use-cases, isolating an error to a particular layer suffices.
+For example, a network operator might verify that inconsistencies manifest in
+the platform but not her own policy specification, and thereby hand off
+troubleshooting responsibility to a maintainer of the platform. 
+
+To isolate and fix the root cause of a problem however, troubleshooters will often
+need more information. In particular, correspondence checking only enumerates
+inconsistencies present in the network at a particular point in time;
+troubleshooters need the ability to explore the execution of the system over
+time. Our approach is to record the state of the production network and replay 
+execution in a simulated model of the system.
+
+Even in small networks,
+the number of low-level events captured by
+log-statements can be overwhelming. The main utility of simulated replay
+analysis is that troubleshooters can easily differentiate pertinent events from
+irrelevant diagnostic information. At any point in time, the troubleshooter
+can run correspondence checking to enumerate all inconsistencies in the
+network. She can then iteratively prune out extraneous external events until
+she is focused in on only the relevant traces. She can further differentiate
+ephemeral from persistent inconsistencies by playing the execution of the
+system forward in time, tracking the life cycle of inconsistencies.
+
+Modeling the execution of the system in a straightforward debugging loop; once the 
+relevant traces and system components have been isolated, troubleshooters can
+restart the execution, add log statements, and iteratively repeat until the
+relevant code block has been fixed. Modeling the system additionally
+yields complete control of the timing, ordering and production of events.
+For example, troubleshooters can proactively induce failures or packet drops
+to reproduce the failure-condition observed in practice.
+
+\colin{Out of place?} Note that for a proactive
+network, only periodic snapshots of routing tables, link state events, and
+control server failure events are needed for high-fidelity replay.
+
+\colin{Mention that model checking could help here?}
 
