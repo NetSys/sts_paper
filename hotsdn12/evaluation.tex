@@ -1,20 +1,17 @@
 \begin{itemize}
 \item Use case 1: network operator doesn't know anything about SDN.
     \begin{itemize}
-    \item Rackspace operator doesn’t know much about SDN stack! Just pays for
-    her GUI
-    \item isolation violation between tenant A and tenant B!
+    \item Operator pays for scale-out BGP router. 
+    \item A particular BGP update fails to be installed -- blackhole
     \item Runs correspondence checking, and there are indeed inconsistencies!
     \item Call up Nicira!
     \end{itemize}
-\item Use case 2: datacenter operator receives complaint from that customer!
+\item Use case 2: SDN developer deals with that customer complaint
     \begin{itemize}
-    \item Operator feeds in current production snapshot to simulator, verifies
-    isolation violation.
-    \item Operator backs up to last major code revision, and verifies 
-    isolation.
-    \item Operator steps through execution until first point in time when
-    isolation is broken again
+    \item feeds in current production snapshot to simulator, verifies
+    blackhole 
+    \item backs up to state before BGP update
+    \item Operator steps through execution until BGP update occurs
     \item Isolates to virualization layer
     \item Isolates the events that matter.
     \item Plays them forward to differentiate ephemeral from persistent.
