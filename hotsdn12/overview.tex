@@ -20,11 +20,12 @@ changes to the switches themselves; a virtualization layer
 wraps the state of the network in a programmable abstraction; and a control
 application written by network administrators 
 expresses the network policy in terms of the virtualization layer abstraction.
-A depiction of this architecture is shown in figure \ref{fig:basicarch}.
+A depiction of this architecture is shown in Figure \ref{fig:basicarch}.
 This facilitates a concise specification of
 intended network behavior, and isolates control applications from the specifics
 of the underlying network. Ideally, each application is reduced to a
-state-less, side-effect free function $f(view) \rightarrow configuration$, that is
+state-less, side-effect free function $f(view) \rightarrow configuration$,
+which is
 easy to validate. \colin{Mention multi-tenancy?}
 
 \begin{figure}[t]
