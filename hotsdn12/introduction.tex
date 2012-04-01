@@ -10,40 +10,42 @@ simply to push complexity from the control application onto the underlying platf
 SDN platform software is prone to bugs as a result of this complexity. Bugs in the
 platform present an architectural tension: troubleshooting requires
 access to precisely the same details hidden by the platform's abstractions.
-When an application developer 
-encounters erratic behavior in the network, they must trace their
-policy specification through multiple layers of abstraction
-preceding changes in the physical network: virtualization logic,
-distribution logic, and network devices. Moreover, the error's root cause
-may manifest in any of these layers, not just the control application.
+When operators encounters erratic behavior in their network, the error's root
+cause may lie in their own policy specification, or in the SDN platform
+itself. In order to deal with the latter case, they must trace through
+multiple layers of abstraction: virtualization logic, distribution logic, and
+network devices.
 
 As it stands, the SDN platform provides meager support for troubleshooting.
 The predominant troubleshooting method is log analysis: manually
 specifying log statements at relevant points throughout the system,
-collecting, gathering, and ordering distributed log files, and analyzing the
+collecting; gathering; and ordering distributed log files; and analyzing the
 results {\it post-hoc} when a error is encountered in production. Besides its
 apparent tediousness, this approach is lacking in several ways: logs events
 are enormous in number, impossible to aggregate into a single serial
 execution of the system, and often at the wrong level of granularity to be of
 use. \colin{</ why it's hard>}
 
-Recent work has contributed much-needed improvements to this state of affairs. 
+Recent work has contributed much-needed improvements to the highest (control
+application) and lowest (dataplane forwarding tables) levels of abstraction, 
+but no principled troublshooting mechanism exists yet for the SDN platform.
 NICE applies concolic execution and model checking to SDN control
 applications, thereby automating the testing process and catching bugs before
 they are deployed~\cite{nice}. Aneater~\cite{anteater} and HSA~\cite{hsa}
 introduce mechanisms for checking static invariants in the dataplane.
-Nonetheless, no principled troubleshooting mechanism exists yet for the SDN platform itself.
 
-New operating system abstractions face an arduous path towards adoption
-without sound troubleshooting mechanisms. Analogously, the success of the
+New programming abstractions face an arduous path towards adoption
+without sound troubleshooting mechanisms (\eg a new language
+without an accompanying debugger is unthinkable) Analogously, the success of the
 SDN programming model depends heavily on the utility of its troubleshooting
 paradigm. Our goal in this paper is to work towards a useful
 troubleshooting mechanism for the SDN platform. \colin{</ why it's important>}
 
 We observe that in eventually-consistent systems such as software-defined networks,
 transient inconsistencies are an inevitable state-of-affairs.
-In such an environment, the process of troubleshooting errors essentially boils down to
-identifying relevant events among a clamor of diagnostic information.
+In such an environment, the process of troubleshooting errors is not just
+about listing inconsistencies, but also identifying which are related to
+serious problems, nad which are harmlessly ephemeral.
 
 We present two mechanisms designed to make it easier for operators and
 developers to ``see through the noise'' of diagnostic information. The first,
