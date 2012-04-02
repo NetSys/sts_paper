@@ -1,3 +1,12 @@
+Two candidates for root cause: 
+\begin{itemize}
+\item scale-out BGP router processes a BGP advertisement improperly. Turns out
+to be a controller failure $\rightarrow$ improper failover (out of date NOM).
+\item Isolation Brach: Storage servers aren't supposed to be reachable from the Internet, only
+internal machines (like EC2). router fails, failover doesn't have proper ACLs, operator
+observes traffic increases, observes increased traffic showing up at servers. 
+\end{itemize}
+
 \begin{itemize}
 \item Use case 1: network operator doesn't know anything about SDN.
     \begin{itemize}
@@ -12,7 +21,7 @@
     blackhole 
     \item backs up to state before BGP update
     \item Operator steps through execution until BGP update occurs
-    \item Isolates to virualization layer
+    \item sees that there was a switch failure
     \item Isolates the events that matter.
     \item Plays them forward to differentiate ephemeral from persistent.
     \item Puts in log statements, re-runs through debugger
@@ -28,17 +37,30 @@ burn-in test:
     \item Gather library of corner-cases that have caused other controllers to
     topple
     \end{itemize}
-\item \colin{New subsection} Graph of simulation scalability (\# of switches
-vs. time to push packet through network)
-\item Back-of-envelope calculation of HSA runtime, space overhead of logging routing tables.
-    \begin{itemize}
-    \item Peynam's conjecture is that HSA runtime scales quadratically with \#
-    of wilcard expression.  See Section 6.3 of
-    \url{http://stanford.edu/~kazemian/hsa.pdf}
-    \item They ran loop detection on Stanford backbone (medium network) in ~10
-    minutes.
-    \end{itemize}
-\item How do you validate the simulator? Is it sufficiently complex to
-capture real-world bugs? Conversely, if I catch a failure mode in the
-simulator, will my fix work in the production network?
 \end{itemize}
+
+\subsection{Overhead}
+
+\noindent{\bf Simulator Scalability.} \tbd{Graph of simulation
+scalability. x-axis is \# of software switches. y-axix.} \\
+
+\noindent{\bf Record and Replay Overhead.} In contrast to general record-and-replay
+mechanisms, the amount of recorded state needed for
+high-fidelity replay is tractable. With proactive flow installation, 
+updates are pushed to routing tables over a relatively long time scale; periodic
+routing table snapshot along with a log of link state events and control server uptime information 
+suffice. As a point of reference, the Cisco 7000 series datacenter-class
+switch supports approximately 2 million MAC, IPv4, IPv6, Netflow and ACL
+FIB entries total. Conservatively assuming 100 bytes per forwarding entry
+yields 200MB per switch. Snapshotting the state of the physical network every
+minute is easily acheiavable in these circumanstances.\colin{Too cavalier; get details from Sangjin}
+
+\noindent{\bf Correspondence Checking Runtime.} Correspondence checking has
+the same computational complexity as the loop detection algorithm described in
+HSA~\cite{hsa}. In their benchmarks, loop detection completed on the Stanford
+backbone network, consisting of 14 routers and 10 switches, completed in 560 seconds
+(9 minutes).
+
+\colin{How do you validate the simulator? Is it sufficiently complex to
+capture real-world bugs? Conversely, if I catch a failure mode in the
+simulator, will my fix work in the production network?}
