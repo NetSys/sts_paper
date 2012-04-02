@@ -41,15 +41,16 @@ burn-in test:
 
 \subsection{Overhead}
 
-\noindent{\bf Simulator Scalability.} \tbd{Graph of simulation
-scalability. x-axis is \# of software switches. y-axix.} \\
+\noindent{\bf Simulator Scalability.} \tbd{Graph of simulator
+scalability. x-axis is \# of software switches. y-axis is time to process N
+OFTP\_FLOW\_MOD messages. A few lines for different values of N} \\
 
 \noindent{\bf Record and Replay Overhead.} In contrast to general record-and-replay
 mechanisms, the amount of recorded state needed for
 high-fidelity replay is tractable. With proactive flow installation, 
 updates are pushed to routing tables over a relatively long time scale; periodic
-routing table snapshot along with a log of link state events and control server uptime information 
-suffice. As a point of reference, the Cisco 7000 series datacenter-class
+RIB snapshots along with a log of link state events and control server uptime information 
+suffice for our purposes. As a point of reference, the Cisco 7000 series datacenter-class
 switch supports approximately 2 million MAC, IPv4, IPv6, Netflow and ACL
 FIB entries total. Conservatively assuming 100 bytes per forwarding entry
 yields 200MB per switch. Snapshotting the state of the physical network every
