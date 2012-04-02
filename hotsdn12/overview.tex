@@ -14,7 +14,8 @@ DHT or a transactional database. Control applications can thus make their own
 tradeoffs in choosing consistency models, degree of
 fault tolerance, and other properties.
 
-The modern SDN stack contains up to three layers: the lowest
+The modern SDN stack \colin{too general... it's really just Nicira's stack}
+contains up to three layers: the lowest
 layer is responsible for tracking switch state and pushing configuration
 changes to the switches themselves; a virtualization layer
 wraps the state of the network in a programmable abstraction; and a control
@@ -31,7 +32,10 @@ of forwarding elements in the physical network.
 
 Virtualization additionaly facilitates multi-tenancy, and isolates control applications from the specifics
 of the underlying network. Ideally, each application is reduced to a
-state-less, side-effect free function $f(view) \rightarrow configuration$.
+state-less, side-effect free function:
+\begin{align*}
+f(view) \rightarrow configuration
+\end{align*}
 
 \begin{figure}[t]
     %\hspace{-10pt}
@@ -51,29 +55,35 @@ into the ingress switch, and the packet is forwarded along.
 \subsection{Platform Failure Modes}
 
 Here we provide a taxonomy of common failure modes observed in
-the SDN architecture.
+production software-defined networks. Note that we focus here on errors in the
+platform; previous work addresses bugs in application
+logic~\cite{nice} and the dataplane~\cite{anteater,hsa}.
 
-\begin{itemize}
-\item Taxonomy of failure modes introduced by these abstractions (Google Doc),
-and why they're hard to debug.
-\item Fence-post: we focus on platform bugs. This is complementary to work on
-application debugging (NICE) and dataplane debugging (Anteater, HSA).
-\end{itemize}
+The purpose of the SDN platform is to translate the control application's policy
+specifications into a concrete configuration of the physical network. It may
+fail in this role in one of three places: synchronization errors between control
+servers, synchronization errors between switches and controllers, and
+mistranslations between the logical view and the physical network topology.
 
-\colin{The following snippet from our class report is far too verbose, and does not reflect any of our
-latest thinking from the google doc.}
+\colin{This needs serious work. Current axes of taxonomy:
+Origin $\rightarrow$ Cause (race condition, failover, byzantine
+h/w fault?, event ordering) $\rightarrow$
+Symptom (forwarding error, breach of isolation, forgotten
+control plane packet due to resource exhaustion, flapping)}
 
-Correspondence errors are particularly pernicious, as the 
-virtualization translation layer of the platform is often quite complex. 
+\noindent{\bf Intra-controller synchronization errors} Eventually consistent
+DHT, may read stale data. Perhaps failover may be wonky, controller crashes,
+boots up with stale state, pushes configuration change that conflict with
+current state. \\
+\noindent{\bf Controller-to-Switch synchronization errors}. Race conditions!
+Switch connects to a new parent. Perhaps fails over, which creates a loop, 
+before the controller has time to react. \\
+\noindent{\bf Topology mismapping}. The mapping between the logical view and
+the physical topology may be highly complex. Usually one-to-many, but even
+many-to-many for multi-tenant networks. \tbd{Cite + rip off text from Martin's
+virtualization paper}
 
-Production SDN deployments distribute the NOS  across multiple servers to achieve fault-tolerance
-and scalability. Distributed control gives rise to the same classes of coordination
-and consistency bugs that affect general distributed systems. 
-
-We note that two distinct classes of consistency violations occur in SDNs.
-Transient consistency violations depend on the ordering of events in the system. For example,
-if the  NOS pushes out a new forwarding policy
-which involves multiple switches, in-flight packets may enter a
-temporary forwarding loop while each of the switches converge on the new policy.
-The effects of transient
-consistency violations are noticeably distinct from persistent violations.
+All of these errors may manifest as dataplane forwarding problems, such as
+loops, blackholes, partitions, broadcast storms. Or breaches of isolation in
+multi-tenant environments. Or just failure to push routing or ACL or QoS
+policys to switches. Also Route flapping. Or (preventable) congestion.
