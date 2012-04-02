@@ -1,21 +1,11 @@
 \tbd{fold in google doc related work section}
 
-\begin{itemize}
-
-
-\item Language-level bug prevention (Frentic et. al)
-\item Application-level static analysis (NICE et. al.)
-\item Dataplane static analysis (Anteater, Header space analysis)
-\item Test harnesses (Mininet)
-\item Replay debugging and general distributed systems debugging $\Rightarrow$ we constrain our problem domain, thereby making the problem somewhat more tractable
-
-\end{itemize}
-
-CLINT extends a growing literature on debugging and software engineering tools for Software-Defined Networks.
+This work extends a growing literature on debugging and software engineering tools for
+Software-Defined Networks.
     
-Some efforts have focused on debugging control applications; however, none do pervasive,
+Some efforts have focused on debugging control applications; however, none do 
 cross-layer analysis to address bugs in the network operating system itself. 
-Canini et al.~\cite{canini} develop symbolic execution techniques to identify
+Canini et al.~\cite{nice} develop symbolic execution techniques to identify
 common cases where application developer's assumptions about the behavior of
 their application may not hold. This work is complementary to ours in
 that we focus on the bugs in the SDN stack itself, not control applications.
@@ -38,6 +28,8 @@ Anteater detects bugs in a static configuration
 of the physical network, and cannot detect bugs that might arise under a different configuration or with different
 inputs to the same network controller.
 
+\colin{s/b less verbose, re: dataplane debugging}
+
 FlowChecker ~\cite{flowchecker} uses a very similar to Anteater, except that
 it focused on OpenFlow networks in particalar.  Similar to Anteater, FlowChecker
 takes a static snapshot of the network (possibly across multiple federated
@@ -46,7 +38,10 @@ network model using binary decision diagrams. This model is then checked using s
 techniques for reachability and security. FlowChecker does not provide checks in real
 time, and is not yet implemented.
 
-Also focusing on the physical network, OFRewind~\cite{ofrewind} develops record and replay techniques
+\tbd{Test harnesses (Mininet)}
+
+Also focusing on the physical network, OFRewind~\cite{ofrewind} develops
+record and replay techniques
 for OpenFlow networks. The replay
 mechanism of OFRewind allows network operators to step through sequences of
 events that led up to an error condition. OFRewind is a `live' version of our
@@ -65,9 +60,9 @@ invariant violations.
 
 \colin{What about xtrace?}
 
-More broadly, projects such as Pip~\cite{pip} and d$^3$s~\cite{d3s} develop
+More broadly, projects such as Pip~\cite{pip} and D$^3$S~\cite{d3s} develop
 techniques for debugging general distributed systems. 
-We demonstrate with CLINT that by constraining the scope of the problem,
+We demonstrate that by constraining the scope of the problem,
 we can potentially provide more comprehensive tools for a more limited domain.
 
 % If we manage to run multiple applications by Monday, we should cite papers
