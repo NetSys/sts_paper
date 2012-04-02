@@ -10,23 +10,28 @@ In order to scale to large networks and achieve fault tolerance for the control
 plane itself, SDN platforms distribute control state across cluster(s) of servers.
 Onix~\cite{onix}, for example,
 partitions a graph of the network state across either an eventually-consistent
-DHT or a transactional database. Control applications can then make their own
-tradeoffs between consistency and latency, level of fault tolerance, and other
-properties.
+DHT or a transactional database. Control applications can thus make their own
+tradeoffs in choosing consistency models, degree of
+fault tolerance, and other properties.
 
-Modern SDN controllers are architected with a three layer approach: the lowest
+The modern SDN stack contains up to three layers: the lowest
 layer is responsible for tracking switch state and pushing configuration
 changes to the switches themselves; a virtualization layer
 wraps the state of the network in a programmable abstraction; and a control
 application written by network administrators 
 expresses the network policy in terms of the virtualization layer abstraction.
 A depiction of this architecture is shown in Figure \ref{fig:basicarch}.
-This facilitates a concise specification of
-intended network behavior, and isolates control applications from the specifics
+
+The virtualization layer facilitates a concise specification of
+intended network behavior. A common pattern is to represent an entire
+datacenter network as a single logical switch. In this manner, operators
+can specify routing, access control, and QoS policies by configuring a single forwarding
+device; the platform then maps the configuration onto sequences 
+of forwarding elements in the physical network.
+
+Virtualization additionaly facilitates multi-tenancy, and isolates control applications from the specifics
 of the underlying network. Ideally, each application is reduced to a
-state-less, side-effect free function $f(view) \rightarrow configuration$,
-which is
-easy to validate. \colin{Mention multi-tenancy?}
+state-less, side-effect free function $f(view) \rightarrow configuration$.
 
 \begin{figure}[t]
     %\hspace{-10pt}
@@ -46,7 +51,7 @@ into the ingress switch, and the packet is forwarded along.
 \subsection{Platform Failure Modes}
 
 Here we provide a taxonomy of common failure modes observed in
-production SDN platforms.
+the SDN architecture.
 
 \begin{itemize}
 \item Taxonomy of failure modes introduced by these abstractions (Google Doc),
@@ -59,12 +64,7 @@ application debugging (NICE) and dataplane debugging (Anteater, HSA).
 latest thinking from the google doc.}
 
 Correspondence errors are particularly pernicious, as the 
-virtualization translation layer of the platform is often quite complex. Consider for example
-that an entire datacenter network supporting 10s of thousands of hosts may be
-treated as a single logical switch. When the control application makes a
-configuration change to the logical switch, the NOS needs to carefully map this
-configuration onto multiple physical switches along the path. Any mismapping in this
-process may prevent the network from ever behaving exactly as the application intended.
+virtualization translation layer of the platform is often quite complex. 
 
 Production SDN deployments distribute the NOS  across multiple servers to achieve fault-tolerance
 and scalability. Distributed control gives rise to the same classes of coordination
