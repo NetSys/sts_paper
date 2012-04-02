@@ -1,12 +1,8 @@
-\begin{itemize}
-\item We observed that troubleshooting eventually consistent systems boils down to
-``seeing through the noise'' of inconsistencies
-\item We present two techniques to help see through noise
-    \begin{itemize}
-    \item Correspondence checking as general notion of correctness yields isolation to a
-    system component
-    \item Record/Replay + Simulator as ``time-machine'' yields isolation of important vs.
-    noisy events. Focus on corner-cases.
-    \end{itemize}
-\item Our use-case supports our argument
-\end{itemize}
+Our paper seeks to improve the process of troubleshooting errors in the SDN
+platform. We present two mechanisms, cross-layer correspondence checking
+and simulated replay analysis, 
+designed to make it easier for troubleshooter to ``see through the noise'' of
+diagnostic information. These tools are based on the observation that 
+troubleshooting eventually-consistent systems such as SDN essentially
+involves differentiating common, ephemeral inconsistencies form persistent
+errors.
