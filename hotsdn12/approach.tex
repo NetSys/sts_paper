@@ -1,6 +1,6 @@
 In this section we present two mechanisms based on the principle of ``seeing
 through the noise''. Correspondence checking allows troubleshooters to isolate
-the cause of inconsistencies to a particular layer. Simulation-based replay analysis 
+the cause of inconsistencies to a particular layer. \Simulator
 allows troubleshooters to isolate relevant events throughout the system
 execution. We provide the details of these techniques below. 
 
@@ -61,7 +61,7 @@ at the access link. The leaves of the propagation graph represent $\Omega$. We
 can verify correspondence in SDN by generating propagation graphs for all SDN layers,
 and comparing the leaves.
 
-\subsection{Simulation-based Replay Analysis}
+\subsection{\SIMULATOR}
 
 For many use-cases, isolating an error to a particular layer suffices.
 For example, a network operator might verify that inconsistencies manifest in
@@ -77,8 +77,8 @@ execution in a simulated model of the system.
 
 Even in small networks,
 the number of low-level events captured by
-log-statements can be overwhelming. The main utility of simulation-based replay
-analysis is that troubleshooters can easily differentiate pertinent events from
+log-statements can be overwhelming. The main utility of \simulator is that
+troubleshooters can easily differentiate pertinent events from
 irrelevant diagnostic information. At any point in time, the troubleshooter
 can run correspondence checking to enumerate all inconsistencies in the
 network. She can then iteratively prune out extraneous external events until

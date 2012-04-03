@@ -60,7 +60,7 @@ correctness. Correspondence checking allows troubleshooters to isolate the
 cause of 
 an inconsistency to a particular layer without needing to define invariants or
 instrument third-party code. Our second
-mechanism, simulation-based replay analysis, allows troubleshooters 
+mechanism, \simulator, allows troubleshooters 
 to differentiate ephemeral from persistent inconsistencies by steering the
 execution of the system forward and backward in time, filtering out extraneous
 external events, and inducing uncommon events. \colin{</ what we did>}
@@ -68,8 +68,7 @@ external events, and inducing uncommon events. \colin{</ what we did>}
 The rest of this paper is organized as follows. In \S\ref{sec:overview},
 we present an overview of the SDN stack and its failure modes.
 In \S\ref{sec:approach} we present correspondence checking and
-simulation-based replay
-replay analysis in detail. In \S\ref{sec:evaluation} we present
+\simulator in detail. In \S\ref{sec:evaluation} we present
 two use-cases of our techniques, as well as a preliminary evaluation
 of their runtime. Finally, in \S\ref{sec:related_work} we discuss related work,
 and in \S\ref{sec:conclusion} we conclude.
