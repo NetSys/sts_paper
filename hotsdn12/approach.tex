@@ -1,6 +1,6 @@
 In this section we present two mechanisms based on the principle of ``seeing
 through the noise''. Correspondence checking allows troubleshooters to isolate
-the cause of inconsistencies to a particular layer. Simulated replay analysis 
+the cause of inconsistencies to a particular layer. Simulation-based replay analysis 
 allows troubleshooters to isolate relevant events throughout the system
 execution. We provide the details of these techniques below. 
 
@@ -40,7 +40,8 @@ transitive closure of $\Phi$:
 Here, $E_{access}$ represents access links adjacent to end-hosts.
 
 In SDN, it should always be the case that 
-$\Omega^{view} \sim \Omega^{physical}$. Formally:
+$\Omega^{view} \sim \Omega^{physical}$. \colin{formal definition is broken}
+Formally:
 \begin{align*}
 \forall_{h} \forall_{e \in E_{access}^{view}} \Omega^{view}(h,e) =
 \Omega^{physical}(encap(h),e) 
@@ -60,7 +61,7 @@ at the access link. The leaves of the propagation graph represent $\Omega$. We
 can verify correspondence in SDN by generating propagation graphs for all SDN layers,
 and comparing the leaves.
 
-\subsection{Simulated Replay Analysis}
+\subsection{Simulation-based Replay Analysis}
 
 For many use-cases, isolating an error to a particular layer suffices.
 For example, a network operator might verify that inconsistencies manifest in
@@ -76,7 +77,7 @@ execution in a simulated model of the system.
 
 Even in small networks,
 the number of low-level events captured by
-log-statements can be overwhelming. The main utility of simulated replay
+log-statements can be overwhelming. The main utility of simulation-based replay
 analysis is that troubleshooters can easily differentiate pertinent events from
 irrelevant diagnostic information. At any point in time, the troubleshooter
 can run correspondence checking to enumerate all inconsistencies in the
