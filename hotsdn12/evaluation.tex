@@ -41,30 +41,66 @@ burn-in test:
 
 \subsection{Overhead}
 
-\noindent{\bf Simulator Scalability.} \tbd{Graph of simulator
-scalability. x-axis is \# of software switches. y-axis is time to process N
-OFTP\_FLOW\_MOD messages. A few lines for different values of N} \\
+\noindent{\bf Simulator Scalability.} We have implemented a prototype
+simulator. In a single process, our prototype models hosts and OpenFlow switches 
+as python objects, which communicate with a SDN controller as if they were
+true hardware.
+
+To gauge the scalability of modeling the network within a single-process,
+we \colin{will have} spawned a network of 10,000 switches and measured the
+time to process 5 FLOW\_MOD messages per switch. \colin{It took X seconds,
+which is below the bounds of human perception}
+
+%\tbd{Graph of simulator
+%scalability. x-axis is \# of software switches. y-axis is time to process N
+%OFTP\_FLOW\_MOD messages. A few lines for different values of N} \\
 
 \noindent{\bf Record and Replay Overhead.} In contrast to general record-and-replay
 mechanisms, the amount of recorded state needed for
 high-fidelity replay is tractable. With proactive flow installation, 
 updates are pushed to routing tables over a relatively long time scale; periodic
-RIB snapshots along with a log of link state events and control server uptime information 
-suffice for our purposes.
+FIB snapshots along with a log of link state events, control server
+downtime, and host mobility information suffice for our purposes. As a point of reference, the Cisco 7000 series
+core switch model supports a maximum of 128K MAC entries and
+128K ACL entries~\cite{cisco7000}. Assuming 36 bytes per flow entry,
+(larger than OpenFlow 13-tuple), this yields
+an upper bound of 9216 bytes, uncompressed, per FIB. A datacenter of 100,000
+hosts includes roughly 8,000 switches~\cite{Al-Fares:2008:SCD:1402946.1402967}.
+Therefore a snapshot of the FIBs of the entire network takes up roughly 74 MB.
+The VL2 paper reports 36M network error events over one year over 8
+datacenters, which implies 8.5 error events per minute per
+datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}.
+Suppose we took a snapshot of the FIBs in the network every second. 
+We would need then to store roughly 4GB uncompressed per minute, a relatively small growth 
+rate for datacenter logs. Note that this is a conservative overestimate.
+\tbd{Get numbers on frequency of VM migrations}
+%To account for host mobility, assume that each server hosts 10 VMs,
+%and 1\% of VMs are created, suspended, or migrated every minute. Then 10,000 host mobility events must be
+%logged per minute, also a reasonable storage cost. \colin{get real numbers}
+
 %As a point of reference, border routers' working RIB size is
 %$\textasciitilde$130MB~\cite{Karpilovsky:2006:UFR:1368436.1368439}.
-As a point of reference, the Cisco 7000 series
-core switch model supports a maximum of 128K MAC entries~\cite{cisco7000}.
-If we then conservatively assume a link-state event every minute and a network
-of 1000 switches, it takes  (uncompressed) 
-.\colin{Too cavalier; get details from Sangjin}
 
 \noindent{\bf Correspondence Checking Runtime.} Correspondence checking has
 the same computational complexity as the loop detection algorithm described in
-HSA~\cite{hsa}. In their benchmarks, loop detection completed on the Stanford
-backbone network, consisting of 14 routers and 10 switches, completed in 560 seconds
-(9 minutes).
+HSA~\cite{hsa}: \\
+$O(c^{d}dR^{2}P)$, where $c$ is the fragmentation factor (a
+small constant close to $1$), $d$ is the diameter of the network, $R$ is
+the number of switches in the network, and $P$ is the number of access links
+in the network. The propogation graph for each access link can be computed
+in parallel, so the remaining serial portion of the runtime is $O(c^{d}dR^{2})$.
 
-\colin{How do you validate the simulator? Is it sufficiently complex to
+To test the runtime of correspondence checking in practice, we \colin{will
+have} ran the algorithm for different network sizes. The results are shown in
+Figure~\ref{fig:hsa_runtime}. We see that \colin{foobar}.
+
+\begin{figure}[t]
+    %\hspace{-10pt}
+    \includegraphics[width=3.25in]{../graphs/mock_hsa_overhead.pdf}
+    \caption[]{\label{fig:hsa_runtime} Runtime of correspondence checking
+    versus size of the network}
+\end{figure}
+
+\noindent{\bf Miscellaneous} \colin{How do you validate the simulator? Is it sufficiently complex to
 capture real-world bugs? Conversely, if I catch a failure mode in the
 simulator, will my fix work in the production network?}
