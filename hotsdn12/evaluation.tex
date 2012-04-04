@@ -1,15 +1,14 @@
-Two candidates for root cause: 
-\begin{itemize}
-\item scale-out BGP router processes a BGP advertisement improperly. Turns out
-to be a controller failure $\rightarrow$ improper failover (out of date NOM).
-\item Isolation Brach: Storage servers aren't supposed to be reachable from the Internet, only
-internal machines (like EC2). router fails, failover doesn't have proper ACLs, operator
-observes traffic increases, observes increased traffic showing up at servers. 
-\end{itemize}
+\subsection{Use-Cases}
+
+Here we present two hypothetical use-cases for correspondence checking and
+\simulator.
+
+\noindent{Use-Case 1: Network Operator}  
+Network doesn't know anything about SDN, pays third-party for an SDN stack to 
+run their foobar network.
 
 \begin{itemize}
-\item Use case 1: network operator doesn't know anything about SDN.
-    \begin{itemize}
+\item foo \begin{itemize}
     \item Operator pays for scale-out BGP router. 
     \item A particular BGP update fails to be installed -- blackhole
     \item Runs correspondence checking, and there are indeed inconsistencies!
