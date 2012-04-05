@@ -30,7 +30,7 @@ can specify routing, access control, and QoS policies by configuring a single fo
 device; the platform then maps the configuration onto sequences 
 of forwarding elements in the physical network.
 
-Virtualization additionaly facilitates multi-tenancy, and isolates control applications from the specifics
+Virtualization additionally facilitates multi-tenancy, and isolates control applications from the specifics
 of the underlying network. Ideally, each application is reduced to a
 state-less, side-effect free function:
 \begin{align*}
@@ -54,39 +54,56 @@ into the ingress switch, and the packet is forwarded along.
 
 \subsection{Platform Failure Modes}
 
-Here we provide a taxonomy of common failure modes observed in
-production software-defined networks. Note that we focus here on errors in the
-platform; previous work addresses bugs in application
-logic~\cite{nice} and the dataplane~\cite{anteater,hsa}.
+Here we provide an overview of the platform's failure modes. Note that
+we do not address failures in the highest (control application) and lowest
+(dataplane forwarding tables) levels of abstraction. Previous work exists
+for finding and troubleshooting faults in the application layer~\cite{nice}
+and the forwarding plane~\cite{anteater}. We focus here on failure modes unaddressed
+by this work.
 
-The purpose of the SDN platform is to translate the control application's policy
-specifications into a concrete configuration of the physical network. It may
-fail in this role in one of three places: synchronization errors between control
-servers, synchronization errors between switches and controllers, and
-mistranslations between the logical view and the physical network topology.
+As described in the previous section, modern SDN platforms differ from
+`first-generation' controllers such as NOX~\cite{nox} in two dimensions. 
+First, they extend vertically by providing a virtualization layer on top of
+which control logic resides. Second, they extend horizontally by
+distributing state across multiple control servers. Errors arise from both of
+these architectural additions. Moreover, the sheer scale of production
+SDN deployments amplifies the
+frequency and severity of errors; consider that Microsoft reports 36M 
+minor to fatal error events over one year across 8 datacenters,
+which implies 8.5 error events per minute per
+datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}. Errors due to virtualization,
+controller coordination, scale, and the confluence of these factors are the main
+focus of our work.
 
-\colin{Sources of errors: distribution (horizontal), virtualization (vertical)
-and the confluence of those to interactions. Oh, and huge scale}
+\noindent{\bf Virtualization}. Virtualization errors often result from a mismapping between the logical
+switch and the physical network topology. Consider that an entire datacenter
+network (up to 10,000 switches) may be abstracted into a single logical switch. Especially in the
+presence of hardware failures, the mapping between the logical switch and the
+physical topology is highly complex. In a multi-tenant environment, the mapping is often
+many-to-many~\cite{Casado:2010:VNF:1921151.1921162}; each tenant specifies
+policies on their own logical switch, while the platform multiplexes each
+slice over the same physical network. If the logical address
+spaces are not disjoint, or a change in the physical network causes the paths
+to temporarily overlap, breaches of tenant isolation or failure to properly
+install configuration changes may occur,
 
-\colin{This needs serious work. Current axes of taxonomy:
-Origin $\rightarrow$ Cause (race condition, failover, byzantine
-h/w fault?, event ordering) $\rightarrow$
-Symptom (forwarding error, breach of isolation, forgotten
-control plane packet due to resource exhaustion, flapping)}
+\noindent{\bf Controller Coordination}. Coordination between controllers
+entails the same classes of error
+conditions that plague general distributed systems; inconsistent reads and
+writes, race conditions over message arrivals, and unintended consequences of failover
+logic are common. As an example, suppose a controller fails, and all the
+switches under its purview are adopted by a new control server. If the new parent
+fails to properly query the switches for their current state, or reads
+stale control information from the data store, it may inadvertently install
+conflicting flow entries in the network. Errors may also result as a
+result of non-disjoint partitioning
+schemes between controllers, or incorrect delegation of control for different
+portions of the network. 
+Moreover, consider that there may
+be high churn in the network topology given VM migration or 
+hardware failures. 
 
-\noindent{\bf Intra-controller synchronization errors} Eventually consistent
-DHT, may read stale data. Perhaps failover may be wonky, controller crashes,
-boots up with stale state, pushes configuration change that conflict with
-current state. \\
-\noindent{\bf Controller-to-Switch synchronization errors}. Race conditions!
-Switch connects to a new parent. Perhaps fails over, which creates a loop, 
-before the controller has time to react. \\
-\noindent{\bf Topology mismapping}. The mapping between the logical view and
-the physical topology may be highly complex. Usually one-to-many, but even
-many-to-many for multi-tenant networks. \tbd{Cite + rip off text from Martin's
-virtualization paper}
-
-All of these errors may manifest as dataplane forwarding problems, such as
-loops, blackholes, partitions, broadcast storms. Or breaches of isolation in
-multi-tenant environments. Or just failure to push routing or ACL or QoS
-policys to switches. Also Route flapping. Or (preventable) congestion.
+%All of these errors may manifest as dataplane forwarding problems, such as
+%loops, blackholes, partitions, broadcast storms. Or breaches of isolation in
+%multi-tenant environments. Or just failure to push routing or ACL or QoS
+%policys to switches. Also Route flapping. Or (preventable) congestion.
