@@ -3,40 +3,48 @@
 Here we present two hypothetical use-cases for correspondence checking and
 \simulator.
 
-\noindent{Use-Case 1: Network Operator}  
-Network doesn't know anything about SDN, pays third-party for an SDN stack to 
-run their foobar network.
+\noindent{Use-Case 1: Network Operator.} An enterprise network
+operator pays a third-party SDN provider to virtualize their network
+and run it in the cloud. The network operator receives a complaint
+from an internal team that two servers cannot reach other, and 
+verifies the reachablility problem with {\tt ping}. Unsure
+whether the problem is in her ACL/routing rules, 
+or whether the problem is in the SDN platform, the
+operator runs correspondence checking on a snapshot of the network state. She
+finds that there is an inconsistency between her policy and the network state, 
+and proceeds to call up the third-party SDN provider to complain
+about the problem.
 
-\begin{itemize}
-\item foo \begin{itemize}
-    \item Operator pays for scale-out BGP router. 
-    \item A particular BGP update fails to be installed -- blackhole
-    \item Runs correspondence checking, and there are indeed inconsistencies!
-    \item Call up Nicira!
-    \end{itemize}
-\item Use case 2: SDN developer deals with that customer complaint
-    \begin{itemize}
-    \item feeds in current production snapshot to simulator, verifies
-    blackhole 
-    \item backs up to state before BGP update
-    \item Operator steps through execution until BGP update occurs
-    \item sees that there was a switch failure
-    \item Isolates the events that matter.
-    \item Plays them forward to differentiate ephemeral from persistent.
-    \item Puts in log statements, re-runs through debugger
-    \item eventually finds one line of code that caused the problem.
-    \item pushes change to production
-    \end{itemize}
-\item Potential use case 3: library of corner cases as integration test /
-burn-in test:
-    \begin{itemize}
-    \item Simulator gives complete control over network
-    \item Unlike code tests, which exercise code branches, simulator exercises
-    the network!
-    \item Gather library of corner-cases that have caused other controllers to
-    topple
-    \end{itemize}
-\end{itemize}
+\noindent{Use-Case 2: SDN Developer.} A developer at the third-party SDN
+company receives the customer's trouble-ticket and begins to investigate the
+problem. The developer examines the system logs and sees a
+long list of link status events, control server reboots, VM migration events,
+and other diagnostic information. These events are numerous (the
+datacenter comprises 8,000 switches and more than 100,000 hosts) and
+interleaved, so the developer is unsure what caused the problem.
+The developer feeds a snapshot of the network from before the
+trouble-ticket was issued into the simulator, and
+begins replaying the execution of the system. The developer runs
+correspondence checking, and finds a substantial list of inconsistencies,
+manifesting as loops, blackholes, and other problems.
+To isolate the root cause, the developer decides to exclude from the simulated
+execution all events unrelated to the path between the two disconnected
+servers. As the developer is stepping through the execution, he periodically
+runs correspondence checking and tracks the inconsistencies over time. He
+finds that most inconsistencies resolve within a short time. However, he
+eventually encounters a blackhole which lasts a considerable time. The
+developer backs up the execution to the point when consistency begins, and
+observes a switch failure followed directly by a reboot of the switch's parent
+controller. The developer adds log statements to the platform's failover
+logic, and re-runs the execution. The developer eventually verifies that the
+controller pushed a routing change to the failed switch's neighbors, but did
+not update the platform's representation of the network state. Upon closer
+examination, the developer finds that the new parent controller for that
+portion of the network assumed that the platform's
+representation of network state was up-to-date. As such, the partially installed flow entries remained
+in the neighboring switches, resulting in the blackhole. The developer fixes
+the platform's recovery code and pushes the change to production. The
+developer also adds this case to the platform's integration test suite.
 
 \subsection{Overhead}
 
@@ -86,7 +94,7 @@ HSA~\cite{hsa}: \\
 $O(c^{d}dR^{2}P)$, where $c$ is the fragmentation factor (a
 small constant close to $1$), $d$ is the diameter of the network, $R$ is
 the number of switches in the network, and $P$ is the number of access links
-in the network. The propogation graph for each access link can be computed
+in the network. The propagation graph for each access link can be computed
 in parallel, so the remaining serial portion of the runtime is $O(c^{d}dR^{2})$.
 
 To test the runtime of correspondence checking in practice, we \colin{will
