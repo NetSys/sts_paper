@@ -12,8 +12,8 @@ into changes in the physical network.
 
 Platform correctness can therefore be expressed as a simple invariant:
 the state of the application layer should correspond to the state of the
-physical network. We check this invariant by applying the virtual packet notation pioneered
-in headerspace analysis~\cite{hsa}. 
+physical network. We check this invariant by applying the virtual packet
+algebra pioneered in headerspace analysis~\cite{hsa}. 
 
 Formally, each layer of the SDN stack can be represented as a graph,
 $G = (V, E)$. Packets are series of bits, $h \in \{0,1\}^L = H$,
@@ -40,16 +40,12 @@ transitive closure of $\Phi$:
 Here, $E_{access}$ represents access links adjacent to end-hosts.
 
 In SDN, it should always be the case that 
-$\Omega^{view} \sim \Omega^{physical}$. \colin{formal definition is broken}
-Formally:
-\begin{align*}
-\forall_{h} \forall_{e \in E_{access}^{view}} \Omega^{view}(h,e) =
-\Omega^{physical}(encap(h),e) 
-\end{align*}
-where $encap$ is a function from packets in $G^{view}$ to packets in
-$G^{physical}$. Note that the mapping between $G^{view}$ and $G^{physical}$ is not
-necessarily one-to-one. Hosts are represented at all layers however, hence
-$E_{access}^{view} \sim E_{access}^{physical}$ is a bijection.
+$\Omega^{view} \sim \Omega^{physical}$. Informally, this means that
+any packet injected at an access link in the $G^{virtual}$ should arrive at
+the same final location as the same (encapsulated) packet injected at the
+corresponding access link in $G^{physical}$. Note that hosts are represented
+in all graphs, although though there may not be a one-to-one mapping between the
+internal vertices of $G^{virtual}$ and $G^{physical}$.
 
 To check correspondence in SDN, we begin by taking a causally consistent
 snapshot~\cite{Chandy:1985:DSD:214451.214456} of the physical network. The routing
