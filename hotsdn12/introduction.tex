@@ -45,12 +45,12 @@ paradigm. Our goal in this paper is to work towards a useful
 troubleshooting mechanism for the SDN platform. \colin{</ why it's important>}
 
 We observe that in eventually-consistent systems such as software-defined
-networks, transient inconsistencies are an inevitable state-of-affairs.
+networks, transient inconsistencies between network policy and actual network
+behavior are an inevitable state-of-affairs.
 In such an environment, it does not suffice for troubleshooting tools to
 simply enumerate inconsistencies; they should also aid the developer
 in identifying which are related to serious problems, and which are
-harmlessly ephemeral. \colin{We're being a bit loose with the term
-``inconsistency''}
+harmlessly ephemeral.
 
 We present two mechanisms designed to make it easier for operators and
 developers to ``see through the noise'' of diagnostic information. The first,
@@ -63,7 +63,9 @@ instrument third-party code. Our second
 mechanism, \simulator, allows troubleshooters 
 to differentiate ephemeral from persistent inconsistencies by steering the
 execution of the system forward and backward in time, filtering out extraneous
-external events, and inducing uncommon events. \colin{</ what we did>}
+external events, and inducing uncommon events. We have implemented prototypes
+of these mechanisms, and are beginning to
+explore their use. \colin{</ what we did>}
 
 The rest of this paper is organized as follows. In \S\ref{sec:overview},
 we present an overview of the SDN stack and its failure modes.
