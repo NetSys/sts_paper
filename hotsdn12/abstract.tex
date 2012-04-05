@@ -1,11 +1,11 @@
 The predominant technique for troubleshooting bugs in software-defined networks,
 log analysis, is tedious and error-prone. We observe that
 in eventually-consistent systems such as SDN,
-transient inconsistencies are inevitable. Beyond identifying inconsistencies,
-troubleshooting mechanisms should therefore differentiate
-pernicious from harmless ephemeral inconsistencies. We present two
+transient inconsistencies between policy and network configuration are inevitable.
+In addition to detecting and isolating inconsistencies,
+troubleshooting mechanisms should therefore provide a mechanism to differentiate
+pernicious persistent from harmless ephemeral inconsistencies. We present two
 mechanisms, cross-layer correspondence checking and \simulator,
 designed to make it easier for troubleshooters to ``see through the noise'' of
-diagnostic information.
-
-\colin{Need to add prototype, and rephrase inconsistency}
+diagnostic information. We have implemented early prototypes of these
+mechanisms, and are beginning to experiment with their use.
