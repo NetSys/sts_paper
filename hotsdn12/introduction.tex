@@ -1,21 +1,18 @@
 The SDN platform's $raison\text{ }d'\hat{e}tre$ is to 
-hide complexity from control applications. Modern platforms perform
+hide complexity from control applications. To this end, modern platforms perform
 replication, resource arbitration, failure recovery, and network 
 virtualization on the control application's behalf. 
 
-Despite the abstractions provided by the SDN programming model,
-software-defined networks are no less complex than traditional networks.
-The architectural goal of SDN is
-simply to push complexity from the control application onto
-the underlying platform.
+While these measures are effective in simplifying control applications,
+they do not remove any complexity from the overall system. Rather, they merely move the complexity
+from control applications into the underlying SDN platform.
 
-SDN platform software is prone to bugs as a result of this complexity.
-Bugs in the
-platform present an architectural tension: troubleshooting requires
-access to precisely the same details hidden by the platform's abstractions.
+As in any software system, additional complexity increases the probability of
+bugs. And unfortunately for the network operator, finding bugs in the platform requires
+access to precisely the details hidden from the control application.
 When operators encounters erratic behavior in their network, the error's root
 cause may lie in their own policy specification, or in the SDN platform
-itself. In order to deal with the latter case, they must trace through
+itself. To deal with the latter case, they must trace through
 multiple layers of abstraction: virtualization logic, distribution logic, and
 network devices.
 
@@ -27,7 +24,7 @@ results {\it post-hoc} when a error is encountered in production. Besides its
 apparent tediousness, this approach is lacking in several ways: logs events
 are enormous in number, impossible to aggregate into a single serial
 execution of the system, and often at the wrong level of granularity to be of
-use. \colin{</ why it's hard>}
+use.
 
 Recent work has contributed much-needed improvements to the highest (control
 application) and lowest (dataplane forwarding tables) levels of abstraction, 
@@ -37,40 +34,36 @@ applications, thereby automating the testing process and catching bugs before
 they are deployed~\cite{nice}. Aneater~\cite{anteater} and HSA~\cite{hsa}
 introduce mechanisms for checking static invariants in the dataplane.
 
-New programming abstractions face an arduous path towards adoption
-without sound troubleshooting mechanisms (\eg a new language
-without an accompanying debugger is unthinkable) Analogously, the success of the
-SDN programming model depends heavily on the utility of its troubleshooting
-paradigm. Our goal in this paper is to work towards a useful
-troubleshooting mechanism for the SDN platform. \colin{</ why it's important>}
+It would be unthinkable to introduce a new programming language without a
+debugger. Similarly, we think it highly undesirable to deploy SDN-based
+networking without a viable troubleshooting paradigm. 
 
-We observe that in eventually-consistent systems such as software-defined
-networks, transient inconsistencies between network policy and actual network
+Correctness of the SDN platform can be stated concisely: high-level policies
+should correspond with low-level configuration. We observe that the structure
+of the SDN platform, graphs at every layer, enables a straightforward
+algorithm to check this invariant. Our algorithm, which we term correspondence checking,
+enumerates all inconsistencies at any point in time and isolates the
+root cause of an inconsistency to a particular component of the system.
+
+In eventually-consistent systems such as software-defined
+networks however, transient inconsistencies between network policy and actual network
 behavior are an inevitable state-of-affairs.
 In such an environment, it does not suffice for troubleshooting tools to
 simply enumerate inconsistencies; they should also aid the developer
 in identifying which are related to serious problems, and which are
-harmlessly ephemeral.
+harmlessly ephemeral. To this end we present \simulator.
+\Simulator allows troubleshooters 
+to sift out pernicious inconsistencies by tracking the life cycle of problems 
+both forward and backward in time.
 
-We present two mechanisms designed to make it easier for operators and
-developers to ``see through the noise'' of diagnostic information. The first,
-cross-layer correspondence checking, leverages the structure of the SDN
-architecture to enable a general and verifiable notion of platform
-correctness. Correspondence checking allows troubleshooters to isolate the
-cause of 
-an inconsistency to a particular layer without needing to define invariants or
-instrument third-party code. Our second
-mechanism, \simulator, allows troubleshooters 
-to differentiate ephemeral from persistent inconsistencies by steering the
-execution of the system forward and backward in time, filtering out extraneous
-external events, and inducing uncommon events. We have implemented prototypes
-of these mechanisms, and made the code publically available~\cite{github}.
- \colin{</ what we did>}
+We have implemented prototypes
+of correspondence checking and \simulation. Our code is publicly available
+at~\cite{github}.
 
 The rest of this paper is organized as follows. In \S\ref{sec:overview},
 we present an overview of the SDN stack and its failure modes.
 In \S\ref{sec:approach} we present correspondence checking and
 \simulator in detail. In \S\ref{sec:evaluation} we present
-two use-cases of our techniques, as well as a preliminary evaluation
-of their runtime. Finally, in \S\ref{sec:related_work} we discuss related work,
+two use-cases and a preliminary performance evaluation
+Finally, in \S\ref{sec:related_work} we discuss related work,
 and in \S\ref{sec:conclusion} we conclude.
