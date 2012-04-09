@@ -90,24 +90,33 @@ rate for datacenter logs. Note that this is a conservative overestimate.
 %As a point of reference, border routers' working RIB size is
 %$\textasciitilde$130MB~\cite{Karpilovsky:2006:UFR:1368436.1368439}.
 
-\noindent{\bf Correspondence Checking Runtime.} Correspondence checking has
-the same computational complexity as the loop detection algorithm described in
-HSA~\cite{hsa}: \\
-$O(c^{d}dR^{2}P)$, where $c$ is the fragmentation factor (a
-small constant close to $1$), $d$ is the diameter of the network, $R$ is
-the number of switches in the network, and $P$ is the number of access links
-in the network. The propagation graph for each access link can be computed
-in parallel, so the remaining serial portion of the runtime is $O(c^{d}dR^{2})$.
+\noindent{\bf Correspondence Checking Runtime.} Computing the propagation
+graph for correspondence checking is equivalent to enumerating
+all possible paths in the network. The number of possible paths scales with the diameter
+of the network as well as the number of routing entries per switch.
+Each branch of the propagation graph can be
+computed in parallel however, so the computation is bottlenecked by the serial runtime
+of computing a single branch of the propagation graph.
 
-To test the runtime of correspondence checking in practice, we \colin{will
-have} ran the algorithm for different network sizes. The results are shown in
-Figure~\ref{fig:hsa_runtime}. We see that \colin{foobar}.
+We show the serial runtime of correspondence checking in 
+Figure~\ref{hsa_runtime}. Each data point was generated on a single Intel Xeon
+2.80GHz core. For this analysis we generated fat-tree topologies
+of varying sizes, with pre-installed PORTLAND~\cite{NiranjanMysore:2009:PSF:1594977.1592575}
+routing tables in each switch. Note
+that the number of PORTLAND routing entries per switch scales with the number
+of pods in the fat-tree. As the figure depicts, the serial runtime of
+correspondence checking scales roughly quadratically with the
+size of the fat-tree topology. The number of serial tasks to be executed
+(total number of branches in the propagation tree) is the number of hosts
+in the network squared, disregarding ECMP load-balancing.
 
 \begin{figure}[t]
     %\hspace{-10pt}
     \includegraphics[width=3.25in]{../graphs/mock_hsa_overhead.pdf}
-    \caption[]{\label{fig:hsa_runtime} Runtime of correspondence checking
-    versus size of the network}
+    \caption[]{\label{fig:hsa_runtime} Serial runtime of correspondence
+    checking on PORTLAND fat tree networks. Each datapoint consists of
+    $x^2/4$ hosts and $5x^2/4$ switches. The serial runtime of correspondence
+    checking scales roughly quadratically with the size of the network}
 \end{figure}
 
 \noindent{\bf Miscellaneous} \colin{How do you validate the simulator? Is it sufficiently complex to
