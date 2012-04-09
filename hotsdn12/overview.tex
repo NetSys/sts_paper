@@ -3,9 +3,6 @@ of errors observed in production software-defined networks.
 
 \subsection{SDN Architecture}
 
-Modern SDN platforms are highly complex. We enumerate the characteristics of
-these systems here.
-
 In order to scale to large networks and achieve fault tolerance for the control
 plane itself, SDN platforms distribute control state across cluster(s) of servers.
 Onix~\cite{onix}, for example,
@@ -54,7 +51,7 @@ into the ingress switch, and the packet is forwarded along.
 
 \subsection{Platform Failure Modes}
 
-Here we provide an overview of the platform's failure modes. Note that
+Here we provide a few examples of the platform's failure modes. Note that
 we do not address failures in the highest (control application) and lowest
 (dataplane forwarding tables) levels of abstraction. Previous work exists
 for finding and troubleshooting faults in the application layer~\cite{nice}
