@@ -1,4 +1,4 @@
-In this section we provide an overview of the SDN architecture and examples of  
+In this section we provide an overview of the SDN architecture and examples 
 of errors observed in production software-defined networks.
 
 \subsection{SDN Architecture}
@@ -64,12 +64,11 @@ applications.
 
 \subsection{Platform Failure Modes}
 
-Here we provide a few examples of the platform's failure modes. Note that
+Here we provide a few examples of platform failures. Note that
 we do not address failures in the highest (control application) and lowest
 (dataplane forwarding tables) levels of abstraction. Previous work exists
 for finding and troubleshooting faults in the application layer~\cite{nice}
-and the forwarding plane~\cite{anteater}. We focus here on failure modes unaddressed
-by this work.
+and the forwarding plane~\cite{anteater}.
 
 As described in the previous section, modern SDN platforms differ from
 `first-generation' controllers such as NOX~\cite{nox} in two dimensions. 
@@ -106,8 +105,8 @@ logic are common. As an example, suppose a controller fails, and all the
 switches under its purview are adopted by a new control server. If the new parent
 fails to properly query the switches for their current state, or reads
 stale control information from the data store, it may inadvertently install
-conflicting flow entries in the network. Errors may also result as a
-result of non-disjoint partitioning
+conflicting flow entries in the network. Errors may also result 
+from non-disjoint partitioning
 schemes between controllers, or incorrect delegation of control for different
 portions of the network. 
 High churn in the network topology due to VM migration and

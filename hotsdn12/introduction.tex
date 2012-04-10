@@ -10,9 +10,9 @@ from control applications into the underlying SDN platform.
 As in any software system, complexity increases the probability of
 bugs. Although application developers may one day be freed from the burden
 of troubleshooting errors in the underlying platform, the evolution of SDN
-is far too nascent to provide stablity today. With today's systems, when 
+is far too nascent to provide stablity today. When 
 network operators encounter erratic behavior in their network
-they are forced to manually trace through
+they are currently forced to manually trace through
 multiple layers of abstraction: policy-specification, virtualization logic, distribution logic, and
 network devices.
 
@@ -45,10 +45,10 @@ In this paper we present an algorithm for verifying correctness of the
 platform. We observe that verifying correctness of the SDN platform
 is equivalent to showing that high-level policies specified by
 control applications correspond with low-level network configuration.
-Our algorithm, which we term `correspondence checking`,
+Our algorithm, which we term `correspondence checking',
 leverages the structure of the SDN platform (graphs at every layer)
 to enumerate all policy-violations at any point in time, and isolate their
-root cause sto a particular component of the system.
+root cause to a particular component of the system.
 
 Correspondence checking does not suffice on its own; like any distributed
 system, transient policy-violations due to failures and delays are 

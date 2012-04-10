@@ -6,12 +6,9 @@ execution. We provide the details of these techniques below.
 
 \subsection{Correspondence Checking}
 
-The sole task of the application layer is to specify network
-policies. The platform translates these high-level policies
-into changes in the physical network.
-
 Platform correctness can be expressed as a simple invariant:
-the state of the application layer should correspond to the state of the
+the policy specified by the application layer should correspond to the
+configuration of the
 physical network. We check this invariant by applying the virtual packet
 algebra pioneered in headerspace analysis~\cite{hsa}. 
 
@@ -46,7 +43,7 @@ $\Omega^{view} \sim \Omega^{physical}$. Informally, this means that
 any packet injected at an access link in $G^{virtual}$ should arrive at
 the same final location as the corresponding (encapsulated) packet injected at the
 corresponding access link in $G^{physical}$. Note that hosts are represented
-in all graphs, although though there may not be a one-to-one mapping between the
+in all graphs, although there may not be a one-to-one mapping between the
 internal vertices of $G^{virtual}$ and $G^{physical}$.
 
 To check correspondence in SDN, we begin by taking a causally consistent
@@ -75,7 +72,7 @@ the faulty behavior.
 
 To achieve these goals, we complement correspondence checking with
 \emph{simulation-based replay analysis}. We base our replay on a consistent
-trace of low level SDN events, as enabled, e.g., by OFRewind~\ref{ofrewind}. The
+trace of low level SDN events, as enabled, e.g., by OFRewind~\cite{ofrewind}. The
 events from the trace are fed into a simulator that invokes the correspondence
 checking at every time step. The simulator focuses on the \emph{sdn control plane},
 and models the failure modes in sufficient detail to reproduce the error, while

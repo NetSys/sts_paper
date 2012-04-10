@@ -1,6 +1,6 @@
 \subsection{Use-Case}
 
-Here we present two perspectives on a hypothetical use-case for correspondence checking and
+Here we present a hypothetical use-case from two perspectives for correspondence checking and
 \simulator{}.
 
 \noindent{\bf Network Operator.} An enterprise network
@@ -20,7 +20,7 @@ company receives the customer's trouble-ticket and begins to investigate the
 problem. The developer examines the system logs and sees a
 long list of link status events, control server reboots, VM migration events,
 and other diagnostic information. These events are numerous (the
-datacenter comprises 8,000 switches and more than 100,000 hosts) and
+datacenter contains 8,000 switches and more than 100,000 hosts) and
 interleaved, so the developer is unsure what caused the problem.
 The developer feeds a snapshot of the network from before the
 trouble-ticket was issued into the simulator, and
@@ -31,7 +31,7 @@ The developer excludes all external events
 unrelated to the two disconnected hosts. As the developer is stepping through the execution, he periodically
 runs correspondence checking and tracks the policy-violations over time. He
 finds that most violations resolve within a short time. However, he
-eventually encounters a blackhole which lasts a considerable time. The
+eventually encounters a blackhole that lasts a considerable time. The
 developer backs up the execution to the point when the blackhole begins, and
 observes a switch failure followed directly by a reboot of the switch's parent
 controller. A correspondence check between the intermediate layers of the SDN
@@ -51,7 +51,7 @@ test suite, and pushes the change to production.
 
 \noindent{\bf Simulator Scalability.} We have implemented a prototype
 simulator. In a single process, our prototype models hosts and OpenFlow switches 
-as lightweight python objects which communicate with a SDN controller as if they were
+as lightweight python objects that communicate with a SDN controller as if they were
 true hardware.
 
 To gauge the scalability of modeling the network within a single-process,
@@ -67,10 +67,10 @@ bounds of reasonable interactive use.
 
 \noindent{\bf Record and Replay Overhead.} In contrast to general record-and-replay
 mechanisms, the amount of recorded state needed for
-high-fidelity replay is tractable: with proactive flow installation, 
-updates are pushed to routing tables over a relatively long time scale, and periodic
+high-fidelity replay is tractable. With proactive flow installation, 
+updates are pushed to routing tables over a relatively long time scale; periodic
 FIB snapshots along with a log of link state events, control server
-downtime, and host mobility information suffice for our purposes. As a point of reference, the Cisco 7000 series
+downtime, and host mobility information suffice for our purposes. As a point of reference, the Cisco 7000 
 core switch model supports a maximum of 128K MAC entries and
 128K ACL entries~\cite{cisco7000}. Assuming 36 bytes per flow entry,
 (larger than the OpenFlow 13-tuple), each FIB will contain a maximum of 9216
@@ -82,7 +82,7 @@ The VL2 paper reports 36M network error events over one year over 8
 datacenters, which implies 8.5 error events per minute per
 datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}.
 Suppose we took a snapshot of the FIBs in the network every second. 
-We would need then to store roughly 4GB uncompressed per minute, a relatively small growth 
+Then we would need to store roughly 4GB, uncompressed, per minute, a relatively small growth 
 rate for datacenter logs. This information, in addition to a log of host
 mobility events (\eg{} VM migrations) will suffice for our purposes. Note that this is a conservative overestimate.
 %To account for host mobility, assume that each server hosts 10 VMs,
@@ -127,14 +127,14 @@ is the number of hosts in the network squared, disregarding ECMP load-balancing.
 
 If our simulated model of the network is not sufficiently complex, it may not
 be able to reproduce error conditions observed in production. Conversely,
-resolving bugs observed in a simulated environment may not imply 
+resolving bugs observed in a simulated environment may not ensure
 correct behavior of the production network. In future work, we hope to verify
 the fidelity of \simulator{} by collaborating with industry partners to
-to reproduce bugs observed in practice. In addition, we
+reproduce bugs observed in practice. In addition, we
 plan to gather error logs by deploying our own applications in Google's
 datacenter networking research cluster~\cite{DNRC}.
 
-Finally, note that correspondence checking can not currently verify 
+Finally, note that our correspondence checking algorith can not verify 
 time-dependent policies such as ``No link should be congested more than 1\% of the
 time'', or ``No server should receive more than 500MB/s of external traffic''.
 In future work we will extend our correspondence checking algorithm to
