@@ -8,56 +8,54 @@ they do not remove any complexity from the overall system. Rather, they merely m
 from control applications into the underlying SDN platform.
 
 As in any software system, additional complexity increases the probability of
-bugs in the platform. And unfortunately for the network operator, finding bugs in the platform requires
-access to precisely the details hidden from the control application.
-When operators encounters erratic behavior in their network, the error's root
-cause may lie in their own policy specification, or in the SDN platform
-itself. To deal with the latter case, they must trace through
-multiple layers of abstraction: virtualization logic, distribution logic, and
+bugs in the platform. Moreover, network operators lack an automated mechanism to
+distinguish bugs in their own policy specification from bugs in the underlying
+platform. When they encounter erratic behavior in their network,
+they are forced to trace through
+multiple layers of abstraction: policy-specification, virtualization logic, distribution logic, and
 network devices.
 
-As it stands, the SDN platform provides meager support for troubleshooting.
 Besides {\it ad-hoc} measurement tools
-such as {\tt traceroute}, the predominant troubleshooting technique is
+such as {\tt traceroute}, the predominant troubleshooting mechanism in SDN is
 log analysis: manually specifying log statements at relevant points throughout the system;
 collecting; gathering; and ordering distributed log files; and analyzing the
-results {\it post-hoc} when a error is encountered in production. Besides its
-apparent tediousness, this approach is lacking in several ways: logs events
+results {\it post-hoc} when a error is encountered in production. Log analysis
+is an important component of the troubleshooting process, but it is deficient
+in several ways as a stand-alone solution: logs events
 are enormous in number, impossible to aggregate into a single serial
-execution of the system, and often at the wrong level of granularity to be of
-use.
+execution of the system, and often at the wrong level of granularity.
 
-Recent work has contributed much-needed improvements to the highest (control
-application) and lowest (dataplane forwarding tables) levels of abstraction. 
+Recent work has contributed troubleshooting techniques focused on the highest (control
+application) and lowest (dataplane forwarding tables) layers of the SDN stack.
 NICE applies concolic execution and model checking to SDN control
 applications, thereby automating the testing process and catching bugs before
 they are deployed~\cite{nice}. Aneater~\cite{anteater} and HSA~\cite{hsa}
 introduce mechanisms for checking static invariants in the dataplane.
-Nonetheless, no principled troubleshooting mechanism exists yet for the SDN
-platform itself.
+Nonetheless, no mechanism exists to troubleshoot problems that span
+multiple layers of the SDN stack, such as those caused by bugs in the platform
+itself.
 
-It would be unthinkable to introduce a new operating system or programming
-language without troubleshooting tools. Similarly, we think it highly undesirable to deploy SDN-based
+The utility of new programming models is heavily dependent on
+the usability of their troubleshooting mechanisms.
+Similarly, we think it highly undesirable to deploy SDN-based
 networking without a viable troubleshooting paradigm. 
 
 Correctness of the SDN platform can be stated concisely: ``high-level policies
 should correspond with low-level configuration''. We observe that the structure
-of the SDN platform, graphs at every layer, enables a straightforward
+of the SDN platform (graphs at every layer) enables a straightforward
 algorithm to check this invariant. Our algorithm, which we term
 `correspondence checking',
-enumerates all inconsistencies at any point in time, and isolates the
-root cause of an inconsistency to a particular component of the system.
+enumerates all policy-violations at any point in time, and isolates the
+root cause of a violation to a particular component of the system.
 
-Correspondence checking does not suffice on its own; SDN
-favors availability over consistency, and transient inconsistencies between
-policy and configuration are inevitable in any large eventually-consistent
-system.
+Correspondence checking does not suffice on its own; as in any distributed
+system, transient policy-violations due to failures and delays are inevitable.
 In such an environment, it does not suffice for troubleshooting tools to
-simply enumerate inconsistencies; they should also aid the developer
+simply enumerate policy-violations; they should also aid the developer
 in identifying which are related to serious problems, and which are
-harmlessly ephemeral. To this end we present \simulator.
+ephemeral. To this end we present \simulator{}.
 \Simulator{} allows troubleshooters 
-to filter out harmless inconsistencies by tracking the life cycle of problems 
+to filter out harmless policy-violations by tracking the life cycle of problems 
 both forward and backward in time.
 
 We have implemented prototypes
