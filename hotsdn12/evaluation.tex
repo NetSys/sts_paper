@@ -92,31 +92,32 @@ rate for datacenter logs. Note that this is a conservative overestimate.
 
 \noindent{\bf Correspondence Checking Runtime.} Computing the propagation
 graph for correspondence checking is equivalent to enumerating
-all possible paths in the network. The number of possible paths scales with the diameter
-of the network as well as the number of routing entries per switch.
-Each branch of the propagation graph can be
+all possible paths in the network, which scales with the diameter
+of the network and the number of routing entries per switch.
+The propogation graph for each host can be
 computed in parallel however, so the computation is bottlenecked by the serial runtime
-of computing a single branch of the propagation graph.
+of computing a single host's propagation graph.
 
 We show the serial runtime of correspondence checking in 
-Figure~\ref{hsa_runtime}. Each data point was generated on a single Intel Xeon
-2.80GHz core. For this analysis we generated fat-tree topologies
-of varying sizes, with pre-installed PORTLAND~\cite{NiranjanMysore:2009:PSF:1594977.1592575}
-routing tables in each switch. Note
-that the number of PORTLAND routing entries per switch scales with the number
-of pods in the fat-tree. As the figure depicts, the serial runtime of
-correspondence checking scales roughly quadratically with the
-size of the fat-tree topology. The number of serial tasks to be executed
-(total number of branches in the propagation tree) is the number of hosts
-in the network squared, disregarding ECMP load-balancing.
+Figure~\ref{hsa_runtime}. For this analysis we generated fat tree topologies
+between 2 and 48 pods wide, with pre-installed PORTLAND~\cite{NiranjanMysore:2009:PSF:1594977.1592575}
+routing tables in each switch. Each data point was generated on a single Intel Xeon
+2.80GHz core. Note that the number of PORTLAND routing entries per switch scales with the number
+of pods in the fat-tree. Note also that we excluded the time to convert
+flow tables to HSA transfer functions, since transfer functions can be maintained
+offline.
+
+As the figure depicts, even for large networks
+(27,648 hosts) the serial runtime of correspondence checking is reasonable for
+interactive use. The number of serial tasks to be executed
+is the number of hosts in the network squared, disregarding ECMP load-balancing.
 
 \begin{figure}[t]
     %\hspace{-10pt}
-    \includegraphics[width=3.25in]{../graphs/mock_hsa_overhead.pdf}
+    \includegraphics[width=3.25in]{../graphs/hsa_overhead_graph/graph.pdf}
     \caption[]{\label{fig:hsa_runtime} Serial runtime of correspondence
     checking on PORTLAND fat tree networks. Each datapoint consists of
-    $x^2/4$ hosts and $5x^2/4$ switches. The serial runtime of correspondence
-    checking scales roughly quadratically with the size of the network}
+    $x^3/4$ hosts and $5x^2/4$ switches.}
 \end{figure}
 
 \noindent{\bf Miscellaneous} \colin{How do you validate the simulator? Is it sufficiently complex to
