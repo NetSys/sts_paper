@@ -55,9 +55,9 @@ true hardware.
 
 To gauge the scalability of modeling the network within a single-process,
 we generated a fat tree network of 48 pods (2,880 switches), and measured the
-time to generate 1 OFFP\_PORT\_STATUS messages and process 5 FLOW\_MOD
-messages per switch. The execution completed in 5.846 seconds, well with the
-bounds for interactive use.
+time to send 1 OFFP\_PORT\_STATUS message and process 5 FLOW\_MOD
+messages per switch. The execution completed in 5.846 seconds, well within the
+bounds of reasonable interactive use.
 
 %\tbd{Graph of simulator
 %scalability. x-axis is \# of software switches. y-axis is time to process N
