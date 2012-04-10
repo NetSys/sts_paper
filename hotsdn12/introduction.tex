@@ -8,7 +8,7 @@ they do not remove any complexity from the overall system. Rather, they merely m
 from control applications into the underlying SDN platform.
 
 As in any software system, additional complexity increases the probability of
-bugs. And unfortunately for the network operator, finding bugs in the platform requires
+bugs in the platform. And unfortunately for the network operator, finding bugs in the platform requires
 access to precisely the details hidden from the control application.
 When operators encounters erratic behavior in their network, the error's root
 cause may lie in their own policy specification, or in the SDN platform
@@ -17,8 +17,9 @@ multiple layers of abstraction: virtualization logic, distribution logic, and
 network devices.
 
 As it stands, the SDN platform provides meager support for troubleshooting.
-The predominant troubleshooting method is log analysis: manually
-specifying log statements at relevant points throughout the system,
+Besides {\it ad-hoc} measurement tools
+such as {\tt traceroute}, the predominant troubleshooting technique is
+log analysis: manually specifying log statements at relevant points throughout the system;
 collecting; gathering; and ordering distributed log files; and analyzing the
 results {\it post-hoc} when a error is encountered in production. Besides its
 apparent tediousness, this approach is lacking in several ways: logs events
@@ -27,43 +28,46 @@ execution of the system, and often at the wrong level of granularity to be of
 use.
 
 Recent work has contributed much-needed improvements to the highest (control
-application) and lowest (dataplane forwarding tables) levels of abstraction, 
-but no principled troubleshooting mechanism exists yet for the SDN platform.
+application) and lowest (dataplane forwarding tables) levels of abstraction. 
 NICE applies concolic execution and model checking to SDN control
 applications, thereby automating the testing process and catching bugs before
 they are deployed~\cite{nice}. Aneater~\cite{anteater} and HSA~\cite{hsa}
 introduce mechanisms for checking static invariants in the dataplane.
+Nonetheless, no principled troubleshooting mechanism exists yet for the SDN
+platform itself.
 
-It would be unthinkable to introduce a new programming language without a
-debugger. Similarly, we think it highly undesirable to deploy SDN-based
+It would be unthinkable to introduce a new operating system or programming
+language without troubleshooting tools. Similarly, we think it highly undesirable to deploy SDN-based
 networking without a viable troubleshooting paradigm. 
 
-Correctness of the SDN platform can be stated concisely: high-level policies
-should correspond with low-level configuration. We observe that the structure
+Correctness of the SDN platform can be stated concisely: ``high-level policies
+should correspond with low-level configuration''. We observe that the structure
 of the SDN platform, graphs at every layer, enables a straightforward
-algorithm to check this invariant. Our algorithm, which we term correspondence checking,
-enumerates all inconsistencies at any point in time and isolates the
+algorithm to check this invariant. Our algorithm, which we term
+`correspondence checking',
+enumerates all inconsistencies at any point in time, and isolates the
 root cause of an inconsistency to a particular component of the system.
 
-In eventually-consistent systems such as software-defined
-networks however, transient inconsistencies between network policy and actual network
-behavior are an inevitable state-of-affairs.
+Correspondence checking does not suffice on its own; SDN
+favors availability over consistency, and transient inconsistencies
+between policy and configuration
+are inevitable in any large eventually-consistent system.
 In such an environment, it does not suffice for troubleshooting tools to
 simply enumerate inconsistencies; they should also aid the developer
 in identifying which are related to serious problems, and which are
 harmlessly ephemeral. To this end we present \simulator.
-\Simulator allows troubleshooters 
-to sift out pernicious inconsistencies by tracking the life cycle of problems 
+\Simulator{} allows troubleshooters 
+to filter out harmless inconsistencies by tracking the life cycle of problems 
 both forward and backward in time.
 
 We have implemented prototypes
-of correspondence checking and \simulator. Our code is publicly available
+of correspondence checking and \simulator{}. Our code is publicly available
 at~\cite{github}.
 
 The rest of this paper is organized as follows. In \S\ref{sec:overview},
 we present an overview of the SDN stack and its failure modes.
 In \S\ref{sec:approach} we present correspondence checking and
-\simulator in detail. In \S\ref{sec:evaluation} we present
+\simulator{} in detail. In \S\ref{sec:evaluation} we present
 two use-cases and a preliminary performance evaluation
 Finally, in \S\ref{sec:related_work} we discuss related work,
 and in \S\ref{sec:conclusion} we conclude.
