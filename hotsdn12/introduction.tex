@@ -5,13 +5,14 @@ virtualization on the control application's behalf.
 
 While these measures are effective in simplifying control applications,
 they do not remove any complexity from the overall system. Rather, they merely move the complexity
-from control applications into the underlying SDN platform.
+from control applications into the underlying SDN platform. 
 
 As in any software system, complexity increases the probability of
-bugs. Moreover, network operators lack an automated mechanism to
-distinguish bugs in their own policy specification from bugs in the underlying
-platform. When they encounter erratic behavior in their network,
-they are forced to trace through
+bugs. Although application developers may one day be freed from the burden
+of troubleshooting errors in the underlying platform, the evolution of SDN
+is far too nascent to provide stablity today. With today's systems, when 
+network operators encounter erratic behavior in their network
+they are forced to manually trace through
 multiple layers of abstraction: policy-specification, virtualization logic, distribution logic, and
 network devices.
 
@@ -32,7 +33,7 @@ applications, thereby automating the testing process and catching bugs before
 they are deployed~\cite{nice}. Aneater~\cite{anteater} and HSA~\cite{hsa}
 introduce mechanisms for checking static invariants in the dataplane.
 Nonetheless, no automated troubleshooting mechanism exists for problems that span
-multiple layers of the SDN stack, especially those caused by bugs in the platform
+multiple layers of the SDN stack, specifically those caused by bugs in the platform
 itself.
 
 %The utility of new programming models is heavily dependent on
@@ -47,7 +48,7 @@ control applications correspond with low-level network configuration.
 Our algorithm, which we term `correspondence checking`,
 leverages the structure of the SDN platform (graphs at every layer)
 to enumerate all policy-violations at any point in time, and isolate their
-root causes to a particular component of the system.
+root cause sto a particular component of the system.
 
 Correspondence checking does not suffice on its own; like any distributed
 system, transient policy-violations due to failures and delays are 
@@ -68,6 +69,6 @@ The rest of this paper is organized as follows. In \S\ref{sec:overview},
 we present an overview of the SDN stack and its failure modes.
 In \S\ref{sec:approach} we present correspondence checking and
 \simulator{} in detail. In \S\ref{sec:evaluation} we present
-two use-cases and a preliminary performance evaluation
+a use-case and a preliminary performance evaluation
 Finally, in \S\ref{sec:related_work} we discuss related work,
 and in \S\ref{sec:conclusion} we conclude.
