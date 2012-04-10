@@ -1,5 +1,5 @@
-In this section we present two mechanisms based on the principle of ``seeing
-through the noise''. Correspondence checking allows troubleshooters to isolate
+In this section we present two mechanisms to facilitate the troubleshooting
+process. Correspondence checking allows troubleshooters to isolate
 the cause of inconsistencies to a particular layer. \Simulator{}
 allows troubleshooters to isolate relevant events throughout the system
 execution. We provide the details of these techniques below. 
@@ -7,10 +7,10 @@ execution. We provide the details of these techniques below.
 \subsection{Correspondence Checking}
 
 The sole task of the application layer is to specify network
-policies. The platform is left to translate these high-level policies
+policies. The platform translates these high-level policies
 into changes in the physical network.
 
-Platform correctness can therefore be expressed as a simple invariant:
+Platform correctness can be expressed as a simple invariant:
 the state of the application layer should correspond to the state of the
 physical network. We check this invariant by applying the virtual packet
 algebra pioneered in headerspace analysis~\cite{hsa}. 
@@ -18,10 +18,12 @@ algebra pioneered in headerspace analysis~\cite{hsa}.
 Formally, each layer of the SDN stack can be represented as a graph,
 $G = (V, E)$. Packets are series of bits, $h \in \{0,1\}^L = H$,
 where $L$ is the maximum number of bits in the header. Upon receiving a packet,
-forwarding elements apply a transformation function \footnote{We assume unicast forwarding for clarity}
-\footnote{Note that forwarding elements may rewrite fields of a packet header
-before passing it along. Forwarding elements may also drop packets.} \\
-$T: (H \times E) \rightarrow (H \times E_{\emptyset})$
+forwarding elements apply a transformation function, potentially modifying
+packets before forwarding them on\footnote{We assume unicast forwarding for
+clarity}:
+\begin{align*}
+T: (H \times E) \rightarrow (H \times E_{\emptyset})
+\end{align*}
 
 We use $`\Psi`$ to denote the collection of all transfer functions present in
 the network at a particular point in time. In this model, network traversal is simply a composition of transformation
@@ -41,8 +43,8 @@ Here, $E_{access}$ represents access links adjacent to end-hosts.
 
 In SDN, it should always be the case that 
 $\Omega^{view} \sim \Omega^{physical}$. Informally, this means that
-any packet injected at an access link in the $G^{virtual}$ should arrive at
-the same final location as the same (encapsulated) packet injected at the
+any packet injected at an access link in $G^{virtual}$ should arrive at
+the same final location as the corresponding (encapsulated) packet injected at the
 corresponding access link in $G^{physical}$. Note that hosts are represented
 in all graphs, although though there may not be a one-to-one mapping between the
 internal vertices of $G^{virtual}$ and $G^{physical}$.
@@ -50,12 +52,13 @@ internal vertices of $G^{virtual}$ and $G^{physical}$.
 To check correspondence in SDN, we begin by taking a causally consistent
 snapshot~\cite{Chandy:1985:DSD:214451.214456} of the physical network. The routing
 tables of forwarding elements can then be translated into transformation functions.
-Finally, we feed a symbolic packet $x^L$ to each access link of the network in
-order to generate
-a propagation graph representing all possible paths taken by a packet injected
-at the access link. The rules for process wildcard bits $x^n$ is defined in
-the HSA paper~\cite{hsa}. The leaves of the propagation graph represent $\Omega$. We
-can verify correspondence in SDN by generating propagation graphs for all SDN layers,
+Finally, we feed a symbolic packet $x^L$ to each access link of the
+network~\footnote{The rules for process wildcard bits $x^n$ are defined in
+the HSA paper~\cite{hsa}}. The end result is a propagation graph representing all possible paths taken by a packet injected
+at the access link.
+
+The leaves of the propagation graph represent $\Omega$. We
+verify correspondence in SDN by generating propagation graphs for all SDN layers,
 and comparing the leaves.
 
 \subsection{\SIMULATOR{}}
