@@ -54,9 +54,10 @@ as lightweight python objects, which communicate with a SDN controller as if the
 true hardware.
 
 To gauge the scalability of modeling the network within a single-process,
-we \colin{will have} spawned a network of 10,000 switches and measured the
-time to process 5 FLOW\_MOD messages per switch. \colin{It took X seconds,
-which is below the bounds of human perception}
+we generated a fat tree network of 48 pods (2,880 switches), and measured the
+time to generate 1 OFFP\_PORT\_STATUS messages and process 5 FLOW\_MOD
+messages per switch. The execution completed in 5.846 seconds, well with the
+bounds for interactive use.
 
 %\tbd{Graph of simulator
 %scalability. x-axis is \# of software switches. y-axis is time to process N
@@ -98,7 +99,7 @@ of computing a single host's propagation graph.
 
 We show the serial runtime of correspondence checking in 
 Figure~\ref{hsa_runtime}. For this analysis we generated fat tree topologies
-between 2 and 48 pods wide, with pre-installed PORTLAND~\cite{NiranjanMysore:2009:PSF:1594977.1592575}
+between 2 and 48 pods wide, with pre-installed PORTLAND~\cite{NiranjanMysore:2009:PSF:1592568.1592575}
 routing tables in each switch. Each data point is the minimum of three
 runs on a single Intel Xeon 2.80GHz core. Note that the number of PORTLAND routing entries per switch scales with the number
 of pods in the fat-tree. We excluded the time to convert
