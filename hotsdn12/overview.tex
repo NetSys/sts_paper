@@ -1,38 +1,46 @@
-In this section we provide an overview of the SDN architecture and the types
+In this section we provide an overview of the SDN architecture and examples of  
 of errors observed in production software-defined networks.
 
 \subsection{SDN Architecture}
 
-In order to scale to large networks and achieve fault tolerance for the control
-plane itself, SDN platforms distribute control state across cluster(s) of servers.
-Onix~\cite{onix}, for example,
-partitions a graph of the network state across either an eventually-consistent
-DHT or a transactional database. Control applications can thus make their own
-tradeoffs in choosing consistency models, degree of
-fault tolerance, and other properties.
+Modern SDN controllers are constructed as three separate layers:
+the lowest layer maintains the state of each switch in the network; the virtualization layer 
+abstracts the details of the physical network into a simple graph representation;
+and the control application layer specifies network policies in terms of the
+virtual graph. A depiction of this architecture is shown in Figure \ref{fig:basicarch}.
+We describe the details of these components below.
 
-The modern SDN stack \colin{too general... it's really just Nicira's stack}
-contains up to three layers: the lowest
-layer is responsible for tracking switch state and pushing configuration
-changes to the switches themselves; a virtualization layer
-wraps the state of the network in a programmable abstraction; and a control
-application written by network administrators 
-expresses the network policy in terms of the virtualization layer abstraction.
-A depiction of this architecture is shown in Figure \ref{fig:basicarch}.
+The lowest layer of the SDN stack maintains a graph data-structure known as
+the `physical view', which has a one-to-one correspondence with the physical
+network. When a higher layer specifies a policy change on the physical view,
+synchronization logic generates configuration changes and sends it to the
+corresponding network devices. Likewise, when a state change
+occurs in the network, this component notifies upper layers of the change.
 
 The virtualization layer facilitates a concise specification of
-intended network behavior. A common pattern is to represent an entire
-datacenter network as a single logical switch. In this manner, operators
+intended network behavior by abstracting the physical view into a simplified
+graph. A common pattern is to represent an entire
+datacenter network as a single logical
+switch~\cite{Casado:2010:VNF:1921151.1921162}. In this manner, operators
 can specify routing, access control, and QoS policies by configuring a single forwarding
 device; the platform then maps the configuration onto sequences 
 of forwarding elements in the physical network.
 
 Virtualization additionally facilitates multi-tenancy, and isolates control applications from the specifics
 of the underlying network. Ideally, each application is reduced to a
-state-less, side-effect free function:
+state-less, side-effect free function~\cite{keynote}:
 \begin{align*}
-f(view) \rightarrow configuration
+f(\text{\it view}) \rightarrow \text{\it configuration}
 \end{align*}
+
+Production software-defined networks may consist of thousands of network
+devices. Modern SDN platforms replicate control across cluster(s) of servers
+for fault tolerance scalability.
+Onix~\cite{onix}, for example,
+partitions a graph of the network state across either an eventually-consistent
+DHT or a transactional database. In this manner control applications can make their own
+tradeoffs in choosing consistency models, degree of
+fault tolerance, and other properties.
 
 \begin{figure}[t]
     %\hspace{-10pt}
@@ -47,7 +55,12 @@ and only push down updates periodically to react to link failures, changes in
 traffic mix, \etc. In contrast, reactive controllers forward all new flows to
 control servers. After a control decision is made, a flow entry is installed
 into the ingress switch, and the packet is forwarded along.
-\colin{Mention that we focus on proactive? And that industry does too? :P}
+
+Production SDN deployments are commonly proactive, primarily due to the large
+scale of datacenter networks and the current capabilities of forwarding hardware.
+We focus on the proactive controllers for the remainder of this paper,
+although our troubleshooting mechanisms are also applicable to reactive
+applications.
 
 \subsection{Platform Failure Modes}
 
