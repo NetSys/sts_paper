@@ -1,9 +1,9 @@
 Our paper seeks to improve the process of troubleshooting errors in the SDN
-platform. We focus on datacenter-scale networks, 
-where the SDN platform itself is distributed across multiple control servers,
-provides virtualization potentially to multiple tenants. We present an
-analysis of this environment's failure-modes, and present two mechanisms, cross-layer correspondence checking
-and \simulator, 
-designed to make it easier for troubleshooter to ``see through the noise'' of
-diagnostic information. 
-\colin{Lacking obligatory audacious claim}
+platform. We focus on large, production networks, 
+where controllers are distributed across multiple servers
+and the platform provides a virtualization abstraction to one or more tenants.
+We present two mechanisms, cross-layer correspondence checking
+and \simulator{}, designed to help troubleshooters automatically identify
+and isolate inconsistencies between high-level policy and low-level configuration 
+caused by bugs in the platform. Our intent throughout this work is to convince
+the community to think outside of the NOX!
