@@ -8,15 +8,15 @@ they do not remove any complexity from the overall system. Rather, they merely m
 from control applications into the underlying SDN platform.
 
 As in any software system, additional complexity increases the probability of
-bugs in the platform. Moreover, network operators lack an automated mechanism to
+bugs. Moreover, network operators lack an automated mechanism to
 distinguish bugs in their own policy specification from bugs in the underlying
 platform. When they encounter erratic behavior in their network,
 they are forced to trace through
 multiple layers of abstraction: policy-specification, virtualization logic, distribution logic, and
 network devices.
 
-Besides {\it ad-hoc} measurement tools
-such as {\tt traceroute}, the predominant troubleshooting mechanism in SDN is
+Besides {\it ad-hoc} measurement tools,
+the predominant troubleshooting mechanism in SDN is
 log analysis: manually specifying log statements at relevant points throughout the system;
 collecting; gathering; and ordering distributed log files; and analyzing the
 results {\it post-hoc} when a error is encountered in production. Log analysis
@@ -31,36 +31,38 @@ NICE applies concolic execution and model checking to SDN control
 applications, thereby automating the testing process and catching bugs before
 they are deployed~\cite{nice}. Aneater~\cite{anteater} and HSA~\cite{hsa}
 introduce mechanisms for checking static invariants in the dataplane.
-Nonetheless, no mechanism exists to troubleshoot problems that span
-multiple layers of the SDN stack, such as those caused by bugs in the platform
+Nonetheless, no automated troubleshooting mechanism exists for problems that span
+multiple layers of the SDN stack, especially those caused by bugs in the platform
 itself.
 
-The utility of new programming models is heavily dependent on
-the usability of their troubleshooting mechanisms.
-Similarly, we think it highly undesirable to deploy SDN-based
-networking without a viable troubleshooting paradigm. 
+%The utility of new programming models is heavily dependent on
+%the usability of their troubleshooting mechanisms.
+%Similarly, we think it highly undesirable to deploy SDN-based
+%networking without a viable troubleshooting paradigm. 
 
-Correctness of the SDN platform can be stated concisely: ``high-level policies
-should correspond with low-level configuration''. We observe that the structure
-of the SDN platform (graphs at every layer) enables a straightforward
+Verifying correctness of the SDN platform is equivalent to showing that
+high-level policies specified by control applications correspond with 
+low-level network configuration. We show that the structure of the
+SDN platform (graphs at every layer) enables a straightforward
 algorithm to check this invariant. Our algorithm, which we term
 `correspondence checking',
 enumerates all policy-violations at any point in time, and isolates the
-root cause of a violation to a particular component of the system.
+root cause to a particular component of the system.
 
-Correspondence checking does not suffice on its own; as in any distributed
-system, transient policy-violations due to failures and delays are inevitable.
-In such an environment, it does not suffice for troubleshooting tools to
-simply enumerate policy-violations; they should also aid the developer
-in identifying which are related to serious problems, and which are
-ephemeral. To this end we present \simulator{}.
+Correspondence checking does not suffice on its own; like any distributed
+system, transient policy-violations due to failures and delays are 
+common, especially at large scale. We present \simulator{} to
+augment the diagnostic information provided by correspodence checking.
 \Simulator{} allows troubleshooters 
-to filter out harmless policy-violations by tracking the life cycle of problems 
+to differentiate harmless from persistent policy-violations by tracking the life cycle of problems 
 both forward and backward in time.
 
-We have implemented prototypes
-of correspondence checking and \simulator{}. Our code is publicly available
-at~\cite{github}.
+We demonstrate that these mechanisms combined can be used to quickly
+identify the root cause of difficult errors, including isolation breaches,
+faulty failover logic, and consistency problems between replicated
+controllers. We have implemented prototypes
+of correspondence checking and \simulator{}, and made the code publically
+available~\cite{github}.
 
 The rest of this paper is organized as follows. In \S\ref{sec:overview},
 we present an overview of the SDN stack and its failure modes.
