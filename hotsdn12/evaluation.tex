@@ -25,12 +25,12 @@ interleaved, so the developer is unsure what caused the problem.
 The developer feeds a snapshot of the network from before the
 trouble-ticket was issued into the simulator, and
 begins replaying the execution of the system. The developer runs
-correspondence checking, and finds a substantial list of inconsistencies,
+correspondence checking, and finds a substantial list of policy-violations,
 manifesting as loops, blackholes, and other problems.
 To isolate the root cause, the developer excludes all external events
 unrelated to the two disconnected hosts. As the developer is stepping through the execution, he periodically
-runs correspondence checking and tracks the inconsistencies over time. He
-finds that most inconsistencies resolve within a short time. However, he
+runs correspondence checking and tracks the policy-violations over time. He
+finds that most violations resolve within a short time. However, he
 eventually encounters a blackhole which lasts a considerable time. The
 developer backs up the execution to the point when consistency begins, and
 observes a switch failure followed directly by a reboot of the switch's parent
