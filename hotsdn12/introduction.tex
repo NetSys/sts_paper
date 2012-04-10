@@ -40,19 +40,19 @@ itself.
 %Similarly, we think it highly undesirable to deploy SDN-based
 %networking without a viable troubleshooting paradigm. 
 
-Verifying correctness of the SDN platform is equivalent to showing that
-high-level policies specified by control applications correspond with 
-low-level network configuration. We show that the structure of the
-SDN platform (graphs at every layer) enables a straightforward
-algorithm to check this invariant. Our algorithm, which we term
-`correspondence checking',
-enumerates all policy-violations at any point in time, and isolates the
-root cause to a particular component of the system.
+In this paper we present an algorithm for verifying correctness of the
+platform. We observe that verifying correctness of the SDN platform
+is equivalent to showing that high-level policies specified by
+control applications correspond with low-level network configuration.
+Our algorithm, which we term `correspondence checking`,
+leverages the structure of the SDN platform (graphs at every layer)
+to enumerate all policy-violations at any point in time, and isolate their
+root causes to a particular component of the system.
 
 Correspondence checking does not suffice on its own; like any distributed
 system, transient policy-violations due to failures and delays are 
-common, especially at large scale. We present \simulator{} to
-augment the diagnostic information provided by correspondence checking.
+common, especially at large scale. We present \simulator{}
+to augment the diagnostic information provided by correspondence checking.
 \Simulator{} allows troubleshooters 
 to differentiate harmless from persistent policy-violations by tracking the life cycle of problems 
 both forward and backward in time.
