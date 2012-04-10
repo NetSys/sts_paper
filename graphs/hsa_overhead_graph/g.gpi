@@ -34,7 +34,7 @@ set output "graph.eps"
 
 set key top left 
 
-set ylabel "Seconds to compute a single propogation tree"
+set ylabel "Seconds to compute\na single propogation tree"
 set xlabel "Number of pods in the fat tree"
 
-plot 'only_sane_values.dat' index 0:5 title "" w lp ls 1
+plot 'only_sane_values.dat' index 0:1 title "" w lp ls 1
