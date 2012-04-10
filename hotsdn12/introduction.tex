@@ -5,13 +5,13 @@ virtualization on the control application's behalf.
 
 While these measures are effective in simplifying control applications,
 they do not remove any complexity from the overall system. Rather, they merely move the complexity
-from control applications into the underlying SDN platform. 
+from control applications into the underlying SDN platform. The goal of SDN is to provide a stable platform upon which
+applications developers can build applications without needing to debug the
+underlying platform. However, the evolution of SDN
+is far too nascent to provide stablity today.
 
 As in any software system, complexity increases the probability of
-bugs. Although application developers may one day be freed from the burden
-of troubleshooting errors in the underlying platform, the evolution of SDN
-is far too nascent to provide stablity today. When 
-network operators encounter erratic behavior in their network
+bugs. When network operators encounter erratic behavior in their network
 they are currently forced to manually trace through
 multiple layers of abstraction: policy-specification, virtualization logic, distribution logic, and
 network devices.
@@ -19,7 +19,7 @@ network devices.
 Besides {\it ad-hoc} measurement tools,
 the predominant troubleshooting mechanism in SDN is
 log analysis: manually specifying log statements at relevant points throughout the system;
-collecting; gathering; and ordering distributed log files; and analyzing the
+collecting; and aligning distributed log files; and analyzing the
 results {\it post-hoc} when a error is encountered in production. Log analysis
 is an important component of the troubleshooting process, but it is deficient
 as a stand-alone solution: logs events
@@ -30,7 +30,7 @@ Recent work has contributed troubleshooting techniques focused on the highest (c
 application) and lowest (dataplane forwarding tables) layers of the SDN stack.
 NICE applies concolic execution and model checking to SDN control
 applications, thereby automating the testing process and catching bugs before
-they are deployed~\cite{nice}. Aneater~\cite{anteater} and HSA~\cite{hsa}
+they are deployed~\cite{nice}. Anteater~\cite{anteater} and HSA~\cite{hsa}
 introduce mechanisms for checking static invariants in the dataplane.
 Nonetheless, no automated troubleshooting mechanism exists for problems that span
 multiple layers of the SDN stack, specifically those caused by bugs in the platform
@@ -47,7 +47,7 @@ is equivalent to showing that high-level policies specified by
 control applications correspond with low-level network configuration.
 Our algorithm, which we term `correspondence checking',
 leverages the structure of the SDN platform (graphs at every layer)
-to enumerate all policy-violations at any point in time, and isolate their
+to enumerate all policy-violations at any point in time, and localize their
 root cause to a particular component of the system.
 
 Correspondence checking does not suffice on its own; like any distributed
