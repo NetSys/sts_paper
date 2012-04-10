@@ -1,21 +1,21 @@
 \subsection{Use-Cases}
 
-Here we present two hypothetical use-cases for correspondence checking and
+Here we present a hypothetical use-case for correspondence checking and
 \simulator.
 
-\noindent{\bf Use-Case 1: Network Operator.} An enterprise network
+\noindent{\bf First perspective: Network Operator.} An enterprise network
 operator pays a third-party SDN provider to virtualize their network
 and run it in the cloud. The network operator receives a complaint
 from an internal team that two servers cannot reach other, and 
 verifies the reachablility problem with {\tt ping}. Unsure
-whether the problem is in her ACL/routing rules, 
+whether the problem is in her ACL/routing rules 
 or whether the problem is in the SDN platform, the
 operator runs correspondence checking on a snapshot of the network state. She
 finds that there is an inconsistency between her policy and the network state, 
 and proceeds to call up the third-party SDN provider to complain
 about the problem.
 
-\noindent{\bf Use-Case 2: SDN Developer.} A developer at the third-party SDN
+\noindent{\bf Second perspective: SDN Developer.} A developer at the third-party SDN
 company receives the customer's trouble-ticket and begins to investigate the
 problem. The developer examines the system logs and sees a
 long list of link status events, control server reboots, VM migration events,
@@ -25,17 +25,17 @@ interleaved, so the developer is unsure what caused the problem.
 The developer feeds a snapshot of the network from before the
 trouble-ticket was issued into the simulator, and
 begins replaying the execution of the system. The developer runs
-correspondence checking, and finds a substantial list of inconsistencies,
+correspondence checking, and finds a substantial list of policy-violations,
 manifesting as loops, blackholes, and other problems.
-To isolate the root cause, the developer decides to exclude from the simulated
-execution all events unrelated to the path between the two disconnected
-servers. As the developer is stepping through the execution, he periodically
-runs correspondence checking and tracks the inconsistencies over time. He
-finds that most inconsistencies resolve within a short time. However, he
+To isolate the root cause, the developer excludes all external events
+unrelated to the two disconnected hosts. As the developer is stepping through the execution, he periodically
+runs correspondence checking and tracks the policy-violations over time. He
+finds that most violations resolve within a short time. However, he
 eventually encounters a blackhole which lasts a considerable time. The
 developer backs up the execution to the point when consistency begins, and
 observes a switch failure followed directly by a reboot of the switch's parent
-controller. The developer adds log statements to the platform's failover
+controller. Correspondence check between layers of the platform indicate the problem is present in the
+physical view, but is not manifest in the virtualization layer. The developer adds log statements to the platform's failover
 logic, and re-runs the execution. The developer eventually verifies that the
 controller pushed a routing change to the failed switch's neighbors, but did
 not update the platform's representation of the network state. Upon closer
@@ -43,22 +43,21 @@ examination, the developer finds that the new parent controller for that
 portion of the network assumed that the platform's
 representation of network state was up-to-date. As such, the partially installed flow entries remained
 in the neighboring switches, resulting in the blackhole. The developer fixes
-the platform's recovery code and pushes the change to production. The
-developer also adds this case to the platform's integration test suite.
-\colin{Mention correspondence checking between intermediate layers of
-SDN stack?}
+the platform's recovery code, adds this case to the platform's integration
+test suite, and pushes the change to production. 
 
 \subsection{Overhead}
 
 \noindent{\bf Simulator Scalability.} We have implemented a prototype
 simulator. In a single process, our prototype models hosts and OpenFlow switches 
-as python objects, which communicate with a SDN controller as if they were
+as lightweight python objects, which communicate with a SDN controller as if they were
 true hardware.
 
 To gauge the scalability of modeling the network within a single-process,
-we \colin{will have} spawned a network of 10,000 switches and measured the
-time to process 5 FLOW\_MOD messages per switch. \colin{It took X seconds,
-which is below the bounds of human perception}
+we generated a fat tree network of 48 pods (2,880 switches), and measured the
+time to send 1 OFFP\_PORT\_STATUS message and process 5 FLOW\_MOD
+messages per switch. The execution completed in 5.846 seconds, well within the
+bounds of reasonable interactive use.
 
 %\tbd{Graph of simulator
 %scalability. x-axis is \# of software switches. y-axis is time to process N
@@ -74,7 +73,8 @@ core switch model supports a maximum of 128K MAC entries and
 128K ACL entries~\cite{cisco7000}. Assuming 36 bytes per flow entry,
 (larger than OpenFlow 13-tuple), this yields
 an upper bound of 9216 bytes, uncompressed, per FIB. A datacenter of 100,000
-hosts includes roughly 8,000 switches~\cite{Al-Fares:2008:SCD:1402946.1402967}.
+hosts includes roughly 8,000
+switches~\cite{Al-Fares:2008:SCD:1402958.1402967}.
 Therefore a snapshot of the FIBs of the entire network takes up roughly 74 MB.
 The VL2 paper reports 36M network error events over one year over 8
 datacenters, which implies 8.5 error events per minute per
@@ -94,16 +94,16 @@ rate for datacenter logs. Note that this is a conservative overestimate.
 graph for correspondence checking is equivalent to enumerating
 all possible paths in the network, which scales with the diameter
 of the network and the number of routing entries per switch.
-The propogation graph for each host can be
+The propagation graph for each host can be
 computed in parallel however, so the computation is bottlenecked by the serial runtime
 of computing a single host's propagation graph.
 
 We show the serial runtime of correspondence checking in 
-Figure~\ref{hsa_runtime}. For this analysis we generated fat tree topologies
-between 2 and 48 pods wide, with pre-installed PORTLAND~\cite{NiranjanMysore:2009:PSF:1594977.1592575}
-routing tables in each switch. Each data point was generated on a single Intel Xeon
-2.80GHz core. Note that the number of PORTLAND routing entries per switch scales with the number
-of pods in the fat-tree. Note also that we excluded the time to convert
+Figure~\ref{fig:hsa_runtime}. For this analysis we generated fat tree topologies
+between 2 and 48 pods wide, with pre-installed PORTLAND~\cite{NiranjanMysore:2009:PSF:1592568.1592575}
+routing tables in each switch. Each data point is the minimum of three
+runs on a single Intel Xeon 2.80GHz core. Note that the number of PORTLAND routing entries per switch scales with the number
+of pods in the fat-tree. We excluded the time to convert
 flow tables to HSA transfer functions, since transfer functions can be maintained
 offline.
 

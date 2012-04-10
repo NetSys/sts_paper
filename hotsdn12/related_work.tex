@@ -1,48 +1,43 @@
-\tbd{fold in google doc related work section}
-
-This work extends a growing literature on debugging and software engineering tools for
+This work extends a growing literature on troubleshooting tools for
 Software-Defined Networks.
     
 The work most closely related to ours is NICE~\cite{nice}. NICE combines concolic execution
-and model checking, to automate the process of testing NOX applications,
+and model checking to automate the process of testing NOX applications,
 thereby catching bugs before
-they are deployed~\cite{nice}. Our approaches complement each other in several ways. 
-\Simulator places a high-burden on human intuition; conceptualizing
+they are deployed. Our approaches complement each other in several ways. 
+\Simulator{} places a high-burden on human intuition; conceptualizing
 a 10,000 node network is difficult, and it's feasible that users will not be able 
-to reproduce the bugs they have in mind. Systematic exploration of failure orderings 
+to reproduce the errors they have in mind. Systematic exploration of failure orderings 
 is potentially of great use for finding corner-case errors.
-In complement to NICE, correspondence checking helps developers isolate the particular 
-component of the SDN platform responsible for an error, without needing to specify invariants.
-Moreover, in the case that
-model checking is unable to complete a system exploration of the code base or improperly
- specifies an invariant, our mechanisms allows users to troubleshoot errors 
+In complement to NICE, correspondence checking helps developers isolate the
+specific component of the SDN platform responsible for an error, without needing to specify invariants.
+NICE may also be applied directly to the code-base of the SDN platform. In the case that only a subset
+of all possible code-paths in the SDN platform can be model-checked due to state-space explosion, 
+our mechanisms allows users to troubleshoot errors 
 {\it post-hoc} after they are observed in production.
 
 Focusing on the physical network, Anteater~\cite{anteater} and HSA~\cite{hsa}
 are alternative approaches to statically checking invariants in the
 configuration of switches and routers. Both take take as input a snapshot of
-the FIB of each network device, as well as
-additional control information such as SNMP updates or VLAN configuration.
-To check invariants, Anteater generates a set of constraint functions and feeds them through a SAT
+the FIB of each network device. To check invariants, Anteater generates a set of constraint functions and feeds them through a SAT
 solver, while HSA defines an algebra for virtual packets and
-their transformation through the network. We leverage the HSA algebra to
-define and implement correspondence checking. Nonetheless, static checking
+their transformation through the network. Nonetheless, static checking
 only detects bugs that manifest entirely within the physical network;  
 it cannot detect errors that manifest across the layers of the SDN stack. Further,
 static checking does not isolate the component within the SDN stack
 responsible for the bug. Finally, as we discuss in \S\ref{sec:approach},
 static checking only detects errors at a particular point in time; it cannot 
-detect bugs that might arise under a different configuration or with different
+detect errors that might arise under a different configuration or with different
 inputs to the same network controller.
 
 Also focusing on the physical network, OFRewind~\cite{ofrewind} develops
 record and replay techniques for the control plane of OpenFlow networks.
 Unlike \simulator, OFRewind focuses specifically on OpenFlow
-interactions and switch hardware behavior, while we focus on more course-grained replay of
+interactions and hardware behavior, while we focus on more course-grained replay of
 failures and topology changes. Running replay within a simulator also allows
 us to manually modify the execution of the system, rather than playing a
 static recording. Finally, we add correspondence checking to automate the
-process of isolation a root cause.
+process of isolating root causes.
 
 Another line of work aims to prevent bugs from being introduced in the first
 place. Frenetic~\cite{frenetic} presents a language-based approach to building
@@ -50,34 +45,39 @@ robust SDN applications. By providing a specialized programming model,
  Frenetic helps developers avoid writing common classes of
 bugs, such `composition errors' where installed flow entries override each other.
 Reitblatt et al.~\cite{consistentupdates} develop a technique for ensuring
-consistent routing updates, such that all switches in the network either route
+consistent routing updates, ensuring that all switches in the network either route
 a given packet under the new configuration or under the old configuration,
-but not both. These abstraction are valuable for preventing common errors
+but not both. These abstraction are valuable for preventing common, difficult errors
 in platform logic.
 
-Several other network simulators exist for testing SDN logic. Mininet is a 
+Several other network simulators exist for testing SDN controllers. Mininet is a 
 platform for emulating OpenFlow switches and hosts within a single
  VM~\cite{Lantz:2010:NLR:1868447.1868466}. The ns-series of network simulators
-provides a general framework for testing out new protocols, topologies,
+provides a general framework for testing new protocols, topologies,
 and traffic mixes~\cite{ns3}. We found that these existing simulators did
-not provide sufficient support for corner-cases situations, such as failures and
-VM migration, which are the focus of our work.
+not provide sufficient support for the corner-cases situations which are the
+focus of our work, such as failures and VM migration.
 
-\colin{What about xtrace?}
 
 Many of our ideas originate from the literature on troubleshooting general
 distributed systems. WiDS checker introduced the notion of recording
 production executions to be later replayed and verified in a controlled simulation.
 Its successor, D$^3$S~\cite{d3s}, applies consistent snapshot algorithms and
-other techniques to make the online invariant checking system robust and
-scalable. Pip~\cite{pip} defines a DSL and a set of annotation tools to
+other techniques to make the online invariant checking system itself scalable
+and robust. Pip~\cite{pip} defines a DSL and collection of annotation tools to
 reason about causal paths throughout the execution of the
 distributed system. Our work solves a more constrained problem; we leverage
 the structure of the SDN stack to enable a simple notion of platform
 correctness. In addition, these systems assume that invariants should hold at
-all times; we observe that in an eventually consistent system such as SDN,
-inconsistencies are inevitable. We built \simulator to help troubleshooters
-differentiate ephemeral from persistent inconsistencies.
+all times; we observe that in an eventually-consistent system such as SDN,
+transient policy-violations are inevitable. We built \simulator{} to help troubleshooters
+differentiate ephemeral from persistent errors. Finally, end-to-end tracing
+frameworks such as X-Trace~\cite{Fonseca:2007:XPN:1973430.1973450} and 
+Pinpoint~\cite{Chen02pinpoint:problem} provide a framework for tracing requests throughout 
+a distributed system in order to infer correctness errors between layers and
+across components. We also aim to identify correctness errors between layers; however, we leverage the structure
+of the SDN platform to infer policy-violations without requiring users to
+manually inspect traces or specify invariants.
 
 % If we manage to run multiple applications by Monday, we should cite papers
 % on consistency and cross-layer debugging:

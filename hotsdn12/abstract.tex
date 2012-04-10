@@ -6,8 +6,13 @@ applications. Towards this end we present
 cross-layer correspondence checking, a mechanism to automatically detect and
 isolate policy-violations due to bugs in the SDN platform. We observe that in
 distributed systems such as SDN however,
-transient policy-violations are inevitable.
+transient policy-violations due to failures and delays are inevitable.
 Our \simulator{} framework augments correspondence checking by helping troubleshooters
-distinguish pernicious from harmless ephemeral policy-violations. We
-show that these techniques combine to help troubleshooters ``see through the fog'' of
-diagnostic information.
+distinguish pernicious from harmless ephemeral policy-violations.
+We show that these mechanisms in combination can be used to quickly
+identify the root cause of difficult errors, including isolation breaches,
+faulty failover logic, and consistency problems between replicated
+controllers.
+
+% Justine: "See through the fog" isn't very compelling - can you enumerate
+% specific classes of errors you resolve?
