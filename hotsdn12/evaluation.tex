@@ -73,7 +73,8 @@ core switch model supports a maximum of 128K MAC entries and
 128K ACL entries~\cite{cisco7000}. Assuming 36 bytes per flow entry,
 (larger than OpenFlow 13-tuple), this yields
 an upper bound of 9216 bytes, uncompressed, per FIB. A datacenter of 100,000
-hosts includes roughly 8,000 switches~\cite{Al-Fares:2008:SCD:1402946.1402967}.
+hosts includes roughly 8,000
+switches~\cite{Al-Fares:2008:SCD:1402958.1402967}.
 Therefore a snapshot of the FIBs of the entire network takes up roughly 74 MB.
 The VL2 paper reports 36M network error events over one year over 8
 datacenters, which implies 8.5 error events per minute per
@@ -98,7 +99,7 @@ computed in parallel however, so the computation is bottlenecked by the serial r
 of computing a single host's propagation graph.
 
 We show the serial runtime of correspondence checking in 
-Figure~\ref{hsa_runtime}. For this analysis we generated fat tree topologies
+Figure~\ref{fig:hsa_runtime}. For this analysis we generated fat tree topologies
 between 2 and 48 pods wide, with pre-installed PORTLAND~\cite{NiranjanMysore:2009:PSF:1592568.1592575}
 routing tables in each switch. Each data point is the minimum of three
 runs on a single Intel Xeon 2.80GHz core. Note that the number of PORTLAND routing entries per switch scales with the number
