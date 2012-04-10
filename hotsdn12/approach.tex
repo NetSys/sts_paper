@@ -63,38 +63,52 @@ and comparing the leaves.
 
 \subsection{\SIMULATOR{}}
 
-For many use-cases, isolating an error to a particular layer suffices.
-For example, a network operator might verify that policy-violations manifest in
-the underlying platform, and thereby hand off
-troubleshooting responsibility to a platform maintainer.
+Correspondence checking allows to detect inconsistencies between the layers and
+policy violations present in the network at a particular point in time, and
+localizes the error to a particular layer in the SDN stack. However, it only
+captures a snapshot, and does not enable the troubleshooter to classify the
+gravity of the detected inconsistencies, i.e., whether the detected 
+inconsistencies are \emph{harmless} and temporary, i.e., byproducts of the forwarding reconverging 
+after a link failure, or whether they are \emph{pernicious} and persistent.
+Also, it cannot aid in isolating the precise \emph{even sequence} that triggered
+the faulty behavior.
 
-To isolate and fix the root cause of a problem however, troubleshooters will often
-need more information. In particular, correspondence checking only enumerates
-policy-violations present in the network at a particular point in time;
-troubleshooters need to explore the execution of the system over
-time. Our approach is to record the execution of the production network and replay 
-it in a simulated model of the system.
+To achieve these goals, we complement correspondence checking with
+\emph{simulation-based replay analysis}. We base our replay on a consistent
+trace of low level SDN events, as enabled, e.g., by OFRewind~\ref{ofrewind}. The
+events from the trace are fed into a simulator that invokes the correspondence
+checking at every time step. The simulator focuses on the \emph{sdn control plane},
+and models the failure modes in sufficient detail to reproduce the error, while
+allowing for complete control of the timing, ordering, and production of the events.
 
-Even in small networks, the number of low-level events captured by
-log-statements can be overwhelming. The main utility of \simulator{} is that
-troubleshooters can easily differentiate pertinent from
-irrelevant diagnostic information by excluding extraneous events and
-tracking the lifetime of policy-violations over time. At any point in time
-during the replay, the troubleshooter
-can run enumerate all policy-violations in the 
-network with correspondence checking.
+\textbf{Identifying pernicious inconsistencies}. When an inconsistency is detected,
+the simulators forks off a simulation branch that investigates the future system behavior
+in a case where \emph{no further external events are received}. If the detected inconsistency
+is resolved in isolation within a customizable number of simulation time steps, it is considered
+a temporary problem. If it is not, this is a strong indication that the system has indeed
+reached a persistently inconsistent state that needs to be investigated.
 
-Correspondence checking and \simulator{} serve to isolate the systems
-components and events responsible for a given error. To debug the code
-responsible for the error, add log statements and iteratively repeat the
-execution of the system until the relevant code block has been identified fixed. Modeling the system additionally
-yields complete control of the timing, ordering and production of events.
-For example, troubleshooters can proactively induce failures or packet drops
-to reproduce the failure-condition observed in practice.
+\textbf{Checking related problems by fuzzing} Input traces can be \emph{fuzzed}, i.e.,
+randomly pertubed, to expose the system to similar error conditions, and confirm
+that a proposed solution is not just a point-fix.
 
-\colin{Out of place?} Note that for a proactive
-network, only periodic snapshots of routing tables, link state events, and
-control server failure events are needed for high-fidelity replay.
+\textbf{Investigating pathological environment conditions} The simulator allows for the investigation
+of pathological environment conditions difficult to achieve in a real world test bed
+(i.e., high, correlated failure rates, extremely long delays etc.). This enables
+investigation of situations that have a high failure potential.
 
-\colin{Mention that model checking could help here?}
+\textbf{Interactive exploration} Troubleshooters can also interactively bisect
+the trace or modify specific events to further pinpoint the cause for a failure.
+This is useful as soon as a concrete suspicious event sequence has been identified.
+
+\subsection{Discussion}
+Correspondence checking and \simulator{} serve to isolate the systems layer and
+the event sequence responsible for a given error. To identify the root cause of
+the failure in the code, they can be complemented by classical debugging
+techniques,~i.e., log messages and source code debugging. These are much more
+effective when applied to investigate a specific event sequence. Once a
+potential fix has been developed, it can be validated by repeating the
+problematic replay. Fuzzing helps to validate whether there may be
+related error events that the patch may have left open.
+
 
