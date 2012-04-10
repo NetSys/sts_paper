@@ -1,11 +1,13 @@
 The predominant technique for troubleshooting bugs in software-defined networks,
 log analysis, is tedious and error-prone. We argue that a more principled
-approach should be built around identifying inconsistencies between lower-level network configuration
-and higher-level policies dictated by control applications. In
+approach should be built around identifying inconsistencies between lower-level
+network configuration and higher-level policies dictated by control
+applications. Towards this end we present
+cross-layer correspondence checking, a mechanism to automatically detect and
+isolate inconstencies due to bugs in the SDN platform. In
 eventually-consistent systems such as SDN however,
 transient inconsistencies between policy and configuration are inevitable.
-Troubleshooting mechanisms should therefore provide a mechanism to differentiate
-pernicious persistent from harmless ephemeral inconsistencies. We present two
-mechanisms based on these principles, cross-layer correspondence checking and \simulator,
-designed to make it easier for troubleshooters to ``see through the fog'' of
+We therefore augment correpondence checking with \simulator to help troubleshooters
+distinguish pernicious persistent from harmless ephemeral inconsistencies. We
+show that these techniques combine to help troubleshooters ``see through the fog'' of
 diagnostic information.
