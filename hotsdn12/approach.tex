@@ -19,8 +19,8 @@ Formally, each layer of the SDN stack can be represented as a graph,
 $G = (V, E)$. Packets are series of bits, $h \in \{0,1\}^L = H$,
 where $L$ is the maximum number of bits in the header. Upon receiving a packet,
 forwarding elements apply a transformation function, potentially modifying
-packets before forwarding them on\footnote{We assume unicast forwarding for
-clarity}:
+packets before forwarding them on\footnote{Multicast forwarding can expressed
+by extending the range to sets of output tuples}:
 \begin{align*}
 T: (H \times E) \rightarrow (H \times E_{\emptyset})
 \end{align*}
