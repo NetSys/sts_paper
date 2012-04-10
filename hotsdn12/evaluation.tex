@@ -1,9 +1,9 @@
-\subsection{Use-Cases}
+\subsection{Use-Case}
 
 Here we present a hypothetical use-case for correspondence checking and
-\simulator.
+\simulator{}.
 
-\noindent{\bf First perspective: Network Operator.} An enterprise network
+\noindent{\bf Network Operator.} An enterprise network
 operator pays a third-party SDN provider to virtualize their network
 and run it in the cloud. The network operator receives a complaint
 from an internal team that two servers cannot reach other, and 
@@ -15,7 +15,7 @@ finds that there is an inconsistency between her policy and the network state,
 and proceeds to call up the third-party SDN provider to complain
 about the problem.
 
-\noindent{\bf Second perspective: SDN Developer.} A developer at the third-party SDN
+\noindent{\bf SDN Developer.} A developer at the third-party SDN
 company receives the customer's trouble-ticket and begins to investigate the
 problem. The developer examines the system logs and sees a
 long list of link status events, control server reboots, VM migration events,
@@ -55,7 +55,8 @@ true hardware.
 
 To gauge the scalability of modeling the network within a single-process,
 we generated a fat tree network of 48 pods (2,880 switches), and measured the
-time to send 1 OFFP\_PORT\_STATUS message and process 5 FLOW\_MOD
+time to send 1 \\
+PORT\_STATUS message and process 5 FLOW\_MOD
 messages per switch. The execution completed in 5.846 seconds, well within the
 bounds of reasonable interactive use.
 
@@ -117,7 +118,8 @@ is the number of hosts in the network squared, disregarding ECMP load-balancing.
     \includegraphics[width=3.25in]{../graphs/hsa_overhead_graph/graph.pdf}
     \caption[]{\label{fig:hsa_runtime} Serial runtime of correspondence
     checking on PORTLAND fat tree networks. Each datapoint consists of
-    $x^3/4$ hosts and $5x^2/4$ switches.}
+    $x^3/4$ hosts and $5x^2/4$ switches (\eg{} 48 pods means 27,468 hosts
+    attached to 2,880 switches)}
 \end{figure}
 
 \colin{\noindent{\bf Miscellaneous} How do you validate the simulator? Is it sufficiently complex to
