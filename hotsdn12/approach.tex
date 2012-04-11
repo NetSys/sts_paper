@@ -87,13 +87,13 @@ large number of failure events and transient policy-violations. We describe
 how users can apply \simulator{} to differentiate transient from persistent
 policy-violations below.
 
-\textbf{Identifying persistent inconsistencies}. When an inconsistency is detected,
+\textbf{Identifying persistent policy-violations}. When a policy-violation is detected,
 the simulators forks off a simulation branch that investigates the future system behavior
 in a case where no further external events are played out. If the detected
 policy-violation
 is resolved in isolation within a customizable number of simulation time steps, it is considered
 a temporary problem. If it is not, this is a strong indication that the system has indeed
-reached a persistently inconsistent state that needs to be investigated.
+reached a persistent policy violation that needs to be investigated.
 
 \textbf{Checking related problems by fuzzing} Input traces can be \emph{fuzzed}, i.e.,
 randomly perturbed, to expose the system to similar error conditions, and confirm
