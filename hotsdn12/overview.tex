@@ -3,18 +3,17 @@ of errors observed in production software-defined networks.
 
 \subsection{SDN Architecture}
 
-Modern SDN controllers are constructed as three separate layers:
+Modern SDN controllers are constructed as three separate layers, depicted in Figure \ref{fig:basicarch}:
 the lowest layer maintains the state of each switch in the network; the virtualization layer 
 abstracts the details of the physical network into a simple graph representation;
 and the control application layer specifies network policies in terms of the
-virtual graph. A depiction of this architecture is shown in Figure \ref{fig:basicarch}.
-We describe the details of these components below.
+virtual graph. We describe the details of these components below.
 
 The lowest layer of the SDN stack maintains a graph data-structure known as
 the `physical view', which has a one-to-one correspondence with the physical
 network. When a higher layer specifies a policy change on the physical view,
 synchronization logic generates configuration changes and sends it to the
-corresponding network devices. Likewise, when a state change
+corresponding network devices. Conversely, when a state change
 occurs in the network, this component notifies upper layers of the change.
 
 The virtualization layer facilitates a concise specification of
@@ -54,11 +53,11 @@ Proactive controllers pre-compute forwarding tables for the entire network,
 and only push down updates periodically to react to link failures, changes in
 traffic mix, \etc. In contrast, reactive controllers forward all new flows to
 control servers. After a control decision is made, a flow entry is installed
-into the ingress switch, and the packet is forwarded along.
+in the ingress switch, and the packet is forwarded along.
 
 Production SDN deployments are commonly proactive, primarily due to the large
 scale of datacenter networks and the current capabilities of forwarding hardware.
-We focus on the proactive controllers for the remainder of this paper,
+We focus on proactive controllers for the remainder of this paper,
 although our troubleshooting mechanisms are also applicable to reactive
 applications.
 
@@ -103,7 +102,7 @@ conditions that plague general distributed systems; inconsistent reads and
 writes, race conditions over message arrivals, and unintended consequences of failover
 logic are common. As an example, suppose a controller fails, and all the
 switches under its purview are adopted by a new control server. If the new parent
-fails to properly query the switches for their current state, or reads
+neglects to properly query the switches for their current state, or reads
 stale control information from the data store, it may inadvertently install
 conflicting flow entries in the network. Errors may also result 
 from non-disjoint partitioning

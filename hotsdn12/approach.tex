@@ -36,7 +36,7 @@ transitive closure of $\Phi$:
 \Omega: (H \times E_{access}) \rightarrow (H \times E_{\emptyset}) \\
 \Omega(h,e) = \Phi^{\infty}(h,e)
 \end{align*}
-Here, $E_{access}$ represents access links adjacent to end-hosts.
+Here, $E_{access}$ denotes access links adjacent to end-hosts.
 
 In SDN, it should always be the case that:
 \begin{align*}
@@ -73,7 +73,7 @@ events from the trace are fed into a simulator, which allows the
 troubleshooter to invokes correspondence
 checking at any point in time. The simulator focuses on corner-case events,
 and models the failure modes in sufficient detail to reproduce the error, while
-allowing for complete control of the timing, ordering, and production of the events.
+allowing for complete control of the timing, ordering, and constuction of the events.
 
 %and does not enable the troubleshooter to classify the
 %gravity of the detected inconsistencies, i.e., whether the detected 
@@ -93,24 +93,24 @@ in a case where no further external events are played out. If the detected
 policy-violation
 is resolved in isolation within a customizable number of simulation time steps, it is considered
 a temporary problem. If it is not, this is a strong indication that the system has indeed
-reached a persistent policy violation that needs to be investigated.
+reached a persistent policy-violation that needs to be investigated.
 
-\textbf{Checking related problems by fuzzing} Input traces can be \emph{fuzzed}, i.e.,
+\textbf{Checking related problems by fuzzing.} Input traces can be \emph{fuzzed}, i.e.,
 randomly perturbed, to expose the system to similar error conditions, and confirm
 that a proposed solution is not just a point-fix.
 
-\textbf{Investigating pathological environment conditions} The simulator allows for investigation
+\textbf{Investigating pathological environment conditions.} The simulator allows for investigation
 of pathological environment conditions difficult to achieve in a real world test bed
 (\eg{}, correlated failure rates, extremely long delays etc.). This enables
 investigation of situations that have a high potential for triggering errors.
 
-\textbf{Interactive exploration} Troubleshooters can also interactively bisect
+\textbf{Interactive exploration.} Troubleshooters can also interactively bisect
 the trace or modify specific events to further pinpoint the cause for a failure.
 This is useful as soon as a suspect event sequence has been identified.
 
 \subsection{Discussion}
-Correspondence checking and \simulator{} serve to isolate the systems layer and
-the event sequence responsible for a given error. To identify the root cause of
+Correspondence checking and \simulator{} serve to isolate the platform layer and
+event sequence responsible for a given error. To identify the root cause of
 the failure in the code, they can be complemented by classical debugging
 techniques,\ie{} log messages and source code debugging. These are much more
 effective when applied to investigate a specific event sequence. Once a
