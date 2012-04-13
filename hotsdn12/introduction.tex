@@ -3,23 +3,24 @@ hide complexity from control applications. To this end, modern platforms perform
 replication, resource arbitration, failure recovery, and network 
 virtualization on the control application's behalf. 
 
-While these measures are effective in simplifying control applications,
+While these measures are effective at simplifying control applications,
 they do not remove any complexity from the overall system. Rather, they merely move the complexity
-from control applications into the underlying SDN platform. The goal of SDN is to provide a stable platform upon which
-applications developers can build applications without needing to debug the
-lower layers. However, the evolution of SDN
-is far too nascent to provide stability today.
+from control applications into the underlying SDN platform. 
 
 As in any software system, complexity increases the probability of
 bugs. When network operators encounter erratic behavior in their network
 they are currently forced to manually trace through
 multiple layers of abstraction: policy-specification, virtualization logic, distribution logic, and
-network devices.
+network devices. SDN system
+developers' hope is that the platform will stable, such that
+operators can safely assume correctness of lower layers.
+Nevertheless, the evolution of SDN is far too nascent to provide stability
+today.
 
 Besides {\it ad-hoc} measurement tools,
 the predominant troubleshooting mechanism in SDN is
 log analysis: manually specifying log statements at relevant points throughout the system;
-collecting; and aligning distributed log files; and analyzing the
+collecting and aligning distributed log files; and analyzing the
 results {\it post-hoc} when a error is encountered in production. Log analysis
 is an important component of the troubleshooting process, but it is deficient
 as a stand-alone solution: logs events
