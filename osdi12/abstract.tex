@@ -1,16 +1,19 @@
-Software-defined networking (SDN) is a structured approach to
-building network control planes, providing a general-purpose
-platform on which control logic can be deployed. The SDN
-platform shields higher-level control logic from the
-complexities of state distribution and the details of
-physical forwarding. The platform may additionally provide a
-virtualized view of the underlying network state to enable
-highly concise specifications of intended behavior. While the SDN platform
-makes writing control logic easier, it also 
-complicates the task of troubleshooting errors;
-it is painstaking to isolate the root cause of errors when there are multiple
-levels of indirection between the high-level control logic and the low-level
-switch configurations. We propose to facilitate troubleshooting in SDN networks by
-checking for {\em correspondence} between abstraction
-layers. We demonstrate that such a system, called \projectname{}, is able to help locate
-virtualization and consistency problems that may arise in SDN deployments.
+The predominant technique for troubleshooting bugs in software-defined networks,
+log analysis, is tedious and error-prone. We argue that a more principled
+approach should be built around identifying inconsistencies between lower-level
+network configuration and higher-level policies dictated by control
+applications. Towards this end we present
+cross-layer correspondence checking, a mechanism to automatically detect and
+isolate policy-violations due to bugs in the SDN platform. We observe,
+however, that in
+distributed systems such as SDN 
+transient policy-violations due to failures and delays are inevitable.
+Our \simulator{} framework augments correspondence checking by helping troubleshooters
+distinguish persistent from harmless ephemeral policy-violations.
+We show that these mechanisms in combination can be used to quickly
+identify the root cause of difficult errors, including isolation breaches,
+faulty failover logic, and consistency problems between replicated
+controllers.
+
+% Justine: "See through the fog" isn't very compelling - can you enumerate
+% specific classes of errors you resolve?

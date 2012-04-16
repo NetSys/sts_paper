@@ -1,13 +1,16 @@
-%\documentclass{sig-alternate-10pt}
-\documentclass[letterpaper,twocolumn,10pt]{article}
-\usepackage{url}
+\documentclass{sig-alternate-10pt}
+%\documentclass[letterpaper,twocolumn,10pt]{article}
+%\usepackage{url}
 %\usepackage{usenix,epsfig,endnotes}
 %\usepackage{fullpage} 
 %\setlength{\textwidth}{6.75in}
 %\setlength{\oddsidemargin}{-.125in}
-\usepackage{graphicx}
+%\usepackage{graphicx}
 
-\usepackage{natbib}
+\usepackage{times,epsfig,url,subfigure,graphics,graphicx,rotating,color,xcolor,xspace}
+
+%\usepackage[letterpaper,hmargin=1in,vmargin=1in]{geometry}
+%\usepackage{natbib}
 %\usepackage{subfigure}
 %\usepackage{ifpdf}
 %\usepackage{multicol}
@@ -17,26 +20,29 @@
 %\newcommand{\tbd}[1]{[{\bf{#1}}]}
 
 \newcommand{\projectname}[1]{\it pcc}
-\newcommand{\tbd}[1]{}
+\newcommand{\simulator}[1]{simulation-based replay analysis}
+\newcommand{\Simulator}[1]{Simulation-based replay analysis}
+\newcommand{\SIMULATOR}[1]{Simulation-based Replay Analysis}
+\newcommand{\tbd}[1]{{\bf [[TBD: {#1}]]}}
 \newcommand{\ie}{{\it i.e.}}
 \newcommand{\eg}{{\it e.g.}}
 \newcommand{\etc}{{\it etc.}}
 \newcommand{\apriori}{{\it a priori}}
 \newcommand{\eat}[1]{}
 
-\usepackage[usenames,dvipsnames]{color}
+%\usepackage[usenames,dvipsnames]{color}
 \newcommand{\justine}[1]{{\color{ForestGreen}\bf JS: {#1}}}
 \newcommand{\andi}[1]{{\color{blue}\bf AW: {#1}}}
-\newcommand{\colin}[1]{{\color{Red}\bf CS: {#1}}}
-\newcommand{\scott}[1]{{\color{Purple}\bf SS: {#1}}}
+\newcommand{\colin}[1]{{\color{red}\bf CS: {#1}}}
+\newcommand{\scott}[1]{{\color{purple}\bf SS: {#1}}}
 
-\setlength{\columnsep}{.25in}
-\setlength\topmargin{-.5in}
-\setlength\textheight{8.5in}
+%\setlength{\columnsep}{.25in}
+%\setlength\topmargin{-.5in}
+%\setlength\textheight{8.5in}
 %\usepackage{verbatim}
 %\usepackage[compact]{titlesec}
 %\usepackage[small]{caption}
-\usepackage{times}
+%\usepackage{times}
 
 % Squeeze out the whitespace!
 %\setlength{\parskip}{0pt}
@@ -51,24 +57,23 @@
 %\titlespacing{\subsection}{.5pt}{*.2}{*.2}
 %\titlespacing{\subsubsection}{.5pt}{*.2}{*.2}
 
+\numberofauthors{3}
 
-\title{\vspace{-40pt}Cross-Layer Debugging for the \\ Software-Defined Networking Stack with \projectname{}}
+\title{Cross-Layer Troubleshooting for the \\ Software-Defined Networking Stack}
 
-%\author{Colin Scott and Andreas Wundsam and Justine Sherry and Scott Shenker}
-\author{Paper \#166, 2 pages}
+\author{
+\alignauthor Colin Scott\\
+    \affaddr{UC Berkeley}
+\alignauthor Andreas Wundsam\\
+    \affaddr{ICSI}
+\alignauthor Scott Shenker\\
+    \affaddr{ICSI \& UC Berkeley}
+}
 
-%        \begin{multicols}{2}{{\it Draft - Please do not distribute.}}\\
-%\author{Paper \#69, 14 Pages}
-
-\date{}
 \begin{document}
     \maketitle
 
-\abstract{
-{\it
-\input{abstract}
-\vspace{45pt}
-}
+\abstract{{\it \input{abstract}}}
 
 \section{Introduction}
 \label{sec:intro}
@@ -78,17 +83,13 @@
 \label{sec:overview}
 \input{overview}
 
-\section{Architecture}
-\label{sec:architecture}
-\input{architecture}
+\section{Approach}
+\label{sec:approach}
+\input{approach}
 
 \section{Evaluation}
 \label{sec:evaluation}
 \input{evaluation}
-
-\section{Discussion}
-\label{sec:discussion}
-\input{discussion}
 
 \section{Related Work}
 \label{sec:related_work}
@@ -96,10 +97,9 @@
 
 \section{Conclusion}
 \label{sec:conclusion}
-SDN is fun!
+\input{conclusion}
 
-%\bibliographystyle{abbrv}
-%\bibliography{bib}
+\bibliographystyle{abbrv} \small \bibliography{bib}
 
 %\input{appendix}
 
