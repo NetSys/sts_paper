@@ -1,8 +1,12 @@
+\tbd{rephrase in terms of localization along two dimensions: time, and
+component}
 In this section we present two mechanisms to facilitate the troubleshooting
 process. Correspondence checking allows troubleshooters to isolate
 the cause of policy-violations to a particular layer. \Simulator{}
 allows troubleshooters to isolate relevant events throughout the system
 execution. We provide the details of these techniques below. 
+
+\tbd{define terms early on: event sequence, policy-violation, minimal causal set}
 
 \subsection{Correspondence Checking}
 
@@ -63,6 +67,20 @@ represent policy-violations between control applications and network
 configuration.
 
 \subsection{\SIMULATOR{}}
+
+\colin{Insight: policy-violations are unavoidable in distributed systems
+(delay). $\rightarrow$ Challenge is to distinguish pernicious from benign
+policy-violations}
+
+\begin{itemize}
+\item Motivate with a (real?) example
+\item Normal software practices -> regression tests: collect failure modes
+\item Large failure log
+\item failure events numerous, potentially overlapping, unclear which are imporant
+\item We offer an improvement: track policy-violation over time to find “minimal
+\item causal set”
+\item Takeaway: “I have never seen this in a networked system”
+\end{itemize}
 
 Correspondence checking only captures a snapshot of the network state.
 We have developed \simulator{} to allow enable troubleshooters to explore

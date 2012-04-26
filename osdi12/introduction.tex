@@ -18,6 +18,9 @@ operators can safely assume correctness of lower layers.
 Nevertheless, the evolution of SDN is far too nascent to provide stability
 today.
 
+\colin{troubleshooting != debugging. Troubleshooting is about clarifying
+symptoms. Debugging assumes a well-defined symptom, and finds the root cause.}
+
 Besides {\it ad-hoc} measurement tools,
 the predominant troubleshooting mechanism in SDN is
 log analysis: manually specifying log statements at relevant points throughout the system;
@@ -42,6 +45,14 @@ itself.
 %the usability of their troubleshooting mechanisms.
 %Similarly, we think it highly undesirable to deploy SDN-based
 %networking without a viable troubleshooting paradigm. 
+
+\colin{Our framework localizes a region of the two dimensional space: layer vs.
+event. HSA helps us get a crisp definition of the policy-violation (scope of
+inconsistency in the network, range of inputs that produce it).}
+
+% Make this sound algorithmic
+
+% Term: minimal causal set
 
 In this paper we present an algorithm for verifying correctness of the
 platform. We observe that verifying correctness of the SDN platform

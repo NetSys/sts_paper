@@ -54,6 +54,9 @@ and only push down updates periodically to react to link failures, changes in
 traffic mix, \etc. In contrast, reactive controllers forward all new flows to
 control servers. After a control decision is made, a flow entry is installed
 in the ingress switch, and the packet is forwarded along.
+\tbd{NOTE: not so different -- only in terms of record/replay overhead. And
+OFRewind showed that even reactive controllers are tractable, since control
+traffic is much smaller than dataplane traffic}
 
 Production SDN deployments are commonly proactive, primarily due to the large
 scale of datacenter networks and the current capabilities of forwarding hardware.
@@ -67,7 +70,9 @@ Here we provide a few examples of platform failures. Note that
 we do not address failures in the highest (control application) and lowest
 (dataplane forwarding tables) levels of abstraction. Previous work exists
 for finding and troubleshooting faults in the application layer~\cite{nice}
-and the forwarding plane~\cite{anteater}.
+and the forwarding plane~\cite{anteater}. \tbd{We are not defining ourselves
+in terms of related work -- related work is a way of addressing the
+deficiencies of our approach}
 
 As described in the previous section, modern SDN platforms differ from
 `first-generation' controllers such as NOX~\cite{nox} in two dimensions. 
