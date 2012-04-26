@@ -1,3 +1,5 @@
+\tbd{introduce SDN}
+
 The SDN platform's $raison\text{ }d'\hat{e}tre$ is to 
 hide complexity from control applications. To this end, modern platforms perform
 replication, resource arbitration, failure recovery, and network 
@@ -9,14 +11,13 @@ they merely move the complexity
 from control applications into the underlying SDN platform. 
 
 As in any software system, complexity increases the probability of
-bugs. When network operators encounter erratic behavior in their network
+bugs. SDN system developers' hope is that the platform will eventually become
+stable, such that operators can safely assume correctness of lower layers.
+Nevertheless, the evolution of SDN is far too nascent to provide stability
+today. When network operators encounter erratic behavior in their network
 they are currently forced to manually trace through
 multiple layers of abstraction: policy-specification, virtualization logic,
-distribution logic, and network devices. SDN system
-developers' hope is that the platform will stable, such that
-operators can safely assume correctness of lower layers.
-Nevertheless, the evolution of SDN is far too nascent to provide stability
-today.
+distribution logic, and network devices. 
 
 \colin{troubleshooting != debugging. Troubleshooting is about clarifying
 symptoms. Debugging assumes a well-defined symptom, and finds the root cause.}
@@ -46,38 +47,43 @@ itself.
 %Similarly, we think it highly undesirable to deploy SDN-based
 %networking without a viable troubleshooting paradigm. 
 
-\colin{Our framework localizes a region of the two dimensional space: layer vs.
-event. HSA helps us get a crisp definition of the policy-violation (scope of
-inconsistency in the network, range of inputs that produce it).}
+In this paper we present \projectname{}, a framework for troubleshooting
+network policy violations caused by bugs in the
+SDN platform. \projectname{} localizes the root cause
+of policy-violations along two dimensions, which we describe in turn:
+component, and time.
 
-% Make this sound algorithmic
+\noindent{\bf Correspondence Checking}. We observe that the structure of the
+SDN platform (graphs at every layer) enables a straightforward algorithm for
+checking that control applications' policies are implemented correctly in
+the physical network. Our algorithm, `correspondence checking',
+enumerates all policy-violations present in the network at a given point in
+time, providing a crisp determination of the scope of a policy-violation in the
+network as well as the range of inputs that produce it. Moreover,
+by checking correspondence between intermediate layers of the
+SDN platform, \projectname{} is able to localize the particular component responsible 
+for a given policy-violation.
 
-% Term: minimal causal set
+% HSA helps us get a crisp definition of the policy-violation (scope of
+% inconsistency in the network, range of inputs that produce it
 
-In this paper we present an algorithm for verifying correctness of the
-platform. We observe that verifying correctness of the SDN platform
-is equivalent to showing that high-level policies specified by
-control applications correspond with low-level network configuration.
-Our algorithm, which we term `correspondence checking',
-leverages the structure of the SDN platform (graphs at every layer)
-to enumerate all policy-violations at any point in time, and localize their
-root cause to a particular component of the system.
-
-Correspondence checking does not suffice on its own; like any distributed
+\noindent{\bf \Simulator{}.} Like any distributed
 system, transient policy-violations due to failures and delays are 
-common, especially at large scale. We present \simulator{}
-to augment the diagnostic information provided by correspondence checking.
-\Simulator{} allows troubleshooters 
-to differentiate transient from persistent policy-violations by tracking
-the life cycle of problems 
-both forward and backward in time.
+common, especially at large scale. We present \simulator{}, a semi-automated
+technique to differentiate pernicious and benign policy-violations.
+By iteratively replaying the execution of
+the system and pruning out events that are not causally related to pernicious
+policy-violations, \simulator{} localizes the minimal causal set of network events
+leading up to a policy-violation. 
 
-We demonstrate that these mechanisms combined can be used to quickly
-identify the root cause of difficult errors, including isolation breaches,
+In evaluating \projectname{} on
+three controller platforms -- Frenetic, Floodlight, and POX -- we find N bugs,
+including isolation breaches,
 faulty failover logic, and consistency problems between replicated
-controllers. We have implemented prototypes
-of correspondence checking and \simulator{}, and made the code publicly
-available~\cite{github}.
+controllers. We further demonstrate the feasibility of deploying
+correspondence checking and \simulator{} on production networks,
+finding that correspondence checking can enumerate all policy-violations in a
+fat-tree network of 100,000 hosts in under N seconds.
 
 The rest of this paper is organized as follows. In \S\ref{sec:overview},
 we present an overview of the SDN stack and its failure modes.
