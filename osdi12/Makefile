@@ -2475,6 +2475,9 @@ echo-list	= for x in $1; do $(ECHO) "$$x"; done
 .PHONY: all
 all: $(default_pdf_targets) ;
 
+scott:
+	zip -r ../osdi12.zip ../osdi12 ../diagrams ../graphs
+
 .PHONY: all-pdf
 all-pdf: $(default_pdf_targets) ;
 
