@@ -1,4 +1,23 @@
-\tbd{introduce SDN}
+The ecosystem of troubleshooting tools for computer networks is desperately
+sparse; relatively little progress has been made since in the invention of
+{\tt traceroute} in 1987~\cite{traceroute}. This is in stark contrast with the software 
+industry, where a 10 billion dollar market
+exists for testing, debugging, and formally proving the correctness of
+software products. The emergence of SDN yields the
+opportunity to have a much more sophisticated set of troubleshooting and
+debugging tools. Consider, for example, a recent quite from Urs
+H\"oelzle~\cite{urs}:
+
+\begin{quote}
+One of the strongest benefits with SDN for Google has been the robust
+testing capabilities available with SDN. H\"olzle reported that the
+transition from traditional to OpenFlow networks was nearly seamless and
+they encountered far fewer challenges than expected. Much of what made
+this possible was the ability to very easily simulate backbone-scale
+network environments virtually, including the ability to mirror
+production event streams in testing environments, which allowed Google
+to identify and fix all the bugs in advance.
+\end{quote}
 
 The SDN platform's $raison\text{ }d'\hat{e}tre$ is to 
 hide complexity from control applications. To this end, modern platforms perform
