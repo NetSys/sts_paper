@@ -6,14 +6,13 @@ We present two techniques for localizing the root cause of network policy
 violations: cross-layer correspondence checking detects inconsistencies between lower-level
 network configuration and higher-level policies dictated by control
 applications, thereby localizing the system component where policy-violations first
-appear; and \newline{} simulation-based replay analysis localizes the minimal causal set of network events
+appear; and \simulator{} localizes the minimal causal set of network events
 leading up to the policy-violation, thereby differentiating harmless
 policy-violations from pernicious policy-violations. In evaluating our tools on
 three controller platforms -- Frenetic, Floodlight, and POX -- we find N bugs,
 including isolation breaches,
 faulty failover logic, and consistency problems between replicated
 controllers.
-
 
 % Justine: "See through the fog" isn't very compelling - can you enumerate
 % specific classes of errors you resolve?
