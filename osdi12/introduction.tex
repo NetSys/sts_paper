@@ -3,7 +3,8 @@ sparse; relatively few innovations have taken place since the invention of
 {\tt traceroute} in 1987~\cite{traceroute}. The emergence of software-defined
 networking (SDN), however, is now enabling a greatly improved testing and debugging
 cycle. Consider a recent quote from Google's Urs H\"oelzle~\cite{urs}:
-% TODO: the article is not by Urs -- need to get real quote from ONS
+% TODO: the article is not by Urs -- need to get real quote from ONS. Also,
+% just paraphrase instead of quote?
 
 \begin{quote}
 One of the strongest benefits with SDN for Google has been the robust
@@ -16,6 +17,7 @@ production event streams in testing environments, which allowed Google
 to identify and fix all the bugs in advance.
 \end{quote}
 
+% Could boil this down to one sentence...
 Software-defined networks are nonetheless highly complex distributed systems.
 Modern platforms perform replication, resource arbitration, failure recovery, and network 
 virtualization at datacenter scale. In this environment the SDN platform must be robust to
@@ -23,8 +25,8 @@ hardware failures, message drops, churn, and a plethora of other issues
 inherent to distributed systems.
 
 As in any software system, complexity increases the probability of
-bugs. SDN platform developers' hope is that the platform will eventually become
-stable, such that operators can safely assume correctness of lower layers.
+bugs. SDN platform developers' hope is that the platform will become
+stable eventually, such that operators can safely assume correctness of lower layers.
 Nevertheless, the evolution of SDN is far too nascent to provide stability
 today. When network operators encounter erratic behavior in their network
 they are currently forced to manually trace through
@@ -41,8 +43,8 @@ collecting and aligning distributed log files; and analyzing the
 results {\it post-hoc} when a error is encountered in production. Log analysis
 is an important component of the troubleshooting process, but it is deficient
 as a stand-alone solution: logs events
-are enormous in number, impossible to aggregate into a single serial
-execution of the system, and often at the wrong level of granularity.
+are enormous in number, often at the wrong level of granularity,
+and yield a partial ordering of the system execution at best.
 
 Recent work has contributed troubleshooting techniques focused on the highest (control
 application) and lowest (dataplane forwarding tables) layers of the SDN stack.
@@ -59,10 +61,11 @@ itself.
 %Similarly, we think it highly undesirable to deploy SDN-based
 %networking without a viable troubleshooting paradigm. 
 
+% poor transition. Also, our work is not brought out until the second page...
 In this paper we present \projectname{}, a framework for troubleshooting
 network policy violations caused by bugs in the
 SDN platform. \projectname{} localizes the root cause
-of policy-violations along two dimensions, which we describe in turn:
+of policy-violations along two dimensions:
 component, and time.
 
 \noindent{\bf Correspondence Checking}. We observe that the structure of the
@@ -76,9 +79,8 @@ by checking correspondence between intermediate layers of the
 SDN platform, \projectname{} is able to localize the particular component responsible 
 for a given policy-violation.
 
-% HSA helps us get a crisp definition of the policy-violation (scope of
-% inconsistency in the network, range of inputs that produce it
 
+% Need more buildup to this component
 \noindent{\bf \Simulator{}.} Like any distributed
 system, transient policy-violations due to failures and delays are 
 common, especially at large scale. We present \simulator{}, a semi-automated
@@ -89,13 +91,14 @@ policy-violations, \simulator{} localizes the minimal causal set of network even
 leading up to a policy-violation. 
 
 In evaluating \projectname{} on
-three controller platforms---Frenetic, Floodlight, and POX---we find N bugs,
+three controller platforms---Frenetic, Floodlight, and POX---we find \colin{N} bugs,
 including isolation breaches,
 faulty failover logic, and consistency problems between replicated
 controllers. We further demonstrate the feasibility of deploying
 correspondence checking and \simulator{} on production networks,
 finding that correspondence checking can enumerate all policy-violations in a
-fat-tree network of 100,000 hosts in under N seconds.
+fat-tree network of 100,000 hosts in under \colin{N} seconds.
+% Need to say something about scalability of simulator as well
 
 The rest of this paper is organized as follows. In \S\ref{sec:overview},
 we present an overview of the SDN stack and its failure modes.
@@ -104,3 +107,47 @@ In \S\ref{sec:approach} we present correspondence checking and
 a use-case and a preliminary performance evaluation.
 Finally, in \S\ref{sec:related_work} we discuss related work,
 and in \S\ref{sec:conclusion} we conclude.
+
+\subsection{Feedback from Kay et al.}
+
+\begin{itemize}
+\item \simulator{} does two things: find the minimal causal set, {\bf and}
+differentiates benign from pernicious. Only one of these points was clear, not
+both.
+\item The Google quote seems to indicate that the problem has already been solved!
+\item Along a similar vein, the point about ``the SDN platform will eventually
+become stable'' makes it seems like these problems aren't fundamental. But
+these problems are fundamental! How will the community view this paper in 10
+years?
+\item The reader doesn't walk away from this problem thinking ``This problem
+seems really heard!''. What are the specific bugs this framework addresses?
+Also, make it clear why this problem is important! If Pepsi knows that
+Coca-cola might be able to snoop on their traffic, we've lost huge \$\$\$.
+\item Don't frame ourselves just against log analysis. Make 
+the shortcomings of the status quo very clear, and be very precise about how
+we address those shortcoming. (Why aren't traditional distributed systems
+techniques apropro? Why is static checking of a single layer insufficient? How
+is \simulator{} different than traditional replay debugging?)
+\item Would be cool to have numbers on how many log events developers have to
+step through today.
+\item Would also be cool to have numbers on how many benign policy-violations
+there are at a given point (say, in POX).
+\item ``Policy-violation'' wasn't well-defined.
+\item The introduction (prose) was too dense. Frame the problem in terms that
+the reader understands. Get them thinking about the problem right off the bat.
+Then lead them through our reasoning of how we came to the solution. Present
+a straw-man solution, and show why that doesn't work. This way
+the reader is much more engaged -- the reader should ``nod along''.
+\item Too many big words, \eg{} ``nascent''
+\item What exactly are we simulating? Hardware faults? Misconfigurations?
+(answer: all of the above)
+\item How exactly does correspondence checking provide a crisp determination of the scope of a policy-violation in the
+network as well as the range of inputs that produce it? (answer: you start off
+with a customer complaint, ``A can't ping B''. Correspondence checking tells
+you all possible inputs that would experience the blackhole, and what parts of
+the network are effected)
+\item ``Stack'' connotes TCP/IP. Maybe use ``Platform'' instead?
+\item ``Fault'' connotes hardware failure. Maybe use ``Software Fault''
+\item Cite Frenetic, POX, Floodlight?
+\item What does \projectname{} stand for?
+\end{itemize}
