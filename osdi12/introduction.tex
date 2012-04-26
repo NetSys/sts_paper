@@ -4,14 +4,15 @@ replication, resource arbitration, failure recovery, and network
 virtualization on the control application's behalf. 
 
 While these measures are effective at simplifying control applications,
-they do not remove any complexity from the overall system. Rather, they merely move the complexity
+they do not remove any complexity from the overall system. Rather,
+they merely move the complexity
 from control applications into the underlying SDN platform. 
 
 As in any software system, complexity increases the probability of
 bugs. When network operators encounter erratic behavior in their network
 they are currently forced to manually trace through
-multiple layers of abstraction: policy-specification, virtualization logic, distribution logic, and
-network devices. SDN system
+multiple layers of abstraction: policy-specification, virtualization logic,
+distribution logic, and network devices. SDN system
 developers' hope is that the platform will stable, such that
 operators can safely assume correctness of lower layers.
 Nevertheless, the evolution of SDN is far too nascent to provide stability
@@ -56,7 +57,8 @@ system, transient policy-violations due to failures and delays are
 common, especially at large scale. We present \simulator{}
 to augment the diagnostic information provided by correspondence checking.
 \Simulator{} allows troubleshooters 
-to differentiate transient from persistent policy-violations by tracking the life cycle of problems 
+to differentiate transient from persistent policy-violations by tracking
+the life cycle of problems 
 both forward and backward in time.
 
 We demonstrate that these mechanisms combined can be used to quickly
