@@ -1,12 +1,9 @@
 The ecosystem of troubleshooting tools for computer networks is desperately
-sparse; relatively little progress has been made since in the invention of
-{\tt traceroute} in 1987~\cite{traceroute}. This is in stark contrast with the software 
-industry, where a 13 billion dollar market
-exists for testing, debugging, and formally proving the correctness of
-software products~\cite{testing_market}. The emergence of SDN yields the
-opportunity to have a much more sophisticated set of troubleshooting and
-debugging tools. Consider, for example, a recent quite from Urs
-H\"oelzle~\cite{urs}:
+sparse; relatively few innovations have taken place since the invention of
+{\tt traceroute} in 1987~\cite{traceroute}. The emergence of software-defined
+networking (SDN), however, is now enabling a greatly improved testing and debugging
+cycle. Consider a recent quote from Google's Urs H\"oelzle~\cite{urs}:
+% TODO: the article is not by Urs -- need to get real quote from ONS
 
 \begin{quote}
 One of the strongest benefits with SDN for Google has been the robust
@@ -19,18 +16,14 @@ production event streams in testing environments, which allowed Google
 to identify and fix all the bugs in advance.
 \end{quote}
 
-The SDN platform's $raison\text{ }d'\hat{e}tre$ is to 
-hide complexity from control applications. To this end, modern platforms perform
-replication, resource arbitration, failure recovery, and network 
-virtualization on the control application's behalf. 
-
-While these measures are effective at simplifying control applications,
-they do not remove any complexity from the overall system. Rather,
-they merely move the complexity
-from control applications into the underlying SDN platform. 
+Software-defined networks are nonetheless highly complex distributed systems.
+Modern platforms perform replication, resource arbitration, failure recovery, and network 
+virtualization at datacenter scale. In this environment the SDN platform must be robust to
+hardware failures, message drops, churn, and a plethora of other issues
+inherent to distributed systems.
 
 As in any software system, complexity increases the probability of
-bugs. SDN system developers' hope is that the platform will eventually become
+bugs. SDN platform developers' hope is that the platform will eventually become
 stable, such that operators can safely assume correctness of lower layers.
 Nevertheless, the evolution of SDN is far too nascent to provide stability
 today. When network operators encounter erratic behavior in their network
@@ -96,7 +89,7 @@ policy-violations, \simulator{} localizes the minimal causal set of network even
 leading up to a policy-violation. 
 
 In evaluating \projectname{} on
-three controller platforms -- Frenetic, Floodlight, and POX -- we find N bugs,
+three controller platforms---Frenetic, Floodlight, and POX---we find N bugs,
 including isolation breaches,
 faulty failover logic, and consistency problems between replicated
 controllers. We further demonstrate the feasibility of deploying
