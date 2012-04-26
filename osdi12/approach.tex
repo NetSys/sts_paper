@@ -82,6 +82,8 @@ policy-violations}
 \item Takeaway: “I have never seen this in a networked system”
 \end{itemize}
 
+\colin{Step backwards, not forwards}
+
 Correspondence checking only captures a snapshot of the network state.
 We have developed \simulator{} to allow enable troubleshooters to explore
 policy-violations over time. We base our replay on a consistent
@@ -126,6 +128,11 @@ investigation of situations that have a high potential for triggering errors.
 the trace or modify specific events to further pinpoint the cause for a failure.
 This is useful as soon as a suspect event sequence has been identified.
 
+\textbf{regression/integration test.} Library of known tricky scenarios.
+\colin{Way to frame this: the value of a regression librawry may seem obvious to you
+systems researchers, but it's new to us networks researchers :). We've never
+seen this before in a networked system!}
+
 \subsection{Discussion}
 Correspondence checking and \simulator{} serve to isolate the platform layer and
 event sequence responsible for a given error. To identify the root cause of
@@ -135,5 +142,4 @@ effective when applied to investigate a specific event sequence. Once a
 potential fix has been developed, it can be validated by repeating the
 problematic replay. Fuzzing helps to validate whether there may be
 related error events that the patch may have left open.
-
 
