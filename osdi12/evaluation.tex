@@ -1,7 +1,7 @@
 \subsection{Use-Case}
 
-Here we present a hypothetical use-case from two perspectives for correspondence checking and
-\simulator{}.
+Here we present a hypothetical use-case from two perspectives
+for correspondence checking and \simulator{}.
 
 \noindent{\bf Network Operator.} An enterprise network
 operator pays a third-party SDN provider to virtualize their network
@@ -49,20 +49,17 @@ test suite, and pushes the change to production.
 
 \subsection{Overhead}
 
-\noindent{\bf Simulator Scalability.} We have implemented a prototype
-simulator. In a single process, our prototype models hosts and OpenFlow switches 
-as lightweight python objects that communicate with a SDN controller. 
+\noindent{\bf Simulator Scalability.} Will a single machine be able to 
+simulate large networks quickly enough for interactive use? In
+Figure~\ref{fig:scalability} we depict the runtime for control processing vs.
+number of simulated switches. We find the foobar. Our simulator keeled over at
+X switches because of bottleneck Y.
 
-To gauge the scalability of modeling the network within a single-process,
-we generated a fat tree network of 48 pods (2,880 switches), and measured the
-time to send 1 \\
-PORT\_STATUS message and process 5 FLOW\_MOD
-messages per switch. The execution completed in 5.8 seconds, well within the
-bounds of reasonable interactive use.
-
-%\tbd{Graph of simulator
-%scalability. x-axis is \# of software switches. y-axis is time to process N
-%OFTP\_FLOW\_MOD messages. A few lines for different values of N} \\
+\begin{figure}[t]
+    %\hspace{-10pt}
+    \includegraphics[width=3.25in]{../graphs/mock_simulator_scalability.jpg}
+    \caption[]{\label{fig:scalability} Our beautfiful scalability graph}
+\end{figure}
 
 \noindent{\bf Record and Replay Overhead.} In contrast to general record-and-replay
 mechanisms, the amount of recorded state needed for
