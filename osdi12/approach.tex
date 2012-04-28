@@ -31,14 +31,14 @@ the network at a particular point in time. In this model, network traversal is s
 functions. For example, if a header $h$ enters the network through edge
 $e$, its state after $k$ hops will be:
 \begin{align*}
-\Phi^k(h,e) = \Psi(\Psi(\dots \Psi(h,e)\dots))
+\Psi^k(h,e) = \Psi(\Psi(\dots \Psi(h,e)\dots))
 \end{align*}
 
 The externally visible behavior of the network can be expressed as the
-transitive closure of $\Phi$:
+transitive closure of $\Psi$:
 \begin{align*}
 \Omega: (H \times E_{access}) \rightarrow (H \times E_{\emptyset}) \\
-\Omega(h,e) = \Phi^{\infty}(h,e)
+\Omega(h,e) = \Psi^{\infty}(h,e)
 \end{align*}
 Here, $E_{access}$ denotes access links adjacent to end-hosts.
 
