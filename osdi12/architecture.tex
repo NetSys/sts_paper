@@ -5,11 +5,12 @@ you wrong. Here are the engineering tricks we mustered to address the problems
 you're thinking of.
 
 Figure \ref{fig:system} depicts our architecture. We address the parts in turn:
-\begin{figure}[t]
-    %\hspace{-10pt}
-    \includegraphics[width=0.8\linewidth]{../diagrams/architecture/architecture.pdf}
-    \caption[]{\label{fig:system} Depiction of the layered SDN stack.} 
-\end{figure}
+\begin{figure*}[!t]
+  \centering
+  \includegraphics[width=0.8\textwidth]{../diagrams/architecture/architecture.pdf}
+  \caption{System architecture}
+  \label{fig:parallel_drops_master}
+\end{figure*}
 
 \noindent{\bf Event Generation} Event generation has two components.
 We first generate system executions, which come from one of three sources:
