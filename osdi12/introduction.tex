@@ -1,87 +1,39 @@
-The ecosystem of troubleshooting tools for computer networks is desperately
-sparse; relatively few innovations have taken place since the invention of
-{\tt traceroute} in 1987~\cite{traceroute}. The emergence of software-defined
-networking (SDN), however, is now enabling a greatly improved testing 
-cycle. For example, in a recent keynote at the Open Networking Summit,
-Urs H\"oelzle cited the recent statement from Google's Urs H\"oelzle~\cite{urs}:
-One of the strongest benefits with SDN for Google has been the robust
-testing capabilities available with SDN. H\"olzle reported that the
-transition from traditional to OpenFlow networks was nearly seamless and
-they encountered far fewer challenges than expected. Much of what made
-this possible was the ability to very easily simulate backbone-scale
-network environments virtually, including the ability to mirror
-production event streams in testing environments, which allowed Google
-to identify and fix all the bugs in advance.
+Given their critical role in enterprises, one might expect that networks
+would come with a well-developed suite of troubleshooting tools. However,
+the unfortunate truth is that {\tt traceroute}, developed in 1987~\cite{traceroute},
+remains the network administrator's most sophisticated diagnostic mechanism. This reflects
+the lack of structure in network control planes, which are an ad hoc mixture of
+distributed protocols and manual configuration that directly manipulate the forwarding tables; it is hard to tell what is broken
+when the goals are only implicitly expressed in the flow entries themselves.
 
-% Could boil this down to one sentence...
-Software-defined networks are nonetheless highly complex distributed systems.
-Modern platforms perform replication, resource arbitration, failure recovery, and network 
-virtualization at datacenter scale. In this environment the SDN platform must be robust to
-hardware failures, message drops, churn, and a plethora of other issues
-inherent to distributed systems.
+In this respect, the emergence of Software-Defined
+Networks (SDN) provides both an opportunity and a challenge. Since SDN
+is still in its infancy (compared to the more traditional networking approaches which have been
+used for decades), we (as a community) have an opportunity to make diagnostic tools
+a more integral part of the overall SDN design process. The challenge is that while SDN's goal is to simplify the
+{\em management} of networks, the SDN platform itself is a complicated distributed system which may have bugs.
+In this paper we present one approach to meeting this challenge, an SDN troubleshooting tool called \projectname{}.
 
-As in any software system, complexity increases the probability of
-bugs. When network operators encounter erratic behavior in their network
-they are currently forced to manually trace through
-multiple layers of abstraction: policy-specification, virtualization logic,
-distribution logic, and network devices. 
+It is important to place this work in context and scope the problem we are attacking.  First, \projectname{} is a troubleshooting tool, not a debugger; by this we mean that \projectname{} helps identify and localize the network problems, but it does not help  identify exactly which line of code causes the error. Second, \projectname{} is focused on the SDN platform itself. While progress has been made in troubleshooting control
+applications that run on top of the SDN platform \cite{nice} and in troubleshooting the forwarding tables in the physical switches \cite{anteater,hsa}, we  
+are not aware of previous troubleshooting work that focuses on the SDN platform; to the best of our knowledge, painstaking analysis of detailed logs is the current state-of-the-art in SDN platform troubleshooting. 
 
-\colin{troubleshooting != debugging. Troubleshooting is about clarifying
-symptoms. Debugging assumes a well-defined symptom, and finds the root cause.}
 
-Besides {\it ad-hoc} measurement tools,
-the predominant troubleshooting mechanism in SDN is
-log analysis: manually specifying log statements at relevant points throughout the system;
-collecting and aligning distributed log files; and analyzing the
-results {\it post-hoc} when a error is encountered in production. Log analysis
-is an important component of the troubleshooting process, but it is deficient
-as a stand-alone solution: logs events
-are enormous in number, often at the wrong level of granularity,
-and yield a partial ordering of the system execution at best.
-
-Recent work has contributed troubleshooting techniques focused on the highest (control
-application) and lowest (dataplane forwarding tables) layers of the SDN stack.
-NICE applies concolic execution and model checking to SDN control
-applications, thereby automating the testing process and catching bugs before
-they are deployed~\cite{nice}. Anteater~\cite{anteater} and HSA~\cite{hsa}
-introduce mechanisms for checking static invariants in the dataplane.
-Nonetheless, no automated troubleshooting mechanism exists for problems that span
-multiple layers of the SDN stack, specifically those caused by bugs in the platform
-itself.
-
-%The utility of new programming models is heavily dependent on
-%the usability of their troubleshooting mechanisms.
-%Similarly, we think it highly undesirable to deploy SDN-based
-%networking without a viable troubleshooting paradigm. 
-
-% poor transition. Also, our work is not brought out until the second page...
-In this paper we present \projectname{}, a framework for troubleshooting
-network policy violations caused by bugs in the
-SDN platform. \projectname{} localizes the root cause
-of policy-violations along two dimensions:
-component, and time.
+\projectname{} localizes the root cause
+of network problems along two dimensions: where in the SDN stack, and when the triggering event occured. To accomplish this, 
+\projectname{} employs two basic techniques:
 
 \noindent{\bf Correspondence Checking}. We observe that the structure of the
-SDN platform (graphs at every layer) enables a straightforward algorithm for
+SDN platform (as we discuss in the next section) enables a straightforward algorithm for
 checking that control applications' policies are implemented correctly in
-the physical network. Our algorithm, `correspondence checking',
-enumerates all policy-violations present in the network at a given point in
+the physical network. Our algorithm enumerates all policy-violations (i.e., any instance where the policies are not properly implemented in the network) present in the network at a given point in
 time, providing a crisp determination of the scope of a policy-violation in the
-network as well as the range of inputs that produce it. Moreover,
-by checking correspondence between intermediate layers of the
-SDN platform, \projectname{} is able to localize the particular component responsible 
-for a given policy-violation.
+network and the particular SDN layer responsible 
+for it.
 
-
-% Need more buildup to this component
-\noindent{\bf \Simulator{}.} Like any distributed
-system, transient policy-violations due to failures and delays are 
-common, especially at large scale. We present \simulator{}, a semi-automated
-technique to differentiate pernicious and benign policy-violations.
-By iteratively replaying the execution of
-the system and pruning out events that are not causally related to pernicious
-policy-violations, \simulator{} localizes the minimal causal set of network events
-leading up to a policy-violation. 
+\noindent{\bf \Simulator{}.} \projectname{} can replay the execution of the SDN platform against
+a stream of network events (e.g., links failures). This allows us to (i) distinguish between policy-violations that are harmless and quickly heal and those that are persistent and/or pernicious, and (ii) identify the minimal set of events that triggered
+the policy violation. \\
 
 In evaluating \projectname{} on
 three controller platforms---Frenetic, Floodlight, and POX---we find \colin{N} bugs,
