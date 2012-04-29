@@ -20,14 +20,14 @@ attacking. First, \projectname{} is a troubleshooting tool, not a debugger; by
 this we mean that \projectname{} helps identify and localize network
 problems (what, where, and when?), but it does not help identify exactly which
 line of code causes the error (why?). Second, \projectname{} is focused on the
-system software layer of the SDN stack (described in the next section). While progress has been made in troubleshooting control
+system software of the SDN stack (described in the next section). While progress has been made in troubleshooting control
 applications that run on top of the SDN platform~\cite{nice} and in troubleshooting the forwarding tables in the physical switches~\cite{anteater,hsa}, we  
 are not aware of previous troubleshooting work that focuses on the SDN
 platform itself; to the best of our knowledge, painstaking analysis of detailed logs is the current state-of-the-art in SDN platform troubleshooting. 
 
 \projectname{} enhances the troubleshooting process by localizing the root cause
 of network problems along three dimensions: what network problems exist at a
-given point in time, where in the control software the problems first developed, and when the triggering event occurred. To accomplish this, 
+given point in time, where in the control software a problem first developed, and when the triggering event occurred. To accomplish this, 
 \projectname{} employs two techniques:
 
 \noindent{\bf Correspondence Checking}. We observe that the structure of the
@@ -38,12 +38,11 @@ the physical network. Our algorithm enumerates all policy-violations
 implemented by the SDN platform) present in the network at a given point in
 time, providing a crisp determination of the range of inputs 
 and the system component(s) responsible for the fault.
-% TODO: point out that correspondence checking tells us ALL possible inputs
-% that would be effected by the poliy-violation? This is what we mean by
-% "providing a crisp determination"
 
 \noindent{\bf \Simulator{}.} \projectname{} can replay the execution of the SDN platform against
-a stream of network events (e.g., link failures). This allows us to (i) distinguish between policy-violations that are harmless and quickly heal and those that are persistent or pernicious, and (ii) identify the minimal set of events that triggered
+a stream of network events (e.g., link failures). This allows us to (i)
+distinguish between policy-violations that are harmless and quickly heal and
+those that are persistent, and (ii) identify the minimal set of events that triggered
 the policy-violation.
 
 In combination, correspondence checking and \simulator{} programmatically localize software-faults in the SDN platform.
@@ -72,6 +71,8 @@ Finally, in \S\ref{sec:related_work} we discuss related work,
 and in \S\ref{sec:conclusion} we conclude.
 
 \eat{
+ % Feedback on version 2.0:
+ % not clear what you mean by "SDN platform", "policy-violation"
 \subsection{\colin{Feedback from Kay et al.}}
 \begin{itemize}
 \item Not sure that OSDI PC members will understand the subtleties of this statement: ``it is hard to tell what is broken when the goals are only implicitly expressed in the flow entries themselves.''
