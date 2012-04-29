@@ -7,34 +7,37 @@ distributed protocols and manual configuration that directly manipulate the forw
 when desired behavior is only implicitly expressed in the routing entries themselves.
 
 In this respect, the emergence of Software-Defined
-Networks (SDN) provides both an opportunity and a challenge. SDN moves control logic out of hardware and into software, where
-flexibility enables concise policy specificatiions and significantly more sophisticated testing and troubleshooting tools. Moreover, since SDN
-is still in its infancy (compared to the more traditional networking approaches which have been
-used for decades), we as a community have an opportunity to make diagnostic tools
+Networks (SDN) provides both an opportunity and a challenge. Moving control logic out of hardware and into software 
+enables enables concise policy specifications and significantly more sophisticated testing and troubleshooting tools. Moreover, since SDN
+is still in its infancy (compared to traditional networking approaches), we as a community have an opportunity to make diagnostic tools
 a more integral part of the overall design process. The challenge is that although SDN's goal is to simplify the
-{\em management} of networks, the SDN platform itself is a complex distributed system, operating in asynchronous, heterogeneous, and failure-prone environments.
-In this paper we present one approach to troubleshooting bugs in the SDN platform, a tool called \projectname{}.
+{\em management} of networks, the SDN software stack itself is a complex distributed system, operating in asynchronous, heterogeneous, and failure-prone environments.
+In this paper we present our approach to troubleshooting bugs in SDN control
+software, a tool called \projectname{}.
 
 It is important to place this work in context and scope the problem we are
 attacking. First, \projectname{} is a troubleshooting tool, not a debugger; by
 this we mean that \projectname{} helps identify and localize network
 problems (what, where, and when?), but it does not help identify exactly which
-line of code causes the error (why?). Second, \projectname{} is focused on the SDN platform. While progress has been made in troubleshooting control
-applications that run on top of the SDN platform \cite{nice} and in troubleshooting the forwarding tables in the physical switches \cite{anteater,hsa}, we  
-are not aware of previous troubleshooting work that focuses on the SDN platform; to the best of our knowledge, painstaking analysis of detailed logs is the current state-of-the-art in SDN platform troubleshooting. 
+line of code causes the error (why?). Second, \projectname{} is focused on the
+system software layer of the SDN stack (described in the next section). While progress has been made in troubleshooting control
+applications that run on top of the SDN platform~\cite{nice} and in troubleshooting the forwarding tables in the physical switches~\cite{anteater,hsa}, we  
+are not aware of previous troubleshooting work that focuses on the SDN
+platform itself; to the best of our knowledge, painstaking analysis of detailed logs is the current state-of-the-art in SDN platform troubleshooting. 
 
-\projectname{} localizes the root cause
-of network problems along three dimensions: what network problems exists at a
-given point in time, where in the SDN stack the problems first developed, and when the triggering event occurred. To accomplish this, 
-\projectname{} employs two basic techniques:
+\projectname{} enhances the troubleshooting process by localizing the root cause
+of network problems along three dimensions: what network problems exist at a
+given point in time, where in the control software the problems first developed, and when the triggering event occurred. To accomplish this, 
+\projectname{} employs two techniques:
 
 \noindent{\bf Correspondence Checking}. We observe that the structure of the
 SDN platform (as we discuss in the next section) enables a straightforward algorithm for
 checking that control applications' policies are implemented correctly in
-the physical network. Our algorithm enumerates all policy-violations (i.e., any instance where the policies are not properly implemented in the network) present in the network at a given point in
-time, providing a crisp determination of the scope of a policy-violation in the
-network and the particular system component responsible  
-for it.
+the physical network. Our algorithm enumerates all policy-violations
+(\ie{}, any instance where the high-level policies are not properly
+implemented by the SDN platform) present in the network at a given point in
+time, providing a crisp determination of the range of inputs 
+and the system component(s) responsible for the fault.
 % TODO: point out that correspondence checking tells us ALL possible inputs
 % that would be effected by the poliy-violation? This is what we mean by
 % "providing a crisp determination"
@@ -43,13 +46,15 @@ for it.
 a stream of network events (e.g., link failures). This allows us to (i) distinguish between policy-violations that are harmless and quickly heal and those that are persistent or pernicious, and (ii) identify the minimal set of events that triggered
 the policy-violation.
 
-In combination, correspondence checking and \simulator{} programmaticaly localize software-faults in the SDN platform.
+In combination, correspondence checking and \simulator{} programmatically localize software-faults in the SDN platform.
 With \projectname{}, operators and developers are free to focus their efforts
 on debugging the code itself, without needing to 
 diagnose the symptoms in the first place.
+% This represents an improvement over the state-of-the-art SDN troubleshooting
+% practices
 
 In evaluating \projectname{} on
-three SDN platforms---Frenetic, Floodlight, and POX---we find \colin{N} bugs,
+three popular SDN platforms---Frenetic, Floodlight, and POX---we find \colin{N} bugs,
 including isolation breaches,
 faulty failover logic, and consistency problems between replicated
 controllers. We further demonstrate the feasibility of deploying
@@ -60,8 +65,9 @@ simulated networks exceeding 100,000 hosts in under \colin{N} seconds.
 The rest of this paper is organized as follows. In \S\ref{sec:overview},
 we present an overview of the SDN stack and its failure modes.
 In \S\ref{sec:approach} we present correspondence checking and
-\simulator{} in detail. In \S\ref{sec:evaluation} we present
-a use-case and a preliminary performance evaluation.
+\simulator{} in detail. We discuss the design of \projectname{} in
+\S\ref{sec:architecture}. In \S\ref{sec:evaluation} we present
+\colin{N} bugs found by \projectname{}, as well as a performance evaluation.
 Finally, in \S\ref{sec:related_work} we discuss related work,
 and in \S\ref{sec:conclusion} we conclude.
 
