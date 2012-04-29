@@ -4,20 +4,20 @@ the unfortunate truth is that {\tt traceroute}, developed in 1987~\cite{tracerou
 remains the network administrator's most sophisticated diagnostic mechanism. This reflects
 the lack of structure in network control planes, which are an ad hoc mixture of
 distributed protocols and manual configuration that directly manipulate the forwarding tables; it is hard to tell what is broken
-when the goals are only implicitly expressed in the flow entries themselves.
+when desired behavior is only implicitly expressed in the routing entries themselves.
 
 In this respect, the emergence of Software-Defined
-Networks (SDN) provides both an opportunity and a challenge. Since SDN
+Networks (SDN) provides both an opportunity and a challenge. SDN moves control logic out of hardware and into software, where
+flexibility enables significantly more sophisticated testing and troubleshooting tools. Moreover, since SDN
 is still in its infancy (compared to the more traditional networking approaches which have been
 used for decades), we (as a community) have an opportunity to make diagnostic tools
-a more integral part of the overall SDN design process. The challenge is that while SDN's goal is to simplify the
-{\em management} of networks, the SDN platform itself is a complicated distributed system which may have bugs.
-In this paper we present one approach to meeting this challenge, an SDN troubleshooting tool called \projectname{}.
+a more integral part of the overall SDN design process. The challenge is that although SDN's goal is to simplify the
+{\em management} of networks, the SDN platform itself is a complex distributed system, operating in asynchronous, heterogeneous, and failure-prone environments.
+In this paper we present one approach to troubleshooting the SDN platform, a tool called \projectname{}.
 
 It is important to place this work in context and scope the problem we are attacking.  First, \projectname{} is a troubleshooting tool, not a debugger; by this we mean that \projectname{} helps identify and localize the network problems, but it does not help  identify exactly which line of code causes the error. Second, \projectname{} is focused on the SDN platform itself. While progress has been made in troubleshooting control
 applications that run on top of the SDN platform \cite{nice} and in troubleshooting the forwarding tables in the physical switches \cite{anteater,hsa}, we  
 are not aware of previous troubleshooting work that focuses on the SDN platform; to the best of our knowledge, painstaking analysis of detailed logs is the current state-of-the-art in SDN platform troubleshooting. 
-
 
 \projectname{} localizes the root cause
 of network problems along two dimensions: where in the SDN stack, and when the triggering event occurred. To accomplish this, 
@@ -32,8 +32,12 @@ network and the particular SDN layer responsible
 for it.
 
 \noindent{\bf \Simulator{}.} \projectname{} can replay the execution of the SDN platform against
-a stream of network events (e.g., links failures). This allows us to (i) distinguish between policy-violations that are harmless and quickly heal and those that are persistent and/or pernicious, and (ii) identify the minimal set of events that triggered
+a stream of network events (e.g., link failures). This allows us to (i) distinguish between policy-violations that are harmless and quickly heal and those that are persistent and/or pernicious, and (ii) identify the minimal set of events that triggered
 the policy violation. \\
+
+In combination, correspondence checking and \simulator{} automatically localize software-faults in the SDN platform.
+With \projectname{}, operators and developers are free to focus their efforts on debugging the code itself, without the need to 
+painstakingly diagnose the symptoms in the first place.
 
 In evaluating \projectname{} on
 three controller platforms---Frenetic, Floodlight, and POX---we find \colin{N} bugs,
@@ -53,9 +57,12 @@ a use-case and a preliminary performance evaluation.
 Finally, in \S\ref{sec:related_work} we discuss related work,
 and in \S\ref{sec:conclusion} we conclude.
 
+\eat{
 \subsection{\colin{Feedback from Kay et al.}}
-
 \begin{itemize}
+\item Not sure that OSDI PC members will understand the subtleties of this statement: ``it is hard to tell what is broken when the goals are only implicitly expressed in the flow entries themselves.''
+\item I think we should push a little harder on emphasizing that the bugs are really nasty, and fundamental to the distributed nature of the system. "may have bugs" seems a little weak.
+\item We should make it very clear how our tools are an improvement over the status quo (log analysis). In particular, we automatically localize the (i) layer, and (ii) minimal causal set of events responsible for an error.
 \item \simulator{} does two things: find the minimal causal set, {\bf and}
 differentiates benign from pernicious. Only one of these points was clear, not
 both.
@@ -95,3 +102,4 @@ the network are effected)
 \item Cite Frenetic, POX, Floodlight?
 \item What does \projectname{} stand for?
 \end{itemize}
+}
