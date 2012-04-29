@@ -1,14 +1,11 @@
 The predominant technique for troubleshooting software-defined networks,
 log analysis, is tedious and error-prone. In this paper we leverage the
-structure of the SDN platform to
-improve on the status quo of troubleshooting tools for networked systems.
-We present two techniques for localizing the root cause of network policy
-violations: cross-layer correspondence checking detects inconsistencies between lower-level
-network configuration and higher-level policies dictated by control
-applications, thereby localizing the system component where policy-violations first
-appear; and \simulator{} localizes the minimal causal set of network events
-leading up to the policy-violation, thereby differentiating harmless
-policy-violations from pernicious policy-violations. In evaluating our tools on
+structure of the SDN software stack to improve the network troubleshooting
+process. We present two techniques for localizing the root cause of network problems:
+cross-layer correspondence checking infers what problems exist in the network, 
+and where in the control software the problem first developed; and
+\simulator{} infers when the triggering event(s) occurred. In evaluating
+our tools on
 three controller platforms---Frenetic, Floodlight, and POX---we find N bugs,
 including isolation breaches,
 faulty failover logic, and consistency problems between replicated
