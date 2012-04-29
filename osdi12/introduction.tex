@@ -8,19 +8,24 @@ when desired behavior is only implicitly expressed in the routing entries themse
 
 In this respect, the emergence of Software-Defined
 Networks (SDN) provides both an opportunity and a challenge. SDN moves control logic out of hardware and into software, where
-flexibility enables significantly more sophisticated testing and troubleshooting tools. Moreover, since SDN
+flexibility enables concise policy specificatiions and significantly more sophisticated testing and troubleshooting tools. Moreover, since SDN
 is still in its infancy (compared to the more traditional networking approaches which have been
-used for decades), we (as a community) have an opportunity to make diagnostic tools
-a more integral part of the overall SDN design process. The challenge is that although SDN's goal is to simplify the
+used for decades), we as a community have an opportunity to make diagnostic tools
+a more integral part of the overall design process. The challenge is that although SDN's goal is to simplify the
 {\em management} of networks, the SDN platform itself is a complex distributed system, operating in asynchronous, heterogeneous, and failure-prone environments.
-In this paper we present one approach to troubleshooting the SDN platform, a tool called \projectname{}.
+In this paper we present one approach to troubleshooting bugs in the SDN platform, a tool called \projectname{}.
 
-It is important to place this work in context and scope the problem we are attacking.  First, \projectname{} is a troubleshooting tool, not a debugger; by this we mean that \projectname{} helps identify and localize the network problems, but it does not help  identify exactly which line of code causes the error. Second, \projectname{} is focused on the SDN platform itself. While progress has been made in troubleshooting control
+It is important to place this work in context and scope the problem we are
+attacking. First, \projectname{} is a troubleshooting tool, not a debugger; by
+this we mean that \projectname{} helps identify and localize network
+problems (what, where, and when?), but it does not help identify exactly which
+line of code causes the error (why?). Second, \projectname{} is focused on the SDN platform. While progress has been made in troubleshooting control
 applications that run on top of the SDN platform \cite{nice} and in troubleshooting the forwarding tables in the physical switches \cite{anteater,hsa}, we  
 are not aware of previous troubleshooting work that focuses on the SDN platform; to the best of our knowledge, painstaking analysis of detailed logs is the current state-of-the-art in SDN platform troubleshooting. 
 
 \projectname{} localizes the root cause
-of network problems along two dimensions: where in the SDN stack, and when the triggering event occurred. To accomplish this, 
+of network problems along three dimensions: what network problems exists at a
+given point in time, where in the SDN stack the problems first developed, and when the triggering event occurred. To accomplish this, 
 \projectname{} employs two basic techniques:
 
 \noindent{\bf Correspondence Checking}. We observe that the structure of the
@@ -28,26 +33,29 @@ SDN platform (as we discuss in the next section) enables a straightforward algor
 checking that control applications' policies are implemented correctly in
 the physical network. Our algorithm enumerates all policy-violations (i.e., any instance where the policies are not properly implemented in the network) present in the network at a given point in
 time, providing a crisp determination of the scope of a policy-violation in the
-network and the particular SDN layer responsible 
+network and the particular system component responsible  
 for it.
+% TODO: point out that correspondence checking tells us ALL possible inputs
+% that would be effected by the poliy-violation? This is what we mean by
+% "providing a crisp determination"
 
 \noindent{\bf \Simulator{}.} \projectname{} can replay the execution of the SDN platform against
-a stream of network events (e.g., link failures). This allows us to (i) distinguish between policy-violations that are harmless and quickly heal and those that are persistent and/or pernicious, and (ii) identify the minimal set of events that triggered
-the policy violation. \\
+a stream of network events (e.g., link failures). This allows us to (i) distinguish between policy-violations that are harmless and quickly heal and those that are persistent or pernicious, and (ii) identify the minimal set of events that triggered
+the policy-violation. \\
 
-In combination, correspondence checking and \simulator{} automatically localize software-faults in the SDN platform.
-With \projectname{}, operators and developers are free to focus their efforts on debugging the code itself, without the need to 
-painstakingly diagnose the symptoms in the first place.
+In combination, correspondence checking and \simulator{} programmaticaly localize software-faults in the SDN platform.
+With \projectname{}, operators and developers are free to focus their efforts
+on debugging the code itself, without needing to 
+diagnose the symptoms in the first place.
 
 In evaluating \projectname{} on
-three controller platforms---Frenetic, Floodlight, and POX---we find \colin{N} bugs,
+three SDN platforms---Frenetic, Floodlight, and POX---we find \colin{N} bugs,
 including isolation breaches,
 faulty failover logic, and consistency problems between replicated
 controllers. We further demonstrate the feasibility of deploying
-correspondence checking and \simulator{} on production networks,
-finding that correspondence checking can enumerate all policy-violations in a
-fat-tree network of 100,000 hosts in under \colin{N} seconds.
-% Need to say something about scalability of simulator as well
+\projectname{} on production networks,
+finding that our tools can enumerate all policy-violations in 
+in the networks exceeding 100,000 hosts in under \colin{N} seconds.
 
 The rest of this paper is organized as follows. In \S\ref{sec:overview},
 we present an overview of the SDN stack and its failure modes.
