@@ -7,7 +7,7 @@ SDN networks are managed by software running on a set of network-attached server
 depicted in Figure \ref{fig:basicarch}. The two lower layers are part of the SDN platform, and the highest layer is the control application. We now describe the functions of each layer.
 
 \noindent{\bf Control Application:} This component specifies the desired
-high-level behavior of the network. We terms these behavioral specifications ``policies''. It is the job of the SDN platform to implement these high-level policy-specifications by configuring the forwarding tables of the physical switches, and the platform does so in two steps, each implemented in a separate layer.
+high-level behavior of the network. We terms these behavioral specifications ``policies''. It is the job of the SDN platform to implement these high-level policy-specifications by configuring the forwarding tables of the physical switches. The platform does so in two steps, each implemented in a separate layer.
 
 \noindent{\bf Physical View:} The lowest level of SDN software maintains a graph data-structure known as
 the `physical view', that has a one-to-one correspondence with the physical
@@ -22,12 +22,13 @@ switch~\cite{Casado:2010:VNF:1921151.1921162}. This allows operators
 to specify routing, access control, and QoS policies by configuring a single forwarding
 device. Thus, network policies (emanating from the control application) can be
 expressed as a set of flow entries $<header, actions>$ where possible actions
-includes primitives such as forward out a particular port, drop, or encrypt, and the possible ports include all edge ports (either connecting to external networks, or to hosts). Such a specification would dictate how any packet entering the network should be handled: i.e., what outgoing edge port it should be forwarded to, and perhaps what middlebox services it should be subject to along the way.   
+includes primitives such as forward out a particular port, drop, or encrypt,
+and the possible ports include all edge ports (either connecting to external
+networks, or to hosts). Such a specification would dictate how any packet
+entering the network should be handled: \ie{} what outgoing edge port it should be forwarded to, and perhaps what middlebox services it should be subject to along the way.   
 In addition to providing a simplified network view, the virtualization layer
 can support multi-tenancy by providing each tenant with their own logical
 network to specify policies over. The platform then multiplexes the policies onto the same physical network.
-\scott{do we use the F(view) anywhere? Let's take it out of the diagram and
-remove it from the text.} \colin{agreed. (waiting for laptop to dry out)}
 
 \eat{
 , and isolates control applications from the specifics
@@ -39,10 +40,13 @@ f(\text{\it view}) \rightarrow \text{\it configuration}
 \end{align*}
 }
 
-The logical view greatly simplifies the job of specifying policies. But SDN
+The logical view greatly simplifies the job of specifying policies.
+Nonethless, SDN
 does not eliminate complexity; it merely moves it into the platform, which
 must transform these high-level policy specifications into the appropriate
-configuration of each physical device. Because modern datacenter networks are
+configuration of each physical device.
+
+Because modern datacenter networks are
 large (easily reaching thousands of switches and a hundred thousand hosts),
 the SDN platform must be replicated across many servers.
 Onix~\cite{onix}, for example,
@@ -53,10 +57,14 @@ fault tolerance, and other properties.
 
 The large scale of these networks also means that error events such as link
 failures or software crashes are common.
-For example, Microsoft reports 36M 
+Microsoft, for example, reports 36M 
 error events over one year across 8 datacenters,
 which implies 8.5 error events per minute per
-datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}. Thus, the SDN control platform is a complicated distributed system operating in a highly dynamic environment, making troubleshooting both hard and necessary.
+datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}.
+\eat{
+Thus, the SDN control platform is a complicated distributed system operating in a highly dynamic environment,
+making troubleshooting both hard and necessary.
+}
 
 \begin{figure}[t]
     %\hspace{-10pt}
@@ -64,7 +72,8 @@ datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}. Thus, the SDN control plat
     \caption[]{\label{fig:basicarch} The SDN Software Architecture } 
 \end{figure}
 
-SDN control applications may express proactively or reactively.
+\colin{out of place}
+We note that SDN controllers may install routing entries proactively or reactively.
 Proactive applications pre-compute forwarding tables for the entire network,
 and only push down updates periodically to react to link failures, changes in
 traffic mix, \etc. In contrast, reactive control applications forward all new flows to
@@ -86,18 +95,24 @@ which control logic resides, and they extend horizontally by
 distributing state across multiple control servers. Platform errors arise from both of
 these extensions.
 
-\noindent{\bf Virtualization}. Virtualization errors often result from a
-mismatch between the logical
-view and the state of the physical network. Consider that an entire datacenter
-network (up to 10,000 switches) may be abstracted into a single logical switch. Especially in the
-presence of hardware failures, the mapping between the logical switch and the
-physical topology is highly complex. In a multi-tenant environment, the mapping is often
+\noindent{\bf Virtualization}. Virtualization errors result from a mismatch between the logical
+view and the state of the physical network. When an entire datacenter
+network (up to 10,000 switches) is abstracted into a single logical switch,
+the mapping between the logical switch and the
+physical topology is highly complex; for example, a simple configuration
+change such as ``$A$ should have a path to $B$'' must be implemented as routing entries in a sequence
+of switches in the physical network. Policy changes 
+that span multiple shards of the physical view (statically-defined
+partions of the physical network small enough to be managed by a single control
+server) require coordination between controllers. In a multi-tenant environment, the mapping is often
 many-to-many~\cite{Casado:2010:VNF:1921151.1921162}; each tenant specifies
 policies on their own logical switch, while the platform multiplexes each
-slice over the same physical network. If the logical address
-spaces are not disjoint, or a change in the physical network causes the paths
-to temporarily overlap, breaches of tenant isolation or failure to properly
-install configuration changes may occur,
+slice over the same physical network. In multi-tenant environments, maintaing isolation
+between tenants is critical; updates to the physical network must therefore be
+performed in a consistent fashion to ensure that isolation breaches do not occur
+for any in-flight packets, despite hardware failures and message delays. The virtualization layer also performs resource arbitration,
+ensuring that each logical network's QoS policies are each met by the capacity of
+the physical network.
 
 \noindent{\bf Controller Coordination}. Coordination between controllers
 entails the same classes of error
@@ -108,11 +123,17 @@ switches under its purview are adopted by a new control server. If the new paren
 neglects to properly query the switches for their current state, or reads
 stale control information from the data store, it may inadvertently install
 conflicting flow entries in the network. Errors may also result 
-from non-disjoint partitioning
-schemes between controllers, or incorrect delegation of control for different
+from non-disjoint partitioning schemes between controllers, or incorrect delegation of control for different
 portions of the network. 
 High churn in the network topology due to VM migration and
 hardware failures exacerbate these issues.
+
+In this paper we focus on bugs in the virtualization and controller
+coordination components of the SDN software stack. We are primarily concerned with corner-case scenarios such as
+correlated hardware failures, which are
+the hardest to test {\it a priori}. Corner-case scenarios are nonetheless
+impossible to avoid due the distributed nature and large scale of
+production networks.
 
 %All of these errors may manifest as dataplane forwarding problems, such as
 %loops, blackholes, partitions, broadcast storms. Or breaches of isolation in
