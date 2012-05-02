@@ -41,12 +41,12 @@ f(\text{\it view}) \rightarrow \text{\it configuration}
 }
 
 The logical view greatly simplifies the job of specifying policies.
-Nonethless, SDN
-does not eliminate complexity; it merely moves it into the platform, which
+However, SDN
+does not reduce the overall system complexity; it merely moves complexity out of the control application and into the platform, which
 must transform these high-level policy specifications into the appropriate
 configuration of each physical device.
 
-Because modern datacenter networks are
+The SDN platform not only must handle a complex task, it must do so in a distributed manner running in a highly dynamic environment. Because modern datacenter networks are
 large (easily reaching thousands of switches and a hundred thousand hosts),
 the SDN platform must be replicated across many servers.
 Onix~\cite{onix}, for example,
@@ -54,17 +54,14 @@ partitions a graph of the network state across either an eventually-consistent
 DHT or a transactional database, allowing control applications to make their own
 tradeoffs in choosing consistency models, degree of
 fault tolerance, and other properties.
-
 The large scale of these networks also means that error events such as link
 failures or software crashes are common.
 Microsoft, for example, reports 36M 
 error events over one year across 8 datacenters,
 which implies 8.5 error events per minute per
 datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}.
-\eat{
-Thus, the SDN control platform is a complicated distributed system operating in a highly dynamic environment,
-making troubleshooting both hard and necessary.
-}
+
+
 
 \begin{figure}[t]
     %\hspace{-10pt}
@@ -73,7 +70,7 @@ making troubleshooting both hard and necessary.
 \end{figure}
 
 \colin{out of place}
-We note that SDN controllers may install routing entries proactively or reactively.
+Before describing the many ways in which such a system might fail, we note that there there are two different kinds of SDN control applications: proactive and reactive.
 Proactive applications pre-compute forwarding tables for the entire network,
 and only push down updates periodically to react to link failures, changes in
 traffic mix, \etc. In contrast, reactive control applications forward all new flows to
@@ -100,14 +97,15 @@ view and the state of the physical network. When an entire datacenter
 network (up to 10,000 switches) is abstracted into a single logical switch,
 the mapping between the logical switch and the
 physical topology is highly complex; for example, a simple configuration
-change such as ``$A$ should have a path to $B$'' must be implemented as routing entries in a sequence
+change such as ``the path from $A$
+ to $B$ should pass through $C$'' must be implemented as routing entries in a sequence
 of switches in the physical network. Policy changes 
-that span multiple shards of the physical view (statically-defined
-partions of the physical network small enough to be managed by a single control
-server) require coordination between controllers. In a multi-tenant environment, the mapping is often
-many-to-many~\cite{Casado:2010:VNF:1921151.1921162}; each tenant specifies
-policies on their own logical switch, while the platform multiplexes each
-slice over the same physical network. In multi-tenant environments, maintaing isolation
+that span multiple shards of the physical view (shards being statically-defined
+partitions of the physical network small enough to be managed by a single control
+server) require coordination between controllers. 
+
+This coordination becomes even more complicated in a multi-tenant environment \cite{Casado:2010:VNF:1921151.1921162} where each tenant specifies
+policies on their own logical switch. In such a case, each controller must deal with multiple tenants, and each tenant's policies must be coordinated among multiple controllers. Maintaining isolation
 between tenants is critical; updates to the physical network must therefore be
 performed in a consistent fashion to ensure that isolation breaches do not occur
 for any in-flight packets, despite hardware failures and message delays. The virtualization layer also performs resource arbitration,
@@ -131,8 +129,7 @@ hardware failures exacerbate these issues.
 In this paper we focus on bugs in the virtualization and controller
 coordination components of the SDN software stack. We are primarily concerned with corner-case scenarios such as
 correlated hardware failures, which are
-the hardest to test {\it a priori}. Corner-case scenarios are nonetheless
-impossible to avoid due the distributed nature and large scale of
+the hardest to test {\it a priori}. Corner-case scenarios, while rare, cannot be ignored because of the distributed nature and large scale of
 production networks.
 
 %All of these errors may manifest as dataplane forwarding problems, such as
