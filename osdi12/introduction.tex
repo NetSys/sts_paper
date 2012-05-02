@@ -3,8 +3,8 @@ would come with a well-developed suite of troubleshooting tools. However,
 the unfortunate truth is that {\tt traceroute}, developed in 1987~\cite{traceroute},
 remains the network administrator's most sophisticated diagnostic mechanism. This reflects
 the lack of structure in network control planes, which are an ad hoc mixture of
-distributed protocols and manual configuration that directly manipulate forwarding tables; it is hard to tell what is broken
-when desired behavior is only implicitly expressed in the routing entries themselves.
+distributed protocols and manual configuration that directly manipulate forwarding tables. It is hard to tell what is broken
+when desired behavior is only implicitly expressed in the routing entries themselves, and that is the case with today's networks.
 
 In this respect, the emergence of Software-Defined
 Networks (SDN) provides both an opportunity and a challenge. Moving control logic out of hardware and into software 
@@ -16,7 +16,7 @@ operating in asynchronous, heterogeneous, and failure-prone environments.
 In this paper we present our approach to troubleshooting bugs in SDN control
 software, a tool called \projectname{}.
 
-\projectname{} simplifies the troubleshooting process by programatically localizing the root cause
+\projectname{} simplifies the troubleshooting process by programmatically localizing the root cause
 of network problems along three dimensions: {\it what} network problems exist at a
 given point in time, {\it where} in the control software a problem first developed, and
 {\it when} the triggering event occurred. To accomplish this
@@ -67,10 +67,10 @@ are not aware of previous troubleshooting work that focuses on the SDN
 platform itself; to the best of our knowledge, painstaking analysis of detailed logs is the current state-of-the-art in SDN platform troubleshooting. 
 
 In evaluating \projectname{} on
-three popular SDN platforms---Frenetic, Floodlight, and POX---we find \colin{N} bugs,
+three popular SDN platforms---Frenetic, Floodlight, and POX---we found several bugs,
 including isolation breaches,
 faulty failover logic, and consistency problems between replicated
-controllers. We further demonstrate the feasibility of deploying
+controllers. We also demonstrated the feasibility of deploying
 \projectname{} on production networks,
 finding that our tools can enumerate all policy-violations in 
 simulated networks exceeding 100,000 hosts in under \colin{N} seconds.
