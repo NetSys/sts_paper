@@ -10,7 +10,7 @@ programaticaly prioritize persistent policy-violations and infer their minimal
 causal sets. In addition to describing bugs, we show that \projectname{} is able 
 to simulate and check large networks quickly.
 
-\subsection{Use-Case}
+\subsection{Case studies}
 
 % Outline for bug reports:
 %  - Describe each system under test
@@ -68,6 +68,33 @@ representation of network state was up-to-date. As such, the partially installed
 in the neighboring switches, resulting in the blackhole. The developer fixes
 the platform's recovery code, adds this case to the platform's integration
 test suite, and pushes the change to production. 
+
+\subsection{Distributed controller failover race condition}
+
+More complex bugs and race conditions occur when controllers need to be
+distributed and fail-over mechanisms between the individual instances are
+required for fault tolerance. Consider the following case described in the
+Floodlight~\cite{floodlight} source code\footnote{Note this issue was
+independently discovered}: For high availability, floodlight can run as a
+distributed controller, with switches connecting to several controllers at the
+same time. In this setup, one controller assumes the role of \emph{master} and
+thereby gains the authority to issue state changing requests to the switches.
+The other controllers are in \emph{slave} mode and thus do not perform any
+state-changes on the switch. Here, a race condition can occur when a switch
+connects to the controllers shortly after the master controller has died, but
+before a new master has been selected. In this case, all controllers will be in
+the slave role and thus will not take responsibility for clearing the switch
+flow table. At some point, one of the controllers is elevated to to
+\emph{master} role and will proceed to manage the newly connected switch, based
+on an inconsistent flow table.
+
+Using \projectname, we were able to reproduce the problem. To this end, the
+emulated switches in the simulator support the \emph{role} vendor extension to
+connect to several controllers. The inter-controller synchronization and heartbeat
+protocol is proxied through the simulator for control over the timing. After the
+master controller dies, a new switch is associated with the slave controllers, and
+integrated into the system with an unmerged flow-table, resulting in a persistent
+inconsistency between the flow-table in the controller and the switch.
 
 \subsection{Overhead}
 
