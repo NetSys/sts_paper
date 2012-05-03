@@ -88,84 +88,122 @@ easily check for such properties.
 \subsection{\SIMULATOR{}}
 
 Correspondence checking infers all policy-violations in the network at a
-particular point in time. To complete the diagnostic puzzle, troubleshooters
-need two additional pieces of information. First, troubleshooters need to
+particular point in time. However, troubleshooters
+need two additional pieces of the diagnostic puzzle. First, in large distributed
+systems with communication delay and hardware failures, transient policy-violations
+are common and unavoidable; troubleshooters therefore need a mechanism to differentiate
+persistent (pernicious) policy-violations from transient (harmless) problems.
+Second, once pernicious policy-violations are encountered, troubleshooters need to
 identify the events (link failures, controller failures, VM migrations,
-\etc{}) that triggered a particular problem. Second, in large distributed
-systems, transient policy-violations due to communication delay and hardware
-failures are unavoidable; troubleshooters need to be able to differentiate
-persistent (pernicious) policy-violations from transient (harmless) problems
-that result from normal convergence delay.
+\etc{}) that triggered the problem.
 
-\Simulator{} is our approach to providing this information. \Simulator{} models
-the network in a single process, allowing arbitrary control over hardware
-failures, 
-message delays and other failure modes.
+\Simulator{} is our mechanism for providing this information. \Simulator{} models
+the network in a single simulation process, thereby providing arbitrary control over hardware
+failures, message delays and other failure modes. With complete control over the
+system execution, we are able to programatically (i) track the lifetime of
+policy-violations to differentiate persistent from transient errors, and (ii)
+infer the `minimal causal set' of events triggering the problem. We describe
+these components below.
 
-\Simulator{} replays the execution of the system against
-a stream of network events (\eg{}, link failures), which can be taken
-either from a production trace of low level failure and topology change
-events, as enabled, \eg{}, by OFRewind~\cite{ofrewind},
-or can be synthetically created. Throughout the system execution, the simulator can invoke correspondence checking at any
-point in time. \Simulator{} iteratively replays
-the event sequences, pruning out events are not casually related to any
-particular
-policy-violation. In this way, \simulator{} is able to
-programatically identify the `minimal causal set' of triggering events for a
-given policy violation.
+\noindent{\bf Policy-Violation Lifetime Tracking.} The first step in
+\simulator{} involves detecting policy-violations and prioritizing them based
+on their duration.
+We do so in a relatively straightforward fashion. First, we take as input
+a stream of network events (\eg{} link failures). Event sequences are either
+synthetically generated or gathered
+either from a production trace of failure and topology change
+events, as enabled, \eg{}, by OFRewind~\cite{ofrewind}. We then replay the execution of the
+control plane based on the input trace. Throughout the system execution,
+the simulator periodically invokes correspondence checking to enumerate all
+policy-violations (defined as any value in $\Omega^{physical}$ not present in
+$\Omega^{virtual}$, or vice versa). When a policy-violation is detected,
+the simulator forks off a branch that investigates the future system behavior
+in a case where no further failure events are played out. Finally, we
+prioritize the policy-violations based on their duration.
 
-Figure \ref{fig:localizing} depicts this process. Suppose that the event log
-consists of events $e_{1}\dots{}e_{5}$. As the system replays the trace, a 
-policy-violation is found at time $t$, before $e_{5}$. The system
-begins the replay at $e_{4}$, the event immediately preceding the
-policy-violation. The simulator then plays the execution of the system forward
-for a static time period $t_max$. If the policy-violation is detected within the window
-defined by $t_max$, $e_{4}$ is added to the `causal set' for this
-policy-violation. Otherwise, it is excluded. The simulator continues this
-process, running previous events both in isolation and in combination, until
-it has the minimum set of events that result in the policy-violation. This set
-is then output to a log for the user to inspect.
+\noindent{\bf Causal Inference.} \colin{Need to be clear that we haven't
+actually implemented this piece yet.} Having identified persistent
+policy-violations, \simulator{} seeks to identify the `minimal causal set' of
+events leading up to the problem. By `minimal causal set', we mean
+the minimally-sized set of events preceding (defined by the `happens-before'
+relation~\cite{Lamport:1978:TCO:359545.359563}) the onset of the policy-violation, such that
+if any single event were removed the set, the policy-violation would not have resulted.
+% * would not have resulted *in such a long duration event*?
 
-\begin{figure}[t]
-    %\hspace{-10pt}
-    \includegraphics[width=3.25in]{../diagrams/approach/localizing}
-    \caption[]{\label{fig:localizing} Localizing the minimal causal sequence for a failure in the 
-    event stream}
-\end{figure}
+\Simulator{} captures the notion of causality by attaching vector clocks~\cite{Mattern89virtualtime} to
+all control messages in the simulated execution of the system. Our
+simulator runs as a single sequential thread; therefore we convert any partially-ordered input trace
+of network events into a totally-ordered trace by choosing an arbitrary
+sequential ordering that maintains the `happens-before'
+relation.
 
-If users were to run \simulator{} on raw event logs, they would encounter a
-large number of failure events and transient policy-violations. 
-Replaying the system execution in a deterministic,
-tightly controller environment additionally allows us
-to track the life-cycle of policy-violations, effectively differentiating
-transient from persistent network problems.
-We describe how \simulator{} differentiates transient from persistent
-policy-violations in detail below.
+Without regarding casual constraints, a naive algorithm to infer the minimal
+causal set would be to iteratively
+exclude each event from the system execution, and see if the policy-violation
+still appears. The problem is that we cannot simply ``erase history'';
+antecedent events in the system execution may have depended on the event we
+are excluding.
 
-\textbf{Identifying persistent policy-violations}. When a policy-violation is detected,
-the simulators forks off a simulation branch that investigates the future system behavior
-in a case where no further external events are played out. If the detected
-policy-violation
-is resolved in isolation within a customizable number of simulation time steps, it is considered
-a temporary problem. If it is not, this is a strong indication that the system has indeed
-reached a persistent policy-violation that needs to be investigated.
+Our algorithm therefore proceeds as as follows. First, consider
+the state of the system at exactly the point where the given policy-violation
+occurs. The active `causal branches' in the system at this time are (i) the
+most recent event (message send, message receive, or internal state change)
+occurring on every node in the system, and (ii) the message send event for any
+in-flight control packets in the network. Our goal is to prune these causal
+branches until we are left with the minimal causal set at the leaves of the
+pruned branches.
 
-\Simulator{} has a number of other possible use-cases:
+\colin{Need a Lamport time diagram for illustration. Also need to be clear
+what I mean by "message send event", etc.}
+%\begin{figure}[t]
+%    %\hspace{-10pt}
+%    \includegraphics[width=3.25in]{../diagrams/approach/localizing}
+%    \caption[]{\label{fig:localizing} Localizing the minimal causal sequence for a failure in the 
+%    event stream}
+%\end{figure}
 
-\textbf{Checking related problems by fuzzing.} Input traces can be \emph{fuzzed}, i.e.,
+After having identified the active `casual branches' in the system at the
+onset of the policy-violation, our algorithm essentially performs a
+topological traversal of the causal relation DAG, pruning leaves that are not
+responsible for the policy-violation. In pseudo-code:
+
+\begin{algorithmic}
+\State $causalSet \gets []$ 
+\While {$\exists\;\text{\it leaf in DAG}$}
+    \State {\it remove leaf from DAG}
+    \State $violation \gets runSimulation(DAG)$
+    \If {\it not violation}
+        \State $causalSet += leaf$
+    \EndIf
+\EndWhile
+\end{algorithmic}
+
+Here, $runSimulation(DAG)$ executes the system from the beginning of the
+trace, and checks whether the policy-violation occurs at the end of the
+execution. Note that each iteration of the loop can be performed in parallel by cloning 
+the state of the simulator. Note also that Lamport's definition of the
+`happens-before' relation can include events that are not in fact
+casually-related; by leveraging domain knowledge of the network control plane
+protocols, it may be possible to further prune the DAG for events that are not
+in fact causally related.
+
+{\bf Additional Use-Cases.} Besides lifetime tracking and causal analysis, our simulation infrastructure has a
+number of other possible use-cases:
+
+\noindent\textbf{Checking related problems by fuzzing.} Input traces can be \emph{fuzzed}, i.e.,
 randomly perturbed, to expose the system to similar error conditions, and confirm
 that a proposed solution is not just a point-fix.
 
-\textbf{Investigating pathological environment conditions.} The simulator allows for investigation
+\noindent\textbf{Investigating pathological environment conditions.} The simulator allows for investigation
 of pathological environment conditions difficult to achieve in a real world test bed
 (\eg{}, correlated failure rates, extremely long delays etc.). This enables
 investigation of situations that have a high potential for triggering errors.
 
-\textbf{Interactive exploration.} Troubleshooters can also interactively bisect
+\noindent\textbf{Interactive exploration.} Troubleshooters can also interactively bisect
 the trace or modify specific events to further pinpoint the cause for a failure.
 This is useful as soon as a suspect event sequence has been identified.
 
-\textbf{Regression/Integration Test Library.} In traditional software engineering practices,
+\noindent\textbf{Regression/Integration Test Library.} In traditional software engineering practices,
 integration tests are an
 important part of the software development cycle: developers feed end-to-end
 input through the system, and verify that the system execution satisfies
