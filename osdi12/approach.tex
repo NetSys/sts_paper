@@ -194,13 +194,20 @@ Here, $runSimulation(DAG)$ executes the system from the beginning of the
 trace, and checks whether the policy-violation occurs at the end of the
 execution. The beginning of the trace starts at some pre-defined point where
 the system was known to be in a coalescent state.
+
 Note that each iteration of the loop can be performed in parallel by cloning 
 the state of the simulator. The serial runtime of the algorithm is therefore
-linear with the number of events in the input trace. Note also that Lamport's definition of the
-`happens-before' relation can include events that are not in fact
-casually-related; by leveraging domain knowledge of the network control plane
-protocols, it may be possible to further prune the DAG for events that are not
-in fact causally related.
+linear with the number of events in the input trace.
+
+We also note that Lamport's definition of the `happens-before' relation is
+conservatively general, and can include events that are not in fact
+casually-related. In fact, as described here, our algorithm can be viewed as a
+generalization of dependency graph algorithms for hardware fault
+isolation~\cite{577079}. In future work we hope to leverage domain
+knowledge of network control plane
+protocols to provide a more specific definition of causality (\eg{} OpenFlow
+control messages with differing transaction ids are not causally related),
+allowing us to further prune events that are not in fact causally related from the DAG.
 
 \subsubsection{Additional Use-Cases} Besides lifetime tracking and causal analysis, our simulation infrastructure has a
 number of other possible use-cases:
