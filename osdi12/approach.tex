@@ -6,9 +6,8 @@ the components of \projectname{} we have designed for performing software fault 
 
 \subsection{Correspondence Checking}
 
-In simple terms, correctness of the platform can be expressed as follows:
-the policy specified by the application layer should correspond to the
-configuration of the physical network. We refer to any miscorrespondence
+The SDN platform transforms high-level policies (specified by the control application) into low-level configuration of they physical infrastructure.
+The configuration of the physical network should semantically correspond with the policy specified by the application layer, in the sense that the disposition of any packet by the physical forwarding tables should reflect  the policies dictated for that packet. We refer to any lack of semantic correspondence
 between the policy and the configuration as a {\it policy-violation}.
 
 We leverage the virtual packet algebra pioneered in headerspace
@@ -89,29 +88,34 @@ easily check for such properties.
 
 Correspondence checking infers all policy-violations in the network at a
 particular point in time. However, troubleshooters
-need two additional pieces of the diagnostic puzzle. First, in large distributed
+need two additional pieces of the diagnostic puzzle. 
+
+First, in large distributed
 systems with communication delay and hardware failures, transient policy-violations
-are common and unavoidable; troubleshooters therefore need a mechanism to differentiate
-persistent (pernicious) policy-violations from transient (harmless) problems.
+are unavoidable, even common. That is, every time there has been a link failure that the SDN platform has not had time to respond to, or every time there has been a policy change that has not yet propagated down to the physical switches, there is a policy-violation.  Most of these policy violations will be temporary, resolving as soon as the SDN platform has had time to respond.  Some of these policy violations will persist, and that indicates a problem in the SDN platform.  In addition, even some of the ephemeral violations may be harmful (such as those that violate isolation conditions), which again indicate a problem in the SDN platform.
+
+Troubleshooters therefore need a mechanism to differentiate
+policy-violations that indicate a problem in the SDN platform from those that merely reflect inherent delays in responding to events; we will call all policy-violations that indicate a problem``pernicious'' violations.
+
+
 Second, once pernicious policy-violations are encountered, troubleshooters need to
 identify the events (link failures, controller failures, VM migrations,
-\etc{}) that triggered the problem.
+\etc{}) that triggered the problem. Moreover, they would like to have these events narrowed down to a minimal set, to make it easier to understand the problem.
 
 \Simulator{} is our mechanism for providing this information. \Simulator{} models
 the network in a single simulation process, thereby providing arbitrary control over hardware
 failures, message delays and other failure modes. With complete control over the
-system execution, we are able to programatically (i) track the lifetime of
+system execution, we are able to programmatically (i) track the lifetime of
 policy-violations to differentiate persistent from transient errors, and (ii)
 infer the `minimal causal set' of events triggering the problem. We describe
 these components below.
 
-\noindent{\bf Policy-Violation Lifetime Tracking.} The first step in
+\subsubsection{Policy-Violation Lifetime Tracking} The first step in
 \simulator{} involves detecting policy-violations and prioritizing them based
 on their duration.
 We do so in a relatively straightforward fashion. First, we take as input
 a stream of network events (\eg{} link failures). Event sequences are either
-synthetically generated or gathered
-either from a production trace of failure and topology change
+synthetically generated or gathered from a production trace of failure and topology change
 events, as enabled, \eg{}, by OFRewind~\cite{ofrewind}. We then replay the execution of the
 control plane based on the input trace. Throughout the system execution,
 the simulator periodically invokes correspondence checking to enumerate all
@@ -121,7 +125,7 @@ the simulator forks off a branch that investigates the future system behavior
 in a case where no further failure events are played out. Finally, we
 prioritize the policy-violations based on their duration.
 
-\noindent{\bf Causal Inference.} \colin{Need to be clear that we haven't
+\subsubsection{\bf Causal Inference} \colin{Need to be clear that we haven't
 actually implemented this piece yet.} Having identified persistent
 policy-violations, \simulator{} seeks to identify the `minimal causal set' of
 events leading up to the problem. By `minimal causal set', we mean
@@ -135,7 +139,7 @@ messages, controllers crash and reboot, hosts migrate, etc. These events are
 "deterministic", or "internal". The simulator also injects "external" or
 "non-deterministic" events from the input trace, and then observes the behavior
 of the system as it reacts to these external events. We describe the details
-of the simulator in the next Section.}
+of the simulator in the next Section.}\scott{agreed}
 
 \Simulator{} captures the notion of causality by attaching vector clocks~\cite{Mattern89virtualtime} to
 all control messages in the simulated execution of the system. Our
@@ -161,7 +165,7 @@ branches until we are left with the minimal causal set at the leaves of the
 pruned branches.
 
 \colin{Need a Lamport time diagram for illustration. Also need to be clear
-what I mean by "message send event", etc.}
+what I mean by "message send event", etc.}\scott{no, everyone will understand this.}
 %\begin{figure}[t]
 %    %\hspace{-10pt}
 %    \includegraphics[width=3.25in]{../diagrams/approach/localizing}
@@ -197,7 +201,7 @@ casually-related; by leveraging domain knowledge of the network control plane
 protocols, it may be possible to further prune the DAG for events that are not
 in fact causally related.
 
-{\bf Additional Use-Cases.} Besides lifetime tracking and causal analysis, our simulation infrastructure has a
+\subsubsection{Additional Use-Cases} Besides lifetime tracking and causal analysis, our simulation infrastructure has a
 number of other possible use-cases:
 
 \noindent\textbf{Checking related problems by fuzzing.} Input traces can be \emph{fuzzed}, i.e.,
@@ -235,8 +239,8 @@ new and existing SDN platforms.
 
 Correspondence checking and \simulator{} serve to isolate the platform layer and
 event sequence responsible for a given error. \projectname{} can be
-complemented by classical debugging techniques, \eg{} log messages and source
-code debugging, to identify the root cause of
+complemented by classical debugging techniques (\eg{} log messages and source
+code debugging) to identify the root cause of
 the failure in the code. These techniques are much more
 effective when applied a specific event sequence. Once a
 potential fix has been developed, it can be validated by repeating the
