@@ -177,6 +177,12 @@ simulator round) was well within the bounds for interactive use.
     attached to 2,880 switches)}
 \end{figure}
 
+We also tested the extreme limits of the simulator's scalabilty, pushing up
+the number of switches until something broke. We enountered what appears to be
+a limitiation of the Linux TCP/IP stack: TCP connection attempts began failing
+beyond 26,680 sockets. Note that 26,680 switches is an order-of-magnitude larger than
+the today's biggest networks.
+
 \subsection{Replay fidelity}
 
 If our simulated model of the network is not sufficiently complex, it may not
