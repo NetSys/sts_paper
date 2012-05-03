@@ -4,6 +4,12 @@
 %  - Describe each system under test
 %  - Describe bugs found
 %  - Lessons learned from finding bugs
+\colin{New structure: describe each system under test, describe bugs found,
+described lessons learned from finding bugs. First Frenetic, which is
+relatively trivial. Then POX, which is our own code, but demonstrates in a
+really nice fashion what the simulator sees, and how that's easier to
+understand than the status quo. And
+lastly, the Floodlight case which is really awesome.}
 Here we present a hypothetical use-case from two perspectives
 for correspondence checking and \simulator{}.
 
@@ -52,18 +58,6 @@ the platform's recovery code, adds this case to the platform's integration
 test suite, and pushes the change to production. 
 
 \subsection{Overhead}
-
-\noindent{\bf Simulator Scalability.} Will a single machine be able to 
-simulate large networks quickly enough for interactive use? In
-Figure~\ref{fig:scalability} we depict the runtime for control processing vs.
-number of simulated switches. We find the foobar. Our simulator keeled over at
-X switches because of bottleneck Y.
-
-\begin{figure}[t]
-    %\hspace{-10pt}
-    \includegraphics[width=3.25in]{../graphs/mock_simulator_scalability.jpg}
-    \caption[]{\label{fig:scalability} Our beautfiful scalability graph}
-\end{figure}
 
 \noindent{\bf Record and Replay Overhead.} In contrast to general record-and-replay
 mechanisms, the amount of recorded state needed for
@@ -119,6 +113,27 @@ is the number of hosts in the network squared, disregarding ECMP load balancing.
     \includegraphics[width=3.25in]{../graphs/hsa_overhead_graph/graph.pdf}
     \caption[]{\label{fig:hsa_runtime} Serial runtime of correspondence
     checking on PORTLAND fat tree networks. Each datapoint consists of
+    $x^3/4$ hosts and $5x^2/4$ switches (\eg{} 48 pods means 27,468 hosts
+    attached to 2,880 switches)}
+\end{figure}
+
+\noindent{\bf Simulator Scalability.} Our design models the entire network
+within a single process. We show in Figure~\ref{fig:scalability}
+that this approach nonetheless scales to large networks. For this analysis we
+generated fat tree topologies between 2 and 48 pods wide, where all switches in
+the network connected to a single controller. The controller sent each switch
+$FLOW_MOD$ and subsequent $BARRIER_REQUEST$ message, and waited for the
+corresponding $BARRIER_REPLY$. We then measured the time to between the first
+$FLOW_MOD$ sent and the last $BARRIER_REPLY$ received. As expected, the
+runtime was roughly linear with the number of switches in the network. The
+figure also shows that the processing time for large networks (5 seconds per
+simulator round) was well within the bounds for interactive use.
+
+\begin{figure}[t]
+    %\hspace{-10pt}
+    \includegraphics[width=3.25in]{../graphs/scalability_graph/scale.pdf}
+    \caption[]{\label{fig:scalability} Time to send and process messages
+    between controller and simulated switches. Each datapoint consists of
     $x^3/4$ hosts and $5x^2/4$ switches (\eg{} 48 pods means 27,468 hosts
     attached to 2,880 switches)}
 \end{figure}

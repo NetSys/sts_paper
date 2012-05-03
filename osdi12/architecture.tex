@@ -1,40 +1,48 @@
-In this section we discuss the goals we follow in building \projectname.
-We then present the architectural details of our prototype implementation~\cite{prototype}
-and discuss the particular implementation challenges.
 
-\subsection{Implementation Goals: The 7 rules of \projectname{}}
+% Research question here? 
+% Going to be challenging to have this not come across as a software design
+% spec.. Let's try to get this section over with as little text wasted as
+% possible... I feel silly writing these sections, since I ALWAYS skip over
+% them when I'm reading other people's papers...
+\projectname{} is our realization of correspondence checking and \simulator{}
+as a useful platform to troubleshoot SDN controllers. In this section we discuss
+our goals in designing \simulator{}, and the challenges we encountered in the process
+of realizing these goals.
 
-The main focus of our system is to be able to study failure modes and corner
-cases prevalent in large-scale, production topologies. As such, our solution
-should scale to network sizes found in production data-centers today,~e.g.,
-$1,000$ to $10,000$ switches and $20,000$ to $100,000$ end-hosts. Today, such
-topologies typically are managed with \emph{proactive} rules, for performance
-predictability and due to hardware constraints. As such, we don't need to focus
-on precise simulation of \emph{data-plane} traffic, but rather on \emph{control
-plane events} induced by host, link and switch failures, and topology changes,
-as induced,~e.g., by virtual machine migrations. Our implementation goals are
-thus:
+\subsection{Design Goals: The 7 rules of \projectname{}}
 
-\textbf{(1) Scalability} 
-We require our simulator to scale up to large topology sizes,
-e.g., a Fat-Tree topology~\cite{fattree} with 48 pods. 
+We seek to build a system that facilitates the process of troubleshooting.
+First and foremost, we hope that \projectname{} can reproduce difficult bugs
+observed in production networks, and automate the process of diagnosing their
+causes. We also envision \projectname{} being used as a common repository for difficult, corner-case
+scenarios known to have caused problems for other control platforms in the past.
+Given these potential use cases, we require the design of the system to be
+driven by the following requirements:
 
-\textbf{(2) Control plane focus} We expect the dynamism in our system to stem from
+\noindent{\bf (1) Realistic Network Sizes.} We focus on large, production SDN
+deployments. As today's datacenters may contain up to 100,000 hosts and 10,000
+switches, our simulation infrastructure must be able to support large numbers
+of switches. 
+
+\noindent \textbf{(2) Control plane focus} We expect the dynamism in our system to stem from
 \emph{control plane events}. Typical rates of control plane events must thus be
 handled, and control plane events must be modeled precisely. Conversely, we
 don't expect to handle a realistic amount of dataplane traffic, which is
 intractable for a software solution, and largely irrelevant in current networks.
 
-\textbf{(3) Controller choice} Our system should run with existing production
-controllers with minimum instrumentation. We don't want to limit ourselves to
+\noindent \textbf{(3) Controller choice} Our system should run with existing production
+controllers with minimum instrumentation. To allow for wider adoption, we don't want to limit ourselves to
 a particular controller/NOS implementation,.
 
-\textbf{(4) Full determinism} We want our simulation environment to be fully 
+\noindent \textbf{(4) Full determinism} We want our simulation environment to be fully 
 deterministic, such that repeated simulations with identical initialization values
 yield provably identical results. This creates a challenge in conjunction with our goal (3).
 
-\textbf{(5) Failure Modes} The system should model failure modes and critical conditions
-accurately, including switch and link failures, message drops, delays reordering (where possible).
+\noindent{\bf (5) Comprehensive Failure Modes.} \projectname{} is primarily
+focused on corner-case scenarios, which are the most difficult to anticipate
+and cover for with traditional testing techniques. \projectname{} should
+therefore support a wide range of failure modes at all components in the
+system, including switch and link failures, message drops, delays reordering (where possible).
 
 \textbf{(6) Corner cases investigation} The potential state-space in a large-scale network
 is intractably large. We focus on interesting cases, as recorded, e.g., in production, or
@@ -44,11 +52,19 @@ we \emph{fuzz} the input traces.
 \textbf{(7) Interactivity} We system should fast enough for interactive exploration through
 an operator.
 
-\subsection{Architecture}
+subsection{Components}
 
-We now discuss the architecture of \projectname in detail and discuss how it
-relates to the goals outlined in the last section. Figure \ref{fig:system}
-depicts our architecture. We address the parts in turn:
+As depicted in Figure \ref{fig:system}, \projectname{} combines several
+components to facilitate the process of troubleshooting SDN platforms:
+\projectname{} takes input
+from production traces, interactive manipulation, and synthetic trace
+generation, and fuzzes these inputs to ensure that fixes are sufficiently general;
+\projectname{}'s simulator supports large, sophisticated networks;
+\projectname{} provides a deterministic, code-agnostic execution environment 
+for running SDN control software; and provides efficient algorithms for
+checking correspondence throughout the system execution. We now provide an
+overview of each of these components, and the challenges we encountered in
+realizing our goals.
 
 \begin{figure*}[!t]
   \centering
@@ -57,83 +73,59 @@ depicts our architecture. We address the parts in turn:
   \label{fig:system}
 \end{figure*}
 
-\noindent{\bf Trace Input And Fuzzing} Event generation has two components.
-We first generate system executions, which come from one of three sources:
-\begin{enumerate}
-  \item \emph{traces taken from the real networks.} This enables us to investigate 
-  real-world bugs in a controlled lab environment. For collecting traces,
-  we use OFRewind~\cite{ofrewind} and related systems.
-\item \emph{synthetic traces.} We also generate synthetic traces for our anlaysis
-  based on a simple model for network failures and other sources of control plane
-  events.
-\item \emph{model checking} Model checking and codepath analysis of parts of the
-  controller systems represents another opportunity for generating input traces
-  that exercise interesting corner case behavior. Note that due to the large network
-  size, we consider a full exploration of the state
-  space to be intractable.
-\item \emph{interactive} Lastly, the troubleshooter can manually inject events into
-  the network. This if the troubleshooter already has an intuition of what might be
-  the trigger event sequence.
-\end{enumerate}
+\noindent{\bf Trace Input And Fuzzing.} Since a major goal \projectname{} was
+to support a wide range of usage scenarios, % WAT does that even mean
+we provide support for three different methods for generating network trace
+inputs. The most common method is to insert failure and topology change logs
+from production deployments into the simulator for replay. Input traces may
+also be produced synthetically with configurable, random probabilities for
+network events. Lastly, we support interactive use, where the troubleshooter
+has complete control over network events, and is thereby free to explore her
+intuitions in order to reproduce a failure mode she has in mind.
 
-To locate the minimum trigger sequence of policy-violation as described in
-\S\ref{sec:approach}, we repeatedly execute the system over the same event sequence,
-while \emph{sub-selecting} events.
+\noindent{\bf Simulator.} We have built a simulator for SDN networks,
+where network devices and hosts are modeled as lightweight python objects. Within a single thread, we
+are able to deterministically model the execution of very large networks.
+Our simulated model supports a wide
+range of failure modes, and provides fine-grained control over event
+orderings, component failures, and other aspects of the system execution. Our
+simulator currently supports switch failures, link failures, arbitrary packet
+re-orderings, drops and delays, a fully general control plane.
 
-\noindent{\bf Simulator} The main simulator is modeled as a single,
-deterministic python process. Switches are emulated as lightweight python
-objects.\footnote{In contrast to common software switches like
-OpenVSwitch~\cite{openvswitch} these switches are optimized for precise,
-controllable emulation of hardware control-plane behavior, not data-plane
-forwarding speed.} The controllers are spawned as separate processes and
-communicate with the emulated switches through normal TCP sockets via the
-OpenFlow protocol. The IO-logic is based on an event-based worker model and
-scales up to $>10,000$ switches through the use of optimized select primitives
-like \texttt{epoll}.
+The main challenge we encountered in the design of the simulator was the
+maintaining large numbers of TCP connections to the
+controller(s). Although the controllers themselves may be spread
+over multiple physical servers, the main simulator must nonetheless handle all
+TCP connections between switches and controllers within a single process.
+We ultimately ended up using epoll to avoid limitations of the UNIX select
+implementation.
 
-The simulation proceeds in discrete timesteps. In each timestep, events are
-sourced from the configured event sources and injected into the system. To
-simulate delays on the control plane, e.g., through packet loss or queuing of
-control plane packets, the simulator maintains a pair of buffers for each
-OpenFlow connection. It controls when OpenFlow messages reach the processing
-logic within the simulator.
+\noindent{\bf Controller Sandbox.} One of our major goals for \projectname{}
+was to be able to run any SDN controller on top of the platform, with minimal
+code changes to the controllers themselves. In addition, control servers
+running on top of the simulated network must support deterministic execution
+for reproducible results.
 
-\noindent{\bf Controller Sandbox}
-Our goals of being able to run arbitrary controllers on top of our simulator
-and being able to reproduce runs deterministically creates the challenge
-of creating a reproducible environment for the controllers. We address this
-challenge by running the guest controllers in a sandbox. The sandbox is 
-orchestrated and controlled by the main simulator processes and limits
-the visibility of external non-deterministic events to the controller (e.g.,
-sources of randomness, timers).
+Currently we run applications as UNIX processes outside of the simulator.
+We note however that there are a number of approaches for achieving deterministic
+replay for external software. For example: a software determinism layer (e.g.
+deterministic random number generators) is
+extremely lightweight, but requires modifications to the external software;
+binary rewriting does not require any modification to the external
+software's source code, but incurs moderate performance overhead; and VMs
+fully support deterministic replay, but only a relatively small number of VMs can be run
+on a single machine. We hope to leverage this previous work in future versions
+of \projectname{}. Nonetheless, our architecture does not prevent us from
+running controllers on different physical
+servers in case we encounter memory or CPU bottlenecks.
 
-There are a number of implementation options for the sandbox, that form a
-trade-off between generality and performance of the solution. The options
-include (i) \emph{software-layer instrumenation} -- replacing timer methods and
-random generator-method in the controller with deterministic versions that are
-controlled by the main simulator (ii) \emph{language runtime instrumentation}
-modern language runtimes like the JVM offer the possibility to instrument and
-control the runtime via plugins. The provides lightweight determinism without
-the need for modifying the controller application itself. (iii) \emph{Binary
-instrumentation} there exist several solutions that enable determinism based on
-binary instrumentation~\cite{XXX}. These must deal with lower-level events and
-thus exhibit a higher overhead than runtime-specific instrumentation, but offer
-the opportunity to instrument arbitrary language programs. (iv) \emph{Virtual machines}
-Virtual machines can be used for achieving fully deterministic replay. The
-offer the greatest accuracy, and generality but also the highest overhead.
+\noindent{\bf Correspondence Checking.}
+\projectname{} leverages the hassell library provided by HSA~\cite{hsa}
+to implement the correspondence checking algorithm. We optimize the code
+slightly to run efficiently on large networks; in particular, we parallelize
+symbolic packet propagation to a large number of subtasks. Correspondence
+checking currently requires a small code change to the controller to fetch
+the platform's view of the network state.
 
-For generality, by default, we run controllers in VMs. As the sandbox control
-happens through normal TCP sockets, we can run controllers on dedicated machines
-to avoid CPU or memory bottlenecks.
-
-\noindent{\bf Correspondence Checking}
-
-For multilayer correspondence checking, \projectname requires snapshots of the
-network graph present in the network operating system at different layers. For this,
-we use a simple request-response protocol and an extensible data serialization in
-JSON that can be implemented with a small amount of code. For instance, we have
-implemented the interface in the Floodlight controller in <500 LoC of Java.
-
-The correspondence checking is performed by the HSA framework~\cite{hsa}, that
-we modified for our purposes. \andi{@colin, describe the modifications and operation
-mode of the correspondence checks.}
+\projectname{} is written in roughly 5,000 lines of python, and is publicly
+available. [anon]
