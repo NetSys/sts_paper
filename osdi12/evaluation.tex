@@ -161,9 +161,10 @@ within a single process. We show in Figure~\ref{fig:scalability}
 that this approach nonetheless scales to large networks. For this analysis we
 generated fat tree topologies between 2 and 48 pods wide, where all switches in
 the network connected to a single controller. The controller sent each switch
-$FLOW_MOD$ and subsequent $BARRIER_REQUEST$ message, and waited for the
-corresponding $BARRIER_REPLY$. We then measured the time to between the first
-$FLOW_MOD$ sent and the last $BARRIER_REPLY$ received. As expected, the
+an OpenfFlow 
+$FLOW\_MOD$ and subsequent $BARRIER\_REQUEST$ message, and waited for the
+corresponding $BARRIER\_REPLY$. We then measured the time to between the first
+$FLOW\_MOD$ sent and the last $BARRIER\_REPLY$ received. As expected, the
 runtime was roughly linear with the number of switches in the network. The
 figure also shows that the processing time for large networks (5 seconds per
 simulator round) was well within the bounds for interactive use.
