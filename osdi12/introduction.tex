@@ -91,10 +91,9 @@ are not aware of previous troubleshooting work that focuses on the SDN
 platform itself; to the best of our knowledge, painstaking analysis of detailed logs is the current state-of-the-art in SDN platform troubleshooting. 
 
 In evaluating \projectname{} on
-three popular SDN platforms---Frenetic, Floodlight, and POX---we found several bugs,
-including isolation breaches,
-faulty failover logic, and consistency problems between replicated
-controllers. We also demonstrated the feasibility of deploying
+two popular SDN platforms---Floodlight and POX---we found two bugs:
+isolation breaches and faulty failover logic between distributed controllers.
+We also demonstrated the feasibility of deploying
 \projectname{} on production networks,
 finding that our tools can enumerate all policy-violations in 
 simulated networks exceeding 100,000 hosts in under \colin{N} seconds.

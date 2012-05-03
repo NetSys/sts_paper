@@ -134,7 +134,8 @@ the behavior of the entire system -- switches respond to control plane
 messages, controllers crash and reboot, hosts migrate, etc. These events are
 "deterministic", or "internal". The simulator also injects "external" or
 "non-determinstic" events from the input trace, and then observes the behavior
-of the system as it reacts to these external events}
+of the system as it reacts to these external events. We describe the details
+of the simulator in the next Section.}
 
 \Simulator{} captures the notion of causality by attaching vector clocks~\cite{Mattern89virtualtime} to
 all control messages in the simulated execution of the system. Our
