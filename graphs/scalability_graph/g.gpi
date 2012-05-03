@@ -36,7 +36,7 @@ set yrange [0:5]
 
 set key top left 
 
-set ylabel "Seconds to perform an\noperation on all switches"
-set xlabel "Number of switches"
+set ylabel "Seconds to perform the\noperation on all switches"
+set xlabel "Number of pods"
 
-plot 'scale-fat.dat' index 0:1 title "" w lp ls 1
+plot 'scale-fat.dat' index 0:1 title "FLOW_MOD -> BARRIER_REQUEST -> BARRIER_REPLY" w lp ls 1
