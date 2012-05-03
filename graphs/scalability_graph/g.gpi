@@ -39,4 +39,4 @@ set key top left
 set ylabel "Seconds to send and process\nFLOW_MOD, BARRIER_REQUEST,\n on all switches"
 set xlabel "Number of pods in the fat tree"
 
-plot 'scale-fat.dat' index 0:1 title "FLOW_MOD, BARRIER_REQUEST, BARRIER_REPLY" w lp ls 1
+plot 'scale-fat.dat' index 0:1 title "" w lp ls 1
