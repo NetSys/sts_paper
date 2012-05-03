@@ -129,6 +129,12 @@ the minimally-sized set of events preceding (defined by the `happens-before'
 relation~\cite{Lamport:1978:TCO:359545.359563}) the onset of the policy-violation, such that
 if any single event were removed the set, the policy-violation would not have resulted.
 % * would not have resulted *in such a long duration event*?
+\colin{Need to make it a little more clear what the simulator does. It models
+the behavior of the entire system -- switches respond to control plane
+messages, controllers crash and reboot, hosts migrate, etc. These events are
+"deterministic", or "internal". The simulator also injects "external" or
+"non-determinstic" events from the input trace, and then observes the behavior
+of the system as it reacts to these external events}
 
 \Simulator{} captures the notion of causality by attaching vector clocks~\cite{Mattern89virtualtime} to
 all control messages in the simulated execution of the system. Our
@@ -164,7 +170,7 @@ what I mean by "message send event", etc.}
 
 After having identified the active `casual branches' in the system at the
 onset of the policy-violation, our algorithm essentially performs a
-topological traversal of the causal relation DAG, pruning leaves that are not
+traversal of the causal relation DAG's topological ordering, pruning leaves that are not
 responsible for the policy-violation. In pseudo-code:
 
 \begin{algorithmic}
@@ -180,7 +186,9 @@ responsible for the policy-violation. In pseudo-code:
 
 Here, $runSimulation(DAG)$ executes the system from the beginning of the
 trace, and checks whether the policy-violation occurs at the end of the
-execution. Note that each iteration of the loop can be performed in parallel by cloning 
+execution. The beginning of the trace starts at some pre-defined point where
+the system was known to be in a coalescent state.
+Note that each iteration of the loop can be performed in parallel by cloning 
 the state of the simulator. Note also that Lamport's definition of the
 `happens-before' relation can include events that are not in fact
 casually-related; by leveraging domain knowledge of the network control plane
