@@ -9,7 +9,7 @@ as a useful platform to troubleshoot SDN controllers. In this section we discuss
 our goals in designing \simulator{}, and the challenges we encountered in the process
 of realizing these goals.
 
-\subsection{Design Goals}
+\subsection{Design Goals: The 7 rules of \projectname{}}
 
 We seek to build a system that facilitates the process of troubleshooting.
 First and foremost, we hope that \projectname{} can reproduce difficult bugs
@@ -19,33 +19,40 @@ scenarios known to have caused problems for other control platforms in the past.
 Given these potential use cases, we require the design of the system to be
 driven by the following requirements:
 
-% Don't mention 'realism', since a simulation-based system just isn't real
-% enough.
+\noindent{\bf (1) Realistic Network Sizes.} We focus on large, production SDN
+deployments. As today's datacenters may contain up to 100,000 hosts and 10,000
+switches, our simulation infrastructure must be able to support large numbers
+of switches. 
 
-\noindent{\bf Comprehensive Failure Modes.} \projectname{} is primarily
+\noindent \textbf{(2) Control plane focus} We expect the dynamism in our system to stem from
+\emph{control plane events}. Typical rates of control plane events must thus be
+handled, and control plane events must be modeled precisely. Conversely, we
+don't expect to handle a realistic amount of dataplane traffic, which is
+intractable for a software solution, and largely irrelevant in current networks.
+
+\noindent \textbf{(3) Controller choice} Our system should run with existing production
+controllers with minimum instrumentation. To allow for wider adoption, we don't want to limit ourselves to
+a particular controller/NOS implementation,.
+
+\noindent \textbf{(4) Full determinism} We want our simulation environment to be fully 
+deterministic, such that repeated simulations with identical initialization values
+yield provably identical results. This creates a challenge in conjunction with our goal (3).
+
+\noindent{\bf (5) Comprehensive Failure Modes.} \projectname{} is primarily
 focused on corner-case scenarios, which are the most difficult to anticipate
 and cover for with traditional testing techniques. \projectname{} should
 therefore support a wide range of failure modes at all components in the
-system.
+system, including switch and link failures, message drops, delays reordering (where possible).
 
-\noindent{\bf Realistic Networks.} We focus on large, production SDN
-deployments. As today's datacenters may contain up to 100,000 hosts and 10,000
-switches, our simulation infrastructure must be able to support large numbers
-of switches. Note that we do not require the simulator to support efficient dataplane
-forwarding however, as we focus on proactive control applications.
+\textbf{(6) Corner cases investigation} The potential state-space in a large-scale network
+is intractably large. We focus on interesting cases, as recorded, e.g., in production, or
+found through interactive evaluation. To investigate related error conditions,
+we \emph{fuzz} the input traces.
 
-\noindent{\bf Wide range of usage scenarios.} The machinery in \simulator{}
-is sophisticated enough to be applicable to a wide range of usage-patterns. We
-hope to support automated use, yet perform well enough to support interactive
-use For interactive use, the system must be able to deterministically replay
-event sequences to allow user to explore their intuitions freely. % wat
+\textbf{(7) Interactivity} We system should fast enough for interactive exploration through
+an operator.
 
-\noindent{\bf Controller Agnostic.} The adoption of the system increases
-dramatically if the control software under test does not need to be modified.
-We aim to provide a framework that can run any SDN control stack, and model a
-wide range of deployment scenarios.
-
-\subsection{Components}
+subsection{Components}
 
 As depicted in Figure \ref{fig:system}, \projectname{} combines several
 components to facilitate the process of troubleshooting SDN platforms:
