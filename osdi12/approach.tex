@@ -120,6 +120,10 @@ policy-violations to differentiate persistent from transient errors, and (ii)
 infer the `minimal causal set' of events triggering the problem. We describe
 these components below.
 
+Note that we have implemented policy-violation lifetime tracking, but we are
+still developing the infrastructure for minimal causal set inference.
+Nonetheless, we present our algorithm in this section.
+
 \subsubsection{Policy-Violation Lifetime Tracking} The first step in
 \simulator{} involves detecting policy-violations and prioritizing them based
 on their duration.
@@ -135,8 +139,7 @@ the simulator forks off a branch that investigates the future system behavior
 in a case where no further failure events are played out. Finally, we
 prioritize the policy-violations based on their duration.
 
-\subsubsection{\bf Causal Inference} \colin{Need to be clear that we haven't
-actually implemented this piece yet.} Having identified persistent
+\subsubsection{\bf Causal Inference} Having identified persistent
 policy-violations, \simulator{} seeks to identify the `minimal causal set' of
 events leading up to the problem. By `minimal causal set', we mean
 the minimally-sized set of events preceding (defined by the `happens-before'
