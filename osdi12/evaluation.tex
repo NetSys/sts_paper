@@ -6,12 +6,12 @@ We found 1 bug for each platform. The bug in Frenetic demonstrates
 the utility of checking correspondence between high-level policies and
 low-level configuration (without needing to specify invariants). The bugs in
 POX and Floodlight demonstrate the importance of the simulator's ability to 
-programaticaly prioritize persistent policy-violations and infer their minimal
+programatically prioritize persistent policy-violations and infer their minimal
 causal sets.
 
 For Frenetic and Floodlight, the only code we added to the platform was
 a small RPC server thread to grab the platform's state for correspondence
-checking. For POX, we additionally fabricated a buf in failover
+checking. For POX, we additionally fabricated a bug in failover
 logic, and independently validated the simulator's ability to identify and localize the
 problem.
 
@@ -25,7 +25,7 @@ Here we the discuss the three bugs we found with \projectname{}.
 
 \noindent{\bf Frenetic}
 
-Our first example is Frenetic~\cite{frenetic}, a control plaform 
+Our first example is Frenetic~\cite{frenetic}, a control platform 
 providing functional-reactive language
 support for programming OpenFlow networks.
 Frenetic's language features aim to prevent common OpenFlow programming
@@ -35,9 +35,9 @@ the application's behalf. Frenetic is a modern SDN controller with a reactive
 flow installation policy;
 we present it here to demonstrate that \projectname{}, although focused
 primarily on proactive controllers, can nonetheless be used to
-troubelshoot errors.
+troubleshoot errors.
 
-When running learning switch, the simplest Frenetic application, we enountered
+When running learning switch, the simplest Frenetic application, we encountered
 persistent policy-violations immediately. The propagation graph ($\Omega$) for Frenetic's
 runtime representation of the network policy had leaves that were not present
 in the physical network. Upon closer examination, we found that Frenetic's
@@ -50,7 +50,7 @@ network. The outdated controller state nevertheless went unnoticed; the bug in
 Frenetic's runtime was not specific to the learning switch, and could have
 resulted in failure to install flow entries at a later point in time if the
 application had asked to re-install them. The key takeaway from this example
-is that correspendence checking is a powerful mechanism for
+is that correspondence checking is a powerful mechanism for
 verifying that the controller's representation of the network matches the true
 network state correctly; without correspondence checking, troubleshooters
 would need to compare the routing configurations and controller's data
@@ -218,9 +218,9 @@ simulator round) was well within the bounds for interactive use.
     attached to 2,880 switches)}
 \end{figure}
 
-We also tested the extreme limits of the simulator's scalabilty, pushing up
-the number of switches until something broke. We enountered what appears to be
-a limitiation of the Linux TCP/IP stack: TCP connection attempts began failing
+We also tested the extreme limits of the simulator's scalability, pushing up
+the number of switches until something broke. We encountered what appears to be
+a limitation of the Linux TCP/IP stack: TCP connection attempts began failing
 beyond 26,680 sockets. Note that 26,680 switches is an order-of-magnitude larger than
 the today's biggest networks.
 
