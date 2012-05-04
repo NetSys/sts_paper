@@ -97,14 +97,24 @@ are unavoidable, even common. That is, every time there has been a link failure 
 Troubleshooters therefore need a mechanism to differentiate
 policy-violations that indicate a problem in the SDN platform from those that merely reflect inherent delays in responding to events; we will call all policy-violations that indicate a problem``pernicious'' violations.
 
-
 Second, once pernicious policy-violations are encountered, troubleshooters need to
 identify the events (link failures, controller failures, VM migrations,
 \etc{}) that triggered the problem. Moreover, they would like to have these events narrowed down to a minimal set, to make it easier to understand the problem.
 
 \Simulator{} is our mechanism for providing this information. \Simulator{} models
 the network in a single simulation process, thereby providing arbitrary control over hardware
-failures, message delays and other failure modes. With complete control over the
+failures, message delays and other failure modes. \Simulator{} distinguishes
+between ``internal'' events that happen throughout the normal course of the
+system execution (\eg{} message sends and receives), and ``external'' events
+injected into the system (\eg{} link failures). We describe the details
+of the simulator in the next section.
+
+The key insight behind
+\simulator{} is that fault localization is significantly easier with the
+ability to selectively filter
+out external events from the system execution and observing how the system
+plays out in isolation. 
+With complete control over the
 system execution, we are able to programmatically (i) track the lifetime of
 policy-violations to differentiate persistent from transient errors, and (ii)
 infer the `minimal causal set' of events triggering the problem. We describe
@@ -133,13 +143,6 @@ the minimally-sized set of events preceding (defined by the `happens-before'
 relation~\cite{Lamport:1978:TCO:359545.359563}) the onset of the policy-violation, such that
 if any single event were removed the set, the policy-violation would not have resulted.
 % * would not have resulted *in such a long duration event*?
-\colin{Need to make it a little more clear what the simulator does. It models
-the behavior of the entire system -- switches respond to control plane
-messages, controllers crash and reboot, hosts migrate, etc. These events are
-"deterministic", or "internal". The simulator also injects "external" or
-"non-deterministic" events from the input trace, and then observes the behavior
-of the system as it reacts to these external events. We describe the details
-of the simulator in the next Section.}\scott{agreed}
 
 \Simulator{} captures the notion of causality by attaching vector clocks~\cite{Mattern89virtualtime} to
 all control messages in the simulated execution of the system. Our
@@ -164,8 +167,6 @@ in-flight control packets in the network. Our goal is to prune these causal
 branches until we are left with the minimal causal set at the leaves of the
 pruned branches.
 
-\colin{Need a Lamport time diagram for illustration. Also need to be clear
-what I mean by "message send event", etc.}\scott{no, everyone will understand this.}
 %\begin{figure}[t]
 %    %\hspace{-10pt}
 %    \includegraphics[width=3.25in]{../diagrams/approach/localizing}
@@ -175,14 +176,14 @@ what I mean by "message send event", etc.}\scott{no, everyone will understand th
 
 After having identified the active `casual branches' in the system at the
 onset of the policy-violation, our algorithm essentially performs a
-traversal of the causal relation DAG's topological ordering, pruning leaves that are not
+traversal of the causal graph's (a DAG) topological ordering, pruning leaves that are not
 responsible for the policy-violation. In pseudo-code:
 
 \begin{algorithmic}
 \State $causalSet \gets []$ 
-\While {$\exists\;\text{\it leaf in DAG}$}
+\While {$\exists\;\text{\it leaf in causalGraph}$}
     \State {\it remove leaf from DAG}
-    \State $violation \gets runSimulation(DAG)$
+    \State $violation \gets runSimulation(causalGraph)$
     \If {\it not violation}
         \State $causalSet\;+= leaf$
     \EndIf
@@ -193,13 +194,20 @@ Here, $runSimulation(DAG)$ executes the system from the beginning of the
 trace, and checks whether the policy-violation occurs at the end of the
 execution. The beginning of the trace starts at some pre-defined point where
 the system was known to be in a coalescent state.
+
 Note that each iteration of the loop can be performed in parallel by cloning 
 the state of the simulator. The serial runtime of the algorithm is therefore
-linear with the number of events in the input trace. Note also that Lamport's definition of the
-`happens-before' relation can include events that are not in fact
-casually-related; by leveraging domain knowledge of the network control plane
-protocols, it may be possible to further prune the DAG for events that are not
-in fact causally related.
+linear with the number of events in the input trace.
+
+We also note that Lamport's definition of the `happens-before' relation is
+conservatively general, and can include events that are not in fact
+casually-related. In fact, as described here, our algorithm can be viewed as a
+generalization of dependency graph algorithms for hardware fault
+isolation~\cite{577079}. In future work we hope to leverage domain
+knowledge of network control plane
+protocols to provide a more specific definition of causality (\eg{} OpenFlow
+control messages with differing transaction ids are not causally related),
+allowing us to further prune events that are not in fact causally related from the DAG.
 
 \subsubsection{Additional Use-Cases} Besides lifetime tracking and causal analysis, our simulation infrastructure has a
 number of other possible use-cases:
