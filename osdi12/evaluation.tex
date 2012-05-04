@@ -9,8 +9,8 @@ POX and Floodlight demonstrate the importance of \simulator{}'s ability to
 programmatically prioritize persistent policy-violations and infer their minimal
 causal sets.
 
-For all three applications, the only code we added to the platform was
-a small RPC server thread to grab the platform's state for correspondence
+For all three cases, only a small code modification to the controller was necessary 
+to retrieve the the platform's state for correspondence
 checking. 
 
 \subsection{Case studies}
@@ -21,9 +21,7 @@ checking.
 %  - Lessons learned from finding bugs
 Here we the discuss the three bugs we found with \projectname{}.
 
-\noindent{\bf Frenetic}
-
-Our first example is Frenetic~\cite{frenetic}, a control platform 
+\noindent{\bf Frenetic.} Our first example is Frenetic~\cite{frenetic}, a control platform 
 providing functional-reactive language
 support for programming OpenFlow networks.
 Frenetic's language features aim to prevent common OpenFlow programming
@@ -33,7 +31,7 @@ the application's behalf. Frenetic is a modern SDN controller with a reactive
 flow installation policy;
 we present it here to demonstrate that \projectname{}, although focused
 primarily on proactive controllers, can nonetheless be used to
-troubleshoot errors.
+troubleshoot errors in reactive control platforms.
 
 When running learning switch, the simplest Frenetic application, we encountered
 persistent policy-violations immediately. The propagation graph ($\Omega$) for Frenetic's
@@ -54,10 +52,7 @@ network state correctly; without correspondence checking, troubleshooters
 would need to compare the routing configurations and controller's data
 structures side-by-side.
 
-\noindent{\bf POX} 
-
-% Need to maintain anonymity...
-Our second example is POX~\cite{pox}. POX is modeled after
+\noindent{\bf POX} Our second example is POX~\cite{pox}. POX is modeled after
 Onix~\cite{onix}, a production SDN platform; as in Figure~\ref{fig:basicarch} 
 POX provides a physical view, a virtualized view, and a naive replication
 mechanism between distributed control servers.
@@ -128,9 +123,7 @@ the platform's recovery code, adds this case to the platform's integration
 test suite, and pushes the change to production. 
 }
 
-\noindent{\bf Distributed controller failover race condition}
-
-More complex bugs and race conditions occur when controllers need to be
+\noindent{\bf Distributed controller failover race condition} More complex bugs and race conditions occur when controllers need to be
 distributed and fail-over mechanisms between the individual instances are
 required for fault tolerance. Consider the following case described in the
 Floodlight~\cite{floodlight} source code\footnote{Note this issue was
