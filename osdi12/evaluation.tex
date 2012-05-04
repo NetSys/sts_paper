@@ -1,14 +1,19 @@
 % Just realized: b/c of anonymity, the PC can't chastise us for 
 % running our system on our own code -- we can't tell them that it's our code!
 We applied \projectname{} to three SDN control platforms: 
-Frenetic, POX, and Floodlight. We found 1 bug for each platform.
-The bug in Frenetic demonstrates 
+Frenetic~\cite{frenetic}, POX~\cite{pox}, and Floodlight~\cite{bigswitch}.
+We found 1 bug for each platform. The bug in Frenetic demonstrates 
 the utility of checking correspondence between high-level policies and
-low-level configuration (without needing to specify invariants). The bugs in 
+low-level configuration (without needing to specify invariants). The bugs in
 POX and Floodlight demonstrate the importance of the simulator's ability to 
 programaticaly prioritize persistent policy-violations and infer their minimal
-causal sets. In addition to describing bugs, we show that \projectname{} is able 
-to simulate and check large networks quickly.
+causal sets.
+
+For Frenetic and Floodlight, the only code we added to the platform was
+a small RPC server thread to grab the platform's state for correspondence
+checking. For POX, we additionally fabricated a buf in failover
+logic, and independently validated the simulator's ability to identify and localize the
+problem.
 
 \subsection{Case studies}
 
@@ -16,15 +21,46 @@ to simulate and check large networks quickly.
 %  - Describe each system under test
 %  - Describe bugs found
 %  - Lessons learned from finding bugs
-\colin{New structure: describe each system under test, describe bugs found,
-described lessons learned from finding bugs. First Frenetic, which is
-relatively trivial. Then POX, which is our own code, but demonstrates in a
-really nice fashion what the simulator sees, and how that's easier to
-understand than the status quo. And
-lastly, the Floodlight case which is really awesome.}
-Here we present a hypothetical use-case from two perspectives
-for correspondence checking and \simulator{}.
+Here we the discuss the three bugs we found with \projectname{}.
 
+\noindent{\bf Frenetic}
+
+Our first example is Frenetic~\cite{frenetic}, a control plaform 
+providing functional-reactive language
+support for programming OpenFlow networks.
+Frenetic's language features aim to prevent common OpenFlow programming
+errors such as race conditions and overlapping flow entries; Frenetic's
+runtime system handles these low-level details on
+the application's behalf. Frenetic is a modern SDN controller with a reactive
+flow installation policy;
+we present it here to demonstrate that \projectname{}, although focused
+primarily on proactive controllers, can nonetheless be used to
+troubelshoot errors.
+
+When running learning switch, the simplest Frenetic application, we enountered
+persistent policy-violations immediately. The propagation graph ($\Omega$) for Frenetic's
+runtime representation of the network policy had leaves that were not present
+in the physical network. Upon closer examination, we found that Frenetic's
+runtime system was neglecting to remove old FLOOD routing entries from its
+representation of the network policy after the hosts' route had been learned,
+even though the learning switch application had
+asked for these entries to be removed. Note that this case was not an overtly
+malicious bug; the FLOOD entries had indeed been removed from the physical
+network. The outdated controller state nevertheless went unnoticed; the bug in
+Frenetic's runtime was not specific to the learning switch, and could have
+resulted in failure to install flow entries at a later point in time if the
+application had asked to re-install them. The key takeaway from this example
+is that correspendence checking is a powerful mechanism for
+verifying that the controller's representation of the network matches the true
+network state correctly; without correspondence checking, troubleshooters
+would need to compare the routing configurations and controller's data
+structures side-by-side.
+
+\noindent{\bf POX} 
+
+Our second example is POX, another modern control platform.
+
+\eat{
 \noindent{\bf Network Operator.} An enterprise network
 operator pays a third-party SDN provider to virtualize their network
 and run it in the cloud. The network operator receives a complaint
@@ -68,8 +104,9 @@ representation of network state was up-to-date. As such, the partially installed
 in the neighboring switches, resulting in the blackhole. The developer fixes
 the platform's recovery code, adds this case to the platform's integration
 test suite, and pushes the change to production. 
+}
 
-\subsection{Distributed controller failover race condition}
+\noindent{\bf Distributed controller failover race condition}
 
 More complex bugs and race conditions occur when controllers need to be
 distributed and fail-over mechanisms between the individual instances are
@@ -97,6 +134,9 @@ integrated into the system with an unmerged flow-table, resulting in a persisten
 inconsistency between the flow-table in the controller and the switch.
 
 \subsection{Overhead}
+
+In addition to describing bugs, we show that \projectname{} is able 
+to simulate and check large networks quickly.
 
 \noindent{\bf Record and Replay Overhead.} In contrast to general record-and-replay
 mechanisms, the amount of recorded state needed for
@@ -161,7 +201,7 @@ within a single process. We show in Figure~\ref{fig:scalability}
 that this approach nonetheless scales to large networks. For this analysis we
 generated fat tree topologies between 2 and 48 pods wide, where all switches in
 the network connected to a single controller. The controller sent each switch
-an OpenfFlow 
+an OpenFlow 
 $FLOW\_MOD$ and subsequent $BARRIER\_REQUEST$ message, and waited for the
 corresponding $BARRIER\_REPLY$. We then measured the time to between the first
 $FLOW\_MOD$ sent and the last $BARRIER\_REPLY$ received. As expected, the
