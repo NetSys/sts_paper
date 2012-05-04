@@ -28,11 +28,11 @@ of switches.
 \emph{control plane events}. Typical rates of control plane events must thus be
 handled, and control plane events must be modeled precisely. Conversely, we
 don't expect to handle a realistic amount of dataplane traffic, which is
-intractable for a software solution, and largely irrelevant in current networks.
+intractable for a software solution, and largely irrelevant in current networks (because they are mostly proactive, so control planes are not being driven by packet arrivals).
 
 \noindent \textbf{(3) Controller choice} Our system should run with existing production
-controllers with minimum instrumentation. To allow for wider adoption, we don't want to limit ourselves to
-a particular controller/NOS implementation,.
+controllers with minimum additional instrumentation. To allow for wider adoption, we don't want to limit ourselves to
+a particular controller implementation,.
 
 \noindent \textbf{(4) Full determinism} We want our simulation environment to be fully 
 deterministic, such that repeated simulations with identical initialization values
@@ -40,9 +40,9 @@ yield provably identical results. This creates a challenge in conjunction with o
 
 \noindent{\bf (5) Comprehensive Failure Modes.} \projectname{} is primarily
 focused on corner-case scenarios, which are the most difficult to anticipate
-and cover for with traditional testing techniques. \projectname{} should
+and cover with traditional testing techniques. \projectname{} should
 therefore support a wide range of failure modes at all components in the
-system, including switch and link failures, message drops, delays reordering (where possible).
+system, including switch and link failures and message drops, delays and reorderings.
 
 \textbf{(6) Corner cases investigation} The potential state-space in a large-scale network
 is intractably large. We focus on interesting cases, as recorded, e.g., in production, or
@@ -51,6 +51,10 @@ we \emph{fuzz} the input traces.
 
 \textbf{(7) Interactivity} We system should fast enough for interactive exploration through
 an operator.
+
+\medskip
+
+While none of these requirements were particularly difficult in isolation, taken in aggregate they posed some difficulties, as we now recount.
 
 \subsection{Components}
 
@@ -90,7 +94,7 @@ Our simulated model supports a wide
 range of failure modes, and provides fine-grained control over event
 orderings, component failures, and other aspects of the system execution. Our
 simulator currently supports switch failures, link failures, arbitrary packet
-re-orderings, drops and delays, a fully general control plane.
+re-orderings, drops and delays, and a fully general control plane.
 
 The main challenge we encountered in the design of the simulator was the
 maintaining large numbers of TCP connections to the
