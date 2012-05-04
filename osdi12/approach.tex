@@ -182,7 +182,7 @@ responsible for the policy-violation. In pseudo-code:
 \begin{algorithmic}
 \State $causalSet \gets []$ 
 \While {$\exists\;\text{\it leaf in causalGraph}$}
-    \State {\it remove leaf from DAG}
+    \State {\it remove leaf from causalGraph}
     \State $violation \gets runSimulation(causalGraph)$
     \If {\it not violation}
         \State $causalSet\;+= leaf$

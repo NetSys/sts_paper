@@ -4,10 +4,8 @@ Software-Defined Networks.
 The work most closely related to ours is NICE~\cite{nice}. NICE combines concolic execution
 and model checking to automate the process of testing NOX applications,
 thereby catching bugs before
-they are deployed. Our approaches complement each other in several ways. 
-\Simulator{} places a high-burden on human intuition; conceptualizing
-a 10,000 node network is difficult, and it's feasible that users will not be able 
-to reproduce the errors they have in mind. Systematic exploration of failure orderings 
+they are deployed. Our approaches complement each other well. 
+Systematic exploration of failure orderings 
 is potentially of great use for finding corner-case errors.
 In complement to NICE, correspondence checking helps developers isolate the
 specific component of the SDN platform responsible for an error, without needing to specify invariants.
