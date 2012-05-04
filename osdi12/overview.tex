@@ -7,7 +7,7 @@ SDN networks are managed by software running on a set of network-attached server
 depicted in Figure \ref{fig:basicarch}. The two lower layers are part of the SDN platform, and the highest layer is the control application. We now describe the functions of each layer.
 
 \noindent{\bf Control Application:} This component specifies the desired
-high-level behavior of the network. We terms these behavioral specifications ``policies''. It is the job of the SDN platform to implement these high-level policy-specifications by configuring the forwarding tables of the physical switches. The platform does so in two steps, each implemented in a separate layer.
+high-level behavior of the network. We term these behavioral specifications ``policies''. It is the job of the SDN platform to implement these high-level policy-specifications by configuring the forwarding tables of the physical switches. The platform does so in two steps, each implemented in a separate layer.
 
 \noindent{\bf Physical View:} The lowest level of SDN software maintains a graph data-structure known as
 the `physical view', that has a one-to-one correspondence with the physical
@@ -67,7 +67,7 @@ datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}.
     \caption[]{\label{fig:basicarch} The SDN Software Architecture } 
 \end{figure}
 
-Before describing the many ways in which such a system might fail, we note that there there are two different kinds of SDN control applications: proactive and reactive.
+Before describing the many ways in which such a system might fail, we note that there are two different kinds of SDN control applications: proactive and reactive.
 Proactive applications pre-compute forwarding tables for the entire network,
 and only push down updates periodically to react to link failures, changes in
 traffic mix, \etc. In contrast, reactive control applications forward all new flows to
