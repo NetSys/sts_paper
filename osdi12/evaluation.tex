@@ -121,7 +121,7 @@ More complex bugs and race conditions occur when controllers need to be
 distributed and fail-over mechanisms between the individual instances are
 required for fault tolerance. Consider the following case described in the
 Floodlight~\cite{floodlight} source code\footnote{Note this issue was
-independently discovered by the authors}: For high availability, floodlight can run as a
+independently discovered by the authors.}: For high availability, floodlight can run as a
 distributed controller, with switches connecting to several controllers at the
 same time. In this setup, one controller assumes the role of \emph{master} and
 thereby gains the authority to issue state changing requests to the switches.
@@ -140,7 +140,7 @@ connect to several controllers. The inter-controller synchronization and heartbe
 protocol is proxied through the simulator for control over the timing. After the
 master controller dies, a new switch is associated with the slave controllers, and
 integrated into the system with an unmerged flow-table, resulting in a persistent
-inconsistency between the flow-table in the controller and the switch.
+policy-violation between the flow-table representation in the controller and the switch.
 
 \subsection{Overhead}
 
