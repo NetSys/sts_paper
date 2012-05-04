@@ -32,24 +32,22 @@ intractable for a software solution, and largely irrelevant in current networks 
 
 \noindent \textbf{(3) Controller choice} Our system should run with existing production
 controllers with minimum additional instrumentation. To allow for wider adoption, we don't want to limit ourselves to
-a particular controller implementation,.
+a particular controller implementation.
 
 \noindent \textbf{(4) Full determinism} We want our simulation environment to be fully 
 deterministic, such that repeated simulations with identical initialization values
 yield provably identical results. This creates a challenge in conjunction with our goal (3).
 
-\noindent{\bf (5) Comprehensive Failure Modes.} \projectname{} is primarily
-focused on corner-case scenarios, which are the most difficult to anticipate
-and cover with traditional testing techniques. \projectname{} should
-therefore support a wide range of failure modes at all components in the
+\noindent{\bf (5) Comprehensive Failure Modes.} \projectname{} should
+support a wide range of failure modes at all components in the
 system, including switch and link failures and message drops, delays and reorderings.
 
-\textbf{(6) Corner cases investigation} The potential state-space in a large-scale network
+\noindent\textbf{(6) Corner cases investigation} The potential state-space in a large-scale network
 is intractably large. We focus on interesting cases, as recorded, e.g., in production, or
 found through interactive evaluation. To investigate related error conditions,
 we \emph{fuzz} the input traces.
 
-\textbf{(7) Interactivity} We system should fast enough for interactive exploration through
+\noindent\textbf{(7) Interactivity} The system should be fast enough for interactive exploration through
 an operator.
 
 \medskip
