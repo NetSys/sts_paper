@@ -1,8 +1,8 @@
 % Just realized: b/c of anonymity, the PC can't chastise us for 
 % running our system on our own code -- we can't tell them that it's our code!
 We applied \projectname{} to three open source SDN control platforms: 
-Frenetic~\cite{frenetic}, POX~\cite{pox}, and Floodlight~\cite{bigswitch}.
-We found 1 bug for each platform. The bug in Frenetic demonstrates 
+Frenetic~\cite{frenetic}, POX~\cite{pox}, and Floodlight~\cite{bigswitch}, and
+quickly found (or reproduced) one bug in each. The bug in Frenetic demonstrates 
 the utility of checking correspondence between high-level policies and
 low-level configuration (without needing to specify invariants). The bugs in
 POX and Floodlight demonstrate the importance of \simulator{}'s ability to 
@@ -124,11 +124,11 @@ test suite, and pushes the change to production.
 }
 
 \noindent{\bf Floodlight: Distributed controller failover race condition} More complex bugs and race conditions occur when controllers need to be
-distributed and fail-over mechanisms between the individual instances are
+distributed, and fail-over mechanisms between the individual instances are
 required for fault tolerance. Consider the following case described in the
 Floodlight~\cite{floodlight} source code\footnote{Note this issue was
 independently discovered by the developers of Floodlight.}: For high availability, Floodlight can run as a
-distributed controller, with switches connecting to several controllers at the
+distributed controller, with switches connecting to several replica controllers at the
 same time. In this setup, one controller assumes the role of \emph{master} and
 thereby gains the authority to issue state changing requests to the switches.
 The other controllers are in \emph{slave} mode and thus do not perform any
@@ -140,7 +140,7 @@ flow table. At some point, one of the controllers is elevated to to
 \emph{master} role and will proceed to manage the newly connected switch, based
 on an inconsistent flow table.
 
-Using \projectname, we were able to reproduce the problem. To this end, the
+Using \projectname, we were able to reproduce the problem. The
 emulated switches in the simulator support the \emph{role} vendor extension to
 connect to several controllers. The inter-controller synchronization and heartbeat
 protocol is proxied through the simulator for control over the timing. After the
