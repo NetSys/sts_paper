@@ -2,30 +2,23 @@ This work extends a growing literature on troubleshooting tools for
 Software-Defined Networks.
     
 The work most closely related to ours is NICE~\cite{nice}. NICE combines concolic execution
-and model checking to automate the process of testing NOX applications,
-thereby catching bugs before
-they are deployed. Our approaches complement each other well. 
-Systematic exploration of failure orderings 
-is potentially of great use for finding corner-case errors.
+and model checking to automate the process of testing NOX applications. This enables one to catch bugs before
+they are deployed.  
+
+Our approach and NICE complement each other in several ways.  First, NICE's systematic exploration of failure orderings 
+is potentially of great use for finding corner-case errors, which we could then add to our regression suite. NICE may also be applied directly to the code-base of the SDN platform, but in the case that only a subset
+of all possible code-paths in the SDN platform can be model-checked due to state-space explosion; 
+our mechanisms allows users to troubleshoot errors 
+{\it post-hoc} after they are observed in production, so we can find bugs that might be missed due to truncating the state-space exploration.
 In complement to NICE, correspondence checking helps developers isolate the
 specific component of the SDN platform responsible for an error, without needing to specify invariants.
-NICE may also be applied directly to the code-base of the SDN platform, but in the case that only a subset
-of all possible code-paths in the SDN platform can be model-checked due to state-space explosion, 
-our mechanisms allows users to troubleshoot errors 
-{\it post-hoc} after they are observed in production.
 
 Focusing on the physical network, Anteater~\cite{anteater} and HSA~\cite{hsa}
 are alternative approaches to statically checking invariants in the
 configuration of switches and routers. Both take take as input a snapshot of
 the FIB of each network device. To check invariants, Anteater generates a set of constraint functions and feeds them through a SAT
 solver, while HSA defines an algebra for virtual packets and
-their transformation through the network. Nonetheless, these techniques
-only detects bugs that manifest entirely within the physical network;  
-they do not detect errors that manifest across the layers of the SDN stack.
-Furthermore, as we discuss in \S\ref{sec:approach},
-static checking only detects errors at a particular point in time; it cannot 
-detect errors that might arise under a different configuration or with different
-inputs to the same network controller.
+their transformation through the network. We leverage the HSA work in \projectname{}, and our simulator allows us to detect policy-violations not just in a given set of tables but what tables are produced by a wide range of scenarios. \
 
 Also focusing on the physical network, OFRewind~\cite{ofrewind} develops
 record and replay techniques for the control plane of OpenFlow networks.
@@ -33,15 +26,14 @@ Unlike \simulator, OFRewind focuses specifically on OpenFlow
 interactions, while we focus on more course-grained replay of
 failures and topology changes. Running replay within a simulator also allows
 us to manually modify the execution of the system, rather than playing a
-static recording. Finally, we add correspondence checking to automate the
-process of isolating root causes.
+static recording. 
 
 Another line of work aims to prevent bugs from being introduced in the first
 place. Frenetic~\cite{frenetic} presents a language-based approach to building
 robust SDN applications. By providing a specialized programming model,
  Frenetic helps developers avoid writing common classes of
-bugs, such `composition errors' where installed flow entries override each other.
-Reitblatt et al.~\cite{consistentupdates} develop a technique for ensuring
+bugs, such as `composition errors' where installed flow entries override each other.
+Reitblatt et al.~\cite{consistentupdates} developed a technique for ensuring
 consistent routing updates, guaranteeing that all switches in the network either route
 a given packet under the new configuration or under the old configuration,
 but not both. These abstractions are valuable for preventing common, difficult errors
