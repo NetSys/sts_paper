@@ -1,11 +1,11 @@
 % Just realized: b/c of anonymity, the PC can't chastise us for 
 % running our system on our own code -- we can't tell them that it's our code!
-We applied \projectname{} to three SDN control platforms: 
+We applied \projectname{} to three open source SDN control platforms: 
 Frenetic~\cite{frenetic}, POX~\cite{pox}, and Floodlight~\cite{bigswitch}.
 We found 1 bug for each platform. The bug in Frenetic demonstrates 
 the utility of checking correspondence between high-level policies and
 low-level configuration (without needing to specify invariants). The bugs in
-POX and Floodlight demonstrate the importance of the simulator's ability to 
+POX and Floodlight demonstrate the importance of \simulator{}'s ability to 
 programmatically prioritize persistent policy-violations and infer their minimal
 causal sets.
 
@@ -58,7 +58,16 @@ structures side-by-side.
 
 \noindent{\bf POX} 
 
-Our second example is POX, another modern control platform.
+% Need to maintain anonymity...
+Our second example is POX~\cite{pox}. POX is modeled after
+Onix~\cite{onix}, a production SDN platform; as in Figure~\ref{fig:basicarch} 
+POX provides a physical view, a virtualized view, and a naive replication
+mechanism between distributed control servers.
+
+Because the functionality within POX is relatively young, we chose to
+fabricate a bug in POX's distribution failover logic, and independently
+validate that the simulator was able to identify, prioritize, and find the
+minimal causal set for.
 
 \eat{
 \noindent{\bf Network Operator.} An enterprise network
@@ -226,17 +235,27 @@ the today's biggest networks.
 
 \subsection{Replay fidelity}
 
-If our simulated model of the network is not sufficiently complex, it may not
-be able to reproduce error conditions observed in production. Conversely,
-resolving bugs observed in a simulated environment may not ensure
-correct behavior of the production network. In future work, we hope to verify
-the fidelity of \simulator{} by collaborating with industry partners to
-reproduce bugs observed in practice. In addition, we
-plan to gather error logs by deploying our own applications in Google's
-datacenter networking research cluster~\cite{DNRC}.
+On the one hand, since the SDN platform is in software, we can, in theory,
+reproduce all software-induced policy violations (though not problems
+resulting from flaky hardware implementing code incorrectly). However, this
+requires setting up the simulator to emulate the appropriate conditions that
+led to the policy violation, and that can be quite difficult. We hope to make
+progress in this area along two dimensions.  First, we hope to help the
+community build up a set of regression tests, so that a wide variety of
+bug-triggering scenarios are available in a public repository. This would go a
+long way towards providing adequate test coverage. 
 
-Finally, note that our correspondence checking algorithm can not verify 
-time-dependent policies such as ``No link should be congested more than 1\% of the
+Second, we hope to gather error logs from real production deployments which
+will help us populate this repository; this may require providing novel kinds
+of anonymization, so that large datacenter operators would be willing to share
+their problems (since they want their SDN code to work) without revealing the
+details of their network.  This may require a infrastructural counterpart to
+minimally-causal events; the smallest number of infrastructure components that
+can reproduce the same bug.
+
+Also, note that our correspondence checking algorithm can not verify 
+time-dependent policies such as ``No link should be congested more than 1\% of
+the
 time'', or ``No server should receive more than 500MB/s of external traffic''.
 In future work we will extend our correspondence checking algorithm to
 account for this class of policies.
