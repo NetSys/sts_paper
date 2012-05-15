@@ -198,6 +198,17 @@ trace, and checks whether the policy-violation occurs at the end of the
 execution. The beginning of the trace starts at some pre-defined point where
 the system was known to be in a coalescent state.
 
+\colin{
+Panda and I realized that the minimal casual set algorithm we presented in the OSDI submission is erroneous.
+
+A few things are wrong with this: 
+\begin{itemize}
+\item We can't remove elements of the MCS from the DAG! We should only remove from the DAG if the event is not in the MCS; otherwise, the policy-violation will never be reproduced after the first element is added the MCS, since we took away one of the necessary conditions.
+\item Need to make a distinction between "random events" (e.g. link failures, node failures) and "deterministic events" (e.g., a node is programmed to send a pong when it receives a ping). In the MCS algorithm, it makes no sense to prune out deterministic events... However, the algorithm still needs to take in the entire casual DAG (both random and deterministic) to maintain casual dependencies [can't prune arbitrary random events]
+\item We assume that the random events are independent; we need make this assumption explicit.
+\end{itemize}
+}
+
 Note that each iteration of the loop can be performed in parallel by cloning 
 the state of the simulator. The serial runtime of the algorithm is therefore
 linear with the number of events in the input trace.
