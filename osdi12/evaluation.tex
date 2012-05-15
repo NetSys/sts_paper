@@ -164,7 +164,7 @@ core switch model supports a maximum of 128K MAC entries and
 (larger than the OpenFlow 13-tuple), each FIB will contain a maximum of 9216
 bytes, uncompressed. A datacenter of 100,000
 hosts includes roughly 8,000
-switches~\cite{Al-Fares:2008:SCD:1402958.1402967}.
+switchee~\cite{Al-Fares:2008:SCD:1402958.1402967}.
 Therefore a snapshot of the FIBs of the entire network takes up roughly 74 MB.
 The VL2 paper reports 36M network error events over one year over 8
 datacenters, which implies 8.5 error events per minute per
@@ -173,6 +173,23 @@ Suppose we took a snapshot of the FIBs in the network every second.
 Then we would need to store roughly 4GB, uncompressed, per minute, a relatively small growth 
 rate for datacenter logs. This information, in addition to a log of host
 mobility events (\eg{} VM migrations) will suffice for our purposes. Note that this is a conservative overestimate.
+
+\colin{Notes from Rean Griffith:
+\begin{itemize}
+\item total vms in a typical datacenter: 1000
+\item migration frequency (migrations/minute): 20 per hour
+\item VM spin ups/downs: 150 power ons per hour (see our OSR 2010 paper for
+power off estimates)
+\item Do we log VM migrations and how does that log grow (I wasn't able to
+get any estimates on log-growth data)
+\end{itemize}
+
+We had an OSR 2010 paper that provided numbers scaled by the number of
+VMs in an installation:
+Challenges in building scalable virtualized datacenter management
+(http://dl.acm.org/citation.cfm?id=1899941)
+}
+
 %To account for host mobility, assume that each server hosts 10 VMs,
 %and 1\% of VMs are created, suspended, or migrated every minute. Then 10,000 host mobility events must be
 %logged per minute, also a reasonable storage cost. \colin{get real numbers}
