@@ -1,10 +1,17 @@
 In this section we present two mechanisms to facilitate the troubleshooting
 process. Correspondence checking allows troubleshooters to isolate
-the cause of policy-violations to a particular layer. \Simulator{}
+the cause of policy violations to a particular layer. \Simulator{}
 allows troubleshooters to isolate relevant events throughout the system
 execution. We provide the details of these techniques below. 
 
 \subsection{Correspondence Checking}
+
+\colin{reviewer b: Correspondence checking as defined in this paper captures a
+rather weak condition that allows implementations that intuitively seem
+incorrect.} \colin{I think we should demphasize cc -- frame it as a ``black
+box policy-violation detector for the purposes of casual analysis. Also,
+apparently need to do a better job of calling out that correspondence checking
+is indeed a weak condition}
 
 Platform correctness can be expressed as a simple invariant:
 the policy specified by the application layer should correspond to the
@@ -49,7 +56,9 @@ in all graphs, although there may not be a one-to-one mapping between the
 internal vertices of $G^{virtual}$ and $G^{physical}$.
 
 To check correspondence in SDN, we begin by taking a causally consistent
-snapshot~\cite{Chandy:1985:DSD:214451.214456} of the physical network. The routing
+snapshot~\cite{Chandy:1985:DSD:214451.214456} of the physical network.
+\colin{reviewer A: how you take it? is the virtual layer included? is the
+application layer included?} The routing
 tables of forwarding elements can then be translated into transformation functions.
 Finally, we feed a symbolic packet $x^L$ to each access link of the
 network.\footnote{The rules for process wildcard bits $x^n$ are defined in
@@ -59,21 +68,25 @@ at the access link.
 The leaves of the propagation graph represent $\Omega$. We
 verify correspondence in SDN by generating propagation graphs for all SDN layers,
 and comparing the leaves. Any mismatch in leaves of the propagation graphs
-represent policy-violations between control applications and network
+represent policy violations between control applications and network
 configuration.
 
 \subsection{\SIMULATOR{}}
 
 Correspondence checking only captures a snapshot of the network state.
-We have developed \simulator{} to allow enable troubleshooters to explore
-policy-violations over time. We base our replay on a consistent
+We have developed \simulator{} to allow troubleshooters to explore
+policy violations over time. We base our replay on a consistent
 trace of low level failure and topology change events, as enabled,
-\eg{}, by OFRewind~\cite{ofrewind}. The
-events from the trace are fed into a simulator, which allows the
-troubleshooter to invokes correspondence
+\eg{}, by OFRewind~\cite{ofrewind}. \colin{reviewer A: how is this defined?}
+The events from the trace are fed into a simulator, which allows the
+troubleshooter to invoke correspondence
 checking at any point in time. The simulator focuses on corner-case events,
 and models the failure modes in sufficient detail to reproduce the error, while
 allowing for complete control of the timing, ordering, and constuction of the events.
+\colin{As for the simulation-based replay analysis, it isn't clear what you
+are simulating/emulating and what are the events included in the trace. Please
+clarify.}
+
 
 %and does not enable the troubleshooter to classify the
 %gravity of the detected inconsistencies, i.e., whether the detected 
@@ -83,11 +96,11 @@ allowing for complete control of the timing, ordering, and constuction of the ev
 %the faulty behavior.
 
 If users were to run \simulator{} on raw event logs, they would encounter a
-large number of failure events and transient policy-violations. We describe
+large number of failure events and transient policy violations. We describe
 how users can apply \simulator{} to differentiate transient from persistent
-policy-violations below.
+policy violations below.
 
-\textbf{Identifying persistent policy-violations}. When a policy-violation is detected,
+\textbf{Identifying persistent policy violations}. When a policy-violation is detected,
 the simulators forks off a simulation branch that investigates the future system behavior
 in a case where no further external events are played out. If the detected
 policy-violation
@@ -97,7 +110,9 @@ reached a persistent policy-violation that needs to be investigated.
 
 \textbf{Checking related problems by fuzzing.} Input traces can be \emph{fuzzed}, i.e.,
 randomly perturbed, to expose the system to similar error conditions, and confirm
-that a proposed solution is not just a point-fix.
+that a proposed solution is not just a point-fix. \colin{reviewer A: Fuzzing
+can be applied across a multitude of dimensions. What kind of fuzzing do you
+suggest using?}
 
 \textbf{Investigating pathological environment conditions.} The simulator allows for investigation
 of pathological environment conditions difficult to achieve in a real world test bed

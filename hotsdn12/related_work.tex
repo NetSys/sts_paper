@@ -1,3 +1,8 @@
+\colin{reviewer b: there is an enormous body of work on bisimulation equivalence that
+captures exactly what is needed, re: correspondence checking}. \colin{reviewer
+c: These sorts of "loopbacks" and P/I paths have existed for eons and the
+differentiation and explanation of merits of this approach are not stated.}
+
 This work extends a growing literature on troubleshooting tools for
 Software-Defined Networks.
     
@@ -18,7 +23,7 @@ our mechanisms allows users to troubleshoot errors
 
 Focusing on the physical network, Anteater~\cite{anteater} and HSA~\cite{hsa}
 are alternative approaches to statically checking invariants in the
-configuration of switches and routers. Both take take as input a snapshot of
+configuration of switches and routers. Both take as input a snapshot of
 the FIB of each network device. To check invariants, Anteater generates a set of constraint functions and feeds them through a SAT
 solver, while HSA defines an algebra for virtual packets and
 their transformation through the network. Nonetheless, these techniques
@@ -70,7 +75,7 @@ across components. Our work solves a more constrained problem; we leverage
 the structure of the SDN stack to enable a simple notion of platform
 correctness. In addition, these systems assume that invariants should hold at
 all times; we observe that in an eventually-consistent system such as SDN,
-transient policy-violations are inevitable. We built \simulator{} to help troubleshooters
+transient policy violations are inevitable. We built \simulator{} to help troubleshooters
 differentiate ephemeral from persistent errors. 
 
 % If we manage to run multiple applications by Monday, we should cite papers
