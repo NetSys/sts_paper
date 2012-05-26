@@ -112,6 +112,11 @@ As the figure depicts, even for large networks
 (27,648 hosts) the serial runtime of correspondence checking is reasonable for
 interactive use. The number of serial tasks to be executed
 is the number of hosts in the network squared, disregarding ECMP load balancing.
+\colin{reviewer B: correspondence is not being checked. I should be clear
+that this is the runtime of generating the propagation on the physical
+network, which is an upper bound on the runtime of checking the virtual
+network.}
+
 
 \begin{figure}[t]
     %\hspace{-10pt}
@@ -138,3 +143,7 @@ time-dependent policies such as ``No link should be congested more than 1\% of t
 time'', or ``No server should receive more than 500MB/s of external traffic''.
 In future work we will extend our correspondence checking algorithm to
 account for this class of policies.
+
+\colin{reviewer B: in fact, in addition to temporal properties, the
+correspondence checking algorithm cannot verify any properties involving
+individual links since it only accounts for externally observable behavior!}

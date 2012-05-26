@@ -8,10 +8,14 @@ execution. We provide the details of these techniques below.
 
 \colin{reviewer b: Correspondence checking as defined in this paper captures a
 rather weak condition that allows implementations that intuitively seem
-incorrect.} \colin{I think we should demphasize cc -- frame it as a ``black
-box policy-violation detector for the purposes of casual analysis. Also,
-apparently need to do a better job of calling out that correspondence checking
-is indeed a weak condition}
+incorrect.} \colin{I think we should demphasize correspondence checking. After
+describing it, we should treat it as a ``black 
+box'' policy-violation detector that serves as an important component in
+casual analysis. Also, 
+apparently we need to do a better job of calling out that correspondence
+checking 
+is indeed a weak condition. Finding real bugs will help with this objection, I
+believe.}
 
 Platform correctness can be expressed as a simple invariant:
 the policy specified by the application layer should correspond to the
@@ -28,6 +32,8 @@ by extending the range to sets of output tuples}:
 \begin{align*}
 T: (H \times E) \rightarrow (H \times E_{\emptyset})
 \end{align*}
+
+\colin{reviewer B: what is $E_{\emptyset}$? it's not defined}
 
 We use $`\Psi`$ to denote the collection of all transfer functions present in
 the network at a particular point in time. In this model, network traversal is simply a composition of transformation
@@ -54,11 +60,23 @@ the same final location as the corresponding (encapsulated) packet injected at t
 corresponding access link in $G^{physical}$. Note that hosts are represented
 in all graphs, although there may not be a one-to-one mapping between the
 internal vertices of $G^{virtual}$ and $G^{physical}$.
+\colin{reviewer B: the equivalence relation ~ is only defined informally\dots To
+get an equivalence that does not suffer from this problem, you might consult
+the literature on bisimulation equivalence (Robin Milner's small book on CCS
+and the Pi-calculus is an excellent starting point; Xavier Leroy's work on the
+CompCert verified compiler is a nice example of this in action). A
+bisimulation would require that every action at the virtual level can be
+simulated by an equivalent action at the physical level, and vice versa.}
 
 To check correspondence in SDN, we begin by taking a causally consistent
 snapshot~\cite{Chandy:1985:DSD:214451.214456} of the physical network.
 \colin{reviewer A: how you take it? is the virtual layer included? is the
-application layer included?} The routing
+application layer included?} \colin{reviewer C: Does each layer have to output
+a transformation
+function in a specific format? Does this approach require a
+standardization of the interfaces between layers in terms of some
+low-level rules? It isn't clear to me that many layers would
+interface with a forwarding-table like set of rules} The routing
 tables of forwarding elements can then be translated into transformation functions.
 Finally, we feed a symbolic packet $x^L$ to each access link of the
 network.\footnote{The rules for process wildcard bits $x^n$ are defined in
@@ -83,9 +101,14 @@ troubleshooter to invoke correspondence
 checking at any point in time. The simulator focuses on corner-case events,
 and models the failure modes in sufficient detail to reproduce the error, while
 allowing for complete control of the timing, ordering, and constuction of the events.
-\colin{As for the simulation-based replay analysis, it isn't clear what you
+\colin{reviewer A: As for the simulation-based replay analysis, it isn't clear what you
 are simulating/emulating and what are the events included in the trace. Please
-clarify.}
+clarify.} \colin{reviewer D:  This is a nice result, and it
+would be nice to see in more detail how this is accomplished.  Is there
+an analysis performed on the control program to decide which aspects
+of the failure modes of the system are relevant to a problem?
+Unfortunately, insufficient information is presented about the model
+to indicate that this is true.}
 
 
 %and does not enable the troubleshooter to classify the
