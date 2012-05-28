@@ -1,0 +1,117 @@
+In this section we provide an overview of the SDN architecture and examples 
+of errors observed in production software-defined networks.
+
+\subsection{SDN Architecture}
+
+Modern SDN controllers are constructed as three separate layers, depicted in Figure \ref{fig:basicarch}:
+the lowest layer maintains the state of each switch in the network; the virtualization layer 
+abstracts the details of the physical network into a simple graph representation;
+and the control application layer specifies network policies in terms of the
+virtual graph. We describe the details of these components below.
+
+The lowest layer of the SDN stack maintains a graph data-structure known as
+the `physical view', which has a one-to-one correspondence with the physical
+network. When a higher layer specifies a policy change on the physical view,
+synchronization logic generates configuration changes and sends it to the
+corresponding network devices. Conversely, when a state change
+occurs in the network, this component notifies upper layers of the change.
+
+The virtualization layer facilitates a concise specification of
+intended network behavior by abstracting the physical view into a simplified
+graph. A common pattern is to represent an entire
+datacenter network as a single logical
+switch~\cite{Casado:2010:VNF:1921151.1921162}. In this manner, operators
+can specify routing, access control, and QoS policies by configuring a single forwarding
+device; the platform then maps the configuration onto sequences 
+of forwarding elements in the physical network.
+
+Virtualization additionally facilitates multi-tenancy, and isolates control applications from the specifics
+of the underlying network. Ideally, each application is reduced to a
+state-less, side-effect free function~\cite{keynote}:
+\begin{align*}
+f(\text{\it view}) \rightarrow \text{\it configuration}
+\end{align*}
+
+Production software-defined networks may consist of thousands of network
+devices. Modern SDN platforms replicate control across cluster(s) of servers
+for fault tolerance scalability.
+Onix~\cite{onix}, for example,
+partitions a graph of the network state across either an eventually-consistent
+DHT or a transactional database. In this manner control applications can make their own
+tradeoffs in choosing consistency models, degree of
+fault tolerance, and other properties.
+
+\begin{figure}[t]
+    %\hspace{-10pt}
+    \includegraphics[width=3.25in]{../diagrams/architecture/SDN_Stack.pdf}
+    \caption[]{\label{fig:basicarch} Depiction of the layered SDN stack.} 
+\end{figure}
+
+SDN controllers can be further categorized according to their flow
+installation model: proactive or reactive.
+Proactive controllers pre-compute forwarding tables for the entire network,
+and only push down updates periodically to react to link failures, changes in
+traffic mix, \etc. In contrast, reactive controllers forward all new flows to
+control servers. After a control decision is made, a flow entry is installed
+in the ingress switch, and the packet is forwarded along.
+
+Production SDN deployments are commonly proactive, primarily due to the large
+scale of datacenter networks and the current capabilities of forwarding hardware.
+We focus on proactive controllers for the remainder of this paper,
+although our troubleshooting mechanisms are also applicable to reactive
+applications.
+
+\subsection{Platform Failure Modes}
+
+Here we provide a few examples of platform failures. Note that
+we do not address failures in the highest (control application) and lowest
+(dataplane forwarding tables) levels of abstraction. Previous work exists
+for finding and troubleshooting faults in the application layer~\cite{nice}
+and the forwarding plane~\cite{anteater}.
+
+As described in the previous section, modern SDN platforms differ from
+`first-generation' controllers such as NOX~\cite{nox} in two dimensions. 
+First, they extend vertically by providing a virtualization layer on top of
+which control logic resides. Second, they extend horizontally by
+distributing state across multiple control servers. Errors arise from both of
+these architectural additions. Moreover, the sheer scale of production
+SDN deployments amplifies the
+frequency and severity of errors; consider that Microsoft reports 36M 
+minor to fatal error events over one year across 8 datacenters,
+which implies 8.5 error events per minute per
+datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}. Errors due to virtualization,
+controller coordination, scale, and the confluence of these factors are the main
+focus of our work.
+
+\noindent{\bf Virtualization}. Virtualization errors often result from a
+mismapping between the logical
+graph and the physical network topology. Consider that an entire datacenter
+network (up to 10,000 switches) may be abstracted into a single logical switch. Especially in the
+presence of hardware failures, the mapping between the logical switch and the
+physical topology is highly complex. In a multi-tenant environment, the mapping is often
+many-to-many~\cite{Casado:2010:VNF:1921151.1921162}; each tenant specifies
+policies on their own logical switch, while the platform multiplexes each
+slice over the same physical network. If the logical address
+spaces are not disjoint, or a change in the physical network causes the paths
+to temporarily overlap, breaches of tenant isolation or failure to properly
+install configuration changes may occur,
+
+\noindent{\bf Controller Coordination}. Coordination between controllers
+entails the same classes of error
+conditions that plague general distributed systems; inconsistent reads and
+writes, race conditions over message arrivals, and unintended consequences of failover
+logic are common. As an example, suppose a controller fails, and all the
+switches under its purview are adopted by a new control server. If the new parent
+neglects to properly query the switches for their current state, or reads
+stale control information from the data store, it may inadvertently install
+conflicting flow entries in the network. Errors may also result 
+from non-disjoint partitioning
+schemes between controllers, or incorrect delegation of control for different
+portions of the network. 
+High churn in the network topology due to VM migration and
+hardware failures exacerbate these issues.
+
+%All of these errors may manifest as dataplane forwarding problems, such as
+%loops, blackholes, partitions, broadcast storms. Or breaches of isolation in
+%multi-tenant environments. Or just failure to push routing or ACL or QoS
+%policys to switches. Also Route flapping. Or (preventable) congestion.

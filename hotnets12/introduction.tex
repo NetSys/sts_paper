@@ -1,0 +1,78 @@
+The SDN platform's {\it raison d'$\hat{e}$tre} is to 
+hide complexity from control applications. To this end, modern platforms perform
+replication, resource arbitration, failure recovery, and network 
+virtualization on the control application's behalf. 
+
+While these measures are effective at simplifying control applications,
+they do not remove any complexity from the overall system. Rather, they merely move the complexity
+from control applications into the underlying SDN platform. 
+
+As in any software system, complexity increases the probability of
+bugs. When network operators encounter erratic behavior in their network
+they are currently forced to manually trace through
+multiple layers of abstraction: policy-specification, virtualization logic, distribution logic, and
+network devices. SDN system
+developers' hope is that the platform will become stable, such that
+operators can safely assume correctness of lower layers.
+Nevertheless, the evolution of SDN is far too nascent to provide stability
+today.
+
+Besides {\it ad-hoc} measurement tools,
+the predominant troubleshooting mechanism in SDN is
+log analysis: manually specifying log statements at relevant points throughout the system;
+collecting and aligning distributed log files; and analyzing the
+results {\it post-hoc} when a error is encountered in production. Log analysis
+is an important component of the troubleshooting process, but it is deficient
+as a stand-alone solution: logs events
+are enormous in number, impossible to aggregate into a single serial
+execution of the system, and often at the wrong level of granularity.
+\colin{Reviewer A: I find this statement too strong ``impossible to aggregate
+into a single serial execution of the system''.}
+
+Recent work has contributed troubleshooting techniques focused on the highest (control
+application) and lowest (dataplane forwarding tables) layers of the SDN stack.
+NICE applies concolic execution and model checking to SDN control
+applications, thereby automating the testing process and catching bugs before
+they are deployed~\cite{nice}. Anteater~\cite{anteater} and HSA~\cite{hsa}
+introduce mechanisms for checking static invariants in the dataplane.
+Nonetheless, no automated troubleshooting mechanism exists for problems that span
+multiple layers of the SDN stack, specifically those caused by bugs in the platform
+itself.
+
+%The utility of new programming models is heavily dependent on
+%the usability of their troubleshooting mechanisms.
+%Similarly, we think it highly undesirable to deploy SDN-based
+%networking without a viable troubleshooting paradigm. 
+
+In this paper we present an algorithm for verifying correctness of the
+platform. We observe that verifying correctness of the SDN platform
+is equivalent to showing that high-level policies specified by
+control applications correspond with low-level network configuration.
+\colin{review A: is this sound and complete?}
+Our algorithm, which we term `correspondence checking',
+leverages the structure of the SDN platform (graphs at every layer)
+to enumerate all policy violations at any point in time, and localize their
+root cause to a particular component of the system.
+
+Correspondence checking does not suffice on its own; like any distributed
+system, transient policy violations due to failures and delays are 
+common, especially at large scale. We present \simulator{}
+to augment the diagnostic information provided by correspondence checking.
+\Simulator{} allows troubleshooters 
+to differentiate transient from persistent policy violations by tracking the life cycle of problems 
+both forward and backward in time.
+
+We demonstrate that these mechanisms combined can be used to quickly
+identify the root cause of difficult errors, including isolation breaches,
+faulty failover logic, and consistency problems between replicated
+controllers. We have implemented prototypes
+of correspondence checking and \simulator{}, and made the code publicly
+available~\cite{github}.
+
+The rest of this paper is organized as follows. In \S\ref{sec:overview},
+we present an overview of the SDN stack and its failure modes.
+In \S\ref{sec:approach} we present correspondence checking and
+\simulator{} in detail. In \S\ref{sec:evaluation} we present
+a use-case and a preliminary performance evaluation.
+Finally, in \S\ref{sec:related_work} we discuss related work,
+and in \S\ref{sec:conclusion} we conclude.
