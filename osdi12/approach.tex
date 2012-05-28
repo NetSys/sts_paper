@@ -205,7 +205,10 @@ A few things are wrong with this:
 \begin{itemize}
 \item We can't remove elements of the MCS from the DAG! We should only remove from the DAG if the event is not in the MCS; otherwise, the policy-violation will never be reproduced after the first element is added the MCS, since we took away one of the necessary conditions.
 \item Need to make a distinction between "random events" (e.g. link failures, node failures) and "deterministic events" (e.g., a node is programmed to send a pong when it receives a ping). In the MCS algorithm, it makes no sense to prune out deterministic events... However, the algorithm still needs to take in the entire casual DAG (both random and deterministic) to maintain casual dependencies [can't prune arbitrary random events]
-\item We assume that the random events are independent; we need make this assumption explicit.
+\item We assume that the random events are independent; we need make this
+assumption explicit. But because we assume they are completely independent,
+and because we only manipualate random events, there is no need for vector
+clocks!!
 \end{itemize}
 }
 
