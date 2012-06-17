@@ -1,6 +1,11 @@
 In this section we provide an overview of the SDN architecture and examples 
 of errors observed in production software-defined networks.
 
+\colin{Urs: I think one of the things that is going to cause some agnst, and
+justifiably, in the industry, is that if you have a controller, you don't want
+your controller to be a SPOF, so you have a backup controller, you need to
+have some kinds of master election. That stuff is hard to get right}
+
 \subsection{SDN Architecture}
 
 Modern SDN controllers are constructed as three separate layers, depicted in Figure \ref{fig:basicarch}:
