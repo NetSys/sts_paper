@@ -14,3 +14,4 @@ buildinfo.tex
 *.swp
 *.temp
 *bak
+*orig
