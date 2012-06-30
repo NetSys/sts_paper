@@ -1,11 +1,11 @@
-The SDN platform's {\it raison d'$\hat{e}$tre} is to 
+The SDN platform's {\it raison d'$\hat{e}$tre} is to
 hide complexity from control applications. To this end, modern platforms perform
-replication, resource arbitration, failure recovery, and network 
-virtualization on the control application's behalf. 
+replication, resource arbitration, failure recovery, and network
+virtualization on the control application's behalf.
 
 While these measures are effective at simplifying control applications,
 they do not remove any complexity from the overall system. Rather, they merely move the complexity
-from control applications into the underlying SDN platform. 
+from control applications into the underlying SDN platform.
 
 As in any software system, complexity increases the probability of
 bugs. When network operators encounter erratic behavior in their network
@@ -42,7 +42,7 @@ itself.
 %The utility of new programming models is heavily dependent on
 %the usability of their troubleshooting mechanisms.
 %Similarly, we think it highly undesirable to deploy SDN-based
-%networking without a viable troubleshooting paradigm. 
+%networking without a viable troubleshooting paradigm.
 
 In this paper we present an algorithm for verifying correctness of the
 platform. We observe that verifying correctness of the SDN platform
@@ -55,11 +55,11 @@ to enumerate all policy violations at any point in time, and localize their
 root cause to a particular component of the system.
 
 Correspondence checking does not suffice on its own; like any distributed
-system, transient policy violations due to failures and delays are 
+system, transient policy violations due to failures and delays are
 common, especially at large scale. We present \simulator{}
 to augment the diagnostic information provided by correspondence checking.
-\Simulator{} allows troubleshooters 
-to differentiate transient from persistent policy violations by tracking the life cycle of problems 
+\Simulator{} allows troubleshooters
+to differentiate transient from persistent policy violations by tracking the life cycle of problems
 both forward and backward in time.
 
 We demonstrate that these mechanisms combined can be used to quickly
