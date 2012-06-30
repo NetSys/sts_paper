@@ -1,9 +1,20 @@
-Our paper seeks to improve the process of troubleshooting errors in the SDN
-platform. We focus on large, production networks, 
-where controllers are distributed across multiple servers
-and the platform provides a virtualization abstraction to one or more tenants.
-We present two mechanisms, cross-layer correspondence checking
-and \simulator{}, designed to help troubleshooters automatically identify
-and isolate inconsistencies between high-level policy and low-level
-configuration. Our intent throughout this work is to convince
-the troubleshooting community to think outside of the NOX!
+SDN is widely heralded as the ``future of networking'', and its purpose is to make it easy to manage networks.  It does so by providing control applications with a simple programmatic interface through which they can specify high-level policies about the network's behavior. While this does indeed make writing control applications simpler, it requires that the underlying SDN platform translates these high-level policies into low-level configuration of the physical switches.
+
+This process of translation is performed by a sophisticated distributed system, comprised of multiple controllers and serving multiple tenants, which must operate at large scales and in the presence of frequent failures. Distributed systems are fundamentally difficult to build, particularly in such a nascent field such as SDN where we have such little experience, and the resulting errors are hard to understand from inspecting logs. Thus, it is important that SDN provide adequate troubleshooting tools so users can determine whether or not the platform is responsible for the problems they are seeing, and SDN vendors can find problems in their own platform code.
+
+In this paper we described a system for troubleshooting called \projectname{}. \projectname{} employs two techniques to localize the root cause of policy-violations.\begin{itemize}
+    \item Correspondence-checking identifies which component of SDN platform is responsible for the policy-violation.
+    \item  \Simulator{} identifies the minimal causal set network events that trigger the policy-violation.
+\end{itemize}
+
+% ============== ORIGINAL ===============
+%We have applied this system to several available SDN platforms, and were able to find or reproduce bugs in all the platforms we investigated.
+%Our paper seeks to improve the process of troubleshooting errors in the SDN
+%platform. We focus on large, production networks,
+%where controllers are distributed across multiple servers
+%and the platform provides a virtualization abstraction to one or more tenants.
+%We present two mechanisms, cross-layer correspondence checking
+%and \simulator{}, designed to help troubleshooters automatically identify
+%and isolate inconsistencies between high-level policy and low-level
+%configuration. Our intent throughout this work is to convince
+%the troubleshooting community to think outside of the NOX!
