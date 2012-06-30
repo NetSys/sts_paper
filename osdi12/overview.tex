@@ -123,6 +123,12 @@ portions of the network.
 High churn in the network topology due to VM migration and
 hardware failures exacerbate these issues.
 
+\colin{Urs: I think one of the things that is going to cause some agnst, and
+justifiably, in the industry, is that if you have a controller, you don't want
+your controller to be a SPOF, so you have a backup controller, you need to
+have some kinds of master election. That stuff is hard to get right}
+
+
 In this paper we focus on bugs in the virtualization and controller
 coordination components of the SDN software stack. We are primarily concerned with corner-case scenarios such as
 correlated hardware failures, which are
