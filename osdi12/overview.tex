@@ -25,7 +25,7 @@ expressed as a set of flow entries $<header, actions>$ where possible actions
 includes primitives such as forward out a particular port, drop, or encrypt,
 and the possible ports include all edge ports (either connecting to external
 networks, or to hosts). Such a specification would dictate how any packet
-entering the network should be handled: \ie{} what outgoing edge port it should be forwarded to, and perhaps what middlebox services it should be subject to along the way.   
+entering the network should be handled: \ie{} what outgoing edge port it should be forwarded to, and perhaps what middlebox services it should be subject to along the way.
 In addition to providing a simplified network view, the virtualization layer
 can support multi-tenancy by providing each tenant with their own logical
 network to specify policies over. The platform then multiplexes the policies onto the same physical network.
@@ -56,7 +56,7 @@ tradeoffs in choosing consistency models, degree of
 fault tolerance, and other properties.
 The large scale of these networks also means that error events such as link
 failures or software crashes are common.
-Microsoft, for example, reports 36M 
+Microsoft, for example, reports 36M
 error events over one year across 8 datacenters,
 which implies 8.5 error events per minute per
 datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}.
@@ -64,7 +64,7 @@ datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}.
 \begin{figure}[t]
     %\hspace{-10pt}
     \includegraphics[width=3.25in]{../diagrams/architecture/SDN_Stack.pdf}
-    \caption[]{\label{fig:basicarch} The SDN Software Architecture } 
+    \caption[]{\label{fig:basicarch} The SDN Software Architecture }
 \end{figure}
 
 Before describing the many ways in which such a system might fail, we note that there are two different kinds of SDN control applications: proactive and reactive.
@@ -81,9 +81,9 @@ applications. For the purposes of our paper, the key difference between the two 
 
 \subsection{Platform Failure Modes}
 
-\projectname{} is designed to troubleshoot the SDN platform; here we discuss a few examples of platform failures. 
+\projectname{} is designed to troubleshoot the SDN platform; here we discuss a few examples of platform failures.
 As described above, modern SDN platforms differ from
-`first-generation' controllers such as NOX~\cite{nox} in two dimensions: 
+`first-generation' controllers such as NOX~\cite{nox} in two dimensions:
 they extend vertically by providing a virtualization layer on top of
 which control logic resides, and they extend horizontally by
 distributing state across multiple control servers. Platform errors arise from both of
@@ -96,10 +96,10 @@ the mapping between the logical switch and the
 physical topology is highly complex; for example, a simple configuration
 change such as ``the path from $A$
  to $B$ should pass through $C$'' must be implemented as routing entries in a sequence
-of switches in the physical network. Policy changes 
+of switches in the physical network. Policy changes
 that span multiple shards of the physical view (shards being statically-defined
 partitions of the physical network small enough to be managed by a single control
-server) require coordination between controllers. 
+server) require coordination between controllers.
 
 This coordination becomes even more complicated in a multi-tenant environment \cite{Casado:2010:VNF:1921151.1921162} where each tenant specifies
 policies on their own logical switch. In such a case, each controller must deal with multiple tenants, and each tenant's policies must be coordinated among multiple controllers. Maintaining isolation
@@ -117,9 +117,9 @@ logic are common. As an example, suppose a controller fails, and all the
 switches under its purview are adopted by a new control server. If the new parent
 neglects to properly query the switches for their current state, or reads
 stale control information from the data store, it may inadvertently install
-conflicting flow entries in the network. Errors may also result 
+conflicting flow entries in the network. Errors may also result
 from non-disjoint partitioning schemes between controllers, or incorrect delegation of control for different
-portions of the network. 
+portions of the network.
 High churn in the network topology due to VM migration and
 hardware failures exacerbate these issues.
 

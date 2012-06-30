@@ -6,14 +6,14 @@
 %    Not problematic that the difficulty hasn't chanfed -- just make it clear
 %    that we aren't getting farther away from the distributed nature of
 %    networks.
-%  - Need to NAIL the motivation: 
+%  - Need to NAIL the motivation:
 %      - Distributed systems are fundamentally hard to troubleshoot, and
 %      they're going to remain that way forever.
 %      - SDN provides an opportunity to do better than traceroute! In
 %      traditional networks, configuration state is spread all over the place.
 %      - Not trivial in SDN (aren't running away from distributed nature)
 %        It presents a new challenge: how to verify high-level policies have
-%        actually been implemented correctly? => enter correspondence checking. 
+%        actually been implemented correctly? => enter correspondence checking.
 %      - What's the key insight here?
 %  - Say what W^3 stands for?
 %  - Too much boiler plate
@@ -31,7 +31,7 @@ distributed protocols and manual configuration that directly manipulate forwardi
 when desired behavior is only implicitly expressed in the routing entries themselves, and that is the case with today's networks.
 
 In this respect, the emergence of Software-Defined
-Networks (SDN) provides both an opportunity and a challenge. Moving control logic out of hardware and into software 
+Networks (SDN) provides both an opportunity and a challenge. Moving control logic out of hardware and into software
 enables enables concise policy specifications and significantly more sophisticated testing and troubleshooting tools. Moreover, since SDN
 is still in its infancy (compared to traditional networking approaches), we as a community have an opportunity to make diagnostic tools
 a more integral part of the overall design process. Although SDN's goal is to simplify the
@@ -52,7 +52,7 @@ checking that control applications' policies are implemented correctly in
 the physical network. Our algorithm enumerates all policy-violations
 (\ie{}, any instance where the high-level policies are not properly
 implemented by the SDN control software) present in the network at a given point in
-time, providing a crisp determination of the range of inputs 
+time, providing a crisp determination of the range of inputs
 and the system component(s) responsible for the fault.
 
 \noindent{\bf \Simulator{}.} \projectname{} can replay the execution of the
@@ -75,7 +75,7 @@ the policy-violation.
 In combination, correspondence checking and \simulator{} programmatically
 localize software-faults in the SDN software stack.
 With \projectname{}, operators and developers are free to focus their efforts
-on debugging the code itself, without needing to 
+on debugging the code itself, without needing to
 diagnose the symptoms in the first place.
 % This represents an improvement over the state-of-the-art SDN troubleshooting
 % practices
@@ -86,16 +86,16 @@ this we mean that \projectname{} helps identify and localize network
 problems (what, where, and when?), but it does not help identify exactly which
 line of code causes the error (why?). Second, \projectname{} is focused on the
 system software of the SDN stack (described in the next section). While progress has been made in troubleshooting control
-applications that run on top of the SDN platform~\cite{nice} and in troubleshooting the forwarding tables in the physical switches~\cite{anteater,hsa}, we  
+applications that run on top of the SDN platform~\cite{nice} and in troubleshooting the forwarding tables in the physical switches~\cite{anteater,hsa}, we
 are not aware of previous troubleshooting work that focuses on the SDN
-platform itself; to the best of our knowledge, painstaking analysis of detailed logs is the current state-of-the-art in SDN platform troubleshooting. 
+platform itself; to the best of our knowledge, painstaking analysis of detailed logs is the current state-of-the-art in SDN platform troubleshooting.
 
 In evaluating \projectname{} on
 three popular SDN platforms---Frenetic, Floodlight and POX---we found or reproduced several bugs:
 isolation breaches and faulty failover logic between distributed controllers.
 We also demonstrated the feasibility of deploying
 \projectname{} on production networks,
-finding that our tools can enumerate all policy-violations in 
+finding that our tools can enumerate all policy-violations in
 simulated networks exceeding 25,000 hosts in under 5 seconds.
 
 The rest of this paper is organized as follows. In \S\ref{sec:overview},
@@ -127,7 +127,7 @@ years?
 seems really heard!''. What are the specific bugs this framework addresses?
 Also, make it clear why this problem is important! If Pepsi knows that
 Coca-cola might be able to snoop on their traffic, we've lost huge \$\$\$.
-\item Don't frame ourselves just against log analysis. Make 
+\item Don't frame ourselves just against log analysis. Make
 the shortcomings of the status quo very clear, and be very precise about how
 we address those shortcoming. (Why aren't traditional distributed systems
 techniques apropro? Why is static checking of a single layer insufficient? How

@@ -1,14 +1,14 @@
 This work extends a growing literature on troubleshooting tools for
 Software-Defined Networks.
-    
+
 The work most closely related to ours is NICE~\cite{nice}. NICE combines concolic execution
 and model checking to automate the process of testing NOX applications. This enables one to catch bugs before
-they are deployed.  
+they are deployed.
 
-Our approach and NICE complement each other in several ways.  First, NICE's systematic exploration of failure orderings 
+Our approach and NICE complement each other in several ways.  First, NICE's systematic exploration of failure orderings
 is potentially of great use for finding corner-case errors, which we could then add to our regression suite. NICE may also be applied directly to the code-base of the SDN platform, but in the case that only a subset
-of all possible code-paths in the SDN platform can be model-checked due to state-space explosion; 
-our mechanisms allows users to troubleshoot errors 
+of all possible code-paths in the SDN platform can be model-checked due to state-space explosion;
+our mechanisms allows users to troubleshoot errors
 {\it post-hoc} after they are observed in production, so we can find bugs that might be missed due to truncating the state-space exploration.
 In complement to NICE, correspondence checking helps developers isolate the
 specific component of the SDN platform responsible for an error, without needing to specify invariants.
@@ -26,7 +26,7 @@ Unlike \simulator, OFRewind focuses specifically on OpenFlow
 interactions, while we focus on more course-grained replay of
 failures and topology changes. Running replay within a simulator also allows
 us to manually modify the execution of the system, rather than playing a
-static recording. 
+static recording.
 
 Another line of work aims to prevent bugs from being introduced in the first
 place. Frenetic~\cite{frenetic} presents a language-based approach to building
@@ -39,7 +39,7 @@ a given packet under the new configuration or under the old configuration,
 but not both. These abstractions are valuable for preventing common, difficult errors
 in platform logic.
 
-Several other network simulators exist for testing SDN controllers. Mininet is a 
+Several other network simulators exist for testing SDN controllers. Mininet is a
 platform for emulating OpenFlow switches and hosts within a single
  VM~\cite{Lantz:2010:NLR:1868447.1868466}. The ns-series of network simulators
 provides a general framework for testing new protocols, topologies,
@@ -53,15 +53,15 @@ production executions to be later replayed and verified in a controlled simulati
 Pip~\cite{pip} defines a DSL and collection of annotation tools to
 reason about causal paths throughout the execution of the
 distributed system. Finally, end-to-end tracing
-frameworks such as X-Trace~\cite{Fonseca:2007:XPN:1973430.1973450} and 
-Pinpoint~\cite{Chen02pinpoint:problem} provide a framework for tracing requests throughout 
+frameworks such as X-Trace~\cite{Fonseca:2007:XPN:1973430.1973450} and
+Pinpoint~\cite{Chen02pinpoint:problem} provide a framework for tracing requests throughout
 a distributed system in order to infer correctness errors between layers and
 across components. Our work solves a more constrained problem; we leverage
 the structure of the SDN stack to enable a simple notion of platform
 correctness. In addition, these systems assume that invariants should hold at
 all times; we observe that in an eventually-consistent system such as SDN,
 transient policy-violations are inevitable. We built \simulator{} to help troubleshooters
-differentiate ephemeral from persistent errors. 
+differentiate ephemeral from persistent errors.
 
 % If we manage to run multiple applications by Monday, we should cite papers
 % on consistency and cross-layer debugging:

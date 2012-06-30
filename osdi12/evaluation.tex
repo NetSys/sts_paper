@@ -1,17 +1,17 @@
-% Just realized: b/c of anonymity, the PC can't chastise us for 
+% Just realized: b/c of anonymity, the PC can't chastise us for
 % running our system on our own code -- we can't tell them that it's our code!
-We applied \projectname{} to three open source SDN control platforms: 
+We applied \projectname{} to three open source SDN control platforms:
 Frenetic~\cite{frenetic}, POX~\cite{pox}, and Floodlight~\cite{bigswitch}, and
-quickly found (or reproduced) one bug in each. The bug in Frenetic demonstrates 
+quickly found (or reproduced) one bug in each. The bug in Frenetic demonstrates
 the utility of checking correspondence between high-level policies and
 low-level configuration (without needing to specify invariants). The bugs in
-POX and Floodlight demonstrate the importance of \simulator{}'s ability to 
+POX and Floodlight demonstrate the importance of \simulator{}'s ability to
 programmatically prioritize persistent policy-violations and infer their minimal
 causal sets.
 
-For all three cases, only a small code modification to the controller was necessary 
+For all three cases, only a small code modification to the controller was necessary
 to retrieve the the platform's state for correspondence
-checking. 
+checking.
 
 \subsection{Case studies}
 
@@ -21,7 +21,7 @@ checking.
 %  - Lessons learned from finding bugs
 Here we the discuss the three bugs we found with \projectname{}.
 
-\noindent{\bf Frenetic.} Our first example is Frenetic~\cite{frenetic}, a control platform 
+\noindent{\bf Frenetic.} Our first example is Frenetic~\cite{frenetic}, a control platform
 providing functional-reactive language
 support for programming OpenFlow networks.
 Frenetic's language features aim to prevent common OpenFlow programming
@@ -53,7 +53,7 @@ would need to compare the routing configurations and controller's data
 structures side-by-side.
 
 \noindent{\bf POX} Our second example is POX~\cite{pox}. POX is modeled after
-Onix~\cite{onix}, a production SDN platform; as in Figure~\ref{fig:basicarch} 
+Onix~\cite{onix}, a production SDN platform; as in Figure~\ref{fig:basicarch}
 POX provides a physical view, a virtualized view, and a naive replication
 mechanism between distributed control servers.
 
@@ -69,24 +69,24 @@ update to the switch. A control server writes a new ACL entry update to the data
 before completing step (ii). The switch is adopted by a new replica,
 but the new control server assumes that the state in the persistent datastore
 is correct. The ACL entry is therefore never installed in the switch, and a
-breach of tenant isolation occurs. 
+breach of tenant isolation occurs.
 
 We interleaved this event sequence with a normal system execution trace, and
 determined whether \simulator{} could identify the policy-violation.
 Throughout the system execution there were a handful of transient
 policy-violations overlapping with the isolation breach. Nonetheless, our
-simulator was able to identify the correct policy-violation. 
+simulator was able to identify the correct policy-violation.
 
 \eat{
 \noindent{\bf Network Operator.} An enterprise network
 operator pays a third-party SDN provider to virtualize their network
 and run it in the cloud. The network operator receives a complaint
-from an internal team that two servers cannot reach other, and 
+from an internal team that two servers cannot reach other, and
 verifies the reachablility problem with {\tt ping}. Unsure
-whether the problem is in her ACL/routing rules 
+whether the problem is in her ACL/routing rules
 or in the underlying SDN platform, the
 operator runs correspondence checking on a snapshot of the network state. She
-finds that there is an inconsistency between her policy and the network state, 
+finds that there is an inconsistency between her policy and the network state,
 and proceeds to call up the third-party SDN provider to complain
 about the problem.
 
@@ -120,7 +120,7 @@ portion of the network assumed that the platform's
 representation of network state was up-to-date. As such, the partially installed flow entries remained
 in the neighboring switches, resulting in the blackhole. The developer fixes
 the platform's recovery code, adds this case to the platform's integration
-test suite, and pushes the change to production. 
+test suite, and pushes the change to production.
 }
 
 \noindent{\bf Floodlight: Distributed controller failover race condition} More complex bugs and race conditions occur when controllers need to be
@@ -150,15 +150,15 @@ policy-violation between the flow-table representation in the controller and the
 
 \subsection{Overhead}
 
-In addition to describing bugs, we show that \projectname{} is able 
+In addition to describing bugs, we show that \projectname{} is able
 to simulate and check large networks quickly.
 
 \noindent{\bf Record and Replay Overhead.} In contrast to general record-and-replay
 mechanisms, the amount of recorded state needed for
-high-fidelity replay is tractable. With proactive flow installation, 
+high-fidelity replay is tractable. With proactive flow installation,
 updates are pushed to routing tables over a relatively long time scale; periodic
 FIB snapshots along with a log of link state events, control server
-downtime, and host mobility information suffice for our purposes. As a point of reference, the Cisco 7000 
+downtime, and host mobility information suffice for our purposes. As a point of reference, the Cisco 7000
 core switch model supports a maximum of 128K MAC entries and
 128K ACL entries~\cite{cisco7000}. Assuming 36 bytes per flow entry,
 (larger than the OpenFlow 13-tuple), each FIB will contain a maximum of 9216
@@ -169,8 +169,8 @@ Therefore a snapshot of the FIBs of the entire network takes up roughly 74 MB.
 The VL2 paper reports 36M network error events over one year over 8
 datacenters, which implies 8.5 error events per minute per
 datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}.
-Suppose we took a snapshot of the FIBs in the network every second. 
-Then we would need to store roughly 4GB, uncompressed, per minute, a relatively small growth 
+Suppose we took a snapshot of the FIBs in the network every second.
+Then we would need to store roughly 4GB, uncompressed, per minute, a relatively small growth
 rate for datacenter logs. This information, in addition to a log of host
 mobility events (\eg{} VM migrations) will suffice for our purposes. Note that this is a conservative overestimate.
 
@@ -205,7 +205,7 @@ The propagation graph for each host can be
 computed in parallel however, so the computation is bottlenecked by the serial runtime
 of computing a single host's propagation graph.
 
-We show the serial runtime of correspondence checking in 
+We show the serial runtime of correspondence checking in
 Figure~\ref{fig:hsa_runtime}. For this analysis we generated fat tree topologies
 between 2 and 48 pods wide, with pre-installed PORTLAND~\cite{NiranjanMysore:2009:PSF:1592568.1592575}
 routing tables in each switch. Each data point is the minimum of three
@@ -233,7 +233,7 @@ within a single process. We show in Figure~\ref{fig:scalability}
 that this approach nonetheless scales to large networks. For this analysis we
 generated fat tree topologies between 2 and 48 pods wide, where all switches in
 the network connected to a single controller. The controller sent each switch
-an OpenFlow 
+an OpenFlow
 $FLOW\_MOD$ and subsequent $BARRIER\_REQUEST$ message, and waited for the
 corresponding $BARRIER\_REPLY$. We then measured the time to between the first
 $FLOW\_MOD$ sent and the last $BARRIER\_REPLY$ received. As expected, the
@@ -266,7 +266,7 @@ led to the policy violation, and that can be quite difficult. We hope to make
 progress in this area along two dimensions.  First, we hope to help the
 community build up a set of regression tests, so that a wide variety of
 bug-triggering scenarios are available in a public repository. This would go a
-long way towards providing adequate test coverage. 
+long way towards providing adequate test coverage.
 
 Second, we hope to gather error logs from real production deployments which
 will help us populate this repository; this may require providing novel kinds
@@ -276,7 +276,7 @@ details of their network.  This may require a infrastructural counterpart to
 minimally-causal events; the smallest number of infrastructure components that
 can reproduce the same bug.
 
-Also, note that our correspondence checking algorithm can not verify 
+Also, note that our correspondence checking algorithm can not verify
 time-dependent policies such as ``No link should be congested more than 1\% of
 the
 time'', or ``No server should receive more than 500MB/s of external traffic''.

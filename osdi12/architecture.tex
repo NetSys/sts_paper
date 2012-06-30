@@ -1,5 +1,5 @@
 
-% Research question here? 
+% Research question here?
 % Going to be challenging to have this not come across as a software design
 % spec.. Let's try to get this section over with as little text wasted as
 % possible... I feel silly writing these sections, since I ALWAYS skip over
@@ -22,7 +22,7 @@ driven by the following requirements:
 \noindent{\bf (1) Realistic Network Sizes.} We focus on large, production SDN
 deployments. As today's datacenters may contain up to 100,000 hosts and 10,000
 switches, our simulation infrastructure must be able to support large numbers
-of switches. 
+of switches.
 
 \noindent \textbf{(2) Control plane focus} We expect the dynamism in our system to stem from
 \emph{control plane events}. Typical rates of control plane events must thus be
@@ -34,7 +34,7 @@ intractable for a software solution, and largely irrelevant in current networks 
 controllers with minimum additional instrumentation. To allow for wider adoption, we don't want to limit ourselves to
 a particular controller implementation.
 
-\noindent \textbf{(4) Full determinism} We want our simulation environment to be fully 
+\noindent \textbf{(4) Full determinism} We want our simulation environment to be fully
 deterministic, such that repeated simulations with identical initialization values
 yield provably identical results. This creates a challenge in conjunction with our goal (3).
 
@@ -62,7 +62,7 @@ components to facilitate the process of troubleshooting SDN platforms:
 from production traces, interactive manipulation, and synthetic trace
 generation, and fuzzes these inputs to ensure that fixes are sufficiently general;
 \projectname{}'s simulator supports large, sophisticated networks;
-\projectname{} provides a deterministic, code-agnostic execution environment 
+\projectname{} provides a deterministic, code-agnostic execution environment
 for running SDN control software; and provides efficient algorithms for
 checking correspondence throughout the system execution. We now provide an
 overview of each of these components, and the challenges we encountered in
