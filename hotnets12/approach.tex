@@ -6,7 +6,7 @@ the components of \projectname{} we have designed for performing software fault 
 
 \subsection{Correspondence Checking}
 
-\colin{reviewer b: Correspondence checking as defined in this paper captures a
+\colin{Reviewer B: Correspondence checking as defined in this paper captures a
 rather weak condition that allows implementations that intuitively seem
 incorrect.} \colin{I think we should demphasize correspondence checking. After
 describing it, we should treat it as a ``black 
@@ -16,7 +16,6 @@ apparently we need to do a better job of calling out that correspondence
 checking 
 is indeed a weak condition. Finding real bugs will help with this objection, I
 believe.}
-
 
 The SDN platform transforms high-level policies (specified by the control application) into low-level configuration of they physical infrastructure.
 The configuration of the physical network should semantically correspond with the policy specified by the application layer, in the sense that the disposition of any packet by the physical forwarding tables should reflect  the policies dictated for that packet. We refer to any lack of semantic correspondence
@@ -48,8 +47,9 @@ T: (H \times E) \rightarrow (H \times E_{\emptyset})
 \colin{reviewer B: what is $E_{\emptyset}$? it's not defined}
 
 We use $`\Psi`$ to denote the collection of all transfer functions present in
-the network at a particular point in time. In this model, network traversal is simply a composition of transformation
-functions. For example, if a header $h$ enters the network through edge
+the network at a particular point in time. In this model, network traversal is
+simply repeated appliction of $`\Psi`$.
+For example, if a header $h$ enters the network through edge
 $e$, its state after $k$ hops will be:
 \begin{align*}
 \Psi^k(h,e) = \Psi(\Psi(\dots \Psi(h,e)\dots))
@@ -76,14 +76,22 @@ corresponding access link in $G^{physical}$. Note that hosts are represented
 in all layers, although there may not be a one-to-one mapping between the
 internal vertices of $G^{virtual}$ and $G^{physical}$.
 
-\colin{reviewer B: the equivalence relation ~ is only defined informally\dots To
-get an equivalence that does not suffer from this problem, you might consult
-the literature on bisimulation equivalence (Robin Milner's small book on CCS
-and the Pi-calculus is an excellent starting point; Xavier Leroy's work on the
-CompCert verified compiler is a nice example of this in action). A
-bisimulation would require that every action at the virtual level can be
-simulated by an equivalent action at the physical level, and vice versa.}
-
+\colin{reviewer B: The problem with this definition is that it allows
+implementations of virtual networks that we would intuitively say are wrong.
+In particular, forwarding at the physical level could be implemented in a way
+that is not compatible with the virtual-to-physical mapping. For example, the
+physical configuration might send all traffic over a single link, even though
+the virtual configuration uses multiple links and the virtual-to-physical
+mapping is bijective. Or instead of actually dropping packets, the physical
+configuration could send them into a forwarding loop. As long as
+the packets ultimately arrive (or do not arrive) at their ultimate
+destination, your definition allows it. To get an equivalence that does not
+suffer from this problem, you might consult the literature on bisimulation
+equivalence (Robin Milner's small book on CCS and the Pi-calculus is an
+excellent starting point; Xavier Leroy's work on the CompCert verified
+compiler is a nice example of this in action). A bisimulation would require
+that every action at the virtual level can be simulated by an equivalent
+action at the physical level, and vice versa.}
 
 To check correspondence in SDN, we begin by taking a causally consistent
 snapshot~\cite{Chandy:1985:DSD:214451.214456} of the physical network. \colin{reviewer A: how you take it? is the virtual layer included? is the
