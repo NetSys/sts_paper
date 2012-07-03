@@ -1,48 +1,51 @@
-\colin{Is this an argument about how networks should be modeled? Or, how
-       network hardware should be built (what primitives they should
-                                         support)?}
+In this paper we leverage the
+structure of the SDN software stack to automate the process of troubleshooting
+networks. We present two techniques for programmatically localizing the root cause of network problems:
+cross-layer correspondence checking infers what problems exist in the network,
+and where in the control software the problem first developed; and
+\simulator{} infers when the triggering event(s) occurred. We evaluated
+our tools on
+three popular SDN platforms---Frenetic, Floodlight and POX---and found or reproduced three bugs:
+isolation breaches and faulty failover logic between replicated controllers.
 
-
-Traditional network algorithms depend heavily
-on self-stabilization. You prove that the algorithm is correct, then you
-verify that your ASIC implements the algorithm correctly. When a change
-in the topology occurs (e.g. hardware failure, host migration, traffic
-shift), your system eventually self-stabilizes. [For other configuration
-changes, (e.g. the addition of a VLAN), manual configuration of each
-individual network device may be required.] But you could be fairly
-confident that your system would eventually converge!
-
-With software-defined
-networking, many protocols are no longer fully distributed.
-Todays SDN control platforms react to hardware failures, VM
-migrations, virtual address space allocation for new tenants, etc.
-Moreover, they are doing more complex things. Most tasks (e.g. VLAN
-addition) that used to be manually configured are now done automatically.
-The problem is, that the algorithms are not self-stabilizing! They are
-often stateful. And failover logic is really hard to get right!
-Insert quote from Urs Hoelzle.
-Moreover,
-its much easier to be loosy-goosy, since unlike hardware ASICs, you
-can just change it if you find out that its broken.
-
-We conclude that we need to think differently about how we treat
-network devices. \colin{(Why?)} In
-particular, we need to add support for vector clocks
-
-\colin{Can the Floodlight bug be solved with a self-stabilizing algorithm?}
-
-\colin{@Peter: isnt your idea to refine the defn of causality just X-Trace?}
-
-\colin{What distributed systems primitives would we want out of network
-       devices? Transactions for consistency, vector clocks for causual
-       analysis + alternate consistency models, support for distributed locking?}
-
-\colin{TODO: read the NVP whitepaper. Floodlights too, if its available}
-
-\colin{Scott: I think W3 implicitly assumes statefullness in the controller.
-       Does it even apply to NVP? I suppose there is state in the NVP controller
-       still though. For example, each controller has a boolean flag: Am I
-       Master}
+%\colin{Is this an argument about how networks should be modeled? Or, how
+%       network hardware should be built (what primitives they should
+%       support)? Or, finally, is it just an argument about how we should
+%       think of switches (re: the loose sense of the word ``model'')}
+%
+%Traditional network algorithms depend heavily
+%on self-stabilization. You prove that the algorithm is correct, then you
+%verify that your ASIC implements the algorithm correctly. When a change
+%in the topology occurs (e.g. hardware failure, host migration, traffic
+%shift), your system eventually self-stabilizes. [For other configuration
+%changes, (e.g. the addition of a VLAN), manual configuration of each
+%individual network device may be required.] But you could be fairly
+%confident that your system would eventually converge!
+%
+%With software-defined
+%networking, many protocols are no longer fully distributed.
+%Todays SDN control platforms react to hardware failures, VM
+%migrations, virtual address space allocation for new tenants, etc.
+%Moreover, they are doing more complex things. Most tasks (e.g. VLAN
+%addition) that used to be manually configured are now done automatically.
+%The problem is, that the algorithms are not self-stabilizing! They are
+%often stateful. And failover logic is really hard to get right!
+%Insert quote from Urs Hoelzle.
+%Moreover,
+%its much easier to be loosy-goosy, since unlike hardware ASICs, you
+%can just change it if you find out that its broken.
+%
+%We conclude that we need to think differently about how we treat
+%network devices. \colin{(Why?)} In
+%particular, we need to add support for vector clocks
+%
+%\colin{Can the Floodlight bug be solved with a self-stabilizing algorithm?}
+%
+%\colin{Whato other distributed systems primitives would we want out of network
+%       devices? Transactions for consistency, vector clocks for causual
+%       analysis + alternate consistency models, support for distributed locking?}
+%
+%\colin{TODO: read the NVP whitepaper. Floodlight's too, if its available}
 
 % ================ PREVIOUS TAKE ================
 %Distributed systems literature traditionally models the network as a
