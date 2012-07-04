@@ -1,8 +1,20 @@
+Including vector clocks on network control messages
+enables automated diagnosis of control plane bugs. In this section we 
+describe our approach for finding the minimal causal
+set of events that triggered a given failure. As a pre-requisite to causal
+inference, we present correspondence checking, which allows us to identify
+policy-violations without needing to explicitly define invariants. Our causal
+inference then repeatedly invokes correspondence checking in a deterministic
+replay of the system execution, pruning events not related to the given
+policy-violation.
+
+\eat{
 \projectname{} simplifies the troubleshooting process by programmatically localizing the root cause
 of network problems along three dimensions: {\it what} network problems exist at a
 particular point in time, {\it where} in the control software a problem first developed, and
 {\it when} the triggering event occurred. In this section we present
 the components of \projectname{} we have designed for performing software fault localization for SDN.
+}
 
 \subsection{Correspondence Checking}
 
@@ -22,7 +34,7 @@ The configuration of the physical network should semantically correspond with th
 between the policy and the configuration as a {\it policy-violation}.
 
 We leverage the virtual packet algebra pioneered in headerspace
-analysis~\cite{hsa} to verify whether the application's policies are indeed
+analysis~\cite{hsa} to check 
 implemented correctly in the physical network. Our algorithm, correspondence
 checking, provides a crisp determination of all possible packet inputs that
 would not behave according to the application's policies if injected into the
@@ -273,6 +285,22 @@ clocks!!
 \end{itemize}
 }
 
+\colin{More notes: 
+\begin{itemize}
+\item How long is the window between snapshot and policy-violation?
+\item How often are snapshots taken?
+\item What if MCS is empty? $\rightarrow$ increase window
+\item Take the description of the log input one step further. Link failures
+come from IS-IS. Controller crashes and switch failrues come from heartbeats. 
+Policy changes are logged as good operating practice. Also, be very careful
+about what we mean by non-deterministic event, and acknowledge false
+negatives.
+\item TODO: need to model policy-changes in the simulator.
+\item Vector clocks as an optimizatoin for causal inference. (If concurrent,
+can prune automatically)
+\end{itemize}
+}
+
 Note that each iteration of the loop can be performed in parallel by cloning
 the state of the simulator. The serial runtime of the algorithm is therefore
 linear with the number of events in the input trace.
@@ -335,3 +363,6 @@ potential fix has been developed, it can be validated by repeating the
 problematic execution within \projectname{}. Input fuzzing further helps to
 validate whether there are
 related error events that the patch missed.
+
+\colin{TODO: paragraph on how this approach might apply to traditional
+networks}

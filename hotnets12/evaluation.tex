@@ -174,6 +174,10 @@ Then we would need to store roughly 4GB, uncompressed, per minute, a relatively 
 rate for datacenter logs. This information, in addition to a log of host
 mobility events (\eg{} VM migrations) will suffice for our purposes. Note that this is a conservative overestimate.
 
+%To account for host mobility, assume that each server hosts 10 VMs,
+%and 1\% of VMs are created, suspended, or migrated every minute. Then 10,000 host mobility events must be
+%logged per minute, also a reasonable storage cost.
+
 \colin{Notes from Rean Griffith:
 \begin{itemize}
 \item total vms in a typical datacenter: 1000
@@ -189,10 +193,6 @@ VMs in an installation:
 Challenges in building scalable virtualized datacenter management
 (http://dl.acm.org/citation.cfm?id=1899941)
 }
-
-%To account for host mobility, assume that each server hosts 10 VMs,
-%and 1\% of VMs are created, suspended, or migrated every minute. Then 10,000 host mobility events must be
-%logged per minute, also a reasonable storage cost. \colin{get real numbers}
 
 %As a point of reference, border routers' working RIB size is
 %$\textasciitilde$130MB~\cite{Karpilovsky:2006:UFR:1368436.1368439}.
@@ -218,10 +218,7 @@ As the figure depicts, even for large networks
 (27,648 hosts) the serial runtime of correspondence checking is reasonable for
 interactive use. The number of serial tasks to be executed
 is the number of hosts in the network squared, disregarding ECMP load balancing.
-\colin{reviewer B: correspondence is not being checked. I should be clear
-that this is the runtime of generating the propagation on the physical
-network, which is an upper bound on the runtime of checking the virtual
-network.}
+\colin{reviewer B: correspondence is not being checked.}
 
 
 \begin{figure}[t]
@@ -291,3 +288,16 @@ account for this class of policies.
 \colin{reviewer B: in fact, in addition to temporal properties, the
 correspondence checking algorithm cannot verify any properties involving
 individual links since it only accounts for externally observable behavior!}
+
+\colin{TODO: add note about not being able to tell difference between
+endogenous and exogenous events, which might hide the true cause of a bug.
+This is OK though, since we assume that the platform should always have a
+correct option, but it doesn't take it. That is, the root cause of the crash
+is not what we're interested in (software vs. hardware), it's how the platform
+reacts to that crash that matters (should be robust, no matter what the
+cause of the crash)}
+
+\colin{Note that we also assume an out-of-band management network between
+switches and controllers, and that the management network always provides 
+connectivity. We could add the management network into our model if we want, I
+suppose.}
