@@ -27,7 +27,10 @@ casual analysis. Also,
 apparently we need to do a better job of calling out that correspondence
 checking 
 is indeed a weak condition. Finding real bugs will help with this objection, I
-believe.}
+believe.} \colin{Also note that in general, specifying invariants is an
+extremeley hard problem. Yes, it is a weak condition, but that's sort of the
+point -- it doesn't require manual intervention. Also, if you wanted a more
+specific blackbox detector, you could write one.}
 
 The SDN platform transforms high-level policies (specified by the control application) into low-level configuration of they physical infrastructure.
 The configuration of the physical network should semantically correspond with the policy specified by the application layer, in the sense that the disposition of any packet by the physical forwarding tables should reflect  the policies dictated for that packet. We refer to any lack of semantic correspondence
@@ -298,6 +301,8 @@ negatives.
 \item TODO: need to model policy-changes in the simulator.
 \item Vector clocks as an optimizatoin for causal inference. (If concurrent,
 can prune automatically)
+\item Point out that MCS finds exactly the events that are both sufficient and
+necessary.
 \end{itemize}
 }
 
