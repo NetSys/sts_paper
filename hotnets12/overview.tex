@@ -16,7 +16,9 @@ synchronization logic in this layer generates a set of configuration changes and
 corresponding network devices. Conversely, when a state change
 occurs in the network (links going down, new ports installed, etc.), this layer notifies the layer above of the change.
 
-\noindent{\bf Logical View:} The middle layer in the SDN software architecture is sometimes called the virtualization layer because it translates the (possibly complicated) physical view into a simpler logical view. A common pattern (and the one we focus on here) is to represent an entire
+\noindent{\bf Logical View:} The middle layer in the SDN software architecture is sometimes called the virtualization layer because
+it translates the (possibly complicated) physical view into a simpler logical view.
+A common pattern (and the one we focus on here) is to represent an entire
 datacenter network as a single logical
 switch~\cite{Casado:2010:VNF:1921151.1921162}. This allows operators
 to specify routing, access control, and QoS policies by configuring a single forwarding
@@ -26,11 +28,9 @@ includes primitives such as forward out a particular port, drop, or encrypt,
 and the possible ports include all edge ports (either connecting to external
 networks, or to hosts). Such a specification would dictate how any packet
 entering the network should be handled: \ie{} what outgoing edge port it should be forwarded to, and perhaps what middlebox services it should be subject to along the way.
-In addition to providing a simplified network view, the virtualization layer
-can support multi-tenancy by providing each tenant with their own logical
+If the control platform supports virtualization, the virtualization layer
+handles multi-tenancy by providing each tenant with their own logical
 network to specify policies over. The platform then multiplexes the policies onto the same physical network.
-
-\colin{Not sure we want to marry ourselves so strongly to virtualization}
 
 The logical view greatly simplifies the job of specifying policies.
 However, SDN
@@ -102,7 +102,7 @@ ensuring that each logical network's QoS policies are each met by the capacity o
 the physical network.
 
 \noindent{\bf Controller Coordination}. Coordination between controllers
-entails the same classes of error
+is prone to the same classes of error
 conditions that arise in general distributed systems: inconsistent reads and
 writes, race conditions over message arrivals, and unintended consequences of failover
 logic are common. As an example, suppose a controller fails, and all the
@@ -112,22 +112,15 @@ stale control information from the data store, it may inadvertently install
 conflicting flow entries in the network. Errors may also result
 from non-disjoint partitioning schemes between controllers, or incorrect delegation of control for different
 portions of the network.
-High churn in the network topology due to VM migration and
-hardware failures exacerbate these issues.
 
-\colin{Urs: I think one of the things that is going to cause some agnst, and
-justifiably, in the industry, is that if you have a controller, you don't want
-your controller to be a SPOF, so you have a backup controller, you need to
-have some kinds of master election. That stuff is hard to get right}
-
+The difficulty of implementing controller coordination correctly has been
+noted by leaders in industry as well as academia. In a recent
+keynote~\cite{urs_keynote}, Google's Urs H\"{o}elzle noted that
+``[controller coordination] is going to cause some agnst, and
+justifiably, in the industry''
 
 In this paper we focus on bugs in the virtualization and controller
 coordination components of the SDN software stack. We are primarily concerned with corner-case scenarios such as
 correlated hardware failures, which are
 the hardest to test {\it a priori}. Corner-case scenarios, while rare, cannot be ignored because of the distributed nature and large scale of
 production networks.
-
-%All of these errors may manifest as dataplane forwarding problems, such as
-%loops, blackholes, partitions, broadcast storms. Or breaches of isolation in
-%multi-tenant environments. Or just failure to push routing or ACL or QoS
-%policys to switches. Also Route flapping. Or (preventable) congestion.
