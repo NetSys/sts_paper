@@ -303,6 +303,13 @@ negatives.
 can prune automatically)
 \item Point out that MCS finds exactly the events that are both sufficient and
 necessary.
+\item Note that we aren't going after performance problems.
+\item We need to know exactly when to inject the non-deterministic events into
+the simulated system. Suppose we boot up the system in our simulator starting
+from a snapshot. We inject the first non-deterministic event, and the system
+reacts by sending out a series of messages. We can't just inject the second
+non-deterministic at any point, since our choice of when to interleave the
+non-deterministic events amongst the messages might affect the final outcome.
 \end{itemize}
 }
 
