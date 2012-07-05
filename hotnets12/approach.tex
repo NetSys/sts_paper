@@ -56,8 +56,8 @@ by extending the range to sets of output tuples}:
 \begin{align*}
 T: (H \times E) \rightarrow (H \times E_{\emptyset})
 \end{align*}
-
-\colin{reviewer B: what is $E_{\emptyset}$? it's not defined}
+Here, $E_{\emptyset} \equiv E \cup \emptyset$, signifying that forwarding elements
+may drop packets.
 
 We use $`\Psi`$ to denote the collection of all transfer functions present in
 the network at a particular point in time. In this model, network traversal is
@@ -106,15 +106,12 @@ compiler is a nice example of this in action). A bisimulation would require
 that every action at the virtual level can be simulated by an equivalent
 action at the physical level, and vice versa.}
 
-To check correspondence in SDN, we begin by taking a causally consistent
-snapshot~\cite{Chandy:1985:DSD:214451.214456} of the physical network. \colin{reviewer A: how you take it? is the virtual layer included? is the
-application layer included?} \colin{reviewer C: Does each layer have to output
-a transformation
-function in a specific format? Does this approach require a
-standardization of the interfaces between layers in terms of some
-low-level rules? It isn't clear to me that many layers would
-interface with a forwarding-table like set of rules.} The routing
-tables of forwarding elements can then be translated into transformation functions.
+Checking correspondence requires a causally consistent
+snapshot of both the physical network and the
+control cluster's state. We discuss in \S\ref{sec:causal_analysis} how this consistent snapshot
+is taken. Given a consistent
+snapshot, the routing
+tables of forwarding elements can be translated into transformation functions.
 Finally, we feed a symbolic packet $x^L$ to each access link of the
 network.\footnote{The rules for process wildcard bits $x^n$ are defined in
 the HSA paper~\cite{hsa}} The end result is a propagation graph representing all possible paths taken by a packet injected
@@ -135,6 +132,7 @@ invariants, the HSA framework used by our system can
 easily check for such properties.
 
 \subsection{\SIMULATOR{}}
+\label{sec:causal_analysis}
 
 \colin{Amin Vahdat:
 I understand another key benefit of SDN/OpenFlow is being able to play with a
@@ -193,6 +191,20 @@ an analysis performed on the control program to decide which aspects
 of the failure modes of the system are relevant to a problem?
 Unfortunately, insufficient information is presented about the model
 to indicate that this is true.}
+
+\colin{The Oracle requires a consistent snapshot of both the physical network
+and the control cluster's state. In the simulator, this consistent snapshot is
+trivial to take: simply pause each controller's VM and the simulation. To
+obtain the snapshot that denotes time zero, we assume that the production
+network takes periodic snapshots using an algorithm such as Chandy et al's
+\cite{Chandy:1985:DSD:214451.214456} consistent snapshot algorithm}
+
+\colin{reviewer C: Does each layer have to output
+a transformation
+function in a specific format? Does this approach require a
+standardization of the interfaces between layers in terms of some
+low-level rules? It isn't clear to me that many layers would
+interface with a forwarding-table like set of rules.}
 
 \subsubsection{Policy-Violation Lifetime Tracking} The first step in
 \simulator{} involves detecting policy-violations and prioritizing them based
