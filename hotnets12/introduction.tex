@@ -106,51 +106,50 @@ three bugs found by \projectname{}, as well as a performance evaluation.
 Finally, in \S\ref{sec:related_work} we discuss related work,
 and in \S\ref{sec:conclusion} we conclude.
 
-\eat{
- % Feedback on version 2.0:
- % not clear what you mean by "SDN platform", "policy-violation"
-\subsection{\colin{Feedback from Kay et al.}}
-\begin{itemize}
-\item Not sure that OSDI PC members will understand the subtleties of this statement: ``it is hard to tell what is broken when the goals are only implicitly expressed in the flow entries themselves.''
-\item I think we should push a little harder on emphasizing that the bugs are really nasty, and fundamental to the distributed nature of the system. "may have bugs" seems a little weak.
-\item We should make it very clear how our tools are an improvement over the status quo (log analysis). In particular, we automatically localize the (i) layer, and (ii) minimal causal set of events responsible for an error.
-\item \simulator{} does two things: find the minimal causal set, {\bf and}
-differentiates benign from pernicious. Only one of these points was clear, not
-both.
-\item The Google quote seems to indicate that the problem has already been solved!
-\item Along a similar vein, the point about ``the SDN platform will eventually
-become stable'' makes it seems like these problems aren't fundamental. But
-these problems are fundamental! How will the community view this paper in 10
-years?
-\item The reader doesn't walk away from this problem thinking ``This problem
-seems really heard!''. What are the specific bugs this framework addresses?
-Also, make it clear why this problem is important! If Pepsi knows that
-Coca-cola might be able to snoop on their traffic, we've lost huge \$\$\$.
-\item Don't frame ourselves just against log analysis. Make
-the shortcomings of the status quo very clear, and be very precise about how
-we address those shortcoming. (Why aren't traditional distributed systems
-techniques apropro? Why is static checking of a single layer insufficient? How
-is \simulator{} different than traditional replay debugging?)
-\item Would be cool to have numbers on how many log events developers have to
-step through today.
-\item Would also be cool to have numbers on how many benign policy-violations
-there are at a given point (say, in POX).
-\item ``Policy-violation'' wasn't well-defined.
-\item The introduction (prose) was too dense. Frame the problem in terms that
-the reader understands. Get them thinking about the problem right off the bat.
-Then lead them through our reasoning of how we came to the solution. Present
-a straw-man solution, and show why that doesn't work. This way
-the reader is much more engaged -- the reader should ``nod along''.
-\item What exactly are we simulating? Hardware faults? Misconfigurations?
-(answer: all of the above)
-\item How exactly does correspondence checking provide a crisp determination of the scope of a policy-violation in the
-network as well as the range of inputs that produce it? (answer: you start off
-with a customer complaint, ``A can't ping B''. Correspondence checking tells
-you all possible inputs that would experience the blackhole, and what parts of
-the network are effected)
-\item ``Stack'' connotes TCP/IP. Maybe use ``Platform'' instead?
-\item ``Fault'' connotes hardware failure. Maybe use ``Software Fault''
-\item Cite Frenetic, POX, Floodlight?
-\item What does \projectname{} stand for?
-\end{itemize}
-}
+% Feedback on version 2.0:
+% not clear what you mean by "SDN platform", "policy-violation"
+
+%\subsection{\colin{Feedback from Kay et al.}}
+%\begin{itemize}
+%\item Not sure that OSDI PC members will understand the subtleties of this statement: ``it is hard to tell what is broken when the goals are only implicitly expressed in the flow entries themselves.''
+%\item I think we should push a little harder on emphasizing that the bugs are really nasty, and fundamental to the distributed nature of the system. "may have bugs" seems a little weak.
+%\item We should make it very clear how our tools are an improvement over the status quo (log analysis). In particular, we automatically localize the (i) layer, and (ii) minimal causal set of events responsible for an error.
+%\item \simulator{} does two things: find the minimal causal set, {\bf and}
+%differentiates benign from pernicious. Only one of these points was clear, not
+%both.
+%\item The Google quote seems to indicate that the problem has already been solved!
+%\item Along a similar vein, the point about ``the SDN platform will eventually
+%become stable'' makes it seems like these problems aren't fundamental. But
+%these problems are fundamental! How will the community view this paper in 10
+%years?
+%\item The reader doesn't walk away from this problem thinking ``This problem
+%seems really heard!''. What are the specific bugs this framework addresses?
+%Also, make it clear why this problem is important! If Pepsi knows that
+%Coca-cola might be able to snoop on their traffic, we've lost huge \$\$\$.
+%\item Don't frame ourselves just against log analysis. Make
+%the shortcomings of the status quo very clear, and be very precise about how
+%we address those shortcoming. (Why aren't traditional distributed systems
+%techniques apropro? Why is static checking of a single layer insufficient? How
+%is \simulator{} different than traditional replay debugging?)
+%\item Would be cool to have numbers on how many log events developers have to
+%step through today.
+%\item Would also be cool to have numbers on how many benign policy-violations
+%there are at a given point (say, in POX).
+%\item ``Policy-violation'' wasn't well-defined.
+%\item The introduction (prose) was too dense. Frame the problem in terms that
+%the reader understands. Get them thinking about the problem right off the bat.
+%Then lead them through our reasoning of how we came to the solution. Present
+%a straw-man solution, and show why that doesn't work. This way
+%the reader is much more engaged -- the reader should ``nod along''.
+%\item What exactly are we simulating? Hardware faults? Misconfigurations?
+%(answer: all of the above)
+%\item How exactly does correspondence checking provide a crisp determination of the scope of a policy-violation in the
+%network as well as the range of inputs that produce it? (answer: you start off
+%with a customer complaint, ``A can't ping B''. Correspondence checking tells
+%you all possible inputs that would experience the blackhole, and what parts of
+%the network are effected)
+%\item ``Stack'' connotes TCP/IP. Maybe use ``Platform'' instead?
+%\item ``Fault'' connotes hardware failure. Maybe use ``Software Fault''
+%\item Cite Frenetic, POX, Floodlight?
+%\item What does \projectname{} stand for?
+%\end{itemize}
