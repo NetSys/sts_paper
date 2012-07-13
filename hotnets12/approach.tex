@@ -1,18 +1,58 @@
-In this section we 
-describe our approach for finding the minimal causal
-set of events that triggered a given failure. As a pre-requisite to causal
-inference, we present correspondence checking, which allows us to identify
-policy-violations without needing to explicitly define invariants. Our causal
-inference then repeatedly invokes correspondence checking in a deterministic
-replay of the system execution, pruning events not related to the given
-policy-violation.
+When the control platform fails to implement the network policy, software
+developers need to reproduce the events that triggered the errant behavior.
+Yet large datacenter networks experience a great number of host migrations,
+policy changes, hardware failures, and other sources of input to the control
+platform, all of which may appear at first glance to be typical of normal operating
+conditions. In this environment, identifying the exact set of events relevant
+to the problem is tedious at best, and impossible at worst.
 
-% ====== Previous take: ========
-%\projectname{} simplifies the troubleshooting process by programmatically localizing the root cause
-%of network problems along three dimensions: {\it what} network problems exist at a
-%particular point in time, {\it where} in the control software a problem first developed, and
-%{\it when} the triggering event occurred. In this section we present
-%the components of \projectname{} we have designed for performing software fault localization for SDN.
+In this section we describe our approach to automatically inferring the minimal
+sequence of events responsible for triggering a given software fault in the
+control platform. We begin by providing precise definitions of our terms. Then we
+describe a generic policy-violation detector as a prerequisite to causual analysis.
+Finally we describe our algorithm for inferring the necessary and sufficient events
+for triggering the fault of interest.
+
+\subsection{Terminology}
+
+We will use the following terms throughout the remainder of the paper:
+
+\colin{Redundant with previous section. Also not sure I like that this
+obstructs the flow}
+
+{\em Policy:} any configuration given to the control platform instructing it
+how the network should behave. Example policy constraints include connectivity, access
+control, addressing, resource allocations, traffic engineering objectives,
+or middlebox processing. Policies may be specified directly by a human operator, or
+programatically though an API such as Quantum \cite{quantum}. 
+
+{\em Policy-violation:} a configuration of the network that is inconsistent
+with the policy.
+
+{\em External events:} input fed to the control platform triggered by processes outside
+of the system. For proactive controllers, external input includes policy
+changes, host placement changes, network topology changes such as hardware
+failures or link rewiring, and control server failures. Reactive controllers
+additionally react to traffic changes. External inputs are to be distinguished
+from events triggered by the system itself, such as message sends or software
+crashes.
+
+{\em happens-before:} a transitive relation $\rightarrow$ on the external and internal events of
+the system execution, following Lamport's
+formulation\cite{Lamport:1978:TCO:359545.359563}: (i) If $a$ and $b$ are
+events in the same process, and $a$ comes before $b$, then $a \rightarrow b$.
+(ii) If $a$ is a message send by one process and $b$ is the receipt of the
+same message by another process, then $a \rightarrow b$. A set of
+happens-before constrains defines a partial ordering on the events in the
+system execution.
+
+{\em Causally-consistent snapshot:} a snapshot of a distributed system's state where
+there exists no event $b$ in a node's event history such that $a \rightarrow
+b$, but $a$ does not appear in the snapshot.
+
+{\em Decider:} an algorithm that takes as input a causally-consistent snapshot of the
+network state, and returns either yes or no for whether a particular
+policy-violation is present in the snapshot.
 
 \subsection{Correspondence Checking}
 
@@ -144,6 +184,10 @@ simulation environment where the exact same control software that would be
 running on servers might be controlling a combination of real and emulated
 switching devices. And then we can inject a number of failure scenarios under
 controlled circumstances to really accelerate our test work.}
+
+\colin{To get a better sense of the inputs to the controller, perhaps we should take
+a look at the Quantum plugin API.}
+
 
 Correspondence checking infers all policy-violations in the network at a
 particular point in time. However, troubleshooters

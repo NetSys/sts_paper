@@ -2,7 +2,7 @@
    go top to bottom? What is the transfer function of a Frenetic-
    style policy function? [Kyriakos is thinking about this]
 
-My intution is that this is almost certiainly possible at the bottom layer
+My intution is that this is almost certainly possible at the bottom layer
 of the software stack; you need to
 represent the state of the physical network in some form.
 
@@ -128,12 +128,8 @@ test the overall system's reactions to errant behavior on one or more
 individual nodes. In the case of the drunk operator, we /do/ care about how
 the system reacts to (i) followed by (ii). We don't really care about figuring
 out how to fix or prevent (i) and (ii) themselves -- that's the responsibility
-of the hardware vendor, not the implementor of the SDN controller platform.
-
-   - Do we need 'deterministic' events in the simulation?
-
-Do we need to test the behavior of the system? (yes...) I think I'm
-misunderstanding this question.
+of the hardware vendor (or the networ operator's manage), not the implementor
+of the SDN controller platform.
 
    - Where do we need vector clocks? Are they fundamental? Is this
      something that needs to be in the communication protocol, or can
@@ -185,7 +181,8 @@ cease to occur in the system execution.
 
 The hard part is going to be tracking happens-before dependencies /within/ a single
 controller (e.g. timers going off). It's not clear that this is even possible
-without instrumenting the code... 
+without instrumenting the code...  hopefully it's sufficient to tail -f the
+log and flag when the dependent event has been logged
 
    - And how do we assume we get the trace? Maybe /this/ is where we
      need them?
