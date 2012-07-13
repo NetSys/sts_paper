@@ -10,8 +10,8 @@ In this section we describe our approach to programatically inferring the minima
 sequence of events responsible for triggering a given fault in the
 control platform. We begin by providing precise definitions of our terms. Then we
 describe a generic policy-violation detector as a prerequisite to causual analysis.
-Finally we describe our algorithm for inferring the necessary and sufficient events
-for triggering the fault of interest.
+Finally we describe our algorithm for inferring the set of events that are both necessary
+and sufficient for triggering the fault of interest.
 
 \subsection{Terminology}
 
@@ -27,7 +27,8 @@ or middlebox processing. Policies may be specified directly by a human operator,
 programatically though an API such as Quantum~\cite{quantum}. 
 
 {\em Policy-violation:} a configuration of the network that is inconsistent
-with the policy.
+with the policy, in the sense that the disposition of some packets by the
+physical forwarding tables conflicts with the policies dictated for that packet.
 
 {\em External events:} input fed to the control platform triggered by processes outside
 of the system. For proactive controllers, external input includes policy
@@ -55,23 +56,11 @@ policy-violation is present in the snapshot.
 
 \subsection{Correspondence Checking}
 
-\colin{Reviewer B: Correspondence checking as defined in this paper captures a
-rather weak condition that allows implementations that intuitively seem
-incorrect.} \colin{I think we should demphasize correspondence checking. After
-describing it, we should treat it as a ``black 
-box'' policy-violation detector that serves as an important component in
-casual analysis. Also, 
-apparently we need to do a better job of calling out that correspondence
-checking 
-is indeed a weak condition. Finding real bugs will help with this objection, I
-believe.} \colin{Also note that in general, specifying invariants is an
-extremeley hard problem. Yes, it is a weak condition, but that's sort of the
-point -- it doesn't require manual intervention. Also, if you wanted a more
-specific blackbox detector, you could write one.}
+\colin{Points to make: CC is a weak condition. CC can replaced by other
+deciders that are more powerful. CC intentionally does not require
+invariant specifications, which is a hard problem.}
 
-The SDN platform transforms high-level policies (specified by the control application) into low-level configuration of they physical infrastructure.
-The configuration of the physical network should semantically correspond with the policy specified by the application layer, in the sense that the disposition of any packet by the physical forwarding tables should reflect  the policies dictated for that packet. We refer to any lack of semantic correspondence
-between the policy and the configuration as a {\it policy-violation}.
+In order to identify events that are necessary .
 
 We leverage the virtual packet algebra pioneered in headerspace
 analysis~\cite{hsa} to check 
