@@ -1,15 +1,25 @@
-\colin{With respect to related work, we should note that we could apply our algorithm to
-other distributed systems (not just SDN controllers). It has always bothered
-me somewhat that this work is so strongly married to SDN.}
+%\colin{With respect to related work, we should note that we could apply our algorithm to
+%other distributed systems (not just SDN controllers). It has always bothered
+%me somewhat that this work is so strongly married to SDN.}
 
-SDN is widely heralded as the ``future of networking'', and its purpose is to make it easy to manage networks.  It does so by providing control applications with a simple programmatic interface through which they can specify high-level policies about the network's behavior. While this does indeed make writing control applications simpler, it requires that the underlying SDN platform translates these high-level policies into low-level configuration of the physical switches.
+SDN is widely heralded as the ``future of networking'', and its purpose is to make
+it easy to manage networks. It does so by moving control plane functionality out of
+network devices, and into a tightly-coupled cluster of servers that provide a simple
+programmatic interface through which policies can be specified. The challenges encountered
+in a tightly-coupled environment (master-backup failover, state replication, sharding) are
+notably different from traditional, fully distributed control planes. If we,
+the networking community, have any desire to remain relevant, we must begin trying
+to understand this set of challenges.
 
-This process of translation is performed by a sophisticated distributed system, comprised of multiple controllers and serving multiple tenants, which must operate at large scales and in the presence of frequent failures. Distributed systems are fundamentally difficult to build, particularly in such a nascent field such as SDN where we have such little experience, and the resulting errors are hard to understand from inspecting logs. Thus, it is important that SDN provide adequate troubleshooting tools so users can determine whether or not the platform is responsible for the problems they are seeing, and SDN vendors can find problems in their own platform code.
-
-In this paper we described a system for troubleshooting called \projectname{}. \projectname{} employs two techniques to localize the root cause of policy-violations.\begin{itemize}
-    \item Correspondence-checking identifies which component of SDN platform is responsible for the policy-violation.
-    \item  \Simulator{} identifies the minimal causal set network events that trigger the policy-violation.
-\end{itemize}
+In this paper we have taken a stab at one facet of this problem space:
+troubleshooting. We developed a technique for automatically
+identifying fault-inducing input from logs of the system execution, with the
+goal of allowing developers to focus their efforts on debugging the problematic
+code itself rather than reproducing the error in the first place. We have
+demonstrated that our solution works on real, production control software,
+despite noted limitations. We hope that our work inspires the community to
+better understand the principles and mechanims needed to construct and
+troubleshoot the network control planes of the future.
 
 % ============== ORIGINAL ===============
 %We have applied this system to several available SDN platforms, and were able to find or reproduce bugs in all the platforms we investigated.
