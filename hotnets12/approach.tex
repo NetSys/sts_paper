@@ -1,29 +1,31 @@
-When the control platform fails to implement the network policy, software
-developers need to reproduce the events that triggered the errant behavior in
-order to proceed with the debugging process.
+When the control platform fails to implement network policy, software
+developers first need to reproduce the events that triggered the errant
+behavior before they can proceed with the debugging process.
 Yet large networks experience a great number of hardware failures, topology changes,
 and other potential triggering events,
 all of which may appear characteristic of normal operating
 conditions at first glance. The entire
-execution log may be sufficient for reproducing the error (assuming
+execution log should theoretically be sufficient for reproducing the error (assuming
 a complete and correctly ordered log), but the execution history may span
 hours or days and include thousands of extraneous events.
 Identifying relevant triggering events within a log of this size is akin to finding
 the proverbial `needle in the haystack'.
-In this section we describe our approach to algorithmically finding the
-smallest possible set of events from a system trace sufficient for triggering the
-software fault of interest.
+In this section we describe our approach to automatically identifying
+the smallest set of events from logs of the system execution sufficient from
+triggering a given software fault.
 
 %Platform developers may discover policy-violations
 %through customer complaints, integration tests, or by periodically running
-%invariant checks on a deployed network. 
+%invariant checks on a deployed network.
 
 \subsection{\SIMULATOR{}}
 \label{sec:causal_analysis}
 
+% TODO(cscott): somewhat redundant. We still need to defined policy-violations
+% though
 Given a trace of the system execution, our goal is to prune events that are not
 necessary for triggering
-errant behavior. We define errant behavior in terms of {\em policy-violations}: 
+errant behavior. We define errant behavior in terms of {\em policy-violations}:
 configurations of the network that are inconsistent
 with the policy, in the sense that the disposition of some packets by the
 physical forwarding tables conflicts with the dictated policies.
@@ -43,7 +45,7 @@ simple to write out:
     \State $violation \gets detect\_violation(snapshot)$
     \If {\it not violation}
         \State $MCS << event$
-        \State {reinsert input to front of trace}
+        \State {reinsert input to front of log}
     \EndIf
 \EndFor
 \end{algorithmic}
@@ -56,34 +58,62 @@ necessary for triggering the fault.
 
 The crux of our problem lies in specifying exactly how each
 individual step of this algorithm works. In the rest of this section we will
-detail the (i) logging and snapshotting infrastructure, (ii) determinstically
-replayable execution environment, and (iii) violation detection algorithms
+detail the (i) distributed logging and analysis infrastructure, (ii) determinstic
+replay execution environment, and (iii) violation detection algorithms
 necessary for finding the minimal causal sequence.
 
-\subsection{Logging and Snashotting}
+\subsection{Distributed Logging and Analysis}
 
-Our causal analysis algorithm first requires a log of the system execution
-that originally triggered the policy-violation. Obtaining a log that has the
-properties we will require for causal analysis presents several challenges:
+Our algorithm first requires a log of the system execution where a
+policy-violation was originally discovered. Policy-violations
+in a running system might be detected through failed integration tests,
+customer complaints, or live runtime checks.
 
-Production Logs:
+Since our goal is to identify
+relevant {\em inputs} from the distributed system's log, we require that the log makes a clear
+distinction between {\em internal} events such as control messages sends and
+receives between nodes within the system, and {\em external} inputs such as
+link failures, controller crashes, VM migrations, or policy changes.
+Production networks almost universally maintain logs of such events as part of
+good operating practices (link failures are typically detected through
+routing protocols such as IS-IS and reported to controllers,
+controllers log crash messages before
+halting in addition to monitoring heartbeats from peers, and VM migrations and
+policy changes are logged centrally for accounting purposes). In the rare case
+that an input to the system is not present in the available logs,
+our algorithm may not reproduce the policy-violation, and the developer will
+have to ensure that the logging messages are added to the system.
 
-(iii) We assume that production logs are complete, in the sense that all relevant events (both internal an external) are included. This also means that if one failure mode (e.g. server hardware failures) causes the remaining nodes of the distributed system to behave in a different way than another failure mode (e.g. network partition between controllers), then those two failure types are distinguishable in the log. 
+Our algorithm also depends on a correctly ordered, `global' log of the
+distributed system's execution. If the control software does not already do
+so, we modify the code to attach Lamport
+clocks~\cite{Lamport:1978:TCO:359545.359563} to all
+control messages and internal log messages
+to achieve a total ordering of the events in the system that
+is consistent with the happens-before relation. The only remaining issue is
+that some failure events may appear multiple times in the log (\eg{} multiple
+replica servers detecting that a master went down), and we only want to
+replay the original event. If it is not possible to distingish the original
+failure event from the consequential detections of the event (\eg{} in the
+case of a disk failure where the original crash message is not recoverable),
+developers may need to manually decipher the original event, or apply
+root cause analysis tools for detecting the originating event from correlated
+alarms~\cite{577079}. Note that it is not
+strictly necessary that the log match the production execution perfectly, so
+long as the policy-violation still occurs at the end of the replayed
+execution.
 
-Naive Solution/Workaround: link failures are detected with a protocol like IS-IS (or even ATPG), and port status messages are sent up to the controller and logged. Controllers log a special message before they crash. VM migrations and policy-changes are logged in a central location.
+As an optimization, the developer may start from a causally-consistent
+snapshot of the network rather than replaying the execution from the
+very beginning of the log. In this case, the user would need to occasionally
+execute a consistent-snapshotting algorithm~\cite{Chandy:1985:DSD:214451.214456}
+on the live deployed system, and start \simulator{} from a quiescent snapshot.
 
-Sound Solution: to disambiguate distinct failure modes (e.g. server crash vs. network partition), we might need have special failure detection devices monitoring all components of the system separately. Mike Walfish had a paper in SOSP last year that did essentially this -- it's one hell of a big hammer though.
-                           
-(iv) We assume that the production log obeys happens-before contraints.
- 
-Solution/Workaround: the production system has to include logical clocks in all messages. (Note: this solution is subsumed by vi)                                                                                      
-                 
-(v) We assume that the distributed logs taken on all the nodes can be aggregated into one "global log". [Some events such as link failures may be logged by multiple nodes, but we only want to replay a single link failure in the simulator]
-
-Solution/Workaround \#1: leverage algorithms from traditional root cause analysis to collapse correlated alarms into the unique root cause.
-
-Solution/Workaround \#2: if you have special failure detector devices (re: Mike Walfish's paper) for every component of your system, and the failure detector devices include a logical clock on all of their messages, then you can infer which failure detector detected the problem first, and ignore the rest.                                                            
-
+%(ii) We assume that the causally-consistent snapshot we start from is quiescent. [it's possible that a member of the MCS occurred before the snapshot was taken]
+%
+%Solution/Workaround: once we've run the MCS algorithm, re-run it from an earlier snapshot and see if the MCS changed. Technically this process would have to be applied inductively, but we could parametrize the number snapshots we have to examine.
+%
+%Discussion: it's also not a huge deal if this assumption does not hold. The policy-violation will still be detected -- the only problem is that the MCS will be smaller than it actually is. Moreover, as the software developer starts debugging the problem, she'll eventually notice that some piece of state at the point of the snapshot is incorrect, and therefore she'll notice that she needs to start from an earlier snapshot.
 
 \eat{
 \colin{In the simulator, this consistent snapshot is
@@ -109,20 +139,6 @@ from internal events triggered by the system itself, such as message sends or so
 crashes.
 }
 
-Causally Consistent Snapshots:                                                                                  
-
-(i) We assume that network hardware has the primitives necessary to support a causally-consistent snapshot algorithm (viz. transactional queries to the FIB/RIB).                                                                     
-
-Solution \#1: buy switches with support for transactions
-
-Solution \#2:  take frequent snapshots of the switch state (without the transactions), and hope that at least one of the snapshots is stable enough to reproduce the policy-violation.
-
-(ii) We assume that the causally-consistent snapshot we start from is quiescent. [it's possible that a member of the MCS occurred before the snapshot was taken]
-
-Solution/Workaround: once we've run the MCS algorithm, re-run it from an earlier snapshot and see if the MCS changed. Technically this process would have to be applied inductively, but we could parametrize the number snapshots we have to examine.
-
-Discussion: it's also not a huge deal if this assumption does not hold. The policy-violation will still be detected -- the only problem is that the MCS will be smaller than it actually is. Moreover, as the software developer starts debugging the problem, she'll eventually notice that some piece of state at the point of the snapshot is incorrect, and therefore she'll notice that she needs to start from an earlier snapshot.
-
 \subsection{Simulation}
 
 \eat{
@@ -145,7 +161,7 @@ Simulator's visibility into system:
 
 (vi) The simulator must know the causal dependencies (not just the happens-before dependencies) between internal events of the system. This is because the simulator must know exactly when it can inject the next external input [if we inject external inputs willy-nilly, we'll get different outputs]. This gets really hairy when we start pruning events from the system execution: pruning an event will cause some internal events to disappear, and it may also cause some internal events to appear that weren't present in the original execution. We need to know which internal events are going to disappear, otherwise we'll be waiting around forever to inject the next external input in the case that the internal event we're waiting for never happens. I can show you on a whiteboard why recording happens-before dependencies is insufficient to solve this problem; we need exact causal dependencies.
 
-Solution: The simulated system includes causal annotations (re: X-Trace) on all messages and internal events. 
+Solution: The simulated system includes causal annotations (re: X-Trace) on all messages and internal events.
 
 (vii) We assume that all internal events are atomically observable by the simulator. This is because the simulator must know exactly when it can inject the next external input. As an example, suppose a backup node internally decides to assume mastership. The simulator needs to be aware of exactly when such internal events occur.
 
@@ -155,7 +171,7 @@ Better solution: interpose on the causal annotation library. Every time an inter
 
 (viii) We assume that the simulator has a mechanism to "fingerprint" internal events, i.e. know when an internal event from one simulation run is the same as another event on the next simulation run. This might be problematic, since the format of messages (such as sequence numbers on packets) might change from run to run!
 
-Solution \#1: Define a regex for log messages, and a mask over the bits of the control packets. This regex should define an equivalence of events between simulation runs. 
+Solution \#1: Define a regex for log messages, and a mask over the bits of the control packets. This regex should define an equivalence of events between simulation runs.
 
 Solution \#2: interposing on the causal annotation library might again solve this problem in a cleaner way.
 
@@ -176,7 +192,7 @@ policy-violation in mind is present in the list.
 In short, correspondence checking provides a crisp determination of all possible packet inputs that
 would not behave according to the application's policies if injected into the
 network. Correspondence checking builds on the virtual packet algebra pioneered in headerspace
-analysis~\cite{hsa}. 
+analysis~\cite{hsa}.
 \eat{Furthermore, running correspondence
 checking between intermediate layers of the SDN stack (logical view versus
 physical view), allow us to identify the component(s) of
@@ -255,7 +271,7 @@ at the access link.
 We compute $\Omega$ by traversing the resulting propagation graph. If a packet
 is dropped before exiting the network, we mark the value as $DROP$. Likewise,
 if we detect a repeated internel vertex along a branch of the propogation graph, we mark the
-that outcome as $LOOP$. Otherwise, 
+that outcome as $LOOP$. Otherwise,
 the leaves of the propagation graph define the final outcomes of the input
 packets injected at that access link.
 
@@ -273,28 +289,28 @@ Nonetheless, correspondence checking represents a somewhat weak notion of
 correctness. Correspondence checking only captures external behavior and
 loops; it does not capture internal behavior such as load-balancing
 over links. It also assumes that the policies as expressed by the
-configuration of the logical view are correct; a user would need to add a more 
+configuration of the logical view are correct; a user would need to add a more
 stringent invariant checks to detect misspecified policies.
 Finally correspondence checking can not verify
 time-dependent policies such as ``No link should be congested more than 1\% of
 the time'', or ``No server should receive more than 500MB/s of external traffic''.
 
 We leave the design of more sophisticated detectors to future work.
-Despite these shortcomings however, we will show in 
+Despite these shortcomings however, we will show in
 \S\ref{sec:casestudy} that correspondence checking is still able of
 detecting a class important failure modes.
 
 \colin{TODO: insert Kyriakos' thoughts here}
 
 \subsection{Putting it all together}
-                                                                                           
+
 MCS assumptions:
 
 (xi) We assume causally independent external input
 
 Solution: Argue that we don't need to model drunk network operators
 
-(xii) We assume that the policy-violation detector algorithm can unambiguously identify violations. [Will the symptom ever be slightly different on the next iteration of the system?] 
+(xii) We assume that the policy-violation detector algorithm can unambiguously identify violations. [Will the symptom ever be slightly different on the next iteration of the system?]
 
 Solution: HSA gives a pretty precise determination of the policy-violation
 
@@ -361,7 +377,7 @@ suggest using?}
 
 \colin{Moved:
 network delays the network in a single simulation process, thereby providing arbitrary control over hardware
-failures, message delays and other failure modes. 
+failures, message delays and other failure modes.
 }
 
 \noindent\textbf{Investigating pathological environment conditions.} The simulator allows for investigation

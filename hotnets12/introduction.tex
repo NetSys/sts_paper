@@ -44,20 +44,20 @@ policy changes, VM migrations, and other inputs to the system that may have
 triggered a given bug can be quite large in production environments. Microsoft,
 for example, reports 36 million error events over one year across 8 datacenters, which
 implies 8.5 error events per minute per
-datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}. 
-Given that SDN control software is designed to operate under such conditions, 
+datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}.
+Given that SDN control software is designed to operate under such conditions,
 it is often difficult to distinguish events that are charasteristic of normal
 conditions from those that push the network into an erroneous state.
 
 In this paper we seek to eliminate the need to manually identify the inputs that lead
 up to software faults, thereby leaving developers to debug the problematic code itself.
-We present a solution for automatically inferring the sequence 
+We present a solution for automatically inferring the sequence
 of inputs that are both necessary and sufficient for
 triggering invalid configurations discovered in executions of the system.
 
 Our algorithm, \simulator{}, leverages (i)
 distributed log analysis, (ii) deterministic replay
-simulation environments, and (iii) invariant checking techniques.
+execution environments, and (iii) invariant checking techniques.
 Beyond detailing these components, we describe a case-study
 on the Floodlight production
 controller~\cite{floodlight}, where we trigger a

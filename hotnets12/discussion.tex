@@ -1,6 +1,21 @@
 % Just realized: b/c of anonymity, the PC can't chastise us for
 % running our system on our own code -- we can't tell them that it's our code!
 
+\colin{Should discuss fidelity of log messages (distinguish different failure
+modes) and what we want (ODR) here}
+
+\colin{
+Logical clocks don't work for all situations! Consider a link failure that
+is detected by both adjacent switches connected to the link. Which one
+observed the link failure first? The message "link went down" doesn't include
+a logical clock...
+}
+
+\colin{WRT snapshotting:
+we assume that network hardware has the primitives necessary to support a
+causally-consistent snapshot algorithm (viz. transactional queries to the
+FIB/RIB).}
+
 We now discuss the overhead of using \simulator{} in a producton environment,
 detail scalability properties of our system, and discuss how the assumptions
 detailed in Section~\ref{sec:approach} can be relaxed.
