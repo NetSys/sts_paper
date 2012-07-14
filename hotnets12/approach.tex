@@ -141,29 +141,33 @@ crashes.
 
 \subsection{Simulation}
 
-Next, our algorithm requires a deterministic execution environment, capable
-replaying the system execution in a controlled fashion. We have developed
-solutions to two separate challenges in achieving this requirement.
+Next, our algorithm requires a mechanism for replaying the system execution.
+We have developed
+solutions two separate challenges in achieving this requirement.
 
-First, replaying events deterministically. Run all controllers in VMs, and
-proceed forward in lock step. Then, map logs events onto actions reproduced in
-the simulator. For example, simulate the network entities, and simulate link
-failures by disconnecting the edge in simulated link. Or emulate node crashes kill -9.
-Replay policy-changes by plugging into Quantum. Note that we don't need
-a precise reproduction of the failure on an /individual/ node.    * Distributed systems are built under the assumption that individual
-     components will fail.
-   * We aren't really interested in diagnosing individual component
-     failures. (e.g. if a piece of hardware fails, we aren't going to get out
-     our oscilloscopes and find the exact circuit path that's going wonky)
-   * We are however interested in testing the overall system's reaction to a
-     particular component failure. (e.g. if the failover logic is broken, we
-     want to know about it)
-   -> It should be sufficient to use a "blunt hammer" to reproduce individual
-     non-deterministic events. (e.g. we can just send a KILL signal to a
-     control process, regardless of how the control process died in
-     the actual run of the system)
+First, we need the ability to {\em deterministically} replay the system
+execution. We achieve this with a single-threaded simulator of the switches
+and hosts in the network. We run the controllers individual VMs, and
+connect the simulated switches the controllers as if there were true
+hardware switches. The simulator interposes on all communication channels in
+the network, allowing it to proceed with the system execution in lock step:
+pausing the controller VMs in between each timestep, and delaying packets
+indefinitely. The simulator then reproduces the external inputs from the log in a controlled fashion.
+For example, link failures are reproduced by disconnecting the edge in
+simulated network and havin the switches notify the controllers through an
+OpenFlow $PORT_STATUS$ message. The simulator replays policy-changes by
+interfacing through the Quantum API~\cite{quantum}, a generic interface to
+modern SDN controlers.
 
-
+Note that the simulator does not  need
+to precisely reproduce the failure of {\em individual} nodes in the system. This is because
+we are interested in observing the behavior of overall distributed system, which is
+built under the assumptions that individual components will fail; we are not
+interested in diagnosing individual component
+failures. Therefore, it should be sufficient to use a ``blunt hammer'' (\eg{}
+$kill -9$) to reproduce individual
+failure events, so long as the remaining nodes in the system react in the same
+way.
 
 Second, knowing when to inject (causal annotations, and interposition on the
 causal annotation library to know exactly when they have occurred). Pruning
@@ -277,6 +281,8 @@ represents an instance of a policy-violation.
 
 \subsubsection{Discussion}
 
+\colin{Dont have this as a separate subsection. either inline it, or move
+       it to the discussion section}
 Correspondence checking is a generic detector that does not require the user
 to define any invariants. As we will see, this property is important for our
 goal of providing as high a degree of automation as possible.
