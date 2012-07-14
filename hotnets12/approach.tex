@@ -58,11 +58,11 @@ necessary for triggering the fault.
 
 The crux of our problem lies in specifying exactly how each
 individual step of this algorithm works. In the rest of this section we will
-detail the (i) distributed logging and analysis infrastructure, (ii) determinstic
+detail the (i) distributed logging infrastructure, (ii) deterministic
 replay execution environment, and (iii) violation detection algorithms
 necessary for finding the minimal causal sequence.
 
-\subsection{Distributed Logging and Analysis}
+\subsection{Distributed Logging}
 
 Our algorithm first requires a log of the system execution where a
 policy-violation was originally discovered. Policy-violations
@@ -93,7 +93,7 @@ to achieve a total ordering of the events in the system that
 is consistent with the happens-before relation. The only remaining issue is
 that some failure events may appear multiple times in the log (\eg{} multiple
 replica servers detecting that a master went down), and we only want to
-replay the original event. If it is not possible to distingish the original
+replay the original event. If it is not possible to distinguish the original
 failure event from the consequential detections of the event (\eg{} in the
 case of a disk failure where the original crash message is not recoverable),
 developers may need to manually decipher the original event, or apply
@@ -111,7 +111,7 @@ on the live deployed system, and start \simulator{} from a quiescent snapshot.
 
 %(ii) We assume that the causally-consistent snapshot we start from is quiescent. [it's possible that a member of the MCS occurred before the snapshot was taken]
 %
-%Solution/Workaround: once we've run the MCS algorithm, re-run it from an earlier snapshot and see if the MCS changed. Technically this process would have to be applied inductively, but we could parametrize the number snapshots we have to examine.
+%Solution/Workaround: once we've run the MCS algorithm, re-run it from an earlier snapshot and see if the MCS changed. Technically this process would have to be applied inductively, but we could parameterize the number snapshots we have to examine.
 %
 %Discussion: it's also not a huge deal if this assumption does not hold. The policy-violation will still be detected -- the only problem is that the MCS will be smaller than it actually is. Moreover, as the software developer starts debugging the problem, she'll eventually notice that some piece of state at the point of the snapshot is incorrect, and therefore she'll notice that she needs to start from an earlier snapshot.
 
@@ -141,49 +141,45 @@ crashes.
 
 \subsection{Simulation}
 
-\eat{
-\Simulator{} depends on a deterministic network simulator capable of
-reproducing external inputs including link failures, host migrations, and
-policy-changes.
-}
+Next, our algorithm requires a deterministic execution environment, capable
+replaying the system execution in a controlled fashion. We have developed
+solutions to two separate challenges in achieving this requirement.
 
-Simulator:
+First, replaying events deterministically. Run all controllers in VMs, and
+proceed forward in lock step. Then, map logs events onto actions reproduced in
+the simulator. For example, simulate the network entities, and simulate link
+failures by disconnecting the edge in simulated link. Or emulate node crashes kill -9.
+Replay policy-changes by plugging into Quantum. Note that we don't need
+a precise reproduction of the failure on an /individual/ node.    * Distributed systems are built under the assumption that individual
+     components will fail.
+   * We aren't really interested in diagnosing individual component
+     failures. (e.g. if a piece of hardware fails, we aren't going to get out
+     our oscilloscopes and find the exact circuit path that's going wonky)
+   * We are however interested in testing the overall system's reaction to a
+     particular component failure. (e.g. if the failover logic is broken, we
+     want to know about it)
+   -> It should be sufficient to use a "blunt hammer" to reproduce individual
+     non-deterministic events. (e.g. we can just send a KILL signal to a
+     control process, regardless of how the control process died in
+     the actual run of the system)
 
-(ix) We assume that our simulation framework can deterministically replay the system execution. This is somewhat tricky, since there may be multiple controller VMs. We essentially need to be able to move the collection of VMs in lock step.
 
-Solution/Workaround: leverage a bunch of previous work on deterministic replay
 
-(x) We assume that the mechanism the simulator uses to reproduce node failures causes the rest of the distributed system to react in the same way it did in the actual execution. Specifically: the actual root cause of an individual node may be quite complex (think: cosmic rays). We hope that the blunt hammer we use in the simulator (kill -9) is sufficient similar. Essentially, what we need is ODR [output deterministic replay] from the perspective of any neighboring node that reacts to a failure.
-
-Solution/Workaround: if we can't manage to reproduce the policy-violation, a developer might need to add some code to the simulator to get a higher fidelity replay.
-
-Simulator's visibility into system:
-
-(vi) The simulator must know the causal dependencies (not just the happens-before dependencies) between internal events of the system. This is because the simulator must know exactly when it can inject the next external input [if we inject external inputs willy-nilly, we'll get different outputs]. This gets really hairy when we start pruning events from the system execution: pruning an event will cause some internal events to disappear, and it may also cause some internal events to appear that weren't present in the original execution. We need to know which internal events are going to disappear, otherwise we'll be waiting around forever to inject the next external input in the case that the internal event we're waiting for never happens. I can show you on a whiteboard why recording happens-before dependencies is insufficient to solve this problem; we need exact causal dependencies.
-
-Solution: The simulated system includes causal annotations (re: X-Trace) on all messages and internal events.
-
-(vii) We assume that all internal events are atomically observable by the simulator. This is because the simulator must know exactly when it can inject the next external input. As an example, suppose a backup node internally decides to assume mastership. The simulator needs to be aware of exactly when such internal events occur.
-
-Naive solution: tail -f the logs of the nodes, and check for when the internal event message is written to the log. A major problem is that the log might not be flushed immediately [perhaps we could cite databases literature on this problem]. For checking message sends/receives, we already interpose on communication channels.
-
-Better solution: interpose on the causal annotation library. Every time an internal event occurs, a causal annotation will be logged. It's at exactly this point where the simulator can interpose.
-
-(viii) We assume that the simulator has a mechanism to "fingerprint" internal events, i.e. know when an internal event from one simulation run is the same as another event on the next simulation run. This might be problematic, since the format of messages (such as sequence numbers on packets) might change from run to run!
-
-Solution \#1: Define a regex for log messages, and a mask over the bits of the control packets. This regex should define an equivalence of events between simulation runs.
-
-Solution \#2: interposing on the causal annotation library might again solve this problem in a cleaner way.
-
+Second, knowing when to inject (causal annotations, and interposition on the
+causal annotation library to know exactly when they have occurred). Pruning
+makes this really hard. This also
+means that we can fingerprint the same event across executions (also solved
+                                                                with causal
+                                                                annotations).
 \subsection{Correspondence Checking}
 
-Next, we need a mechansim for deciding
+Finally, we need a mechanism for deciding
 whether a policy-violation is present at any point in the system execution.
 We refer to such an algorithm as a {\em decider}. Deciders take as input a
 causally-consistent snapshot of the system state, and return whether the
 policy-violation they were designed to detect is present.
 
-We refer to the particular decider we develop here as correspondence checking.
+We develop a particular decider here, which we refer to as correspondence checking.
 Correspondence checking is generic, in the sense that it does not require
 the user to specify invariants. Instead, correspondence checking returns a list
 of policy-violations present in the network, and the user checks whether the
@@ -270,7 +266,7 @@ at the access link.
 
 We compute $\Omega$ by traversing the resulting propagation graph. If a packet
 is dropped before exiting the network, we mark the value as $DROP$. Likewise,
-if we detect a repeated internel vertex along a branch of the propogation graph, we mark the
+if we detect a repeated internal vertex along a branch of the propagation graph, we mark the
 that outcome as $LOOP$. Otherwise,
 the leaves of the propagation graph define the final outcomes of the input
 packets injected at that access link.
@@ -315,17 +311,15 @@ Solution: Argue that we don't need to model drunk network operators
 Solution: HSA gives a pretty precise determination of the policy-violation
 
 
-% --------------- Some Relevant thougts ---------------------
-\colin{TODO: paragraph on how this approach might apply to traditional
-networks}
+% --------------- Some Relevant thoughts ---------------------
 
-\colin{To get a better sense of the inputs to the controller, perhaps we should take
-a look at the Quantum plugin API.}
+%\colin{To get a better sense of the inputs to the controller, perhaps we should take
+%a look at the Quantum plug-in API.}
 
-\colin{
-Vector clocks as an optimization for causal inference. (If concurrent,
-can prune automatically)
-}
+%\colin{
+%Vector clocks as an optimization for causal inference. (If concurrent,
+%can prune automatically)
+%}
 
 % ============ TERMS ================
 \eat{
@@ -338,13 +332,13 @@ same message by another process, then $a \rightarrow b$. A happens-before
 relation defines a partial ordering on the events in the system execution.
 
 Happens-before is to be distinguished by causality. happens-before says "could
-have caused". Casuality says "actually affected the behavior"
+have caused". Causality says "actually affected the behavior"
 }
 
 % ============ /TERMS ================
 
 
-% --------------- /end Some Relevant thougts ---------------------
+% --------------- /end Some Relevant thoughts ---------------------
 
 
 % ------- Old Additional Use-Cases section -------
@@ -446,7 +440,7 @@ in a case where no further failure events are played out. Finally, we
 prioritize the policy-violations based on their duration.
 }
 
-% ------ Maybe inlude this quote from Google -------
+% ------ Maybe include this quote from Google -------
 
 \eat{
 \colin{Amin Vahdat:

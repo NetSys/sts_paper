@@ -16,7 +16,13 @@ we assume that network hardware has the primitives necessary to support a
 causally-consistent snapshot algorithm (viz. transactional queries to the
 FIB/RIB).}
 
-We now discuss the overhead of using \simulator{} in a producton environment,
+\colin{WRT fidelity: make the point that we can always
+increase the fidelity of the simulator -- it's all just software}
+
+\colin{TODO: paragraph on how this approach might apply to traditional
+networks}
+
+We now discuss the overhead of using \simulator{} in a production environment,
 detail scalability properties of our system, and discuss how the assumptions
 detailed in Section~\ref{sec:approach} can be relaxed.
 
@@ -35,7 +41,7 @@ kilobytes, uncompressed. A fat tree network of 27,648 hosts
 includes 2,880
 switches~\cite{Al-Fares:2008:SCD:1402958.1402967}.
 Therefore a snapshot of the FIBs of the entire network would naively take up roughly
-26 GB. Note however, that the data is likely to be compressable quite well, due to do its
+26 GB. Note however, that the data is likely to be compressible quite well, due to do its
 structural and temporal properties. Assuming 8.5 error events per minute per
 datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}, 1,000,000
 VM placement changes per day per datacenter~\cite{Soundararajan:2010:CBS:1899928.1899941},
