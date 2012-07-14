@@ -2,7 +2,6 @@
 % running our system on our own code -- we can't tell them that it's our code!
 We demonstrate the \simulator{} workflow by reproducing a bug in the Floodlight
 SDN control platform and documenting the effectiveness of the pruned output.
-In this section we detail the Floodlight case study.
 
 Floodlight is the open source control platform built by BigSwitch
 networks~\cite{bigswitch}. Floodlight is distributed across multiple
@@ -10,20 +9,21 @@ controllers, and provides support for virtualization.
 Consider the following case described in the
 Floodlight~\cite{floodlight} source code\footnote{Note this issue was
 independently discovered by the developers of Floodlight.}: for high availability, Floodlight can run as a
-distributed controller, with switches connecting to several replica controllers at the
-same time. In this setup, one controller assumes the role of \emph{master} and
-thereby gains the authority to issue state changing requests to the switches.
-The other controllers are in \emph{slave} mode and thus do not perform any
-state-changes on the switch. Here, a race condition can occur when a switch
-connects to the controllers shortly after the master controller has died, but
-before a new master has been selected. In this case, all controllers will be in
+distributed controller, with switches maintaining one hot connection to a master
+controller and serveral cold connectoins to replica controllers.
+In this setup, the \emph{master} holds the authority to issue state changing requests to the switches.
+The other controllers are in \emph{slave} mode and do not perform any
+state-changes on the switch unless they detect that the master has crashed.
+Here, a race condition can occur when a switch connects
+to the controllers shortly after the master controller has died, but
+before a new master has been selected. In this case, all live controllers will be in
 the slave role and thus will not take responsibility for clearing the switch
 flow table. At some point, one of the controllers is elevated to to
-\emph{master} role and will proceed to manage the newly connected switch, based
-on an inconsistent flow table.
+master role and will proceed to manage the newly connected switch, but without
+ever clearing its inconsistent flow table.
 
-Using \projectname, we were able to reproduce the problem. The
-emulated switches in the simulator support the \emph{role} vendor extension to
+We were able to reproduce the problem in our deterministic runtime environment. The
+emulated switches in our simulator support the \emph{role} vendor extension to
 connect to several controllers. The inter-controller synchronization and heartbeat
 protocol is proxied through the simulator for control over the timing. After the
 master controller dies, a new switch is associated with the slave controllers, and
