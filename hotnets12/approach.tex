@@ -10,18 +10,14 @@ In this section we describe our approach to automated causal
 analysis on a log of the system execution. We begin by describing a
 generic fault detection algorithm as a prerequisite to causal analysis.
 We then describe our algorithm for inferring the set of events in the system
-log that are both necessary and sufficient for triggering a given software
+execution that are both necessary and sufficient for triggering a given software
 fault.
 
 \subsection{Correspondence Checking}
 
 Given a trace of the system execution, our goal is to prune events that are not necessary for triggering
-errant behavior. We define errant behavior in terms of network {\em policy}: configuration given to the
-control platform describing the desired behavior of the network. Policy
-constraints might include connectivity, access control, addressing,
-resource allocations, traffic engineering objectives,
-or middlebox processing. Errant behavior is then any instance of a
-{\em policy-violation}: a configuration of the network that is inconsistent
+errant behavior. We define errant behavior in terms of {\em policy-violations}: 
+configurations of the network that are inconsistent
 with the policy in the sense that the disposition of some packets by the
 physical forwarding tables conflicts with the dictated policies.
 
@@ -39,7 +35,7 @@ policy-violation in mind is present in the list.
 
 In short, correspondence checking provides a crisp determination of all possible packet inputs that
 would not behave according to the application's policies if injected into the
-network. Correspondence checking relies heavily on the virtual packet algebra pioneered in headerspace
+network. Correspondence checking builds on the virtual packet algebra pioneered in headerspace
 analysis~\cite{hsa}. 
 \eat{Furthermore, running correspondence
 checking between intermediate layers of the SDN stack (logical view versus
@@ -80,16 +76,13 @@ Here, $E_{access}$ denotes access links adjacent to end-hosts.
 
 The domain of $\Omega^{physical}$ is the set of pairs of end-hosts in the
 physical network along with packets that they could possibly produce (before
-traversing any interfaces -- although the physical network may encapsulate
+traversing any interfaces; although the physical network may encapsulate
 packets while in transit, end-hosts do not observe any encapsulation).
 We define $\Omega^{view}$ in exactly the same way, where
 the logical hosts are abstract representations of the hosts in the physical
 network. This definition depends on the observation that end-hosts are represented
 in all layers, even if there is not a one-to-one mapping between the
-internal vertices of $G^{virtual}$ and $G^{physical}$. We use $f$ to denote
-this bijective mapping between physical hosts and logical hosts. As a result of the
-bijection $f$, and since $\Omega$ is a total function, the domain
-of $\Omega^{physical}$ is bijective with the domain of $\Omega^{view}$.
+internal vertices of $G^{virtual}$ and $G^{physical}$.
 
 The range of $\Omega$ is the hypothetical final location and state of the
 input packet if it were injected in the network.
@@ -98,15 +91,15 @@ $\Omega$. For example, if an input packet passes through a NAT,
 the source address of the associated output packet will be re-written
 appropriately. We also use the special values $DROP$ and $LOOP$ to distinguish
 a packet dropped by a network device from a packet entering an
-infinite loop (both packet drops and loops stop the packet from ever leaving the network).
+infinite loop (both packet drops and loops prevent the packet from ever leaving the network).
 
 In SDN, it should always be the case that:
 \begin{align*}
 \Omega^{view} \sim \Omega^{physical}
 \end{align*}
 The equivalence $\sim$ means that the final outcome of any input packet
-injected at a host $a$ in the physical network has the same hypothetical final outcome as
-the same input injected at $f(a)$, and vice versa.
+injected at a host $a_{physical}$ in the physical network has the same hypothetical final outcome as
+the same input injected at the corresponding $a_{logical}$, and vice versa.
 
 Correspondence checking takes as input a causally-consistent
 snapshot of both the physical network and the
@@ -120,8 +113,10 @@ the HSA paper~\cite{hsa}} The end result is a propagation graph representing all
 at the access link.
 
 We compute $\Omega$ by traversing the resulting propagation graph. If a packet
-is dropped or enters a loop, we mark the value as $DROP$ or $LOOP$. Otherwise, 
-the leaves of the propagation graph define the final outcome of the input
+is dropped before exiting the network, we mark the value as $DROP$. Likewise,
+if we detect a repeated internel vertex along a branch of the propogation graph, we mark the
+that outcome as $LOOP$. Otherwise, 
+the leaves of the propagation graph define the final outcomes of the input
 packets injected at that access link.
 
 Because network policies are defined by
@@ -136,7 +131,7 @@ goal of providing as high a degree of automation as possible.
 
 Nonetheless, correspondence checking represents a somewhat weak notion of
 correctness. Correspondence checking only captures external behavior and
-internal loops; it does not capture internal behavior such as load-balancing
+loops; it does not capture internal behavior such as load-balancing
 over links. It also assumes that the policies as expressed by the
 configuration of the logical view are correct; a user would need to add a more 
 stringent invariant checks to detect misspecified policies.
@@ -154,6 +149,7 @@ detecting a class important failure modes.
 \subsection{\SIMULATOR{}}
 \label{sec:causal_analysis}
 
+\eat{
 \colin{Amin Vahdat:
 I understand another key benefit of SDN/OpenFlow is being able to play with a
 lot of "what if" scenarios to enable you to fine-tune the network before going
@@ -167,7 +163,7 @@ controlled circumstances to really accelerate our test work.}
 
 \colin{To get a better sense of the inputs to the controller, perhaps we should take
 a look at the Quantum plugin API.}
-
+}
 
 % ============ TERMS ================
 {\em External events:} input fed to the control platform triggered by processes outside
