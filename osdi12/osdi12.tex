@@ -12,7 +12,6 @@
 \usepackage{times,epsfig,url,subfigure,graphics,graphicx,rotating,color,xcolor}
 \usepackage{amssymb,amsmath,amsfonts,algpseudocode,subfigure,xspace}
 
-
 %\usepackage[letterpaper,hmargin=1in,vmargin=1in]{geometry}
 %\usepackage{natbib}
 %\usepackage{subfigure}
@@ -37,7 +36,8 @@
 %\usepackage[usenames,dvipsnames]{color}
 \newcommand{\justine}[1]{{\color{ForestGreen}\bf JS: {#1}}}
 \newcommand{\andi}[1]{{\color{blue}\bf AW: {#1}}}
-\newcommand{\colin}[1]{{\color{red}\bf CS: {#1}}}
+%\newcommand{\colin}[1]{{\color{red}\bf CS: {#1}}}
+\newcommand{\colin}[1]{}
 \newcommand{\scott}[1]{{\color{purple}\bf SS: {#1}}}
 
 %\setlength{\columnsep}{.25in}
@@ -61,17 +61,19 @@
 %\titlespacing{\subsection}{.5pt}{*.2}{*.2}
 %\titlespacing{\subsubsection}{.5pt}{*.2}{*.2}
 
-%\author {
-%\numberofauthors{4}
-%\alignauthor Colin Scott\\
-%    UC Berkeley
-%\alignauthor Andreas Wundsam\\
-%    ICSI
-%\alignauthor Kyriakos Zarifis\\
-%    ICSI
-%\alignauthor Scott Shenker\\
-%    ICSI \& UC Berkeley
-%}
+\author {
+Colin Scott \\
+UC Berkeley
+\and
+Andreas Wundsam \\
+ICSI
+\and
+Kyriakos Zarifis \\
+ICSI
+\and
+Scott Shenker \\
+ICSI \& UC Berkeley
+}
 
 \begin{document}
 \title{What, Where, and When: \\ Software Fault Localization for SDN}
