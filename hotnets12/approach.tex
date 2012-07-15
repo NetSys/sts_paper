@@ -70,9 +70,9 @@ in a running system might be detected through failed integration tests,
 customer complaints, or live runtime checks.
 
 Since our goal is to identify
-relevant {\em inputs} from the distributed system's log, we require that the log makes a clear
+relevant {\em inputs} from the distributed system's log, the log must make a clear
 distinction between {\em internal} events such as control messages sends and
-receives between nodes within the system, and {\em external} inputs such as
+receives, and {\em external} inputs such as
 link failures, controller crashes, VM migrations, or policy changes.
 Production networks almost universally maintain logs of such events as part of
 good operating practices (link failures are typically detected through
@@ -87,14 +87,15 @@ have to ensure that the logging messages are added to the system.
 Our algorithm also depends on a correctly ordered, `global' log of the
 distributed system's execution. If the control software does not already do
 so, we modify the code to attach Lamport
-clocks~\cite{Lamport:1978:TCO:359545.359563} to all
+clocks to all
 control messages and internal log messages
 to achieve a total ordering of the events in the system that
-is consistent with the happens-before relation. The only remaining issue is
+is consistent with the happens-before
+relation~\cite{Lamport:1978:TCO:359545.359563}. The only remaining issue is
 that some failure events may appear multiple times in the log (\eg{} multiple
-replica servers detecting that a master went down), and we only want to
+replica servers detecting that a master went down), yet we only want to
 replay the original event. If it is not possible to distinguish the original
-failure event from the consequential detections of the event (\eg{} in the
+failure event from the consequential events (\eg{} in the
 case of a disk failure where the original crash message is not recoverable),
 developers may need to manually decipher the original event, or apply
 root cause analysis tools for detecting the originating event from correlated
@@ -103,11 +104,13 @@ strictly necessary that the log match the production execution perfectly, so
 long as the policy-violation still occurs at the end of the replayed
 execution.
 
+\eat{
 As an optimization, the developer may start from a causally-consistent
 snapshot of the network rather than replaying the execution from the
 very beginning of the log. In this case, the user would need to occasionally
 execute a consistent-snapshotting algorithm~\cite{Chandy:1985:DSD:214451.214456}
 on the live deployed system, and start \simulator{} from a quiescent snapshot.
+}
 
 %(ii) We assume that the causally-consistent snapshot we start from is quiescent. [it's possible that a member of the MCS occurred before the snapshot was taken]
 %
@@ -143,38 +146,59 @@ crashes.
 
 Next, our algorithm requires a mechanism for replaying the system execution.
 We have developed
-solutions two separate challenges in achieving this requirement.
+solutions to two separate challenges in achieving this requirement.
 
 First, we need the ability to {\em deterministically} replay the system
-execution. We achieve this with a single-threaded simulator of the switches
-and hosts in the network. We run the controllers individual VMs, and
-connect the simulated switches the controllers as if there were true
-hardware switches. The simulator interposes on all communication channels in
+execution. We achieve this with a single-threaded simulator that models switches
+and hosts in the network. We run the controllers in individual VMs, and
+connect the simulated switches to the controllers as if they were true
+network devices. The simulator interposes on all communication channels in
 the network, allowing it to proceed with the system execution in lock step:
-pausing the controller VMs in between each timestep, and delaying packets
-indefinitely. The simulator then reproduces the external inputs from the log in a controlled fashion.
+pausing the controller VMs between each timestep and delaying messages
+arbitrarily. The simulator then reproduces the external inputs from the log.
 For example, link failures are reproduced by disconnecting the edge in
-simulated network and havin the switches notify the controllers through an
-OpenFlow $PORT_STATUS$ message. The simulator replays policy-changes by
-interfacing through the Quantum API~\cite{quantum}, a generic interface to
-modern SDN controlers.
+the simulated network and issuing an
+OpenFlow $PORT_STATUS$ message from the switch to its parent controller. The simulator replays policy-changes by
+interfacing through the Quantum API~\cite{quantum}, a generic interface
+to several modern SDN control platforms.
 
-Note that the simulator does not  need
-to precisely reproduce the failure of {\em individual} nodes in the system. This is because
+Note that the simulator does not need
+to precisely reproduce the failure modes of {\em individual} nodes in the system. This is because
 we are interested in observing the behavior of overall distributed system, which is
-built under the assumptions that individual components will fail; we are not
-interested in diagnosing individual component
-failures. Therefore, it should be sufficient to use a ``blunt hammer'' (\eg{}
+built under the assumptions that individual components will fail.
+Therefore, it should be sufficient to use a `blunt hammer' (\eg{}
 $kill -9$) to reproduce individual
 failure events, so long as the remaining nodes in the system react in the same
-way.
+way as they did in the actual run.
 
-Second, knowing when to inject (causal annotations, and interposition on the
-causal annotation library to know exactly when they have occurred). Pruning
-makes this really hard. This also
-means that we can fingerprint the same event across executions (also solved
-                                                                with causal
-                                                                annotations).
+Second, we need to know precisely {\em when} to inject inputs to the control
+cluster; without maintaining the exact happens-before dependencies reflected in the
+log the output of the simulated system execution may not be the same.
+
+We can inject an external input $e$ at exactly the point where all other
+events (both external and internal) that precede it in the happens-before
+relation ($P = {i \mid i \rightarrow e}$) have occured. Unfortunately the problem is made
+substantially more complicated by the fact that we are pruning inputs to the
+system, thereby changing the resulting internal events generated by the control
+software; without knowing in advance what internal events are triggered by a
+given input, we can never know when the happens-before dependencies have
+been met (since the internal events may or may not appear again after the
+pruning). We solve this problem by modifying the control software to include causal
+annotations~\cite{xtrace} on all log and control messages:
+when we prune an input $e$, we then remove all of its causal offspring from the set of
+happens-before constraints. Modifying the control software incidentally solves two
+additional problems for us: the simulator can know exactly when internal events occur
+on controllers since we can interpose on the causal annotation library, and
+the simulator can infer equivalent internal events between runs despite minor
+syntactic differences (\eq{} sequence numbers on packets) by
+uniquely identifying events according to their place in the causal tree.
+
+\colin{
+Note that in the absense of causal annotations it is still feasible to replay
+the system execution by naively injecting inputs using timers, although the
+output of the algorithm is not guarenteed to be exactly correct.
+}
+
 \subsection{Correspondence Checking}
 
 Finally, we need a mechanism for deciding
@@ -193,6 +217,7 @@ In short, correspondence checking provides a crisp determination of all possible
 would not behave according to the application's policies if injected into the
 network. Correspondence checking builds on the virtual packet algebra pioneered in headerspace
 analysis~\cite{hsa}.
+
 \eat{Furthermore, running correspondence
 checking between intermediate layers of the SDN stack (logical view versus
 physical view), allow us to identify the component(s) of
