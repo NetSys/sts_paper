@@ -1,32 +1,32 @@
 When the control platform fails to implement the network policy, software
-developers need to reproduce the events that triggered the errant behavior.
+developers need to reproduce the events that triggered the errant behavior in
+order to continue with the debugging process.
 Yet large networks experience a great number of hardware failures, topology changes,
 and other potential triggering events,
 all of which may appear characteristic of normal operating
-conditions at first glance. In such an environment, identifying relevant
-triggering events is tedious at best. In this section we describe our approach
-to automated causal
-analysis on a log of the system execution. 
+conditions at first glance. The entire
+execution log may be sufficient for reproducing the error (assuming
+a complete and correctly ordered log), but the execution history may span
+hours or days and include thousands of extraneous events.
+Identifying relevant triggering events within a log of this size is akin to finding
+the proverbial `needle in the haystack'.
+In this section we describe our approach to algorithmically finding the
+smallest possible set of events from a system trace sufficient for triggering the
+software fault of interest.
+
+%Platform developers may discover policy-violations
+%through customer complaints, integration tests, or by periodically running
+%invariant checks on a deployed network. 
 
 \subsection{\SIMULATOR{}}
 \label{sec:causal_analysis}
 
-Given a trace of the system execution, our goal is to prune events that are not necessary for triggering
+Given a trace of the system execution, our goal is to prune events that are not
+necessary for triggering
 errant behavior. We define errant behavior in terms of {\em policy-violations}: 
 configurations of the network that are inconsistent
 with the policy, in the sense that the disposition of some packets by the
 physical forwarding tables conflicts with the dictated policies.
-
-Platform developers may discover policy-violations
-through customer complaints, integration tests, or by periodically running
-invariant checks on a deployed network. Once a 
-policy-violation is encountered, the developer needs to
-identify the external inputs that caused the control software to behave
-erratically. Ideally these inputs would be narrowed
-down to the minimal sequence required to trigger the violation; although the entire
-execution log is sufficient for reproducing the error (assuming
-a complete and correctly ordered log), the execution history may span
-hours or days and include thousands of extraneous events.
 
 \Simulator{} is our algorithm for automatically inferring the external inputs
 that are both necessary and sufficient for triggering the policy-violation. We
@@ -57,7 +57,32 @@ The crux of the problem lies in specifying exactly how each
 individual step of this algorithm works. We detail the pieces of this algorithm in
 turn.
 
-\subsection{Obtaining System Trace}
+\subsection{Obtaining A System Trace}
+
+\eat{
+\colin{The Oracle requires a consistent snapshot of both the physical network
+and the control cluster's state. In the simulator, this consistent snapshot is
+trivial to take: simply pause each controller's VM and the simulation. To
+obtain the snapshot that denotes time zero, we assume that the production
+network takes periodic snapshots using an algorithm such as Chandy et al's
+\cite{Chandy:1985:DSD:214451.214456} consistent snapshot algorithm}
+}
+
+\eat{
+{\em Causally-consistent snapshot:} a snapshot of a distributed system's state where
+there exists no event $b$ in a node's event history such that $a \rightarrow
+b$, but $a$ does not appear in the snapshot.
+}
+
+\eat{
+{\em External events:} input fed to the control platform triggered by processes outside
+of the system. For proactive controllers, external input includes policy
+changes, host placement changes, network topology changes (including hardware
+failures), and control server failures. Reactive controllers
+additionally take traffic changes as input. External events are to be distinguished
+from internal events triggered by the system itself, such as message sends or software
+crashes.
+}
 
 Causally Consistent Snapshots:                                                                                  
 
@@ -93,6 +118,12 @@ Solution/Workaround \#2: if you have special failure detector devices (re: Mike 
 
 \subsection{Simulation}
 
+\eat{
+\Simulator{} depends on a deterministic network simulator capable of
+reproducing external inputs including link failures, host migrations, and
+policy-changes.
+}
+
 Simulator:
 
 (ix) We assume that our simulation framework can deterministically replay the system execution. This is somewhat tricky, since there may be multiple controller VMs. We essentially need to be able to move the collection of VMs in lock step.
@@ -123,7 +154,7 @@ Solution \#2: interposing on the causal annotation library might again solve thi
 
 \subsection{Correspondence Checking}
 
-We will need a mechanism for deciding
+Next, we need a mechansim for deciding
 whether a policy-violation is present at any point in the system execution.
 We refer to such an algorithm as a {\em decider}. Deciders take as input a
 causally-consistent snapshot of the system state, and return whether the
@@ -243,11 +274,10 @@ the time'', or ``No server should receive more than 500MB/s of external traffic'
 
 We leave the design of more sophisticated detectors to future work.
 Despite these shortcomings however, we will show in 
-\S\ref{sec:evaluation} that correspondence checking is still able of
+\S\ref{sec:casestudy} that correspondence checking is still able of
 detecting a class important failure modes.
 
 \colin{TODO: insert Kyriakos' thoughts here}
-
 
 \subsection{Putting it all together}
                                                                                            
@@ -262,32 +292,12 @@ Solution: Argue that we don't need to model drunk network operators
 Solution: HSA gives a pretty precise determination of the policy-violation
 
 
-
 % --------------- Some Relevant thougts ---------------------
-\eat{
-\Simulator{} depends on a deterministic network simulator capable of
-reproducing external inputs including link failures, host migrations, and
-policy-changes.
-
-\Simulator{} distinguishes
-between ``internal'' events that happen throughout the normal course of the
-system execution (\eg{} message sends and receives), and ``external'' events
-injected into the system (\eg{} link failures). We describe the details
-of the simulator in the next section.
-
-\colin{The Oracle requires a consistent snapshot of both the physical network
-and the control cluster's state. In the simulator, this consistent snapshot is
-trivial to take: simply pause each controller's VM and the simulation. To
-obtain the snapshot that denotes time zero, we assume that the production
-network takes periodic snapshots using an algorithm such as Chandy et al's
-\cite{Chandy:1985:DSD:214451.214456} consistent snapshot algorithm}
-
 \colin{TODO: paragraph on how this approach might apply to traditional
 networks}
 
 \colin{To get a better sense of the inputs to the controller, perhaps we should take
 a look at the Quantum plugin API.}
-
 
 \colin{
 Vector clocks as an optimization for causal inference. (If concurrent,
@@ -296,15 +306,6 @@ can prune automatically)
 
 % ============ TERMS ================
 \eat{
-{\em External events:} input fed to the control platform triggered by processes outside
-of the system. For proactive controllers, external input includes policy
-changes, host placement changes, network topology changes (including hardware
-failures), and control server failures. Reactive controllers
-additionally take traffic changes as input. External events are to be distinguished
-from internal events triggered by the system itself, such as message sends or software
-crashes.
- 
-
 {\em happens-before:} a transitive relation $\rightarrow$ on the external and internal events of
 the system execution, following Lamport's
 formulation~\cite{Lamport:1978:TCO:359545.359563}: (i) if $a$ and $b$ are
@@ -313,15 +314,12 @@ events in the same process and $a$ comes before $b$, then $a \rightarrow b$,
 same message by another process, then $a \rightarrow b$. A happens-before
 relation defines a partial ordering on the events in the system execution.
 
-Happens-before is to be distinguished by causality. appens-before says "could
+Happens-before is to be distinguished by causality. happens-before says "could
 have caused". Casuality says "actually affected the behavior"
+}
 
-{\em Causally-consistent snapshot:} a snapshot of a distributed system's state where
-there exists no event $b$ in a node's event history such that $a \rightarrow
-b$, but $a$ does not appear in the snapshot.
-}
 % ============ /TERMS ================
-}
+
 
 % --------------- /end Some Relevant thougts ---------------------
 
@@ -405,7 +403,6 @@ the state of the simulator. The serial runtime of the algorithm is therefore
 linear with the number of events in the input trace.}
 } % \eat \subsubsection{Additional Use-Cases}
 
-
 % --- Policy-Violation Lifetime Tracking ---
 
 \eat{
@@ -428,7 +425,6 @@ prioritize the policy-violations based on their duration.
 
 % ------ Maybe inlude this quote from Google -------
 
-
 \eat{
 \colin{Amin Vahdat:
 I understand another key benefit of SDN/OpenFlow is being able to play with a
@@ -440,6 +436,4 @@ simulation environment where the exact same control software that would be
 running on servers might be controlling a combination of real and emulated
 switching devices. And then we can inject a number of failure scenarios under
 controlled circumstances to really accelerate our test work.}
-
 }
-
