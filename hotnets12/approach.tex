@@ -35,10 +35,10 @@ simple to write out:
 
 \begin{algorithmic}
 \State $MCS \gets []$
-\ForAll {\text{\it external input in trace}}
-    \State {\it remove first input from trace}
+\ForAll {\text{\it external input in log}}
+    \State {\it remove first input from log}
     \State {\it bootstrap system}
-    \State {\it simulate system execution until a fixed point}
+    \State {\it rerun execution with modified input}
     \State $snapshot \gets snapshot\_system()$
     \State $violation \gets detect\_violation(snapshot)$
     \If {\it not violation}
@@ -48,20 +48,45 @@ simple to write out:
 \EndFor
 \end{algorithmic}
 
-\noindent In words, the algorithm prunes each external input in isolation,
-runs the system forward without that input, checks whether the
+\noindent In words, the algorithm takes in a log of the system execution,
+prunes each external input in isolation,
+runs the system forward with the remaining input, checks whether the
 policy-violation is still present, and thereby infers whether that input is
 necessary for triggering the fault.
 
-The crux of the problem lies in specifying exactly how each
-individual step of this algorithm works. We detail the pieces of this algorithm in
-turn.
+The crux of our problem lies in specifying exactly how each
+individual step of this algorithm works. In the rest of this section we will
+detail the (i) logging and snapshotting infrastructure, (ii) determinstically
+replayable execution environment, and (iii) violation detection algorithms
+necessary for finding the minimal causal sequence.
 
-\subsection{Obtaining A System Trace}
+\subsection{Logging and Snashotting}
+
+Our causal analysis algorithm first requires a log of the system execution
+that originally triggered the policy-violation. Obtaining a log that has the
+properties we will require for causal analysis presents several challenges:
+
+Production Logs:
+
+(iii) We assume that production logs are complete, in the sense that all relevant events (both internal an external) are included. This also means that if one failure mode (e.g. server hardware failures) causes the remaining nodes of the distributed system to behave in a different way than another failure mode (e.g. network partition between controllers), then those two failure types are distinguishable in the log. 
+
+Naive Solution/Workaround: link failures are detected with a protocol like IS-IS (or even ATPG), and port status messages are sent up to the controller and logged. Controllers log a special message before they crash. VM migrations and policy-changes are logged in a central location.
+
+Sound Solution: to disambiguate distinct failure modes (e.g. server crash vs. network partition), we might need have special failure detection devices monitoring all components of the system separately. Mike Walfish had a paper in SOSP last year that did essentially this -- it's one hell of a big hammer though.
+                           
+(iv) We assume that the production log obeys happens-before contraints.
+ 
+Solution/Workaround: the production system has to include logical clocks in all messages. (Note: this solution is subsumed by vi)                                                                                      
+                 
+(v) We assume that the distributed logs taken on all the nodes can be aggregated into one "global log". [Some events such as link failures may be logged by multiple nodes, but we only want to replay a single link failure in the simulator]
+
+Solution/Workaround \#1: leverage algorithms from traditional root cause analysis to collapse correlated alarms into the unique root cause.
+
+Solution/Workaround \#2: if you have special failure detector devices (re: Mike Walfish's paper) for every component of your system, and the failure detector devices include a logical clock on all of their messages, then you can infer which failure detector detected the problem first, and ignore the rest.                                                            
+
 
 \eat{
-\colin{The Oracle requires a consistent snapshot of both the physical network
-and the control cluster's state. In the simulator, this consistent snapshot is
+\colin{In the simulator, this consistent snapshot is
 trivial to take: simply pause each controller's VM and the simulation. To
 obtain the snapshot that denotes time zero, we assume that the production
 network takes periodic snapshots using an algorithm such as Chandy et al's
@@ -97,24 +122,6 @@ Solution \#2:  take frequent snapshots of the switch state (without the transact
 Solution/Workaround: once we've run the MCS algorithm, re-run it from an earlier snapshot and see if the MCS changed. Technically this process would have to be applied inductively, but we could parametrize the number snapshots we have to examine.
 
 Discussion: it's also not a huge deal if this assumption does not hold. The policy-violation will still be detected -- the only problem is that the MCS will be smaller than it actually is. Moreover, as the software developer starts debugging the problem, she'll eventually notice that some piece of state at the point of the snapshot is incorrect, and therefore she'll notice that she needs to start from an earlier snapshot.
-                                                                                           
-Production Logs:
-
-(iii) We assume that production logs are complete, in the sense that all relevant events (both internal an external) are included. This also means that if one failure mode (e.g. server hardware failures) causes the remaining nodes of the distributed system to behave in a different way than another failure mode (e.g. network partition between controllers), then those two failure types are distinguishable in the log. 
-
-Naive Solution/Workaround: link failures are detected with a protocol like IS-IS (or even ATPG), and port status messages are sent up to the controller and logged. Controllers log a special message before they crash. VM migrations and policy-changes are logged in a central location.
-
-Sound Solution: to disambiguate distinct failure modes (e.g. server crash vs. network partition), we might need have special failure detection devices monitoring all components of the system separately. Mike Walfish had a paper in SOSP last year that did essentially this -- it's one hell of a big hammer though.
-                           
-(iv) We assume that the production log obeys happens-before contraints.
- 
-Solution/Workaround: the production system has to include logical clocks in all messages. (Note: this solution is subsumed by vi)                                                                                      
-                 
-(v) We assume that the distributed logs taken on all the nodes can be aggregated into one "global log". [Some events such as link failures may be logged by multiple nodes, but we only want to replay a single link failure in the simulator]
-
-Solution/Workaround \#1: leverage algorithms from traditional root cause analysis to collapse correlated alarms into the unique root cause.
-
-Solution/Workaround \#2: if you have special failure detector devices (re: Mike Walfish's paper) for every component of your system, and the failure detector devices include a logical clock on all of their messages, then you can infer which failure detector detected the problem first, and ignore the rest.                                                            
 
 \subsection{Simulation}
 

@@ -22,45 +22,61 @@
 %   attacking" is really lecturing the reader  ...  of course context and scope of
 %   any research problem is important.
 
-Given their critical role in enterprises, one might expect that networks
-would come with a well-developed suite of troubleshooting tools. However,
-the unfortunate truth is that {\tt traceroute}, developed in 1987~\cite{traceroute},
-remains the network administrator's most sophisticated diagnostic mechanism. This reflects
-the lack of structure in network control planes, which are an ad hoc mixture of
-distributed protocols and manual configuration that directly manipulate forwarding tables. It is hard to tell what is broken
-when desired behavior is only implicitly expressed in the routing entries themselves, and that is the case with today's networks.
+Modern software-defined networking control platforms are highly complex,
+distributing state between replicated
+servers~\cite{floodlight},
+providing isolation and resource arbitration between multiple
+tenants~\cite{Casado:2010:VNF:1921151.1921162}, or
+globally optimizing network utilization~\cite{urs_keynote}.
 
-In this respect, the emergence of Software-Defined
-Networks (SDN) provides both an opportunity and a challenge. Moving control logic out of hardware and into software
-enables enables concise policy specifications and significantly more sophisticated testing and troubleshooting tools. Moreover, since SDN
-is still in its infancy (compared to traditional networking approaches), we as a community have an opportunity to make diagnostic tools
-a more integral part of the overall design process. Although SDN's goal is to simplify the
-{\em management} of networks, the challenge is that the SDN software stack itself is a complex distributed system,
-operating in asynchronous, heterogeneous, and failure-prone environments.
-In this paper we present our approach to troubleshooting bugs in SDN control
-software, a tool called \projectname{}.
+Constructing and operating tightly-coupled control clusters also presents a
+set of challenges that the networking community has little experience
+solving. For example, as Google's Urs H$\ddot{\mathrm{o}}$elzle noted at a recent
+keynote~\cite{urs_keynote}: ``[controller coordination] is going to
+cause some agnst, and justifiably, in the industry''.
 
-\projectname{} simplifies the troubleshooting process by programmatically localizing the root cause
-of network problems along three dimensions: {\it what} network problems exist at a
-given point in time, {\it where} in the control software a problem first developed, and
-{\it when} the triggering event occurred. To accomplish this
-\projectname{} employs two techniques:
+As industry deploys SDN on larger and larger networks, the complexity of the control
+software will only continue to increase, and with complexity inevitably always comes
+bugs. To make matters worse, in large networks the rate of hardware failures,
+policy-changes, and other inputs to the system can be so great that the task 
+of finding the set of inputs that caused the system to enter an erroneous state
+is highly tedious and time consuming.
 
-\noindent{\bf Correspondence Checking}. We observe that the structure of the
-SDN software stack (as we discuss in the next section) enables a straightforward algorithm for
-checking that control applications' policies are implemented correctly in
-the physical network. Our algorithm enumerates all policy-violations
-(\ie{}, any instance where the high-level policies are not properly
-implemented by the SDN control software) present in the network at a given point in
-time, providing a crisp determination of the range of inputs
-and the system component(s) responsible for the fault.
+In this paper we tackle the problem of automatically inferring the minimal set
+of events that is sufficient for
+triggering policy-violations discovered in executions of the system.
+Our hope is that by automatically providing an exact diagnosis of the
+triggering events, operators and developers can be free to focus their efforts
+on debugging the code itself rather the reproducing the fault in the first
+place.
 
-\noindent{\bf \Simulator{}.} \projectname{} can replay the execution of the
-system against
-a stream of network events (e.g., link failures). This allows us to (i)
-distinguish between policy-violations that are harmless and quickly heal and
-those that are persistent, and (ii) identify the minimal set of events that triggered
-the policy-violation.
+Our algorithm, \simulator{}, leverages (i)
+infrastructure for analyzing distributed logs (ii) deterministic replay
+simulation environments, and (iii) invariant verification techniques.
+In addition to detailing these components, we describe a preliminary case-study
+on the Floodlight production controller~\cite{floodlight}, where we reproduce a
+corner-case failover scenario between two controllers resulting in a permanent
+network blackhole. 
+
+\eat{
+It is important to place this work in context and scope the problem we are
+attacking. First, \projectname{} is a troubleshooting tool, not a debugger; by
+this we mean that \projectname{} helps identify and localize network
+problems but it does not help identify exactly which
+line of code causes the error. Second, \projectname{} is focused on the
+system software of the SDN stack (described in the next section). While progress has been made in troubleshooting control
+applications that run on top of the SDN platform~\cite{nice} and in troubleshooting the forwarding tables in the physical switches~\cite{anteater,hsa}, we
+are not aware of previous troubleshooting work that focuses on the SDN
+platform itself; to the best of our knowledge, painstaking analysis of detailed logs is the current state-of-the-art in SDN platform troubleshooting.
+}
+
+The rest of this paper is organized as follows. In \S\ref{sec:overview},
+we present an overview of the SDN stack and its failure modes.
+In \S\ref{sec:approach} we present \simulator{} in detail.
+In \S\ref{sec:casestudy} we describe 
+the Floodlight case-study. Finally, in \S\ref{sec:related_work} we provide a
+discussion along with related work,
+and in \S\ref{sec:conclusion} we conclude.
 
 % OSDI "Tips":
 %  - Make very clear that we implemented it!
@@ -71,45 +87,8 @@ the policy-violation.
 %  - How generally applicable are these ideas?
 %  - What were the alternatives considered at various points?
 %  - Keep forward references (to later sections) to a minimum
-
-In combination, correspondence checking and \simulator{} programmatically
-localize software-faults in the SDN software stack.
-With \projectname{}, operators and developers are free to focus their efforts
-on debugging the code itself, without needing to
-diagnose the symptoms in the first place.
 % This represents an improvement over the state-of-the-art SDN troubleshooting
 % practices
-
-It is important to place this work in context and scope the problem we are
-attacking. First, \projectname{} is a troubleshooting tool, not a debugger; by
-this we mean that \projectname{} helps identify and localize network
-problems (what, where, and when?), but it does not help identify exactly which
-line of code causes the error (why?). Second, \projectname{} is focused on the
-system software of the SDN stack (described in the next section). While progress has been made in troubleshooting control
-applications that run on top of the SDN platform~\cite{nice} and in troubleshooting the forwarding tables in the physical switches~\cite{anteater,hsa}, we
-are not aware of previous troubleshooting work that focuses on the SDN
-platform itself; to the best of our knowledge, painstaking analysis of detailed logs is the current state-of-the-art in SDN platform troubleshooting.
-
-In evaluating \projectname{} on
-three popular SDN platforms---Frenetic, Floodlight and POX---we found or reproduced several bugs:
-isolation breaches and faulty failover logic between distributed controllers.
-We also demonstrated the scalability of correspondence checking,
-finding that our tools can enumerate all policy-violations in
-simulated networks exceeding 25,000 hosts in under 5 seconds.
-
-The rest of this paper is organized as follows. In \S\ref{sec:overview},
-we present an overview of the SDN stack and its failure modes.
-In \S\ref{sec:approach} we present correspondence checking and
-\simulator{} in detail. In \S\ref{sec:casestudy} we describe 
-a bugs found by \projectname{}, as well as a performance evaluation.
-Finally, in \S\ref{sec:related_work} we discuss related work,
-and in \S\ref{sec:conclusion} we conclude.
-
-The difficulty of implementing
-controller coordination correctly has been noted by leaders in industry as well
-as academia. In a recent keynote~\cite{urs_keynote}, Google's Urs
-H$\ddot{\mathrm{o}}$elzle noted that ``[controller coordination] is going to
-cause some agnst, and justifiably, in the industry''
 
 
 % Feedback on version 2.0:
