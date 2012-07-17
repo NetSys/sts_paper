@@ -56,6 +56,8 @@ and the physical topology is highly complex.
 %change such as ``the path from $A$ to $B$ should pass through $C$'' must be
 %implemented as routing entries in a sequence of switches in the physical
 %network. 
+
+\eat{
 This mapping is further complicated in a multi-tenant environment
 \cite{Casado:2010:VNF:1921151.1921162} where each tenant specifies policies on
 their own logical switch. In such a case, each controller must deal with
@@ -64,6 +66,7 @@ controllers. Maintaining isolation between tenants is critical; updates to the
 physical network must therefore be performed in a consistent fashion to ensure
 that isolation breaches do not occur for any in-flight packets, despite hardware
 failures and message delays.
+}
 
 \subsection{Vertical Distribution}
 
