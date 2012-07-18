@@ -22,41 +22,48 @@
 %   attacking" is really lecturing the reader  ...  of course context and scope of
 %   any research problem is important.
 
-Modern software-defined networking control platforms are highly complex,
+Today's software-defined networking control platforms are highly complex,
 distributing state between replicated
 servers~\cite{floodlight},
 providing isolation and resource arbitration between multiple
 tenants~\cite{Casado:2010:VNF:1921151.1921162}, or
 globally optimizing network utilization~\cite{urs_keynote}.
+The majority of this complexity comes from
+fundamentally difficult distributed systems challenges that the networking community has
+relatively little experience
+solving in tightly-coupled (not fully disributed) environments.
+For example, as Google's Urs H$\ddot{\mathrm{o}}$elzle recently
+noted at the Open Networking Summit~\cite{urs_keynote}: ``[Coordination between replicated controllers] is going to
+cause some agnst, and justifiably, in the industry''. As industry uses SDN
+control clusters to manage larger and more complicated networks, the
+complexity of the sofware will only continue to inrease.
 
-Constructing and operating tightly-coupled control clusters also presents a
-set of challenges that the networking community has little experience
-solving. For example, as Google's Urs H$\ddot{\mathrm{o}}$elzle noted at a recent
-keynote~\cite{urs_keynote}: ``[controller coordination] is going to
-cause some agnst, and justifiably, in the industry''.
+With complexity inevitably comes
+bugs. To make matters worse, the number of hardware failures,
+policy changes, VM migrations, and other inputs to the system that may have
+triggered a given bug can be quite large in production environments. Microsoft,
+for example, reports 36 million error events over one year across 8 datacenters, which
+implies 8.5 error events per minute per
+datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}. 
+Given that SDN control software is designed to operate under such conditions, 
+it is often difficult to distinguish events that are charasteristic of normal
+conditions from those that push the network into an erroneous state.
 
-As industry deploys SDN on larger and larger networks, the complexity of the control
-software will only continue to increase, and with complexity inevitably always comes
-bugs. To make matters worse, in large networks the rate of hardware failures,
-policy-changes, and other inputs to the system can be so great that the task 
-of finding the set of inputs that caused the system to enter an erroneous state
-is highly tedious and time consuming.
-
-In this paper we tackle the problem of automatically inferring the minimal set
-of events that is sufficient for
-triggering policy-violations discovered in executions of the system.
-Our hope is that by automatically providing an exact diagnosis of the
-triggering events, operators and developers can be free to focus their efforts
-on debugging the code itself rather the reproducing the fault in the first
-place.
+In this paper we seek to eliminate the need to manually identify the inputs that lead
+up to software faults, thereby leaving developers to debug the problematic code itself.
+We present a solution for automatically inferring the sequence 
+of inputs that are both necessary and sufficient for
+triggering invalid configurations discovered in executions of the system.
 
 Our algorithm, \simulator{}, leverages (i)
-infrastructure for analyzing distributed logs (ii) deterministic replay
-simulation environments, and (iii) invariant verification techniques.
-In addition to detailing these components, we describe a preliminary case-study
-on the Floodlight production controller~\cite{floodlight}, where we reproduce a
-corner-case failover scenario between two controllers resulting in a permanent
-network blackhole. 
+distributed log analysis, (ii) deterministic replay
+simulation environments, and (iii) invariant checking techniques.
+Beyond detailing these components, we describe a case-study
+on the Floodlight production
+controller~\cite{floodlight}, where we trigger a
+corner-case failover scenario between replicated controllers and apply our
+algorithm to show how the exact inputs that triggered the problem are
+identified.
 
 \eat{
 It is important to place this work in context and scope the problem we are
@@ -73,9 +80,10 @@ platform itself; to the best of our knowledge, painstaking analysis of detailed 
 The rest of this paper is organized as follows. In \S\ref{sec:overview},
 we present an overview of the SDN stack and its failure modes.
 In \S\ref{sec:approach} we present \simulator{} in detail.
-In \S\ref{sec:casestudy} we describe 
-the Floodlight case-study. Finally, in \S\ref{sec:related_work} we provide a
-discussion along with related work,
+We describe our experience applying \simulator{} to the Floodlight
+control platform in \S\ref{sec:casestudy}, and discuss the limitations of our
+approach in \S\ref{sec:discussion}. Finally, in \S\ref{sec:related_work}
+we consider related related work,
 and in \S\ref{sec:conclusion} we conclude.
 
 % OSDI "Tips":
@@ -89,7 +97,6 @@ and in \S\ref{sec:conclusion} we conclude.
 %  - Keep forward references (to later sections) to a minimum
 % This represents an improvement over the state-of-the-art SDN troubleshooting
 % practices
-
 
 % Feedback on version 2.0:
 % not clear what you mean by "SDN platform", "policy-violation"
