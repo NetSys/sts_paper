@@ -1,14 +1,14 @@
-In this section we sketch the software architecture of SDN networks, and discuss
-the correctness challenges experienced by SDN operators.
+We begin by sketching the architecture of SDN networks and
+describing the correctness challenges experienced by operators and
+implementers of SDN control clusters.
 
 SDN networks are managed by software running on a set of network-attached
 servers called ``controllers''. Modern SDN platforms differ from
 `first-generation' controllers such as NOX~\cite{nox} in two dimensions: they
 extend vertically by providing a virtualization layer on top of which control
 logic resides, and they extend horizontally by distributing state across
-multiple control servers. We now discuss the correctness challenges imposed by
+multiple control servers. We describe the correctness challenges imposed by
 this complexity.
-
 
 %Two common patterns of control are proactive and
 %reactive. Proactive controllers pre-compute forwarding tables for the entire
@@ -23,15 +23,16 @@ this complexity.
 %although our troubleshooting mechanisms are also applicable to reactive
 %applications.
 
-\subsection{Horizontal Layering Challenges}
+\subsection{Vertical Layering Challenges}
+
 Modern SDN controllers consist of at least three distinct layers, as depicted in
 Figure \ref{fig:basicarch}. The two lower layers are part of the SDN platform,
 and the highest layer is the \emph{control application}. The lowest level of SDN
 software maintains a graph data-structure known as the \emph{physical view}
-(PV), that has a one-to-one correspondence with the physical network.
+that has a one-to-one correspondence with the physical network.
 Synchronization logic in this layer keeps its information up-to-date with the
-physical network state. Above, the \emph{Logical View} translates the possibly
-complicated physical network to into a simpler logical view, commonly a single
+physical network state. Above, the \emph{Logical View} ideally translates the
+potentially complicated physical network to into a simpler logical view, commonly a single
 logical switch~\cite{Casado:2010:VNF:1921151.1921162}. This allows operators to
 specify routing, access control, or QoS policies by configuring a single
 forwarding device. If the control platform supports virtualization, a
@@ -68,19 +69,19 @@ that isolation breaches do not occur for any in-flight packets, despite hardware
 failures and message delays.
 }
 
-\subsection{Vertical Distribution}
+\subsection{Horizontal Layering Challenges}
 
-For fault-tolerance, production SDN controllers typically run \emph{physically
+For fault-tolerane, production SDN control software is typically \emph{physically
 distributed} on several control servers. For scalability, the responsibility for
-managing the network is partitioned between several control servers, \eg{},
-hierarchically or through sharding. Onix~\cite{onix}, for example, partitions a
+managing the network is partitioned hierarchically or through sharding between
+several control servers. Onix~\cite{onix}, for example, partitions a
 graph of the network state across either an eventually-consistent DHT or a
 transactional database, allowing control applications to make their own
 tradeoffs in choosing consistency models, degree of fault tolerance, and other
 properties.
 
-Policy changes that span multiple shards of the physical view (shards being
-statically-defined partitions of the physical network small enough to be managed
+Policy changes that span multiple shards of the physical view
+(statically-defined partitions of the physical network small enough to be managed
 by a single control server) require coordination between controllers.
 Coordination between controllers is prone to a plethora of well-known failure
 modes, such as inconsistent reads, race conditions over message arrivals, and
@@ -88,11 +89,13 @@ unintended consequences of failover logic. Errors may also result from
 non-disjoint partitioning schemes between controllers, or incorrect delegation
 of control for different portions of the network.
 
+\eat{
 The large scale of these networks also means that
 error events such as link failures or software crashes are common. Microsoft,
 for example, reports 36M error events over one year across 8 datacenters, which
 implies 8.5 error events per minute per
 datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}. 
+}
 
 \begin{figure}[t]
     %\hspace{-10pt}
@@ -103,8 +106,8 @@ datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}.
 In this paper we focus on bugs in the virtualization and controller coordination
 components of the SDN software stack. We focus on a \emph{proactive} mode of
 operation where forwarding state updates are triggered by policy or topology
-changes, not data-plane events.\footnote{Our approaches can be generalized to
-this case.} 
+changes, not data-plane events.\footnote{It seems feasible to generalize our
+approach to include inputs from the data-plane.}
 %We are primarily concerned with corner-case scenarios such as
 %correlated hardware failures, which are the hardest to test {\it a priori}
 %\andi{Check with our assuptions, i.e., uncorrelated external events}.
