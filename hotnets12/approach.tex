@@ -91,15 +91,7 @@ clocks to all
 control messages and internal log messages
 to achieve a total ordering of the events in the system that
 is consistent with the happens-before
-relation~\cite{Lamport:1978:TCO:359545.359563}. The only remaining issue is
-that some failure events may appear multiple times in the log (\eg{} multiple
-replica servers detecting that a master went down), yet we only want to
-replay the original event. If it is not possible to distinguish the original
-failure event from the consequential events (\eg{} in the
-case of a disk failure where the original crash message is not recoverable),
-developers may need to manually decipher the original event, or apply
-root cause analysis tools for detecting the originating event from correlated
-alarms~\cite{577079}. Note that it is not
+relation~\cite{Lamport:1978:TCO:359545.359563}. Note that it is not
 strictly necessary that the log match the production execution perfectly, so
 long as the policy-violation still occurs at the end of the replayed
 execution.

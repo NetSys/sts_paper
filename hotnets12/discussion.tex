@@ -1,33 +1,79 @@
 % Just realized: b/c of anonymity, the PC can't chastise us for
 % running our system on our own code -- we can't tell them that it's our code!
-
-\colin{This section is currently being written by Andi (on a plane)}
-
-\eat{
-\colin{Should discuss fidelity of log messages (distinguish different failure
-modes) and what we want (ODR) here}
-
-\colin{
-Logical clocks don't work for all situations! Consider a link failure that
-is detected by both adjacent switches connected to the link. Which one
-observed the link failure first? The message "link went down" doesn't include
-a logical clock...
-}
-
-\colin{WRT snapshotting:
-we assume that network hardware has the primitives necessary to support a
-causally-consistent snapshot algorithm (viz. transactional queries to the
-FIB/RIB).}
-
-\colin{WRT fidelity: make the point that we can always
-increase the fidelity of the simulator -- it's all just software}
-
-\colin{TODO: paragraph on how this approach might apply to traditional
-networks}
-
-We now discuss the overhead of using \simulator{} in a production environment,
+We now discuss the properties of our proposed solution. We investigate the
+impact our assumptions, the overhead of using \simulator{} in a production environment,
 detail scalability properties of our system, and discuss how the assumptions
 detailed in Section~\ref{sec:approach} can be relaxed.
+
+\subsection{Workarounds for Assumptions}
+
+\noindent{\bf Fully Ordered, Complete Log}
+Our approach conceptually depends on a correctly ordered, global log of the
+system execution. Such a log may not be available or complete at times, as we
+may not be able to observe or uniquely timestamp all events. 
+Also, some failure events may appear multiple times in the log (\eg{}
+multiple replica servers detecting that a master went down), yet we only want to
+replay the original event. If it is not possible to distinguish the original
+failure event from the consequential events (\eg{} in the case of a disk failure
+where the original crash message is not recoverable), developers may need to
+manually decipher the original event, or apply root cause analysis tools for
+detecting the originating event from correlated alarms~\cite{577079}. 
+Two properties improve the feasibility of our approach: First, the log
+does not have to cover the production failure event in microscopic detail, 
+as long as the causal interdependencies in the \emph{minimal causal sequence} are
+observed, the simulation will reproduce the failure. Secondly, as the simulation
+based approach is cheap to set up and reproduce, the simulator try different event
+orderings when a particular reconstructed event sequence doesn't reproduce the failure.
+
+\noindent{\bf Snapshots}
+As networks typically run for long periods of time, and not all devices are 'turned on'
+at the same time, our simulation needs a \emph{snapshot} of the network state as a
+starting point. If supported by the network, we can rely on prior for for taking
+causally consistent snapshots to achieve this goal. Otherwise, it may be possible
+to take a series of snapshots during periods of quiet operation (e.g., at night)
+and check for consistency.
+
+\subsection{Simulation fidelity}
+
+Since the SDN platform is in software, we can fundamentally
+reproduce all software-induced policy violations, subject to scalability
+limitations of fine-grained simulations (though not problems resulting from
+flaky hardware implementing code incorrectly). This requires setting up
+the simulator to emulate the appropriate conditions that led to the policy
+violation, and that can be quite difficult. We hope to make progress in this
+area along two dimensions. First, we hope to help the community build up a set
+of regression tests, so that a wide variety of bug-triggering scenarios are
+available in a public repository. This would go a long way towards providing
+adequate test coverage. 
+
+Note that our approach doesn't strive for precise instruction-deterministic
+reproduction of the production. Instead, we strive for the reproduction
+of a particular failure. In this sense, our determinism goal is similar
+to that of ODR~\cite{odr}.
+
+Second, we hope to gather error logs from real production deployments which
+will help us populate this repository; this may require providing novel kinds
+of anonymization, so that large datacenter operators would be willing to share
+their problems (since they want their SDN code to work) without revealing the
+details of their network.  This may require a infrastructural counterpart to
+minimally-causal events; the smallest number of infrastructure components that
+can reproduce the same bug.
+
+
+\colin{TODO: add note about not being able to tell difference between
+endogenous and exogenous events, which might hide the true cause of a bug.
+This is OK though, since we assume that the platform should always have a
+correct option, but it doesn't take it. That is, the root cause of the crash
+is not what we're interested in (software vs. hardware), it's how the platform
+reacts to that crash that matters (should be robust, no matter what the
+cause of the crash)}
+
+\andi{Don't quite know what you mean by endogenous vs. exogenous}
+
+\colin{Note that we also assume an out-of-band management network between
+switches and controllers, and that the management network always provides 
+connectivity. We could add the management network into our model if we want, I
+suppose.}
 
 \subsection{Overhead}
 
@@ -142,39 +188,4 @@ the number of switches until something broke. We encountered what appears to be
 a limitation of the Linux TCP/IP stack: TCP connection attempts began failing
 beyond 26,680 sockets. Note that 26,680 switches is an order-of-magnitude larger than
 the today's biggest networks.
-}
-
-\subsection{Simulation fidelity}
-
-On the one hand, since the SDN platform is in software, we can, in theory,
-reproduce all software-induced policy violations (though not problems
-resulting from flaky hardware implementing code incorrectly). However, this
-requires setting up the simulator to emulate the appropriate conditions that
-led to the policy violation, and that can be quite difficult. We hope to make
-progress in this area along two dimensions.  First, we hope to help the
-community build up a set of regression tests, so that a wide variety of
-bug-triggering scenarios are available in a public repository. This would go a
-long way towards providing adequate test coverage.
-
-Second, we hope to gather error logs from real production deployments which
-will help us populate this repository; this may require providing novel kinds
-of anonymization, so that large datacenter operators would be willing to share
-their problems (since they want their SDN code to work) without revealing the
-details of their network.  This may require a infrastructural counterpart to
-minimally-causal events; the smallest number of infrastructure components that
-can reproduce the same bug.
-
-
-\colin{TODO: add note about not being able to tell difference between
-endogenous and exogenous events, which might hide the true cause of a bug.
-This is OK though, since we assume that the platform should always have a
-correct option, but it doesn't take it. That is, the root cause of the crash
-is not what we're interested in (software vs. hardware), it's how the platform
-reacts to that crash that matters (should be robust, no matter what the
-cause of the crash)}
-
-\colin{Note that we also assume an out-of-band management network between
-switches and controllers, and that the management network always provides 
-connectivity. We could add the management network into our model if we want, I
-suppose.}
 }
