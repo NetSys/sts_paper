@@ -1,79 +1,69 @@
-\colin{This section sucks. It needs to be thoroughly condensed, and it needs
-to compare and contrast our work more directly with the other literature}
+%-- Program Slicing --
 
-Our algorithm can be viewed as a
-generalization of dependency graph algorithms for hardware fault
-isolation.
+The delta debugging algorithm~\cite{Zeller:2002:SIF:506201.506206} seeks to solve
+a problem that is exactly analogous to ours on a single machine: given input that causes a test case
+to fail, what is the minimum subset of the input that still produces the failure?
+We generalize the same reasoning to a distributed system.
 
-\colin{reviewer b: there is an enormous body of work on bisimulation equivalence that
-captures exactly what is needed, re: correspondence checking}. \colin{reviewer
-c: These sorts of "loopbacks" and P/I paths have existed for eons and the
-differentiation and explanation of merits of this approach are not stated.}
+%-- Deterministic Replay (OFRewind) --
 
-This work extends a growing literature on troubleshooting tools for
-Software-Defined Networks.
+Deterministic replay techniques such as OFRewind~\cite{ofrewind}
+are designed to allow developers to interactively prune
+the inputs that lead up to errant behavior. We present an algorithm that
+automates this process.
 
-The work most closely related to ours is NICE~\cite{nice}. NICE combines concolic execution
-and model checking to automate the process of testing NOX applications. This enables one to catch bugs before
-they are deployed.
+%-- Model checking (NICE): --
 
-Our approach and NICE complement each other in several ways.  First, NICE's systematic exploration of failure orderings
-is potentially of great use for finding corner-case errors, which we could then add to our regression suite. NICE may also be applied directly to the code-base of the SDN platform, but in the case that only a subset
-of all possible code-paths in the SDN platform can be model-checked due to state-space explosion;
-our mechanisms allows users to troubleshoot errors
-{\it post-hoc} after they are observed in production, so we can find bugs that might be missed due to truncating the state-space exploration.
-In complement to NICE, correspondence checking helps developers isolate the
-specific component of the SDN platform responsible for an error, without needing to specify invariants.
+NICE~\cite{nice} combines model checking with concolic execution
+to enumerate all possible code paths taken by control software (NOX),
+and identify concrete inputs (\eg{} control message orderings) that cause
+the network to enter invalid configurations. Unlike NICE, our approach
+applies directly to distributed control platforms, does not analyze the
+control software itself, and is used {\em post-hoc} to
+reproduce errors from live runs of the system.
 
-Focusing on the physical network, Anteater~\cite{anteater} and HSA~\cite{hsa}
-are alternative approaches to statically checking invariants in the
-configuration of switches and routers. Both take take as input a snapshot of
-the FIB of each network device. To check invariants, Anteater generates a set of constraint functions and feeds them through a SAT
-solver, while HSA defines an algebra for virtual packets and
-their transformation through the network. We leverage the HSA work in \projectname{}, and our simulator allows us to detect policy-violations not just in a given set of tables but what tables are produced by a wide range of scenarios. \
+%-- Invariant Checking? --
 
-Also focusing on the physical network, OFRewind~\cite{ofrewind} develops
-record and replay techniques for the control plane of OpenFlow networks.
-Unlike \simulator, OFRewind focuses specifically on OpenFlow
-interactions, while we focus on more course-grained replay of
-failures and topology changes. Running replay within a simulator also allows
-us to manually modify the execution of the system, rather than playing a
-static recording.
+\eat{
+Invariant checking tools such as Anteater~\cite{anteater} and HSA~\cite{hsa}
+detect problems in the dataplane. We leverage invariant checking tools
+to distinguish inputs that are necessary for reproducing a given invariant violation.
+}
 
-Another line of work aims to prevent bugs from being introduced in the first
-place. Frenetic~\cite{frenetic} presents a language-based approach to building
-robust SDN applications. By providing a specialized programming model,
- Frenetic helps developers avoid writing common classes of
-bugs, such as `composition errors' where installed flow entries override each other.
-Reitblatt et al.~\cite{consistentupdates} developed a technique for ensuring
-consistent routing updates, guaranteeing that all switches in the network either route
-a given packet under the new configuration or under the old configuration,
-but not both. These abstractions are valuable for preventing common, difficult errors
-in platform logic.
+%-- Root cause analysis? --
 
-Several other network simulators exist for testing SDN controllers. Mininet is a
-platform for emulating OpenFlow switches and hosts within a single
- VM~\cite{Lantz:2010:NLR:1868447.1868466}. The ns-series of network simulators
-provides a general framework for testing new protocols, topologies,
-and traffic mixes~\cite{ns3}. We found that these existing simulators did
-not provide sufficient support for the corner-cases situations which are the
-focus of our work, such as failures and VM migration.
+Root cause analysis techniques~\cite{577079} seek to identify the minimum set of failed
+components (\eg{} link failures) needed to explain a collection of alarms. Rather than
+focusing on individual component failures, we seek to minimize inputs that affect the behavior
+of the overall distributed system.
 
-Many of our ideas originate from the literature on troubleshooting general
-distributed systems. WiDS checker introduced the notion of recording
-production executions to be later replayed and verified in a controlled simulation.
-Pip~\cite{pip} defines a DSL and collection of annotation tools to
-reason about causal paths throughout the execution of the
-distributed system. Finally, end-to-end tracing
-frameworks such as X-Trace~\cite{Fonseca:2007:XPN:1973430.1973450} and
-Pinpoint~\cite{Chen02pinpoint:problem} provide a framework for tracing requests throughout
-a distributed system in order to infer correctness errors between layers and
-across components. Our work solves a more constrained problem; we leverage
-the structure of the SDN stack to enable a simple notion of platform
-correctness. In addition, these systems assume that invariants should hold at
-all times; we observe that in an eventually-consistent system such as SDN,
-transient policy-violations are inevitable. We built \simulator{} to help troubleshooters
-differentiate ephemeral from persistent errors.
+%-- Simulators? --
+%
+%Several other network simulators exist for testing SDN controllers. Mininet is a
+%platform for emulating OpenFlow switches and hosts within a single
+% VM~\cite{Lantz:2010:NLR:1868447.1868466}. The ns-series of network simulators
+%provides a general framework for testing new protocols, topologies,
+%and traffic mixes~\cite{ns3}. We found that these existing simulators did
+%not provide sufficient support for the corner-cases situations which are the
+%focus of our work, such as failures and VM migration.
+
+%-- Distributed Systems --
+%
+%Many of our ideas originate from the literature on troubleshooting general
+%distributed systems. WiDS checker introduced the notion of recording
+%production executions to be later replayed and verified in a controlled simulation.
+%Pip~\cite{pip} defines a DSL and collection of annotation tools to
+%reason about causal paths throughout the execution of the
+%distributed system. Finally, end-to-end tracing
+%frameworks such as X-Trace~\cite{Fonseca:2007:XPN:1973430.1973450} and
+%Pinpoint~\cite{Chen02pinpoint:problem} provide a framework for tracing requests throughout
+%a distributed system in order to infer correctness errors between layers and
+%across components. Our work solves a more constrained problem; we leverage
+%the structure of the SDN stack to enable a simple notion of platform
+%correctness. In addition, these systems assume that invariants should hold at
+%all times; we observe that in an eventually-consistent system such as SDN,
+%transient policy-violations are inevitable. We built \simulator{} to help troubleshooters
+%differentiate ephemeral from persistent errors.
 
 % If we manage to run multiple applications by Monday, we should cite papers
 % on consistency and cross-layer debugging:
