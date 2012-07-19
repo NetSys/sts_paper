@@ -1,12 +1,12 @@
-When the control platform fails to implement network policy, software
-developers first need to reproduce the events that triggered the errant
-behavior before they can proceed with the debugging process.
-Yet large networks experience a large number of hardware failures, topology changes,
+For most bugs in the control software, software
+developers need to reproduce the events that triggered the errant
+behavior before they can begin stepping through the code with
+debugging tools. Yet large networks experience a large number of hardware failures, topology changes,
 and other potential triggering events,
 all of which may appear characteristic of normal operating
 conditions at first glance. The entire
 execution log should theoretically be sufficient for reproducing the error (assuming
-a complete and correctly ordered log), but the execution history may span
+complete and `globally orderable' logs), but the execution history may span
 hours or days and include thousands of extraneous events.
 Identifying relevant triggering events within a log of this size is akin to finding
 the proverbial `needle in the haystack'.
