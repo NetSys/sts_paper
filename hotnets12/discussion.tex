@@ -25,6 +25,9 @@ observed, the simulation will reproduce the failure. Secondly, as the simulation
 based approach is cheap to set up and reproduce, the simulator try different event
 orderings when a particular reconstructed event sequence doesn't reproduce the failure.
 
+\eat{ % CS: cutting, since I have since realized that snapshots are purely an
+% optimization. It might take a really long time, but you can always just
+% start from the beginning of the log
 \noindent{\bf Snapshots}
 As networks typically run for long periods of time, and not all devices are 'turned on'
 at the same time, our simulation needs a \emph{snapshot} of the network state as a
@@ -32,6 +35,7 @@ starting point. If supported by the network, we can rely on prior for for taking
 causally consistent snapshots to achieve this goal. Otherwise, it may be possible
 to take a series of snapshots during periods of quiet operation (e.g., at night)
 and check for consistency.
+}
 
 \subsection{Simulation fidelity}
 
@@ -59,7 +63,7 @@ details of their network.  This may require a infrastructural counterpart to
 minimally-causal events; the smallest number of infrastructure components that
 can reproduce the same bug.
 
-
+\eat{
 \colin{TODO: add note about not being able to tell difference between
 endogenous and exogenous events, which might hide the true cause of a bug.
 This is OK though, since we assume that the platform should always have a
@@ -74,6 +78,7 @@ cause of the crash)}
 switches and controllers, and that the management network always provides 
 connectivity. We could add the management network into our model if we want, I
 suppose.}
+}
 
 \subsection{Overhead}
 
