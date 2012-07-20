@@ -85,7 +85,7 @@ policy-violation is still present, and thereby infers whether that input is
 necessary for triggering the fault. Going back to our example, suppose the
 log includes many more inputs (policy changes, host migrations, hardware
 failures) than just the link failure and the controller crash. Whenever an
-extraneous event is pruned, the blackhole will still persist. When either of
+extraneous event is pruned, the blackhole will still persist. When
 the controller crash is pruned, the blackhole will be resolved properly, and
 when the link failure is pruned, no blackhole will occur. The MCS returned
 is therefore the controller crash and the link failure in conjuction.
@@ -101,7 +101,7 @@ necessary for finding the minimal causal sequence.
 \Simulator{} first requires a log of the system execution where a
 policy-violation was originally discovered. Policy-violations
 in a running system might be detected through failed integration tests,
-customer complaints, or live runtime checks.
+customer complaints, or runtime invariant checks.
 
 Since our goal is to identify
 relevant {\em inputs} from the distributed system's log, the log must make a clear
@@ -110,7 +110,7 @@ receives, and {\em external} inputs such as
 link failures, controller crashes, VM migrations, or policy changes.
 Production networks almost universally maintain logs of such events as part of
 good operating practices (link failures are typically detected through
-routing protocols such as IS-IS and reported to controllers,
+protocols such as IS-IS,
 controllers log crash messages before
 halting in addition to monitoring heartbeats from peers, and VM migrations and
 policy changes are logged centrally for accounting purposes). In the rare case
@@ -122,7 +122,7 @@ have to ensure that the logging messages are added to the system.
 distributed system's execution. If the control software does not already do
 so, we modify the code to attach Lamport
 clocks to all
-control messages and internal log messages
+control packets and internal log messages
 to achieve a total ordering of the events in the system that
 is consistent with the happens-before
 relation~\cite{Lamport:1978:TCO:359545.359563}. Note that it is not
@@ -168,33 +168,31 @@ from internal events triggered by the system itself, such as message sends or so
 crashes.
 }
 
-\subsection{Simulation}
+\subsection{Deterministic Replay}
 
-Next, \simulator{} requires a mechanism for replaying the system execution.
-We have developed
-solutions to two separate challenges in achieving this requirement.
+Next, \simulator{} requires the ability to replay the system execution.
+We have developed solutions to two separate challenges in achieving this requirement.
 
-First, we need the ability to {\em deterministically} replay the system
-execution. We achieve this with a single-threaded simulator that models switches
-and hosts in the network. We run the controllers in individual VMs, and
-connect the simulated switches to the controllers as if they were true
+First, the system replay has to be {\em deterministic}.
+We achieve this with a single-threaded simulator that models switches
+and hosts in the network. We run the controllers in individual VMs that are
+bootstrapped from a static snaphot (including random number generator
+seeds, \etc{}) and connect the simulated switches to the controllers as if they were true
 network devices. The simulator interposes on all communication channels in
 the network, allowing it to proceed with the system execution in lock step:
-pausing the controller VMs between each timestep and delaying messages
+pausing the controller VMs between each logical timestep and delaying messages
 arbitrarily. The simulator then reproduces the external inputs from the log.
 For example, link failures are reproduced by disconnecting the edge in
-the simulated network and issuing an
-OpenFlow $PORT\_STATUS$ message from the switch to its parent controller. The
-simulator can replay policy-changes by
+the simulated network. The simulator can replay policy-changes by
 interfacing through generic interfaces to SDN control platforms such as the
 Quantum API~\cite{quantum}.
 
 Note that the simulator does not need
-to precisely reproduce the failure modes of {\em individual} nodes in the system. This is because
-we are interested in observing the behavior of the overall distributed system, which is
-built under the assumptions that individual components will fail.
+to precisely reproduce the failure modes of {\em individual} nodes.
+We are only interested in observing the behavior of the overall distributed system, which is
+built under the assumption that individual components will fail.
 Therefore, it should be sufficient to use a `blunt hammer' (\eg{}
-$kill -9$) to reproduce individual
+$kill \text{ -}9$) to reproduce individual
 failure events, so long as the remaining nodes in the system react in the same
 way as they did in the actual run.
 
@@ -207,15 +205,16 @@ events (both external and internal) that precede it in the happens-before
 relation ($\{i \mid i \rightarrow e\}$) have occurred. Unfortunately the problem is made
 substantially more complicated by the fact that we are pruning inputs to the
 system, thereby changing the resulting internal events generated by the control
-software; without knowing in advance what internal events are triggered by a
-given input, we can never know when the happens-before dependencies have
-been met (since the internal events may or may not appear again after the
-pruning). We solve this problem by modifying the control software to include causal
-annotations~\cite{xtrace} on all log and control messages:
-when we prune an input $e$, we then remove all of its causal offspring from the set of
+software; without knowing in advance what internal events will {\em not} occur
+as a result of pruning an external input, we can never know when the happens-before
+dependencies have
+been met. We solve this problem by modifying the control software to include causal
+annotations~\cite{xtrace} on all log and control messages, yielding a tree of
+causal offspring for any given event. When we prune an input $e$, we then remove
+all of its causal offspring from the set of
 happens-before constraints. Modifying the control software incidentally solves two
-additional problems: the simulator can know exactly when internal events occur
-on controllers since we can interpose on the causal annotation library, and
+additional problems: the simulator can know exactly when internal controller events
+occur since we can interpose on the causal annotation library, and
 the simulator can infer equivalent internal events between runs despite minor
 syntactic differences (\eg{} sequence numbers on packets) by
 uniquely identifying events according to their place in the causal call graph.
@@ -229,7 +228,7 @@ uniquely identifying events according to their place in the causal call graph.
 \subsection{Correspondence Checking}
 
 Finally, we need a mechanism for deciding
-whether a policy-violation is present at any point in the system execution.
+whether a policy-violation is present at the end of the system execution.
 We refer to such an algorithm as a {\em decider}. Deciders take as input a
 causally-consistent snapshot of the system state, and return whether the
 policy-violation they were designed to detect is present.
@@ -310,20 +309,20 @@ the same input injected at the corresponding $a_{logical}$, and vice versa.
 Correspondence checking takes as input a causally-consistent
 snapshot of both the physical network and the
 control cluster's state. We first modify the controller to present an
-interface through which the physical and virtual views datastructures can be
-obtained. In our simulated environment, the snapshot is
+interface through which the physical and virtual views can be
+extracted. In our simulated environment, the snapshot is
 then obtained by pausing execution and invoking this interface.
-The routing tables of forwarding elements in both the views and the physical
-newtork can be translated into transformation functions.
+The routing tables of forwarding elements in the views and the physical
+network can then be translated into transformation functions.
 Finally, we feed a symbolic packet $x^L$ to each access link of the
 network.\footnote{The rules for process wildcard bits $x^n$ are defined in
-the HSA paper~\cite{hsa}} The end result is a propagation graph representing all possible paths taken by a packet injected
+the HSA paper~\cite{hsa}} The end result is a propagation graph representing
+all possible paths taken by a packet injected
 at the access link.
 
 We compute $\Omega$ by traversing the resulting propagation graph. If a packet
-is dropped before exiting the network, we mark the value as $DROP$. Likewise,
-if we detect a repeated internal vertex along a branch of the propagation graph, we mark the
-that outcome as $LOOP$. Otherwise,
+is dropped, or enters a loop before exiting the network, we mark the value as
+$DROP$ or $LOOP$. Otherwise,
 the leaves of the propagation graph define the final outcomes of the input
 packets injected at that access link.
 

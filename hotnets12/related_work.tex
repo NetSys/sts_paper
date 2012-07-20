@@ -3,7 +3,7 @@
 The delta debugging algorithm~\cite{Zeller:2002:SIF:506201.506206} seeks to solve
 a problem that is exactly analogous to ours on a single machine: given input that causes a test case
 to fail, what is the minimum subset of the input that still produces the failure?
-We generalize the same reasoning to a distributed system.
+We apply the same reasoning to a distributed system.
 
 %-- Deterministic Replay (OFRewind) --
 
@@ -15,11 +15,11 @@ automates this process.
 %-- Model checking (NICE): --
 
 NICE~\cite{nice} combines model checking with concolic execution
-to enumerate all possible code paths taken by control software (NOX),
+to enumerate all possible code paths taken by control software (NOX)
 and identify concrete inputs (\eg{} control message orderings) that cause
 the network to enter invalid configurations. Unlike NICE, our approach
-applies directly to distributed control platforms, does not analyze the
-control software itself, and is used {\em post-hoc} to
+applies directly to distributed control platforms, does not require analysis
+of the control software itself, and is used {\em post-hoc} to
 reproduce errors from live runs of the system.
 
 %-- Invariant Checking? --
