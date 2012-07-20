@@ -92,7 +92,7 @@ describe our efforts to support \simulator{}, including (i)
 detailing how execution logs are obtained
 and what properties they need, (ii) developing a deterministic network simulator
 to replay the execution of control software, and (iii) developing an invariant
-checking algorithm for detecing errant behavior.
+checking algorithm for detecting errant behavior.
 
 \subsection{Distributed Logging}
 
@@ -173,9 +173,9 @@ switches, in a single-threaded process, and running the controllers in
 individual virtual machines that are
 bootstrapped from a static snapshot (including random number generator
 seeds, \etc{}). The switches connect to the controllers as if they were true
-network devices, and the controllers believe they are configuring a true
-network. The simulator interposes on all communication channels in
-the network, allowing it to proceed with the system execution in
+network devices such that the controllers believe they are configuring a true
+network. The simulator interposes on all communication channels,
+allowing it to proceed with the system execution in
 lock step~\cite{Gupta06toinfinity}:
 pausing the controller VMs between each logical timestep and delaying messages
 arbitrarily. The simulator then reproduces the external inputs from the log.
@@ -191,8 +191,8 @@ $kill \text{ -}9$) to reproduce individual
 failure events, so long as the remaining controllers react in the same
 way as they did in the actual run.
 
-Second, we need to know precisely {\em when} to inject inputs to the controllers,
-including internal timers; without maintaining the exact happens-before dependencies reflected in the
+Second, we need to know precisely {\em when} to inject inputs to the controllers;
+without maintaining the exact happens-before dependencies reflected in the
 log the output of the simulated system execution may not be the same.
 
 We can inject an external input $e$ at exactly the point where all other
@@ -225,17 +225,12 @@ uniquely identifying events according to their place in the causal call graph.
 Finally, we need a mechanism for deciding
 whether a policy-violation between the views of the controllers and the simulated network
 is present at the end of the system execution.
-We refer to such an algorithm as a {\em decider}. Deciders take as input a
-snapshot of the system state, and return whether the
-policy-violation they were designed to detect is present.
+We refer to such an algorithm as a {\em decider}.
 
 We develop a particular decider here, which we refer to as correspondence checking.
 Correspondence checking does not require
 the troubleshooter to specify invariants. Instead, correspondence checking
 obtains invariants by extracting the policies reflected in the virtual view.
-It returns a list of inconsistencies between the virtual view and the
-simulated network, and the troubleshooter specifies the signature of the
-policy-violation of interest so that its presense in the list can be checked.
 Correspondence checking leverages the virtual packet algebra
 pioneered in headerspace analysis~\cite{hsa}.
 
@@ -289,7 +284,7 @@ The range of $\Omega$ is the hypothetical final state of the
 input packet if it were injected in the network.
 We use the special value $LOOP$ to distinguish
 a packet dropped by a network device from a packet entering an
-infinite loop (both packet drops and loops prevent the packet from ever leaving the network).
+infinite loop (both of which never leave the network).
 
 In SDN, it should always be the case that:
 \begin{align*}
@@ -299,11 +294,11 @@ The equivalence $\sim$ means that the final outcome of any input packet
 injected at a host $a_{physical}$ in the physical network has the same hypothetical final outcome as
 the same input injected at the corresponding $a_{logical}$, and vice versa.
 
-Correspondence checking takes as input a causally-consistent
+Correspondence checking takes as input a
 snapshot of both the physical network and the
-controllers' state. We first modify the controller to present an
+controllers' state. We first modify the control software to present an
 interface through which the physical and virtual views can be
-extracted. In our simulated environment, the snapshot is
+extracted. The snapshot is
 then obtained by pausing execution and invoking this interface.
 The routing tables of forwarding elements in the views and the physical
 network can then be translated into transformation functions.
@@ -317,9 +312,7 @@ We compute $\Omega$ by traversing the resulting propagation graph. If a packet
 enters a loop before exiting the network, we mark the value as
 $LOOP$. Otherwise,
 the leaves of the propagation graph define the final outcomes of the input
-packets injected at that access link.
-
-Because network policies are defined by
+packets injected at that access link. Because network policies are defined by
 configuring the logical view, any mismatch between $\Omega^{view}$ and $\Omega^{physical}$
 represents an instance of a policy-violation.
 
@@ -328,11 +321,9 @@ correspondence checking represents a somewhat weak notion of
 correctness. Correspondence checking only captures external behavior and
 loops; it does not capture internal behavior such as load-balancing
 over links. It also assumes that the policies as expressed by the
-configuration of the logical view are correct; a troubleshooter would need to add a more
-stringent invariant check to detect misspecified policies.
-Finally correspondence checking can not verify
+configuration of the logical view are correct. Finally, correspondence checking can not verify
 time-dependent policies such as ``No link should be congested more than 1\% of
-the time'', or ``No server should receive more than 500MB/s of external traffic''.
+the time''.
 
 %\subsection{Putting it all together}
 %
