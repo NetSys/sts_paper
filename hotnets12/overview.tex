@@ -1,12 +1,12 @@
 We begin by sketching the architecture of SDN networks and
-describing the correctness challenges experienced by operators and
+describing the failure-modes and correctness challenges encountered by operators and
 implementers of SDN controllers.
 
 SDN networks are managed by software running on a set of network-attached
 servers called ``controllers''. Modern SDN platforms differ from
-`first-generation' controllers such as NOX~\cite{nox} in two dimensions: they
-extend vertically by providing a virtualization layer on top of which control
-logic resides, and they extend horizontally by distributing state across
+`first-generation' controllers such as NOX~\cite{nox} in two aspects: they
+maintain a virtualized view on top of which control
+logic resides, and they distribute state across
 multiple control servers.
 %Two common patterns of control are proactive and
 %reactive. Proactive controllers pre-compute forwarding tables for the entire
@@ -24,22 +24,18 @@ multiple control servers.
 \subsection{Virtualization Challenges}
 
 Modern SDN controllers consist of at least three distinct layers, as depicted in
-Figure \ref{fig:basicarch}. The two lower layers are part of the SDN platform,
-and the highest layer is the \emph{control application}. The lowest level of SDN
-software maintains a graph data-structure known as the \emph{physical view}
+Figure \ref{fig:basicarch}. The two lower layers are part of the SDN platform.
+The lowest latter maintains a graph data-structure known as the \emph{physical view}
 that has a one-to-one correspondence with the physical network.
 Synchronization logic in this layer keeps its information up-to-date with the
-physical network state. Above, the \emph{Logical View} translates the
+physical network state. Above, the \emph{logical view} translates the
 potentially complicated physical network to a simpler logical view, commonly a single
-logical switch~\cite{Casado:2010:VNF:1921151.1921162}. This allows operators to
-specify routing, access control, or QoS policies by configuring a single
-forwarding device. If the control platform supports virtualization, a
+logical switch~\cite{Casado:2010:VNF:1921151.1921162}. If the control platform supports virtualization, a
 virtualization layer handles multi-tenancy by providing each tenant with their
 own logical view to specify policies over. The platform then multiplexes the
-policies onto the same physical network.
-
-At the top of the stack, the \emph{control application} specifies the desired
-high-level behavior of the network. We term these behavioral specifications
+policies onto the same physical network. Finally, at the top of the stack
+the \emph{control application} specifies the desired
+high-level behavior of the network by configuring the logical view. We term these behavioral specifications
 ``policies''. Policy constraints might include connectivity, access control,
 addressing resource allocations, traffic engineering objectives, or middlebox
 processing.
@@ -54,7 +50,7 @@ and the physical topology is highly complex.
 %; for example, a simple configuration
 %change such as ``the path from $A$ to $B$ should pass through $C$'' must be
 %implemented as routing entries in a sequence of switches in the physical
-%network. 
+%network.
 
 \eat{
 This mapping is further complicated in a multi-tenant environment
@@ -73,17 +69,24 @@ For fault-tolerance, production SDN control software is typically \emph{physical
 distributed} on several control servers. For scalability, the responsibility for
 managing the network is partitioned either hierarchically, or through sharding between
 several control servers. Onix~\cite{onix}, for example, partitions a
-graph of the network state across either an eventually-consistent DHT or a
+graph of the network state across either an eventually-consistent
+distributed-hash table or a
 transactional database, allowing control applications to make their own
 tradeoffs in choosing consistency models, degree of fault tolerance, and other
 properties.
 
 Policy and state changes require coordination between controllers.
-Coordination between controllers is prone to a plethora of well-known failure
-modes, such as inconsistent reads, race conditions over message arrivals, and
-unintended consequences of failover logic. Errors may also result from
-non-disjoint partitioning schemes between controllers, or incorrect delegation
-of control for different portions of the network.
+Coordination in SDN is not exempt from the well-known class of faults
+inherent to all distributed systems, including
+inconsistent reads, race conditions over message arrivals, and
+unintended consequences of failover logic.
+
+In conjunction, the challenges of maintaining virtualized and distributed
+objects while ensuring that critical invariants such as isolation between
+tenants are upheld at all times makes the task of constructing
+SDN control software highly complex and error-prone. We aim to provide a
+technique to ease the process of troubleshooting bugs encountered in this
+task.
 
 \eat{
 The large scale of these networks also means that
@@ -99,11 +102,13 @@ datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}.
     \caption[]{\label{fig:basicarch} The SDN Software Architecture }
 \end{figure}
 
+\eat{
 In this paper we focus on bugs in the virtualization and controller coordination
 components of the SDN software stack. We focus on a \emph{proactive} mode of
 operation where forwarding state updates are triggered by policy or topology
 changes, not data-plane events.\footnote{It is possible to generalize our
 approach to include inputs from the data-plane, subject to performance limitations.}
+}
 
 %We are primarily concerned with corner-case scenarios such as
 %correlated hardware failures, which are the hardest to test {\it a priori}

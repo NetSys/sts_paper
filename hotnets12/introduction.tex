@@ -66,11 +66,7 @@ corner-case failover scenario between replicated controllers and apply our
 algorithm to show how the exact inputs that triggered the problem are
 identified.
 
-It is important to place this work in context and scope the problem we are
-attacking. First, \simulator{} is a troubleshooting tool, not a debugger; by
-this we mean that \simulator{} helps identify and localize network
-problems but it does not help identify exactly which
-line of code causes the error. Second, \simulator{} is focused on the
+\Simulator{} is focused on the
 system software of the SDN stack (described in the next section). While progress has been made in troubleshooting control
 applications that run on top of the SDN platform~\cite{nice} and in troubleshooting the
 forwarding tables in the physical switches~\cite{anteater,hsa}, we
