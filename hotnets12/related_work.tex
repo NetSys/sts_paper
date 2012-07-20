@@ -18,8 +18,8 @@ NICE~\cite{nice} combines model checking with concolic execution
 to enumerate all possible code paths taken by control software (NOX)
 and identify concrete inputs (\eg{} control message orderings) that cause
 the network to enter invalid configurations. Unlike NICE, our approach
-applies directly to distributed control platforms, does not require analysis
-of the control software itself, and is used {\em post-hoc} to
+applies directly to distributed control platforms, and does not require analysis
+of the control software itself, but is rather used {\em post-hoc} to
 reproduce errors from live runs of the system.
 
 %-- Invariant Checking? --
@@ -39,11 +39,10 @@ of the overall distributed system.
 
 %-- Distributed Systems debuggers
 
-Pip~\cite{pip} is a framework for instrumenting general distributed systems
-in order to record, display, and check invariants on causal paths throughout the execution of
-live system. \Simulator{} observes the causal behavior of the
-distributed system in a simulated environment, enabling us to prune events from the
-causal paths.
+Pip~\cite{pip} is a framework for instrumenting general-purpose distributed systems
+in order to record, display, and check invariants on causal paths throughout
+live executions. \Simulator{} observes the causal behavior of the
+distributed system in a simulated environment, enabling us to prune events.
 
 %-- Simulators? --
 %
