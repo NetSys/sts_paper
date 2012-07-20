@@ -14,19 +14,6 @@ live system and bootrap the simulator from the nearest quiescent snapshot.
 The length of the execution can also be `compressed' by manipulating timers in the
 controllers while still maintaining happens-before dependencies.
 
-\eat{ % CS: cutting, since I have since realized that snapshots are purely an
-% optimization. It might take a really long time, but you can always just
-% start from the beginning of the log
-\noindent{\bf Snapshots}
-As networks typically run for long periods of time, and not all devices are 'turned on'
-at the same time, our simulation needs a \emph{snapshot} of the network state as a
-starting point. If supported by the network, we can rely on prior for for taking
-causally consistent snapshots to achieve this goal. Otherwise, it may be possible
-to take a series of snapshots during periods of quiet operation (e.g., at night)
-and check for consistency.
-}
-
-
 \noindent{\bf Isn't a global log difficult to obtain?} Some failure events may appear
 multiple times in the log (\eg{} replica servers detecting that a master went down),
 yet we only want to replay the original event.
@@ -34,7 +21,7 @@ If it is not possible to distinguish the original
 failure event from the resulting events (\eg{} in the case of a disk failure
 where the original crash message is not recoverable), developers may need to
 manually decipher the original event.
-We note that if the simulator is unable to reproduce the policy-violation,
+If the simulator is unable to reproduce the policy-violation,
 the simulator may be able to `fuzz' different event
 orderings in an attempt to retrigger it.
 
@@ -42,13 +29,14 @@ orderings in an attempt to retrigger it.
 from actual failures?}
 Maybe not, but since the deterministic replay environment
 is built in software, the fidelity of our simulated failures
-can be made arbitrarily sophisticated\footnote{subject to scalability
+can be made arbitrarily sophisticated.\footnote{subject to scalability
 limitations of fine-grained simulations}
 
 \noindent{\bf Is it reasonable to assume that external inputs events are
 causally independent?} Developer's need to know how the
 distributed system {\it reacts} to external inputs. Understanding why external
 inputs occurred is an orthogonal issue.
+% POSSIBLY CUT IF NOT ENOUGH SPACE
 Consider a drunk network operator who (i) trips on an ethernet cable, and
 consequently (ii) spills his drink on a switch (busting the hardware). Our
 system views (i) and (ii) as causally independent, and that's fine, since 
