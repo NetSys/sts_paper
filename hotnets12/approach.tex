@@ -67,8 +67,8 @@ algorithm itself shown here, and elaborated in later sections:
     \State {\it rerun execution with modified input}
     \State $violation \gets detect\_violation()$
     \If {\it not violation}
-        \State $MCS << event$
-        \State {reinsert input to front of log}
+        \State {\it add event to MCS}
+        \State {\it reinsert input to front of log}
     \EndIf
 \EndFor
 \end{algorithmic}
@@ -169,12 +169,13 @@ Next, \simulator{} requires the ability to replay the system execution.
 We have developed solutions to two separate challenges in achieving this requirement.
 
 First, the system replay has to be {\em deterministic}.
-We achieve this with a single-threaded simulator that models switches
-and hosts in the network. We also run the controllers in individual virtual
-machines that are
+We achieve this by simulating the entire network, including hosts and
+switches, in a single-threaded process, and running the controllers in
+individual virtual machines that are
 bootstrapped from a static snapshot (including random number generator
-seeds, \etc{}) and connect the simulated switches to the controllers as if they were true
-network devices. The simulator interposes on all communication channels in
+seeds, \etc{}). The switches connect to the controllers as if they were true
+network devices, and the controllers believe they are configuring a true
+network. The simulator interposes on all communication channels in
 the network, allowing it to proceed with the system execution in
 lock step~\cite{Gupta06toinfinity}:
 pausing the controller VMs between each logical timestep and delaying messages
@@ -230,15 +231,14 @@ snapshot of the system state, and return whether the
 policy-violation they were designed to detect is present.
 
 We develop a particular decider here, which we refer to as correspondence checking.
-Correspondence checking is generic, in the sense that it does not require
-the troubleshooter to specify invariants. Instead, correspondence checking returns a list
-of policy-violations present in the network, and the troubleshooter specifies the signature of the
-policy-violation so that its presense in the list can be checked.
-
-In short, correspondence checking leverages the virtual packet algebra
-pioneered in headerspace analysis~\cite{hsa} to enumerate all packets
-that would not behave according to the virtual view's policies if
-hypothetically injected into the snapshot of the simulated physical network.
+Correspondence checking does not require
+the troubleshooter to specify invariants. Instead, correspondence checking
+obtains invariants by extracting the policies reflected in the virtual view.
+It returns a list of inconsistencies between the virtual view and the
+simulated network, and the troubleshooter specifies the signature of the
+policy-violation of interest so that its presense in the list can be checked.
+Correspondence checking leverages the virtual packet algebra
+pioneered in headerspace analysis~\cite{hsa}.
 
 \eat{Furthermore, running correspondence
 checking between intermediate layers of the SDN stack (logical view versus

@@ -42,8 +42,7 @@ With complexity inevitably come
 bugs. To make matters worse, the number of hardware failures,
 policy changes, VM migrations, and other inputs to the system that may have
 triggered a given bug can be quite large in production environments. Microsoft,
-for example, reports 36 million error events over one year across 8
-datacenters, implying 8.5 error events per minute per
+for example, reports 8.5 network error events per minute per
 datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}.
 Consequently, it is often difficult to distinguish events that are
 characteristic of operating normal
@@ -52,14 +51,14 @@ conditions from those that push the network into an erroneous state.
 In this paper we seek to eliminate the need to manually identify the inputs
 from logs that lead
 up to software faults, thereby freeing developers to debug the problematic code itself.
-We present a solution for automatically inferring the sequence
+We present an algorithm, \simulator{} for automatically inferring the sequence
 of inputs that are both necessary and sufficient for
 triggering invalid configurations discovered in executions of the system.
 
-Our algorithm, \simulator{}, leverages (i)
-distributed log analysis, (ii) deterministic replay
-execution environments, and (iii) invariant checking techniques.
-Beyond detailing these components, we describe a case-study
+To support \simulator{}, we have (i) detailed how execution logs are obtained
+and what properties they need, (ii) developed a deterministic network simulator
+to replay the execution of control software, and (iii) developed an invariant
+checking algorithm for detecing errant behavior. Beyond detailing these components, we describe a case-study
 on BigSwitch's Floodlight production
 controller~\cite{floodlight}, where we trigger a
 corner-case failover scenario between replicated controllers and apply our
