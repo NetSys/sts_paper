@@ -19,14 +19,16 @@ These SDN controllers have evolved to large-scale, complex systems that are
 layered both horizontally for separation of concerns and distributed vertically
 for fault-tolerance and scalability. The distributed and/or replicated
 controllers and the forwarding hardware (switches) form a large scale
-distributed system with complex failure modes. With such complexity come complex
-bugs.
+distributed system with complex state and intricate failure modes. These are
+notably different from the ones encountered in traditional, fully distributed
+control planes. The authors believe that the community should invest in fully
+understanding this set of challenges.
 
 On the other hand, SDN also presents an opportunity to attack the underdeveloped
 field of network troubleshooting in a more systematic way. In this paper we
 present an approach and early prototype of a system that solves an important
-piece of the puzzle: By automatically identifying fault-inducing input from
-execution logs, we allow developers to focus their efforts on
+piece of the puzzle: automatically identifying fault-inducing input from
+execution logs. In doing so, we free developers to focus their efforts on
 debugging the problematic code itself rather than reproducing the error in the
 first place. We have demonstrated that our solution works on real, production
 control software, despite noted limitations. We hope that our work inspires the
