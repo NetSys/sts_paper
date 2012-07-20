@@ -109,22 +109,21 @@ good operating practices (link failures are typically detected through
 protocols such as IS-IS,
 controllers log crash messages before
 halting in addition to monitoring heartbeats from peers, and VM migrations and
-policy changes are logged centrally for accounting purposes). In case
+policy changes are logged centrally for accounting purposes). We discuss in
+\S\ref{sec:discussion} the size and truncation optimizations that
+can performed on these logs. In case
 that an input to the system is not present in the available logs,
 \simulator{} may not reproduce the policy-violation, and the developer will
 have to ensure that the logging messages are added to the system.
 
-\Simulator{} also depends on a correctly ordered, `global' log of the
+\Simulator{} also depends on a causally ordered log of the
 distributed system's execution. If the control software does not already do
-so, we modify the code to attach Lamport
+so, we need to modify the code to attach Lamport
 clocks to all
 control packets and internal log messages
 to achieve a total ordering of the events in the system that
 is consistent with the happens-before
-relation~\cite{Lamport:1978:TCO:359545.359563}. Note that it is not
-strictly necessary that the log match the production execution perfectly, so
-long as the policy-violation still occurs at the end of the replayed
-execution.
+relation~\cite{Lamport:1978:TCO:359545.359563}.
 
 \eat{
 As an optimization, the developer may start from a causally-consistent
@@ -171,11 +170,13 @@ We have developed solutions to two separate challenges in achieving this require
 
 First, the system replay has to be {\em deterministic}.
 We achieve this with a single-threaded simulator that models switches
-and hosts in the network. We run the controllers in individual VMs that are
+and hosts in the network. We also run the controllers in individual virtual
+machines that are
 bootstrapped from a static snapshot (including random number generator
 seeds, \etc{}) and connect the simulated switches to the controllers as if they were true
 network devices. The simulator interposes on all communication channels in
-the network, allowing it to proceed with the system execution in lock step:
+the network, allowing it to proceed with the system execution in
+lock step~cite{Gupta06toinfinity}:
 pausing the controller VMs between each logical timestep and delaying messages
 arbitrarily. The simulator then reproduces the external inputs from the log.
 For example, link failures are reproduced by disconnecting the edge in
@@ -184,16 +185,16 @@ interfacing through generic interfaces to SDN control platforms such as the
 Quantum API~\cite{quantum}.
 
 Note that the simulator does not need
-to precisely reproduce the failure modes of {\em individual} nodes.
+to precisely reproduce the failure modes of {\em individual} controllers or switches.
 We are only interested in observing the behavior of the overall distributed system, which is
 built under the assumption that individual components will fail.
 Therefore, it is sufficient to use a `blunt hammer' (\eg{}
 $kill \text{ -}9$) to reproduce individual
-failure events, so long as the remaining nodes in the system react in the same
+failure events, so long as the remaining controllers react in the same
 way as they did in the actual run.
 
-Second, we need to know precisely {\em when} to inject inputs to the controllers;
-without maintaining the exact happens-before dependencies reflected in the
+Second, we need to know precisely {\em when} to inject inputs to the controllers,
+including internal timers; without maintaining the exact happens-before dependencies reflected in the
 log the output of the simulated system execution may not be the same.
 
 We can inject an external input $e$ at exactly the point where all other
@@ -205,8 +206,10 @@ software; without knowing in advance what internal events will {\em not} occur
 as a result of pruning an external input, we can never know when the happens-before
 dependencies have
 been met. We solve this problem by modifying the control software to include causal
-annotations~\cite{xtrace} on all log and control messages, yielding a tree of
-causal offspring for any given event. When we prune an input $e$, we then remove
+annotations on all log and control messages, yielding a tree of
+causal offspring for any given event. Since we are not interested in casual annotations
+for many layers as in X-Trace~\cite{xtrace}, adding these annotations is a relatively
+straightforward process. When we prune an input $e$, we then remove
 all of its causal offspring from the set of
 happens-before constraints. Modifying the control software incidentally solves two
 additional problems: the simulator can know exactly when internal controller events
@@ -224,21 +227,22 @@ uniquely identifying events according to their place in the causal call graph.
 \subsection{Correspondence Checking}
 
 Finally, we need a mechanism for deciding
-whether a policy-violation is present at the end of the system execution.
+whether a policy-violation between the views of the controllers and the simulated network
+is present at the end of the system execution.
 We refer to such an algorithm as a {\em decider}. Deciders take as input a
-causally-consistent snapshot of the system state, and return whether the
+snapshot of the system state, and return whether the
 policy-violation they were designed to detect is present.
 
 We develop a particular decider here, which we refer to as correspondence checking.
 Correspondence checking is generic, in the sense that it does not require
-the user to specify invariants. Instead, correspondence checking returns a list
-of policy-violations present in the network, and the user checks whether the
-policy-violation in mind is present in the list.
+the troubleshooter to specify invariants. Instead, correspondence checking returns a list
+of policy-violations present in the network, and the troubleshooter specifies the signature of the
+policy-violation so that its presense in the list can be checked.
 
-In short, correspondence checking provides a crisp determination of all possible packet inputs that
-would not behave according to the application's policies if injected into the
-network. Correspondence checking builds on the virtual packet algebra pioneered in headerspace
-analysis~\cite{hsa}.
+In short, correspondence checking leverages the virtual packet algebra
+pioneered in headerspace analysis~\cite{hsa} to enumerate all packets
+that would not behave according to the virtual view's policies if
+hypothetically injected into the snapshot of the simulated physical network.
 
 \eat{Furthermore, running correspondence
 checking between intermediate layers of the SDN stack (logical view versus
@@ -247,7 +251,8 @@ the system where policy-violations first manifest themselves.}
 
 Formally, the state of the physical network, the physical view, and the
 logical view can be represented as graphs,
-$G = (V, E)$. Packets are series of bits, $h \in \{0,1\}^L = H$,
+$G = (V, E)$. Packets are series of bits, $h \in \{0,1\}^L$, in the universe
+of all possible bit sequences $H = \{0,1\}^L$,
 where $L$ is the maximum number of bits in the header.
 
 Upon receiving a packet,
@@ -260,9 +265,9 @@ T: (H \times E) \rightarrow (H \times E_{\emptyset})
 Here, $E_{\emptyset} \equiv E \cup \emptyset$, signifying that forwarding elements
 may drop packets.
 
-We use $`\Psi`$ to denote the collection of all transfer functions present in
+We use $\Psi$ to denote the collection of all transfer functions present in
 the network at a particular point in time. In this model, network traversal is
-simply repeated application of $`\Psi`$.
+simply repeated application of $\Psi$.
 For example, if a header $h$ enters the network through edge
 $e$, its state after $k$ hops will be:
 \begin{align*}
@@ -285,12 +290,12 @@ network. This definition depends on the observation that end-hosts are represent
 in all layers, even if there is not a one-to-one mapping between the
 internal vertices of $G^{virtual}$ and $G^{physical}$.
 
-The range of $\Omega$ is the hypothetical final location and state of the
+The range of $\Omega$ is the hypothetical final state of the
 input packet if it were injected in the network.
 Note that packet transformations are reflected in
 $\Omega$. For example, if an input packet passes through a NAT,
 the source address of the associated output packet will be re-written
-appropriately. We also use the special values $DROP$ and $LOOP$ to distinguish
+appropriately. We also use the special value $LOOP$ to distinguish
 a packet dropped by a network device from a packet entering an
 infinite loop (both packet drops and loops prevent the packet from ever leaving the network).
 
@@ -317,8 +322,8 @@ all possible paths taken by a packet injected
 at the access link.
 
 We compute $\Omega$ by traversing the resulting propagation graph. If a packet
-is dropped, or enters a loop before exiting the network, we mark the value as
-$DROP$ or $LOOP$. Otherwise,
+enters a loop before exiting the network, we mark the value as
+$LOOP$. Otherwise,
 the leaves of the propagation graph define the final outcomes of the input
 packets injected at that access link.
 
@@ -326,12 +331,12 @@ Because network policies are defined by
 configuring the logical view, any mismatch between $\Omega^{view}$ and $\Omega^{physical}$
 represents an instance of a policy-violation.
 
-Note that correspondence checking does not require the user
-to define any invariants. Consequently, correspondence checking represents a somewhat weak notion of
+Note that without requiring the troubleshooter to specify invariants,
+correspondence checking represents a somewhat weak notion of
 correctness. Correspondence checking only captures external behavior and
 loops; it does not capture internal behavior such as load-balancing
 over links. It also assumes that the policies as expressed by the
-configuration of the logical view are correct; a user would need to add a more
+configuration of the logical view are correct; a troubleshooter would need to add a more
 stringent invariant check to detect misspecified policies.
 Finally correspondence checking can not verify
 time-dependent policies such as ``No link should be congested more than 1\% of
