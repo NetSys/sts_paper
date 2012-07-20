@@ -2,18 +2,18 @@
 % running our system on our own code -- we can't tell them that it's our code!
 
 We were able to reproduce the problem shown in Figure~\ref{fig:example} in our
-deterministic runtime environment\footnote{The code is publicly available}, and apply \simulator{} successfully.
-We ran two Floodlight controller instances, modified with a port for
-extracting the views, in their own processes (not in
-VMs), and connected them to 5 simulated switches. We did not add causal
+deterministic runtime environment\footnote{The code is publicly available},
+and apply \simulator{} successfully.
+We modified the Floodlight software to provide a port for extracting its
+physical view. We did not add causal
 annotations or interpose on internal events of the controller, but instead used a
 heuristic to wait for $.5$ seconds between injecting inputs to allow the
-controllers to fully react. We injected 4 extraneous link and switch failures, along with the
-controller crash and switch connect event\footnote{We used a switch connect
+controllers to fully react. We ran two of the modified Floodlight controller
+instances, connected to two simulated switches, and injected 200 extraneous link
+and switch failures, with the controller crash and switch connect event\footnote{We used a switch connect
 event rather than a link failure event for logistical reasons, but both
-can trigger the race condition} that triggered the policy-violation.
-The algorithm successfully pruned all extraneous
-inputs, despite non-determinism in the Floodlight internal events. With 6
-inputs total, the algorithm took 3 minutes to run. With full determinism and
+can trigger the race condition} that triggered the blackhole interleaved among them.
+On ten repeated runs, the algorithm successfully pruned all extraneous
+inputs despite non-determinism in the Floodlight internal events. With full determinism and
 interposition, we expect that the algorithm should work well for less
 fabricated cases.
