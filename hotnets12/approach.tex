@@ -180,9 +180,7 @@ lock step~cite{Gupta06toinfinity}:
 pausing the controller VMs between each logical timestep and delaying messages
 arbitrarily. The simulator then reproduces the external inputs from the log.
 For example, link failures are reproduced by disconnecting the edge in
-the simulated network. The simulator can replay policy-changes by
-interfacing through generic interfaces to SDN control platforms such as the
-Quantum API~\cite{quantum}.
+the simulated network.
 
 Note that the simulator does not need
 to precisely reproduce the failure modes of {\em individual} controllers or switches.
@@ -207,9 +205,7 @@ as a result of pruning an external input, we can never know when the happens-bef
 dependencies have
 been met. We solve this problem by modifying the control software to include causal
 annotations on all log and control messages, yielding a tree of
-causal offspring for any given event. Since we are not interested in casual annotations
-for many layers as in X-Trace~\cite{xtrace}, adding these annotations is a relatively
-straightforward process. When we prune an input $e$, we then remove
+causal offspring for any given event. When we prune an input $e$, we then remove
 all of its causal offspring from the set of
 happens-before constraints. Modifying the control software incidentally solves two
 additional problems: the simulator can know exactly when internal controller events
@@ -292,10 +288,7 @@ internal vertices of $G^{virtual}$ and $G^{physical}$.
 
 The range of $\Omega$ is the hypothetical final state of the
 input packet if it were injected in the network.
-Note that packet transformations are reflected in
-$\Omega$. For example, if an input packet passes through a NAT,
-the source address of the associated output packet will be re-written
-appropriately. We also use the special value $LOOP$ to distinguish
+We use the special value $LOOP$ to distinguish
 a packet dropped by a network device from a packet entering an
 infinite loop (both packet drops and loops prevent the packet from ever leaving the network).
 
