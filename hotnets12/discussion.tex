@@ -1,25 +1,19 @@
 % Just realized: b/c of anonymity, the PC can't chastise us for
 % running our system on our own code -- we can't tell them that it's our code!
-\Simulator{} is certainly not without limitations. Here we discuss these
-limitations, and provide how the assumptions
-detailed in Section~\ref{sec:approach} can be relaxed.
+\Simulator{} is certainly not without limitations. We discuss several of them
+here.
 
-\noindent{\bf How is the global log obtained?} Our approach conceptually depends on a correctly ordered, global log of the
-system execution. Such a log may not be available or complete at times, as we
-may not be able to observe or uniquely timestamp all events.
-Also, some failure events may appear multiple times in the log (\eg{}
-multiple replica servers detecting that a master went down), yet we only want to
-replay the original event. If it is not possible to distinguish the original
-failure event from the consequential events (\eg{} in the case of a disk failure
+\noindent{\bf Isn't a global log difficult to obtain?} Some failure events may appear
+multiple times in the log (\eg{} replica servers detecting that a master went down),
+yet we only want to replay the original event.
+If it is not possible to distinguish the original
+failure event from the resulting events (\eg{} in the case of a disk failure
 where the original crash message is not recoverable), developers may need to
 manually decipher the original event, or apply root cause analysis tools for
 detecting the originating event from correlated alarms~\cite{577079}.
-Two properties improve the feasibility of our approach: First, the log
-does not have to cover the production failure event in microscopic detail,
-as long as the causal interdependencies in the \emph{minimal causal sequence} are
-observed, the simulation should reproduce the failure. Secondly, as the
-simulator executions are to set up, the simulator can `fuzz' different event
-orderings when a particular reconstructed event sequence doesn't reproduce the failure.
+We note that if the simulator is unable to reproduce the policy-violation,
+the simulator may be able to `fuzz' different event
+orderings in an attempt to retrigger it.
 
 \eat{ % CS: cutting, since I have since realized that snapshots are purely an
 % optimization. It might take a really long time, but you can always just
@@ -33,44 +27,35 @@ to take a series of snapshots during periods of quiet operation (e.g., at night)
 and check for consistency.
 }
 
-\noindent{\bf Are the component failures reproduced by the simulator really
-indistinguishable from the failures that occured in the production run?} If the
-component failures (\eg{} server crashes) we reproduce in the simulated environment are
-distinguishable from the actual failures, meaning that the the control software reacts in a different
-way, the output of the system will differ. We first note that our approach
-doesn't require precise instruction-deterministic
-reproduction of the production. So long as the control software cannot
-distinguish the two failure modes, the output should be the same. In this sense, our determinism goal is similar
-to that of ODR~\cite{odr}. Second, we note that since simulator
-is built in software, the fidelity of our failure mode
-replays by made arbitrarily sophisticated, subject to scalability
-limitations of fine-grained simulations (though not problems resulting from
-flaky hardware implementing code incorrectly).
+\noindent{\bf Are all simulated failures really indistinguishable
+from actual failures?}
+Maybe not, but since the simulator
+is built in software, the fidelity of our simulated failures
+can be made arbitrarily sophisticated, subject to scalability
+limitations of fine-grained simulations.
 
 \noindent{\bf Is it reasonable to assume that external inputs events are
-causally independent?} This depends on what we are trying to debug. Consider a drunk network operator who (i) trips on an ethernet cable, and
+causally independent?} This depends on what the developer is trying to debug.
+Consider a drunk network operator who (i) trips on an ethernet cable, and
 consequently (ii) spills his drink on a switch (busting the hardware). Our
 system views (i) and (ii) as causally independent, but in reality (i) caused
-(ii). Our goal is to model drunk operators though. Our goal is to
-test the overall system's reactions to errant behavior on one or more
-individual nodes. In the case of the drunk operator, what we {\em do} care
-about is whether the system reacted incorrectly to the two events\footnote{We
-leave it up to management to deal with the drunk operator's behavior}
+(ii). The developer's goal is not to debug drunk operators though\footnote{We
+leave that up to the operator's manager}
 
-\noindent{\bf What about random number generators or other non-deterministic
-behavior?}
+\noindent{\bf Will this approach work on all control platforms?}
+\Simulator{} requires some controller-specific modifications, including
+awareness of the API to specify policy changes, awareness of the format of log
+messages, and causal annotation instrumentation. Correspondence checking also
+assumes that it has access to a physical view. If no physical view is
+available, alternate detectors could be used.
 
-\noindent{\bf Will this approach work on bare-metal (non-Onix) controllers?}
+\noindent{\bf Will control platforms ever become stable enough to not require
+          \simulator{}?}
+We certainly hope so! The field is from this point today though.
 
-\noindent{Once you have a system the distributes rules correctly and
-consistently and this layer is correctly implemented... then do you
-ever need W3 again? or is it the position that this won't happen and
-so we'll always need to debug rule distribution?}
-
-\noindent{\bf Isn't this work applicable to all distributed systems, not just
-SDN?}
-
-Yes!
+%\noindent{\bf How is this specific to SDN?}
+%
+%Yes!
 
 \eat{
 Second, we hope to gather error logs from real production deployments which
