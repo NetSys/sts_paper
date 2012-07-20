@@ -35,18 +35,18 @@ solving in tightly-coupled (not fully distributed) environments.
 For example, as Google's Urs H$\ddot{\mathrm{o}}$elzle recently
 noted at the Open Networking Summit~\cite{urs_keynote}: ``[Coordination between replicated controllers] is going to
 cause some angst, and justifiably, in the industry''. As industry uses SDN
-control clusters to manage larger and more complicated networks, the
+control clusters to manage larger and more sophisticated networks, the
 complexity of the software will only continue to increase.
 
 With complexity inevitably comes
 bugs. To make matters worse, the number of hardware failures,
 policy changes, VM migrations, and other inputs to the system that may have
 triggered a given bug can be quite large in production environments. Microsoft,
-for example, reports 36 million error events over one year across 8 datacenters, which
-implies 8.5 error events per minute per
+for example, reports 36 million error events over one year across 8
+datacenters, implying 8.5 error events per minute per
 datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}.
-Given that SDN control software is designed to operate under such conditions,
-it is often difficult to distinguish events that are characteristic of normal
+Consequently, it is often difficult to distinguish events that are
+characteristic of operating normal
 conditions from those that push the network into an erroneous state.
 
 In this paper we seek to eliminate the need to manually identify the inputs that lead
