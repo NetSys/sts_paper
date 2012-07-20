@@ -29,7 +29,7 @@ and the highest layer is the \emph{control application}. The lowest level of SDN
 software maintains a graph data-structure known as the \emph{physical view}
 that has a one-to-one correspondence with the physical network.
 Synchronization logic in this layer keeps its information up-to-date with the
-physical network state. Above, the \emph{Logical View} ideally translates the
+physical network state. Above, the \emph{Logical View} translates the
 potentially complicated physical network to a simpler logical view, commonly a single
 logical switch~\cite{Casado:2010:VNF:1921151.1921162}. This allows operators to
 specify routing, access control, or QoS policies by configuring a single
@@ -102,8 +102,8 @@ datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}.
 In this paper we focus on bugs in the virtualization and controller coordination
 components of the SDN software stack. We focus on a \emph{proactive} mode of
 operation where forwarding state updates are triggered by policy or topology
-changes, not data-plane events.\footnote{It seems feasible to generalize our
-approach to include inputs from the data-plane.}
+changes, not data-plane events.\footnote{It is possible to generalize our
+approach to include inputs from the data-plane, subject to performance limitations.}
 
 %We are primarily concerned with corner-case scenarios such as
 %correlated hardware failures, which are the hardest to test {\it a priori}

@@ -113,7 +113,7 @@ good operating practices (link failures are typically detected through
 protocols such as IS-IS,
 controllers log crash messages before
 halting in addition to monitoring heartbeats from peers, and VM migrations and
-policy changes are logged centrally for accounting purposes). In the rare case
+policy changes are logged centrally for accounting purposes). In case
 that an input to the system is not present in the available logs,
 \simulator{} may not reproduce the policy-violation, and the developer will
 have to ensure that the logging messages are added to the system.
@@ -191,7 +191,7 @@ Note that the simulator does not need
 to precisely reproduce the failure modes of {\em individual} nodes.
 We are only interested in observing the behavior of the overall distributed system, which is
 built under the assumption that individual components will fail.
-Therefore, it should be sufficient to use a `blunt hammer' (\eg{}
+Therefore, it is sufficient to use a `blunt hammer' (\eg{}
 $kill \text{ -}9$) to reproduce individual
 failure events, so long as the remaining nodes in the system react in the same
 way as they did in the actual run.
