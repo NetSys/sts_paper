@@ -2,38 +2,23 @@
 %other distributed systems (not just SDN controllers). It has always bothered
 %me somewhat that this work is so strongly married to SDN.}
 
-\eat{ SDN is widely heralded as the ``future of networking'', and its purpose is
-to make it easy to manage networks. It does so by moving control plane
-functionality out of network devices, and into a tightly-coupled cluster of
-servers that provide a simple programmatic interface through which policies can
-be specified. The challenges encountered in a tightly-coupled environment
-(master-backup failover, state replication, sharding) are notably different from
-traditional, fully distributed control planes, and thus present new
-opportunities and challenges to the networking community. If we, the networking
-community, have any desire to remain relevant, we must begin trying to
-understand this set of challenges. }
+SDN is widely heralded as the ``future of networking'', and its purpose is to make
+it easy to manage networks. It does so by moving control plane functionality out of
+network devices, and into a tightly-coupled cluster of servers that provide a simple
+programmatic interface through which policies can be specified. As we have
+learned in this work, the challenges encountered
+in a tightly-coupled environment (master-backup failover, state replication, sharding) are
+notably different from traditional, fully distributed control planes.
 
-SDN refactors the network control plane by moving the decision logic from the
-forwarding devices to custom controller software running on separate servers.
-These SDN controllers have evolved to large-scale, complex systems that are
-layered both horizontally for separation of concerns and distributed vertically
-for fault-tolerance and scalability. The distributed and/or replicated
-controllers and the forwarding hardware (switches) form a large scale
-distributed system with complex state and intricate failure modes. These are
-notably different from the ones encountered in traditional, fully distributed
-control planes. The authors believe that the community should invest in fully
-understanding this set of challenges.
-
-On the other hand, SDN also presents an opportunity to attack the underdeveloped
-field of network troubleshooting in a more systematic way. In this paper we
-present an approach and early prototype of a system that solves an important
-piece of the puzzle: automatically identifying fault-inducing input from
-execution logs. In doing so, we free developers to focus their efforts on
-debugging the problematic code itself rather than reproducing the error in the
-first place. We have demonstrated that our solution works on real, production
-control software, despite noted limitations. We hope that our work inspires the
-community to better understand the principles and mechanisms needed to construct
-and operate the network control planes of the future.
+In this paper we have taken a stab at one facet of these challenges:
+troubleshooting. We developed a technique for automatically
+identifying fault-inducing input from execution logs, with the
+goal of allowing developers to focus their efforts on debugging the problematic
+code itself rather than reproducing the error in the first place. We have
+demonstrated that our solution works on real, production control software,
+despite noted limitations. We hope that our work inspires the community to
+better understand the principles and mechanisms needed to construct and
+operate the network control planes of the future.
 
 % ============== ORIGINAL ===============
 %We have applied this system to several available SDN platforms, and were able to find or reproduce bugs in all the platforms we investigated.
