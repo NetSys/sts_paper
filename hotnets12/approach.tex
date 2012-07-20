@@ -23,15 +23,48 @@ triggering a given software fault.
 
 % TODO(cscott): somewhat redundant. We still need to defined policy-violations
 % though
-Given a trace of the system execution, our goal is to prune events that are not
-necessary for triggering
-errant behavior. We define errant behavior in terms of {\em policy-violations}:
+
+Before describing our approach, we describe an example bug in the Floodlight open source control platform
+built by BigSwitch networks~\cite{bigswitch}. Floodlight is distributed across multiple
+controllers for high availability, and provides support for virtualization.
+Switches maintain one hot connection to a master
+controller and several cold connections to replica controllers.
+The \emph{master} holds the authority to issue state changing requests to the switches.
+The other controllers are in \emph{slave} mode and do not perform any
+state-changes on the switch unless they detect that the master has crashed.
+
+\begin{figure}[t]
+    %\hspace{-10pt}
+    \includegraphics[width=3.25in]{../diagrams/case_study/example_bug.pdf}
+    \caption[]{\label{fig:example} Floodlight failover bug. Only the master is
+               allowed to push down updates to switches, yet the backup has
+               not detected that the master has crashed when the switch sends
+               a notification.}
+\end{figure}
+
+Consider the following race condition\footnote{Note that this issue was
+independently discovered by the developers of Floodlight.} depicted in Figure~\cite{fig:example}:
+a link fails, and the switch attempts to notify the controllers shortly after the master
+controller has died, but before a new master has been selected. In this case, all live controllers are in
+the slave role and thus will not take responsibility for updating the switch
+flow table. At some point, the heartbeats time out and one of the controllers
+elevates itself to the master role. The new master will proceed to manage
+the newly connected switch, but without ever clearing the routing entries for the failed link.
+
+Given a log of the system execution similar to the Floodlight case,
+our goal is to prune events that are not
+necessary for triggering errant behavior. We define errant behavior in terms of {\em policy-violations}:
 configurations of the network that are inconsistent
 with the policy, in the sense that the disposition of some packets by the
 physical forwarding tables conflicts with the dictated policies.
+In the example, the policy-violation is between a reachability policy (``All
+packets should arrive at their destination'') and the blackhole caused by the outdated
+routing table. The two inputs that are necessary for
+triggering this policy-violation are the link failure and the server crash, in
+conjunction.
 
-\Simulator{} is our algorithm for automatically inferring the external inputs
-that are both necessary and sufficient for triggering the policy-violation. We
+\Simulator{} is our algorithm for automatically inferring the inputs to the
+control cluster that are both necessary and sufficient for triggering the policy-violation. We
 refer to these events as the {\em minimal causal sequence} (MCS). The algorithm itself is
 simple to write out:
 
@@ -50,10 +83,16 @@ simple to write out:
 \end{algorithmic}
 
 \noindent In words, the algorithm takes in a log of the system execution,
-prunes each external input in isolation,
-runs the system forward with the remaining input, checks whether the
+prunes each external input in isolation (assuming that inputs are causally
+independent), runs the system forward with the remaining input, checks whether the
 policy-violation is still present, and thereby infers whether that input is
-necessary for triggering the fault.
+necessary for triggering the fault. Going back to our example, suppose the
+log includes many more inputs (policy changes, host migrations, hardware
+failures) than just the link failure and the controller crash. Whenever an
+extraneous event is pruned, the blackhole will still persist. When either of
+the controller crash is pruned, the blackhole will be resolved properly, and
+when the link failure is pruned, no blackhole will occur. The $MCS$ returned
+is therefore the controller crash and the link failure in conjuction.
 
 The crux of our problem lies in specifying exactly how each
 individual step of this algorithm works. In the rest of this section we will
