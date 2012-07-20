@@ -5,7 +5,7 @@ and other potential triggering events,
 all of which may appear characteristic of normal operating
 conditions at first glance. The entire
 execution log should theoretically be sufficient for reproducing the error (assuming
-complete and `globally orderable' logs), but the execution history may span
+complete and `globally order-able' logs), but the execution history may span
 hours or days and include thousands of extraneous events.
 Identifying relevant triggering events within a log of this size is akin to finding
 the proverbial `needle in the haystack'.
@@ -88,7 +88,7 @@ failures) than just the link failure and the controller crash. Whenever an
 extraneous event is pruned, the blackhole will still persist. When
 the controller crash is pruned, the blackhole will be resolved properly, and
 when the link failure is pruned, no blackhole will occur. The MCS returned
-is therefore the controller crash and the link failure in conjuction.
+is therefore the controller crash and the link failure in conjunction.
 
 The crux of our problem lies in specifying exactly how each
 individual step of this algorithm works. In the rest of this section we will
@@ -176,7 +176,7 @@ We have developed solutions to two separate challenges in achieving this require
 First, the system replay has to be {\em deterministic}.
 We achieve this with a single-threaded simulator that models switches
 and hosts in the network. We run the controllers in individual VMs that are
-bootstrapped from a static snaphot (including random number generator
+bootstrapped from a static snapshot (including random number generator
 seeds, \etc{}) and connect the simulated switches to the controllers as if they were true
 network devices. The simulator interposes on all communication channels in
 the network, allowing it to proceed with the system execution in lock step:
