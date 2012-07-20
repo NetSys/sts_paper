@@ -51,7 +51,7 @@ and other potential triggering events will be present,
 all of which may appear characteristic of normal operating
 conditions at first glance; assuming 8.5 network error events per
 minute~\cite{Greenberg:2009:VSF:1592568.1592576}, 500 VM migrations per
-hour~\cite{Soundararajan:2010:CBS:1899928.1899941}, and a relevent execution
+hour~\cite{Soundararajan:2010:CBS:1899928.1899941}, and a relevant execution
 history of one hour, there would be over 1000 extraneous inputs to the system
 reflected in the log.
 
@@ -176,7 +176,7 @@ seeds, \etc{}). The switches connect to the controllers as if they were true
 network devices such that the controllers believe they are configuring a true
 network. The simulator interposes on all communication channels,
 allowing it to proceed with the system execution in
-lock step~\cite{Gupta06toinfinity}:
+lock step~\cite{Dunlap:2002:REI:844128.844148}:
 pausing the controller VMs between each logical timestep and delaying messages
 arbitrarily. The simulator then reproduces the external inputs from the log.
 For example, link failures are reproduced by disconnecting the edge in
