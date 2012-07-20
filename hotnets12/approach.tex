@@ -43,7 +43,7 @@ state-changes on the switch unless they detect that the master has crashed.
 Consider the following race condition\footnote{Note that this issue was
 independently discovered by the developers of Floodlight.} depicted in
 Figure~\ref{fig:example}:
-a link fails, and the switch attempts to notify the control cluster shortly after the master
+a link fails, and the switch attempts to notify the controllers shortly after the master
 controller has died, but before a new master has been selected. In this case, all live controllers are in
 the slave role and thus will not take responsibility for updating the switch
 flow table. At some point, the heartbeats time out and one of the controllers
@@ -60,7 +60,7 @@ reachability policy specified in the logical view (``A can talk to B'')
 and the blackhole (``A's packets to B enter the blackhole'').
 
 \Simulator{} is our algorithm for automatically inferring the inputs to the
-control cluster that are both necessary and sufficient for triggering the policy-violation. We
+controllers  that are both necessary and sufficient for triggering the policy-violation. We
 refer to these events as the {\em minimal causal sequence} (MCS). The algorithm itself is
 simple to write out:
 
@@ -196,8 +196,8 @@ $kill \text{ -}9$) to reproduce individual
 failure events, so long as the remaining nodes in the system react in the same
 way as they did in the actual run.
 
-Second, we need to know precisely {\em when} to inject inputs to the control
-cluster; without maintaining the exact happens-before dependencies reflected in the
+Second, we need to know precisely {\em when} to inject inputs to the controllers;
+without maintaining the exact happens-before dependencies reflected in the
 log the output of the simulated system execution may not be the same.
 
 We can inject an external input $e$ at exactly the point where all other
@@ -308,7 +308,7 @@ the same input injected at the corresponding $a_{logical}$, and vice versa.
 
 Correspondence checking takes as input a causally-consistent
 snapshot of both the physical network and the
-control cluster's state. We first modify the controller to present an
+controller's state. We first modify the controller to present an
 interface through which the physical and virtual views can be
 extracted. In our simulated environment, the snapshot is
 then obtained by pausing execution and invoking this interface.
