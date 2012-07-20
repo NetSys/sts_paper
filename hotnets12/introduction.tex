@@ -49,7 +49,8 @@ Consequently, it is often difficult to distinguish events that are
 characteristic of operating normal
 conditions from those that push the network into an erroneous state.
 
-In this paper we seek to eliminate the need to manually identify the inputs that lead
+In this paper we seek to eliminate the need to manually identify the inputs
+from logs that lead
 up to software faults, thereby freeing developers to debug the problematic code itself.
 We present a solution for automatically inferring the sequence
 of inputs that are both necessary and sufficient for
@@ -59,23 +60,22 @@ Our algorithm, \simulator{}, leverages (i)
 distributed log analysis, (ii) deterministic replay
 execution environments, and (iii) invariant checking techniques.
 Beyond detailing these components, we describe a case-study
-on the Floodlight production
+on BigSwitch's Floodlight production
 controller~\cite{floodlight}, where we trigger a
 corner-case failover scenario between replicated controllers and apply our
 algorithm to show how the exact inputs that triggered the problem are
 identified.
 
-\eat{
 It is important to place this work in context and scope the problem we are
-attacking. First, \projectname{} is a troubleshooting tool, not a debugger; by
-this we mean that \projectname{} helps identify and localize network
+attacking. First, \simulator{} is a troubleshooting tool, not a debugger; by
+this we mean that \simulator{} helps identify and localize network
 problems but it does not help identify exactly which
-line of code causes the error. Second, \projectname{} is focused on the
+line of code causes the error. Second, \simulator{} is focused on the
 system software of the SDN stack (described in the next section). While progress has been made in troubleshooting control
-applications that run on top of the SDN platform~\cite{nice} and in troubleshooting the forwarding tables in the physical switches~\cite{anteater,hsa}, we
+applications that run on top of the SDN platform~\cite{nice} and in troubleshooting the
+forwarding tables in the physical switches~\cite{anteater,hsa}, we
 are not aware of previous troubleshooting work that focuses on the SDN
 platform itself; to the best of our knowledge, painstaking analysis of detailed logs is the current state-of-the-art in SDN platform troubleshooting.
-}
 
 The rest of this paper is organized as follows. In \S\ref{sec:overview},
 we present an overview of the SDN stack and its failure modes.
