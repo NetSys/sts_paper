@@ -36,7 +36,7 @@ For example, as Google's Urs H$\ddot{\mathrm{o}}$elzle recently
 noted at the Open Networking Summit~\cite{urs_keynote}: ``[Coordination between replicated controllers] is going to
 cause some angst, and justifiably, in the industry''. As SDN control software
 is used to manage larger and more sophisticated networks,
-its complexity will only continue to increase.
+we expect its complexity to further increase.
 
 With complexity inevitably come
 bugs. To make matters worse, the number of hardware failures,
@@ -58,12 +58,11 @@ triggering invalid configurations discovered in executions of the system.
 To support \simulator{}, we have (i) detailed how execution logs are obtained
 and what properties they need, (ii) developed a deterministic network simulator
 to replay the execution of control software, and (iii) developed an invariant
-checking algorithm for detecing errant behavior. Beyond elaborating these components, we describe a case-study
-on BigSwitch's Floodlight production
-controller~\cite{floodlight}, where we trigger a
-corner-case failover scenario between replicated controllers and apply our
-algorithm to show how the exact inputs that triggered the problem are
-identified.
+checking algorithm for detecing errant behavior. Beyond elaborating these
+components, we describe a case-study on the Floodlight opensource
+controller~\cite{floodlight}, where we trigger a corner-case failover scenario
+between replicated controllers and apply our algorithm to show how the exact
+inputs that triggered the problem are identified.
 
 \Simulator{} is focused on the
 system software of the SDN stack (described in the next section). While progress has been made in troubleshooting control
