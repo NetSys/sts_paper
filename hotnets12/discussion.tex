@@ -3,17 +3,12 @@
 \Simulator{} is certainly not without limitations. We discuss several of them
 here.
 
-\noindent{\bf Isn't a global log difficult to obtain?} Some failure events may appear
-multiple times in the log (\eg{} replica servers detecting that a master went down),
-yet we only want to replay the original event.
-If it is not possible to distinguish the original
-failure event from the resulting events (\eg{} in the case of a disk failure
-where the original crash message is not recoverable), developers may need to
-manually decipher the original event, or apply root cause analysis tools for
-detecting the originating event from correlated alarms~\cite{577079}.
-We note that if the simulator is unable to reproduce the policy-violation,
-the simulator may be able to `fuzz' different event
-orderings in an attempt to retrigger it.
+\noindent{\bf How big is the log? How long does this take to run?}
+First note that production control platforms already log most or all external
+inputs to the system. If the log is too long to rerun from the beginning for
+every iteration, the operator can take causally-consistent
+snapshots~\cite{Chandy:1985:DSD:214451.214456} of the
+live system and bootrap the simulator from the nearest quiescent snapshot.
 
 \eat{ % CS: cutting, since I have since realized that snapshots are purely an
 % optimization. It might take a really long time, but you can always just
@@ -27,35 +22,41 @@ to take a series of snapshots during periods of quiet operation (e.g., at night)
 and check for consistency.
 }
 
+
+\noindent{\bf Isn't a global log difficult to obtain?} Some failure events may appear
+multiple times in the log (\eg{} replica servers detecting that a master went down),
+yet we only want to replay the original event.
+If it is not possible to distinguish the original
+failure event from the resulting events (\eg{} in the case of a disk failure
+where the original crash message is not recoverable), developers may need to
+manually decipher the original event.
+We note that if the simulator is unable to reproduce the policy-violation,
+the simulator may be able to `fuzz' different event
+orderings in an attempt to retrigger it.
+
 \noindent{\bf Are all simulated failures really indistinguishable
 from actual failures?}
-Maybe not, but since the simulator
+Maybe not, but since the deterministic replay environment
 is built in software, the fidelity of our simulated failures
-can be made arbitrarily sophisticated, subject to scalability
-limitations of fine-grained simulations.
+can be made arbitrarily sophisticated\footnote{subject to scalability
+limitations of fine-grained simulations}
 
 \noindent{\bf Is it reasonable to assume that external inputs events are
 causally independent?} This depends on what the developer is trying to debug.
 Consider a drunk network operator who (i) trips on an ethernet cable, and
 consequently (ii) spills his drink on a switch (busting the hardware). Our
 system views (i) and (ii) as causally independent, but in reality (i) caused
-(ii). The developer's goal is not to debug drunk operators though.\footnote{We
-leave that up to the operator's manager}
+(ii). The developer's goal is not to debug drunk operators though.
 
 \noindent{\bf Will this approach work on all control platforms?}
-\Simulator{} requires some controller-specific modifications, including
+\Simulator{} requires controller-specific modifications, including
 awareness of the API to specify policy changes, awareness of the format of log
 messages, and causal annotation instrumentation. Correspondence checking also
-assumes that it has access to a physical view. If no physical view is
-available, alternate detectors could be used.
+assumes that it has access to a physical view with a routing table-like format.
 
 \noindent{\bf Will control platforms ever become stable enough to not require
           \simulator{}?}
-We certainly hope so! The field is from that point today though, and there
-will always be some latent bugs.
-
-\colin{In log size analysis, mention two optimizations. log truncation (causally
-consistent snapshots) and pruning branches of the happens-before}
+We certainly hope so! The field is decades from that point though.
 
 %\noindent{\bf How is this specific to SDN?}
 %

@@ -37,6 +37,14 @@ components (\eg{} link failures) needed to explain a collection of alarms. Rathe
 focusing on individual component failures, we seek to minimize inputs that affect the behavior
 of the overall distributed system.
 
+%-- Distributed Systems debuggers
+
+Pip~\cite{pip} is a framework for instrumenting general distributed systems
+in order to record, display, and check invariants on causal paths throughout the execution of
+live system. \Simulator{} observes the causal behavior of the
+distributed system in a simulated environment, enabling us to prune events from the
+causal paths.
+
 %-- Simulators? --
 %
 %Several other network simulators exist for testing SDN controllers. Mininet is a
@@ -52,9 +60,7 @@ of the overall distributed system.
 %Many of our ideas originate from the literature on troubleshooting general
 %distributed systems. WiDS checker introduced the notion of recording
 %production executions to be later replayed and verified in a controlled simulation.
-%Pip~\cite{pip} defines a DSL and collection of annotation tools to
-%reason about causal paths throughout the execution of the
-%distributed system. Finally, end-to-end tracing
+% Finally, end-to-end tracing
 %frameworks such as X-Trace~\cite{Fonseca:2007:XPN:1973430.1973450} and
 %Pinpoint~\cite{Chen02pinpoint:problem} provide a framework for tracing requests throughout
 %a distributed system in order to infer correctness errors between layers and
