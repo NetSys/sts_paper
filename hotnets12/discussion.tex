@@ -46,11 +46,13 @@ can be made arbitrarily sophisticated\footnote{subject to scalability
 limitations of fine-grained simulations}
 
 \noindent{\bf Is it reasonable to assume that external inputs events are
-causally independent?} This depends on what the developer is trying to debug.
+causally independent?} Developer's need to know how the
+distributed system {\it reacts} to external inputs. Understanding why external
+inputs occurred is an orthogonal issue.
 Consider a drunk network operator who (i) trips on an ethernet cable, and
 consequently (ii) spills his drink on a switch (busting the hardware). Our
-system views (i) and (ii) as causally independent, but in reality (i) caused
-(ii). The developer's goal is not to debug drunk operators though.
+system views (i) and (ii) as causally independent, and that's fine, since 
+the developer's goal is not to debug drunk operators.
 
 \noindent{\bf Will this approach work on all control platforms?}
 \Simulator{} requires controller-specific modifications, including

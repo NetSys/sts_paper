@@ -20,8 +20,9 @@ switch unless they detect that the master has crashed.
                dots, and timeouts are depicted as dotted messages lines.}
 \end{figure}
 
-Consider the following race condition\footnote{Note that this issue was
-independently discovered by the developers of Floodlight.} depicted in
+The failover logic in Floodlight is not implemented correctly, leading to the
+following race condition\footnote{Note that this issue was
+originally discovered by the developers of Floodlight~\cite{floodlight_bug}} depicted in
 Figure~\ref{fig:example}:
 a link fails (E1), and the switch attempts to notify the controllers (E2,E4) shortly after the master
 controller has died (E3), but before a new master has been selected (E6). In this case, all live controllers are in
@@ -43,7 +44,7 @@ reachability policy specified in the logical view (``A can talk to B'')
 and the blackhole in the physical network (``A's packets to B enter the
 blackhole and do not arrive at B'').
 
-There were only two inputs (link failure, and server crash) shown in our example.
+There were only two external inputs (E1,E3) shown in our example.
 In production datacenter logs
 a significantly greater number of hardware failures, topology changes,
 and other potential triggering events will be present,
@@ -55,9 +56,9 @@ history of one hour, there would be over 1000 extraneous inputs to the system
 reflected in the log.
 
 We have developed an algorithm, \simulator{}, for automatically inferring the inputs to the
-controllers  that are both necessary and sufficient for triggering the policy-violation. We
-refer to these events as the {\em minimal causal sequence} (MCS). The
-algorithm itself shown here, and elaborated in later sections:
+controllers that are both necessary and sufficient for triggering the policy-violation. We
+refer to these events as the {\em minimal causal sequence} (MCS). We show
+the algorithm here, and elaborate in later sections:
 
 \begin{algorithmic}
 \State $MCS \gets []$
@@ -75,22 +76,23 @@ algorithm itself shown here, and elaborated in later sections:
 
 \noindent In words, the algorithm takes in a log of the system execution,
 prunes each external input in isolation (assuming that inputs are causally
-independent, thereby avoiding exponential runtime),
+independent to avoid exponential runtime),
 runs the system forward with the remaining input, checks whether the
 policy-violation is still present, and thereby infers whether that input is
 necessary for triggering the fault. Going back to our example, suppose the
-log includes many more inputs (policy changes, host migrations, hardware
-failures) than just the link failure and the controller crash. Whenever an
+log includes many more (extraneous) inputs. Whenever an
 extraneous event is pruned, the blackhole will still persist. When
 the controller crash is pruned, the blackhole will be resolved properly, and
 when the link failure is pruned, no blackhole will occur. The MCS returned
 is therefore the controller crash and the link failure in conjunction.
 
 The crux of our contribution lies in specifying exactly how each
-individual step of this algorithm works. In the rest of this section we will
-detail the (i) distributed logging infrastructure, (ii) deterministic
-replay execution environment, and (iii) violation detection algorithms
-necessary for finding the minimal causal sequence.
+individual step of this algorithm works. In the rest of the section we will
+describe our efforts to support \simulator{}, including (i)
+detailing how execution logs are obtained
+and what properties they need, (ii) developing a deterministic network simulator
+to replay the execution of control software, and (iii) developing an invariant
+checking algorithm for detecing errant behavior.
 
 \subsection{Distributed Logging}
 
@@ -110,11 +112,8 @@ protocols such as IS-IS,
 controllers log crash messages before
 halting in addition to monitoring heartbeats from peers, and VM migrations and
 policy changes are logged centrally for accounting purposes). We discuss in
-\S\ref{sec:discussion} the size and truncation optimizations that
-can performed on these logs. In case
-that an input to the system is not present in the available logs,
-\simulator{} may not reproduce the policy-violation, and the developer will
-have to ensure that the logging messages are added to the system.
+\S\ref{sec:discussion} the size of these logs, and truncation that can be
+performed. 
 
 \Simulator{} also depends on a causally ordered log of the
 distributed system's execution. If the control software does not already do
