@@ -1,5 +1,4 @@
-For most bugs in the control software, software
-developers need to reproduce the events that triggered the errant
+Software developers need to reproduce the events that triggered errant
 behavior before they can begin stepping through the code with
 debugging tools. Yet large networks experience a large number of hardware failures, topology changes,
 and other potential triggering events,
@@ -11,7 +10,7 @@ hours or days and include thousands of extraneous events.
 Identifying relevant triggering events within a log of this size is akin to finding
 the proverbial `needle in the haystack'.
 In this section we describe our approach to automatically identifying
-the smallest set of events from logs of the system execution sufficient for
+the smallest set of events from execution logs sufficient for
 triggering a given software fault.
 
 %Platform developers may discover policy-violations
@@ -24,7 +23,7 @@ triggering a given software fault.
 % TODO(cscott): somewhat redundant. We still need to defined policy-violations
 % though
 
-Before describing our approach, we describe an example bug in the Floodlight open source control platform
+Before presenting our approach, we describe an example bug in the Floodlight open source control platform
 built by BigSwitch networks~\cite{bigswitch}. Floodlight is distributed across multiple
 controllers for high availability, and provides support for virtualization.
 Switches maintain one hot connection to a master
@@ -36,32 +35,29 @@ state-changes on the switch unless they detect that the master has crashed.
 \begin{figure}[t]
     %\hspace{-10pt}
     \includegraphics[width=3.25in]{../diagrams/case_study/example_bug.pdf}
-    \caption[]{\label{fig:example} Floodlight failover bug. Only the master is
-               allowed to push down updates to switches, yet the backup has
-               not detected that the master has crashed when the switch sends
-               a notification.}
+    \caption[]{\label{fig:example} Floodlight failover bug. External inputs
+               are depicted as red dots, internal events are depicted as black
+               dots, and timeouts are depicted as dotted messages lines.}
 \end{figure}
 
 Consider the following race condition\footnote{Note that this issue was
-independently discovered by the developers of Floodlight.} depicted in Figure~\cite{fig:example}:
-a link fails, and the switch attempts to notify the controllers shortly after the master
+independently discovered by the developers of Floodlight.} depicted in
+Figure~\ref{fig:example}:
+a link fails, and the switch attempts to notify the control cluster shortly after the master
 controller has died, but before a new master has been selected. In this case, all live controllers are in
 the slave role and thus will not take responsibility for updating the switch
 flow table. At some point, the heartbeats time out and one of the controllers
 elevates itself to the master role. The new master will proceed to manage
-the newly connected switch, but without ever clearing the routing entries for the failed link.
+the newly connected switch, but without ever clearing the routing entries for
+the failed link (resulting in a blackhole).
 
 Given a log of the system execution similar to the Floodlight case,
 our goal is to prune events that are not
 necessary for triggering errant behavior. We define errant behavior in terms of {\em policy-violations}:
 configurations of the network that are inconsistent
-with the policy, in the sense that the disposition of some packets by the
-physical forwarding tables conflicts with the dictated policies.
-In the example, the policy-violation is between a reachability policy (``All
-packets should arrive at their destination'') and the blackhole caused by the outdated
-routing table. The two inputs that are necessary for
-triggering this policy-violation are the link failure and the server crash, in
-conjunction.
+with the policy. In the example, the policy-violation is between a
+reachability policy specified in the logical view (``A can talk to B'')
+and the blackhole (``A's packets to B enter the blackhole'').
 
 \Simulator{} is our algorithm for automatically inferring the inputs to the
 control cluster that are both necessary and sufficient for triggering the policy-violation. We
@@ -91,7 +87,7 @@ log includes many more inputs (policy changes, host migrations, hardware
 failures) than just the link failure and the controller crash. Whenever an
 extraneous event is pruned, the blackhole will still persist. When either of
 the controller crash is pruned, the blackhole will be resolved properly, and
-when the link failure is pruned, no blackhole will occur. The $MCS$ returned
+when the link failure is pruned, no blackhole will occur. The MCS returned
 is therefore the controller crash and the link failure in conjuction.
 
 The crux of our problem lies in specifying exactly how each
