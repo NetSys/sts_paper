@@ -6,9 +6,10 @@ SDN is widely heralded as the ``future of networking'', and its purpose is to ma
 it easy to manage networks. It does so by moving control plane functionality out of
 network devices, and into a tightly-coupled cluster of servers that provide a simple
 programmatic interface through which policies can be specified. As we have
-learned in this work, the challenges encountered
-in a tightly-coupled environment (master-backup failover, state replication, sharding) are
-notably different from traditional, fully distributed control planes.
+learned in this work, the challenges of maintaining virtualized and distributed
+views in a failure-prone environment are
+notably different from the challenges encountered in traditional,
+fully distributed control planes.
 
 In this paper we have taken a stab at one facet of these challenges:
 troubleshooting errors in control software. We developed a technique for automatically

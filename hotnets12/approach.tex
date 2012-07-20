@@ -86,7 +86,7 @@ the controller crash is pruned, the blackhole will be resolved properly, and
 when the link failure is pruned, no blackhole will occur. The MCS returned
 is therefore the controller crash and the link failure in conjunction.
 
-The crux of our problem lies in specifying exactly how each
+The crux of our contribution lies in specifying exactly how each
 individual step of this algorithm works. In the rest of this section we will
 detail the (i) distributed logging infrastructure, (ii) deterministic
 replay execution environment, and (iii) violation detection algorithms
@@ -176,7 +176,7 @@ bootstrapped from a static snapshot (including random number generator
 seeds, \etc{}) and connect the simulated switches to the controllers as if they were true
 network devices. The simulator interposes on all communication channels in
 the network, allowing it to proceed with the system execution in
-lock step~cite{Gupta06toinfinity}:
+lock step~\cite{Gupta06toinfinity}:
 pausing the controller VMs between each logical timestep and delaying messages
 arbitrarily. The simulator then reproduces the external inputs from the log.
 For example, link failures are reproduced by disconnecting the edge in
