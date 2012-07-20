@@ -1,6 +1,6 @@
 We begin by sketching the architecture of SDN networks and
 describing the failure-modes and correctness challenges encountered by operators and
-implementers of SDN controllers.
+implementers of SDN control platforms.
 
 SDN networks are managed by software running on a set of network-attached
 servers called ``controllers''. Modern SDN platforms differ from
@@ -32,8 +32,8 @@ physical network state. Above, the \emph{logical view} translates the
 potentially complicated physical network to a simpler logical view, commonly a single
 logical switch~\cite{Casado:2010:VNF:1921151.1921162}. If the control platform supports virtualization, a
 virtualization layer handles multi-tenancy by providing each tenant with their
-own logical view to specify policies over. The platform then multiplexes the
-policies onto the same physical network. Finally, at the top of the stack
+own logical view, which are multpliexed onto the same physical network.
+Finally, at the top of the stack
 the \emph{control application} specifies the desired
 high-level behavior of the network by configuring the logical view. We term these behavioral specifications
 ``policies''. Policy constraints might include connectivity, access control,

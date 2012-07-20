@@ -1,27 +1,7 @@
-Software developers need to reproduce the events that triggered errant
-behavior before they can begin stepping through the code with
-debugging tools. Yet large networks experience a large number of hardware failures, topology changes,
-and other potential triggering events,
-all of which may appear characteristic of normal operating
-conditions at first glance. The entire
-execution log should theoretically be sufficient for reproducing the error (assuming
-complete and `globally order-able' logs), but the execution history may span
-hours or days and include thousands of extraneous events.
-Identifying relevant triggering events within a log of this size is akin to finding
-the proverbial `needle in the haystack'.
-In this section we describe our approach to automatically identifying
-the smallest set of events from execution logs sufficient for
-triggering a given software fault.
 
 %Platform developers may discover policy-violations
 %through customer complaints, integration tests, or by periodically running
 %invariant checks on a deployed network.
-
-\subsection{\SIMULATOR{}}
-\label{sec:causal_analysis}
-
-% TODO(cscott): somewhat redundant. We still need to defined policy-violations
-% though
 
 Before presenting our approach, we describe an example bug in the Floodlight
 open source control platform~\cite{floodlight}. Floodlight is distributed across
@@ -43,13 +23,16 @@ switch unless they detect that the master has crashed.
 Consider the following race condition\footnote{Note that this issue was
 independently discovered by the developers of Floodlight.} depicted in
 Figure~\ref{fig:example}:
-a link fails, and the switch attempts to notify the controllers shortly after the master
-controller has died, but before a new master has been selected. In this case, all live controllers are in
+a link fails (E1), and the switch attempts to notify the controllers (E2,E4) shortly after the master
+controller has died (E3), but before a new master has been selected (E6). In this case, all live controllers are in
 the slave role and thus will not take responsibility for updating the switch
-flow table. At some point, the heartbeats time out and one of the controllers
-elevates itself to the master role. The new master will proceed to manage
+flow table (E5). At some point, the heartbeats time out and one of the controllers
+elevates itself to the master role (E6). The new master will proceed to manage
 the newly connected switch, but without ever clearing the routing entries for
 the failed link (resulting in a blackhole).
+
+\subsection{\SIMULATOR{}}
+\label{sec:causal_analysis}
 
 Given a log of the system execution similar to the Floodlight case,
 our goal is to prune events that are not
@@ -57,12 +40,24 @@ necessary for triggering errant behavior. We define errant behavior in terms of 
 configurations of the network that are inconsistent
 with the policy. In the example, the policy-violation is between a
 reachability policy specified in the logical view (``A can talk to B'')
-and the blackhole (``A's packets to B enter the blackhole'').
+and the blackhole in the physical network (``A's packets to B enter the
+blackhole and do not arrive at B'').
 
-\Simulator{} is our algorithm for automatically inferring the inputs to the
+There were only two inputs (link failure, and server crash) shown in our example.
+In production datacenter logs
+a significantly greater number of hardware failures, topology changes,
+and other potential triggering events will be present,
+all of which may appear characteristic of normal operating
+conditions at first glance; assuming 8.5 network error events per
+minute~\cite{Greenberg:2009:VSF:1592568.1592576}, 500 VM migrations per
+hour~\cite{Soundararajan:2010:CBS:1899928.1899941}, and a relevent execution
+history of one hour, there would be over 1000 extraneous inputs to the system
+reflected in the log.
+
+We have developed an algorithm, \simulator{}, for automatically inferring the inputs to the
 controllers  that are both necessary and sufficient for triggering the policy-violation. We
-refer to these events as the {\em minimal causal sequence} (MCS). The algorithm itself is
-simple to write out:
+refer to these events as the {\em minimal causal sequence} (MCS). The
+algorithm itself shown here, and elaborated in later sections:
 
 \begin{algorithmic}
 \State $MCS \gets []$
@@ -80,7 +75,8 @@ simple to write out:
 
 \noindent In words, the algorithm takes in a log of the system execution,
 prunes each external input in isolation (assuming that inputs are causally
-independent), runs the system forward with the remaining input, checks whether the
+independent, thereby avoiding exponential runtime),
+runs the system forward with the remaining input, checks whether the
 policy-violation is still present, and thereby infers whether that input is
 necessary for triggering the fault. Going back to our example, suppose the
 log includes many more inputs (policy changes, host migrations, hardware
