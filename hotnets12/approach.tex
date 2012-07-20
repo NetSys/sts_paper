@@ -23,14 +23,14 @@ triggering a given software fault.
 % TODO(cscott): somewhat redundant. We still need to defined policy-violations
 % though
 
-Before presenting our approach, we describe an example bug in the Floodlight open source control platform
-built by BigSwitch networks~\cite{bigswitch}. Floodlight is distributed across multiple
-controllers for high availability, and provides support for virtualization.
-Switches maintain one hot connection to a master
-controller and several cold connections to replica controllers.
-The \emph{master} holds the authority to issue state changing requests to the switches.
-The other controllers are in \emph{slave} mode and do not perform any
-state-changes on the switch unless they detect that the master has crashed.
+Before presenting our approach, we describe an example bug in the Floodlight
+open source control platform~\cite{floodlight}. Floodlight is distributed across
+multiple controllers for high availability, and provides support for
+virtualization. Switches maintain one hot connection to a master controller and
+several cold connections to replica controllers. The \emph{master} holds the
+authority to issue state changing requests to the switches. The other
+controllers are in \emph{slave} mode and do not perform any state-changes on the
+switch unless they detect that the master has crashed.
 
 \begin{figure}[t]
     %\hspace{-10pt}
