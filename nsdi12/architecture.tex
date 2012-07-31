@@ -75,7 +75,7 @@ realizing our goals.
   \label{fig:system}
 \end{figure*}
 
-\noindent{\bf Trace Input And Fuzzing.} Since a major goal \projectname{} was
+\noindent{\bf Trace Input And Fuzzing.} Since a major goal of \projectname{} was
 to support a wide range of usage scenarios, % WAT does that even mean
 we provide support for three different methods for generating network trace
 inputs. The most common method is to insert failure and topology change logs
@@ -86,7 +86,8 @@ has complete control over network events, and is thereby free to explore her
 intuitions in order to reproduce a failure mode she has in mind.
 
 \noindent{\bf Simulator.} We have built a simulator for SDN networks,
-where network devices and hosts are modeled as lightweight python objects. Within a single thread, we
+where network devices and hosts are modeled as lightweight python objects.
+\colin{Reviewer OA: python objects creep in to the writing} Within a single thread, we
 are able to deterministically model the execution of very large networks.
 Our simulated model supports a wide
 range of failure modes, and provides fine-grained control over event
@@ -94,7 +95,7 @@ orderings, component failures, and other aspects of the system execution. Our
 simulator currently supports switch failures, link failures, arbitrary packet
 re-orderings, drops and delays, and a fully general control plane.
 
-The main challenge we encountered in the design of the simulator was the
+The main challenge we encountered in the design of the simulator was
 maintaining large numbers of TCP connections to the
 controller(s). Although the controllers themselves may be spread
 over multiple physical servers, the main simulator must nonetheless handle all
@@ -111,7 +112,9 @@ for reproducible results.
 Currently we run applications as UNIX processes outside of the simulator.
 We note however that there are a number of approaches for achieving deterministic
 replay for external software. For example: a software determinism layer (e.g.
-deterministic random number generators) is
+deterministic random number generators \colin{Reviewer OA: Whenever I see
+replay, I worry about dealing with nondeterminism and pseudorandom number
+generators. It was not clear how you are dealing with these issues.}) is
 extremely lightweight, but requires modifications to the external software;
 binary rewriting does not require any modification to the external
 software's source code, but incurs moderate performance overhead; and VMs

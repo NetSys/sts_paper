@@ -76,6 +76,11 @@ and comparing the leaves. Any mismatch in leaves of the propagation graphs
 represent policy-violations between control applications and network
 configuration.
 
+\colin{Reviewer B: Without an introduction and an explanation of how the
+propagation graph is built, and what an example propagation graph looks like,
+it is difficult to grasp the performance and correctness of the techniques
+proposed in the paper.}
+
 It is important to note that correspondence checking assumes that the
 application's policies are correct; it only checks whether the physical
 network's configuration is isomorphic with the logical view, but does not
@@ -143,7 +148,9 @@ a stream of network events (\eg{} link failures). Event sequences are either
 synthetically generated or gathered from a production trace of failure and topology change
 events, as enabled, \eg{}, by OFRewind~\cite{ofrewind}. We then replay the execution of the
 control plane based on the input trace. Throughout the system execution,
-the simulator periodically invokes correspondence checking to enumerate all
+the simulator periodically\colin{Reviewer OB: Why not invoke it every time
+there's a new event being evaluated? If the periodic checking is justified,
+what is an appropriate period?} invokes correspondence checking to enumerate all
 policy-violations (defined as any value in $\Omega^{physical}$ not present in
 $\Omega^{virtual}$, or vice versa). When a policy-violation is detected,
 the simulator forks off a branch that investigates the future system behavior
@@ -165,7 +172,7 @@ of network events into a totally-ordered trace by choosing an arbitrary
 sequential ordering that maintains the `happens-before'
 relation.
 
-Without regarding casual constraints, a naive algorithm to infer the minimal
+Without regarding causal constraints, a naive algorithm to infer the minimal
 causal set would be to iteratively
 exclude each event from the system execution, and see if the policy-violation
 still appears. The problem is that we cannot simply ``erase history'';
@@ -188,7 +195,7 @@ pruned branches.
 %    event stream}
 %\end{figure}
 
-After having identified the active `casual branches' in the system at the
+After having identified the active `causal branches' in the system at the
 onset of the policy-violation, our algorithm essentially performs a
 traversal of the causal graph's (a DAG) topological ordering, pruning leaves that are not
 responsible for the policy-violation. In pseudo-code:
@@ -207,15 +214,19 @@ responsible for the policy-violation. In pseudo-code:
 Here, $runSimulation(DAG)$ executes the system from the beginning of the
 trace, and checks whether the policy-violation occurs at the end of the
 execution. The beginning of the trace starts at some pre-defined point where
-the system was known to be in a coalescent state.
+the system was known to be in a quiescent state.
 
 \colin{
-Panda and I realized that the minimal casual set algorithm we presented in the OSDI submission is erroneous.
+Panda and I realized that the minimal causal set algorithm we presented in the OSDI submission is erroneous.
 
 A few things are wrong with this:
 \begin{itemize}
 \item We can't remove elements of the MCS from the DAG! We should only remove from the DAG if the event is not in the MCS; otherwise, the policy-violation will never be reproduced after the first element is added the MCS, since we took away one of the necessary conditions.
-\item Need to make a distinction between "random events" (e.g. link failures, node failures) and "deterministic events" (e.g., a node is programmed to send a pong when it receives a ping). In the MCS algorithm, it makes no sense to prune out deterministic events... However, the algorithm still needs to take in the entire casual DAG (both random and deterministic) to maintain casual dependencies [can't prune arbitrary random events]
+\item Need to make a distinction between "random events" (e.g. link failures,
+node failures) and "deterministic events" (e.g., a node is programmed to send
+a pong when it receives a ping). In the MCS algorithm, it makes no sense to
+prune out deterministic events... However, the algorithm still needs to take
+in the entire causal DAG (both random and deterministic) to maintain causal dependencies [can't prune arbitrary random events]
 \item We assume that the random events are independent; we need make this
 assumption explicit. But because we assume they are completely independent,
 and because we only manipualate random events, there is no need for vector
@@ -229,7 +240,7 @@ linear with the number of events in the input trace.
 
 We also note that Lamport's definition of the `happens-before' relation is
 conservatively general, and can include events that are not in fact
-casually-related. In fact, as described here, our algorithm can be viewed as a
+causally-related. In fact, as described here, our algorithm can be viewed as a
 generalization of dependency graph algorithms for hardware fault
 isolation~\cite{577079}. In future work we hope to leverage domain
 knowledge of network control plane

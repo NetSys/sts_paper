@@ -150,6 +150,11 @@ policy-violation between the flow-table representation in the controller and the
 
 \subsection{Overhead}
 
+\colin{Reviewer OB: I would prefer to see a more in-depth analysis of why
+correspondence checking is not as heavyweight as, say, conventional
+model-checking. Is it the inherent symmetry in data center networks? Can we
+assume that there is symmetry?}
+
 In addition to describing bugs, we show that \projectname{} is able
 to simulate and check large networks quickly.
 
@@ -213,6 +218,10 @@ runs on a single Intel Xeon 2.80GHz core. Note that the number of PORTLAND routi
 of pods in the fat-tree. We excluded the time to convert
 flow tables to HSA transfer functions, since transfer functions can be maintained
 offline.
+
+\colin{Reviewer OB:  what are the characteristics of the PORTLAND routing
+table? If the tables were any different, would the performance of
+correspondence checking remain the same, degrade or improve? }
 
 As the figure depicts, even for large networks
 (27,648 hosts) the serial runtime of correspondence checking is reasonable for
