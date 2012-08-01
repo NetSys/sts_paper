@@ -205,7 +205,8 @@ Challenges in building scalable virtualized datacenter management
 \noindent{\bf Correspondence Checking Runtime.} Computing the propagation
 graph for correspondence checking is equivalent to enumerating
 all possible paths in the network, which scales with the diameter
-of the network and the number of routing entries per switch.
+of the network and the number of routing entries per switch \colin{Reviewer
+OC: scales how? I suspect it's at least N2}.
 The propagation graph for each host can be
 computed in parallel however, so the computation is bottlenecked by the serial runtime
 of computing a single host's propagation graph.
@@ -214,7 +215,7 @@ We show the serial runtime of correspondence checking in
 Figure~\ref{fig:hsa_runtime}. For this analysis we generated fat tree topologies
 between 2 and 48 pods wide, with pre-installed PORTLAND~\cite{NiranjanMysore:2009:PSF:1592568.1592575}
 routing tables in each switch. Each data point is the minimum of three
-runs on a single Intel Xeon 2.80GHz core. Note that the number of PORTLAND routing entries per switch scales with the number
+runs\colin{Reviewer OC: seems to overstate value of approach if maximum is much different} on a single Intel Xeon 2.80GHz core. Note that the number of PORTLAND routing entries per switch scales with the number
 of pods in the fat-tree. We excluded the time to convert
 flow tables to HSA transfer functions, since transfer functions can be maintained
 offline.
@@ -222,6 +223,10 @@ offline.
 \colin{Reviewer OB:  what are the characteristics of the PORTLAND routing
 table? If the tables were any different, would the performance of
 correspondence checking remain the same, degrade or improve? }
+
+\colin{Reviewer OD: First the paper started generally, then it narrows its
+scope to PORTLAND-style datacenters. An accurate abstract would have reflected
+this narrowing of scope}
 
 As the figure depicts, even for large networks
 (27,648 hosts) the serial runtime of correspondence checking is reasonable for

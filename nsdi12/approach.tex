@@ -49,7 +49,7 @@ transitive closure of $\Psi$:
 \end{align*}
 Here, $E_{access}$ denotes access links adjacent to end-hosts.
 In words, $\Omega$ is a mapping between all possible input packets inserted
-into the network from an end-hosts, to the final location of the packet after
+into the network from end-hosts to the final location of the packet after
 traversing the network.
 
 In SDN, it should always be the case that:
@@ -147,7 +147,8 @@ We do so in a relatively straightforward fashion. First, we take as input
 a stream of network events (\eg{} link failures). Event sequences are either
 synthetically generated or gathered from a production trace of failure and topology change
 events, as enabled, \eg{}, by OFRewind~\cite{ofrewind}. We then replay the execution of the
-control plane based on the input trace. Throughout the system execution,
+control plane based on the input trace\colin{Use the word ``Forensically''.
+Need to be more concrete about how this tool actually gets used}. Throughout the system execution,
 the simulator periodically\colin{Reviewer OB: Why not invoke it every time
 there's a new event being evaluated? If the periodic checking is justified,
 what is an appropriate period?} invokes correspondence checking to enumerate all
@@ -251,7 +252,8 @@ allowing us to further prune events that are not in fact causally related from t
 \subsubsection{Additional Use-Cases} Besides lifetime tracking and causal analysis, our simulation infrastructure has a
 number of other possible use-cases:
 
-\noindent\textbf{Checking related problems by fuzzing.} Input traces can be \emph{fuzzed}, i.e.,
+\noindent\textbf{Checking related problems by fuzzing.} Input traces can be
+\emph{fuzzed}~\cite{Miller:1990:ESR:96267.96279}, \ie{},
 randomly perturbed, to expose the system to similar error conditions, and confirm
 that a proposed solution is not just a point-fix.
 
