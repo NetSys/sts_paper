@@ -1,0 +1,5 @@
+1. Figure out binary search applicability
+
+2. Figure out if we can get away without causal annotations (prefix inference)
+
+3. Write up alternate outlines (based on the answer to 2.)
