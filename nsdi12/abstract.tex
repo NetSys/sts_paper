@@ -1,9 +1,10 @@
-In this paper we leverage the
-structure of the SDN software stack to automate the process of troubleshooting
-networks. We present two techniques for programmatically localizing the root cause of network problems:
-cross-layer correspondence checking infers what problems exist in the network,
-and where in the control software the problem first developed; and
-\simulator{} infers when the triggering event(s) occurred. We evaluated
-our tools on
-three popular SDN platforms---Frenetic, Floodlight and POX---and found or reproduced three bugs:
+Modern software-defined networking control platforms are highly complex distributed
+systems. When control software behaves incorrectly, it is difficult
+for developers to identify the exact events that caused the system to enter
+an erroneous state. In this paper we address the problem of automatically
+identifying fault-inducing input from execution logs. We evaluate our
+algorithm and system on three popular SDN platforms---Frenetic, Floodlight and POX---and
+found or reproduced three bugs:
 isolation breaches and faulty failover logic between replicated controllers.
+
+\colin{Design principles pitch?}
