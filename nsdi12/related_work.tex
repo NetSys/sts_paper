@@ -9,6 +9,54 @@ captures exactly what is needed, re: correspondence checking}. \colin{reviewer
 c: These sorts of "loopbacks" and P/I paths have existed for eons and the
 differentiation and explanation of merits of this approach are not stated.}
 
+%-- Program Slicing --
+
+The delta debugging algorithm~\cite{Zeller:2002:SIF:506201.506206} seeks to solve
+a problem that is exactly analogous to ours on a single machine: given input that causes a test case
+to fail, what is the minimum subset of the input that still produces the failure?
+We apply the same reasoning to a distributed system.
+
+%-- Deterministic Replay (OFRewind) --
+
+Deterministic replay techniques such as OFRewind~\cite{ofrewind}
+are designed to allow developers to interactively prune
+the inputs that lead up to errant behavior. We present an algorithm that
+automates this process.
+
+%-- Model checking (NICE): --
+
+NICE~\cite{nice} combines model checking with concolic execution
+to enumerate all possible code paths taken by control software (NOX)
+and identify concrete inputs (\eg{} control message orderings) that cause
+the network to enter invalid configurations. Unlike NICE, by analyzing
+bugs {\em post-hoc} from live runs of the system our approach applies
+to large software systems without suffering from state explosion 
+
+%-- Invariant Checking? --
+
+\eat{
+Invariant checking tools such as Anteater~\cite{anteater} and HSA~\cite{hsa}
+detect problems in the dataplane. We leverage invariant checking tools
+to distinguish inputs that are necessary for reproducing a given invariant violation.
+}
+
+%-- Root cause analysis? --
+
+Root cause analysis techniques~\cite{577079} seek to identify the minimum set of failed
+components (\eg{} link failures) needed to explain a collection of alarms. Rather than
+focusing on individual component failures, we seek to minimize inputs that affect the behavior
+of the overall distributed system.
+
+%-- Distributed Systems debuggers --
+
+Pip~\cite{pip} is a framework for instrumenting general-purpose distributed systems
+with code to record, display, and check invariants on causal paths throughout
+live executions. \Simulator{} observes the causal behavior of the
+distributed system in a simulated environment, enabling us to iteratively prune extraneous input events.
+
+% ------------ OLD -----------
+
+\eat{
 This work extends a growing literature on troubleshooting tools for
 Software-Defined Networks.
 
@@ -82,3 +130,4 @@ differentiate ephemeral from persistent errors.
 % Virtualization definitely won't happen by Monday. But, papers include
 % Martin's presto '10 paper 'Virtualizaing the Network Forwarding Plane'
 
+}
