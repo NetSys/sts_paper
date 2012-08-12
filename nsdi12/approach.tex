@@ -1,28 +1,251 @@
-\projectname{} simplifies the troubleshooting process by programmatically localizing the root cause
-of network problems along three dimensions: {\it what} network problems exist at a
-particular point in time, {\it where} in the control software a problem first developed, and
-{\it when} the triggering event occurred. In this section we present
-the components of \projectname{} we have designed for performing software fault localization for SDN.
+%Platform developers may discover policy-violations
+%through customer complaints, integration tests, or by periodically running
+%invariant checks on a deployed network.
+
+Before presenting our approach, we describe an example bug in the Floodlight
+open source control platform~\cite{floodlight}. Floodlight is distributed across
+multiple controllers for high availability, and provides support for
+virtualization. Switches maintain one hot connection to a master controller and
+several cold connections to replica controllers. The \emph{master} holds the
+authority to issue state changing commands to the switches. The other
+controllers are in \emph{slave} mode and do not perform any changes to the
+switch configurations unless they detect that the master has crashed.
+
+\begin{figure}[t]
+    %\hspace{-10pt}
+    \includegraphics[width=3.25in]{../diagrams/case_study/example_bug.pdf}
+    \caption[]{\label{fig:example} Floodlight failover bug. External inputs
+               are depicted as red dots, internal events are depicted as black
+               dots, and timeouts are depicted as dotted messages lines.}
+\end{figure}
+
+The failover logic in Floodlight is not implemented correctly, leading to the
+following race condition\footnote{Note that this issue was
+originally discovered by the developers of Floodlight~\cite{floodlight_bug}} depicted in
+Figure~\ref{fig:example}:
+a link fails (E1), and the switch attempts to notify the controllers (E2,E4) shortly after the master
+controller has died (E3), but before a new master has been selected (E6). In this case, all live controllers are in
+the slave role and thus will not take responsibility for updating the switch
+flow table (E5). At some point, the heartbeats time out and one of the controllers
+elevates itself to the master role (E6). The new master will proceed to manage
+the newly connected switch, but without ever clearing the routing entries for
+the failed link (resulting in a blackhole).
+
+\subsection{\SIMULATOR{}}
+\label{sec:causal_analysis}
+
+Given a log of the system execution similar to the Floodlight case,
+our goal is to prune events that are not
+necessary for triggering errant behavior. We define errant behavior in terms of {\em policy-violations}:
+configurations of the network that are inconsistent
+with the policy. In the example, the policy-violation is between a
+reachability policy specified in the logical view (``A can talk to B'')
+and the blackhole in the physical network (``A's packets to B enter the
+blackhole and do not arrive at B'').
+
+There were only two external inputs (E1,E3) shown in our example.
+In production datacenter logs
+a significantly greater number of hardware failures, topology changes,
+and other potential triggering events will be present,
+all of which may appear characteristic of normal operating
+conditions at first glance; assuming 8.5 network error events per
+minute~\cite{Greenberg:2009:VSF:1592568.1592576}, 500 VM migrations per
+hour~\cite{Soundararajan:2010:CBS:1899928.1899941}, and a relevant execution
+history of one hour, there would be over 1000 extraneous inputs to the system
+reflected in the log.
+
+We have developed an algorithm, \simulator{}, for automatically inferring the inputs to the
+controllers that are both necessary and sufficient for triggering the policy-violation. We
+refer to these events as the {\em minimal causal sequence} (MCS). We show
+the algorithm here, and elaborate in later sections:
+
+\begin{algorithmic}
+\State $MCS \gets []$
+\ForAll {\text{\it external input in log}}
+    \State {\it remove first input from log}
+    \State {\it bootstrap system}
+    \State {\it rerun execution with modified input}
+    \State $violation \gets detect\_violation()$
+    \If {\it not violation}
+        \State {\it add event to MCS}
+        \State {\it reinsert input to front of log}
+    \EndIf
+\EndFor
+\end{algorithmic}
+
+\colin{Can we run binary search?}
+
+\noindent In words, the algorithm takes in a log of the system execution,
+prunes each external input in isolation (assuming that inputs are causally
+independent to avoid exponential runtime),
+runs the system forward with the remaining input, checks whether the
+policy-violation is still present, and thereby infers whether that input is
+necessary for triggering the fault. Going back to our example, suppose the
+log includes many more (extraneous) inputs. Whenever an
+extraneous event is pruned, the blackhole will still persist. When
+the controller crash is pruned, the blackhole will be resolved properly, and
+when the link failure is pruned, no blackhole will occur. The MCS returned
+is therefore the controller crash and the link failure in conjunction.
+
+The crux of our contribution lies in specifying exactly how each
+individual step of this algorithm works. In the rest of this section we will
+describe our efforts to support \simulator{}, including (i)
+detailing how execution logs are obtained
+and what properties they need, (ii) developing a deterministic network simulator
+to replay the execution of control software, and (iii) developing an invariant
+checking algorithm for detecting errant behavior.
+
+\subsection{Distributed Logging}
+
+\Simulator{} first requires a log of the system execution where a
+policy-violation was originally discovered. Policy-violations
+in a running system might be detected through failed integration tests,
+customer complaints, or online invariant checks. \colin{Use the word
+``Forensically''}
+
+Since our goal is to identify
+relevant {\em inputs} from the distributed system's log, the log must make a clear
+distinction between {\em internal} events such as control message sends and
+receives, and {\em external} inputs such as
+link failures, controller crashes, VM migrations, or policy changes.
+Production networks almost universally maintain logs of such events as part of
+good operating practices (link failures are typically detected through
+protocols such as IS-IS,
+controllers log crash messages before
+halting in addition to monitoring heartbeats from peers, and VM migrations and
+policy changes are logged centrally for accounting purposes). In
+\S\ref{sec:discussion} we discuss the size of these logs, and truncation that can be
+performed. 
+
+\Simulator{} also depends on a causally ordered log of the
+distributed system's execution. If the control software does not already do
+so, we need to modify the code to attach Lamport
+clocks to all
+control packets and internal log messages
+to achieve a total ordering of the events in the system that
+is consistent with the happens-before
+relation~\cite{Lamport:1978:TCO:359545.359563}.
+
+\eat{
+As an optimization, the developer may start from a causally-consistent
+snapshot of the network rather than replaying the execution from the
+very beginning of the log. In this case, the user would need to occasionally
+execute a consistent-snapshotting algorithm~\cite{Chandy:1985:DSD:214451.214456}
+on the live deployed system, and start \simulator{} from a quiescent snapshot.
+}
+
+%(ii) We assume that the causally-consistent snapshot we start from is quiescent. [it's possible that a member of the MCS occurred before the snapshot was taken]
+%
+%Solution/Workaround: once we've run the MCS algorithm, re-run it from an earlier snapshot and see if the MCS changed. Technically this process would have to be applied inductively, but we could parameterize the number snapshots we have to examine.
+%
+%Discussion: it's also not a huge deal if this assumption does not hold. The policy-violation will still be detected -- the only problem is that the MCS will be smaller than it actually is. Moreover, as the software developer starts debugging the problem, she'll eventually notice that some piece of state at the point of the snapshot is incorrect, and therefore she'll notice that she needs to start from an earlier snapshot.
+
+\eat{
+\colin{In the simulator, this consistent snapshot is
+trivial to take: simply pause each controller's VM and the simulation. To
+obtain the snapshot that denotes time zero, we assume that the production
+network takes periodic snapshots using an algorithm such as Chandy et al's
+\cite{Chandy:1985:DSD:214451.214456} consistent snapshot algorithm}
+}
+
+\eat{
+{\em Causally-consistent snapshot:} a snapshot of a distributed system's state where
+there exists no event $b$ in a node's event history such that $a \rightarrow
+b$, but $a$ does not appear in the snapshot.
+}
+
+\eat{
+{\em External events:} input fed to the control platform triggered by processes outside
+of the system. For proactive controllers, external input includes policy
+changes, host placement changes, network topology changes (including hardware
+failures), and control server failures. Reactive controllers
+additionally take traffic changes as input. External events are to be distinguished
+from internal events triggered by the system itself, such as message sends or software
+crashes.
+}
+
+\subsection{Deterministic Replay}
+
+Next, \simulator{} requires the ability to replay the system execution.
+We have developed solutions to two separate challenges in achieving this requirement.
+
+First, the system replay has to be {\em deterministic}.
+We achieve this by simulating the entire network, including hosts and
+switches, in a single-threaded process, and running the controllers in
+individual virtual machines that are
+bootstrapped from a static snapshot (including random number generator
+seeds, \etc{}). The switches connect to the controllers as if they were true
+network devices, such that the controllers believe they are configuring a true
+network. The simulator interposes on all communication channels,
+allowing it to proceed with the system execution in
+lock step~\cite{Dunlap:2002:REI:844128.844148}:
+pausing the controller VMs between each logical timestep and delaying messages
+arbitrarily. The simulator then reproduces the external inputs from the log.
+For example, link failures are reproduced by disconnecting the edge in
+the simulated network.
+
+Note that the simulator does not need
+to accurately reproduce the failure modes of {\em individual} controllers or switches.
+We are only interested in observing the behavior of the overall distributed system, which is
+built under the assumption that individual components will fail.
+Therefore, it is sufficient to use a `blunt hammer' (\eg{}
+$kill \text{ -}9$) to reproduce individual
+failure events, so long as the remaining controllers react in the same
+way as they did in the actual run.
+
+Second, we need to know precisely {\em when} to inject inputs to the controllers;
+without maintaining the exact happens-before dependencies reflected in the
+log the output of the simulated system execution may not be the same.
+
+We can inject an external input $e$ at exactly the point where all other
+events (both external and internal) that precede it in the happens-before
+relation ($\{i \mid i \rightarrow e\}$) have occurred. Unfortunately the problem is made
+substantially more complicated by the fact that we are pruning inputs to the
+system, thereby changing the resulting internal events generated by the control
+software; without knowing in advance what internal events will {\em not} occur
+as a result of pruning an external input, we can never know when the happens-before
+dependencies have
+been met. We solve this problem by modifying the control software to include causal
+annotations on all log and control messages, yielding a tree of
+causal offspring for any given event. When we prune an input $e$, we then remove
+all of its causal offspring from the set of
+happens-before constraints. Modifying the control software incidentally solves two
+additional problems: the simulator can know exactly when internal controller events
+occur since it can interpose on the causal annotation library, and
+the simulator can infer equivalent internal events between separate runs of
+the system despite minor
+syntactic differences (\eg{} sequence numbers on packets) by
+uniquely identifying events according to their place in the causal graph.
+
+%\colin{
+%Note that in the absence of causal annotations it is still feasible to replay
+%the system execution by naively injecting inputs using timers, although the
+%output of the algorithm is not guaranteed to be exactly correct.
+%}
 
 \subsection{Correspondence Checking}
 
-The SDN platform transforms high-level policies (specified by the control application) into low-level configuration of they physical infrastructure.
-The configuration of the physical network should semantically correspond with the policy specified by the application layer, in the sense that the disposition of any packet by the physical forwarding tables should reflect  the policies dictated for that packet. We refer to any lack of semantic correspondence
-between the policy and the configuration as a {\it policy-violation}.
+Finally, we need a mechanism for deciding
+whether a policy-violation between the network operator's intent and the simulated network
+is present at the end of the system execution.
+We refer to such an algorithm as a {\em decider}.
 
-We leverage the virtual packet algebra pioneered in headerspace
-analysis~\cite{hsa} to verify whether the application's policies are indeed
-implemented correctly in the physical network. Our algorithm, correspondence
-checking, provides a crisp determination of all possible packet inputs that
-would not behave according to the application's policies if injected into the
-network at a particular point in time. Furthermore, running correspondence
+We develop a particular decider here, which we refer to as correspondence checking.
+Correspondence checking does not require
+the troubleshooter to specify invariants. Instead, correspondence checking
+obtains invariants by extracting the policies reflected in the virtual view.
+Correspondence checking builds on the virtual packet algebra
+pioneered in headerspace analysis~\cite{hsa}.
+
+\eat{Furthermore, running correspondence
 checking between intermediate layers of the SDN stack (logical view versus
 physical view), allow us to identify the component(s) of
-the system where policy-violations first manifest themselves.
+the system where policy-violations first manifest themselves.}
 
 Formally, the state of the physical network, the physical view, and the
-logical view can be represented as a graph,
-$G = (V, E)$. Packets are series of bits, $h \in \{0,1\}^L = H$,
+logical view can be represented as graphs,
+$G = (V, E)$. Packets are series of bits, $h \in \{0,1\}^L$ in the universe
+of all possible bit sequences $H = \{0,1\}^L$,
 where $L$ is the maximum number of bits in the header.
 
 Upon receiving a packet,
@@ -32,10 +255,13 @@ by extending the range to sets of output tuples}:
 \begin{align*}
 T: (H \times E) \rightarrow (H \times E_{\emptyset})
 \end{align*}
+Here, $E_{\emptyset} \equiv E \cup \emptyset$, signifying that forwarding elements
+may drop packets.
 
-We use $`\Psi`$ to denote the collection of all transfer functions present in
-the network at a particular point in time. In this model, network traversal is simply a composition of transformation
-functions. For example, if a header $h$ enters the network through edge
+We use $\Psi$ to denote the collection of all transfer functions present in
+the network at a particular point in time. In this model, network traversal is
+simply repeated application of $\Psi$.
+For example, if a header $h$ enters the network through edge
 $e$, its state after $k$ hops will be:
 \begin{align*}
 \Psi^k(h,e) = \Psi(\Psi(\dots \Psi(h,e)\dots))
@@ -48,206 +274,79 @@ transitive closure of $\Psi$:
 \Omega(h,e) = \Psi^{\infty}(h,e)
 \end{align*}
 Here, $E_{access}$ denotes access links adjacent to end-hosts.
-In words, $\Omega$ is a mapping between all possible input packets inserted
-into the network from end-hosts to the final location of the packet after
-traversing the network.
+
+The domain of $\Omega^{physical}$ is the set of pairs of end-hosts in the
+physical network along with packets they could possibly produce (before
+the packets have been encapsulated). We define $\Omega^{view}$ in exactly the same way, where
+the logical hosts are abstract representations of the hosts in the physical
+network. This definition depends on the observation that end-hosts are represented
+in all layers, even if there is not a one-to-one mapping between the
+internal vertices of $G^{virtual}$ and $G^{physical}$.
+
+The range of $\Omega$ is the hypothetical final state of the
+input packet if it were injected in the network.
+We use the special value $LOOP$ to distinguish
+a packet dropped by a network device from a packet entering an
+infinite loop (both of which never leave the network).
 
 In SDN, it should always be the case that:
 \begin{align*}
 \Omega^{view} \sim \Omega^{physical}
 \end{align*}
-Informally, this means that any packet injected at an access link in $G^{virtual}$ should arrive at
-the same final location as the corresponding (encapsulated) packet injected at the
-corresponding access link in $G^{physical}$. Note that hosts are represented
-in all layers, although there may not be a one-to-one mapping between the
-internal vertices of $G^{virtual}$ and $G^{physical}$.
+The equivalence $\sim$ means that the final outcome of any input packet
+injected at a host $a_{physical}$ in the physical network has the same hypothetical final outcome as
+the same input injected at the corresponding $a_{logical}$, and vice versa.
 
-To check correspondence in SDN, we begin by taking a causally consistent
-snapshot~\cite{Chandy:1985:DSD:214451.214456} of the physical network. The routing
-tables of forwarding elements can then be translated into transformation functions.
+Correspondence checking takes as input a
+snapshot of both the physical network and the
+controllers' state. We first modify the control software to present an
+interface through which the physical and virtual views can be
+extracted. The snapshot is
+then obtained by pausing execution and invoking this interface.
+The routing tables of forwarding elements in the views and the physical
+network can then be translated into transformation functions.
 Finally, we feed a symbolic packet $x^L$ to each access link of the
 network.\footnote{The rules for process wildcard bits $x^n$ are defined in
-the HSA paper~\cite{hsa}} The end result is a propagation graph representing all possible paths taken by a packet injected
+the HSA paper~\cite{hsa}} The end result is a propagation graph representing
+all possible paths taken by any packet injected
 at the access link.
 
-The leaves of the propagation graph represent $\Omega$. We
-verify correspondence in SDN by generating propagation graphs for all SDN layers,
-and comparing the leaves. Any mismatch in leaves of the propagation graphs
-represent policy-violations between control applications and network
-configuration.
+We compute $\Omega$ by traversing the resulting propagation graph. If a packet
+enters a loop before exiting the network, we mark the value as
+$LOOP$. Otherwise,
+the leaves of the propagation graph define the final outcomes of the input
+packets injected at that access link. Because network policies are defined by
+configuring the logical view, any mismatch between $\Omega^{view}$ and $\Omega^{physical}$
+represents an instance of a policy-violation.
 
-\colin{Reviewer B: Without an introduction and an explanation of how the
+\colin{Reviewer OB: Without an introduction and an explanation of how the
 propagation graph is built, and what an example propagation graph looks like,
 it is difficult to grasp the performance and correctness of the techniques
 proposed in the paper.}
 
-It is important to note that correspondence checking assumes that the
-application's policies are correct; it only checks whether the physical
-network's configuration is isomorphic with the logical view, but does not
-check for additional correctness properties such as connectivity and
-loop-free routing. If the user wishes to explicitly express additional
-invariants, the HSA framework used by our system can
-easily check for such properties.
+Note that without requiring the troubleshooter to specify invariants,
+correspondence checking represents a somewhat weak notion of
+correctness. Correspondence checking only captures external behavior and
+loops; it does not capture internal behavior such as load-balancing
+over links. It also assumes that the policies as expressed by the
+configuration of the logical view are correct. Finally, correspondence checking can not verify
+time-dependent policies such as ``No link should be congested more than 1\% of
+the time''.
 
-\subsection{\SIMULATOR{}}
+\colin{TODO: discuss additional benefits of a deterministic simulator.
+Integration testing, etc. Use Amin's quote as motivation for the software
+simulator.} 
 
-\colin{Amin Vahdat:
-I understand another key benefit of SDN/OpenFlow is being able to play with a
-lot of "what if" scenarios to enable you to fine-tune the network before going
-live.
-
-Exactly. So one of the key benefits we have is a very nice emulation and
-simulation environment where the exact same control software that would be
-running on servers might be controlling a combination of real and emulated
-switching devices. And then we can inject a number of failure scenarios under
-controlled circumstances to really accelerate our test work.}
-
-Correspondence checking infers all policy-violations in the network at a
-particular point in time. However, troubleshooters
-need two additional pieces of the diagnostic puzzle.
-
-First, in large distributed
-systems with communication delay and hardware failures, transient policy-violations
-are unavoidable, even common. That is, every time there has been a link failure that the SDN platform has not had time to respond to, or every time there has been a policy change that has not yet propagated down to the physical switches, there is a policy-violation.  Most of these policy violations will be temporary, resolving as soon as the SDN platform has had time to respond.  Some of these policy violations will persist, and that indicates a problem in the SDN platform.  In addition, even some of the ephemeral violations may be harmful (such as those that violate isolation conditions), which again indicate a problem in the SDN platform.
-
-Troubleshooters therefore need a mechanism to differentiate
-policy-violations that indicate a problem in the SDN platform from those that merely reflect inherent delays in responding to events; we will call all policy-violations that indicate a problem``pernicious'' violations.
-
-Second, once pernicious policy-violations are encountered, troubleshooters need to
-identify the events (link failures, controller failures, VM migrations,
-\etc{}) that triggered the problem. Moreover, they would like to have these events narrowed down to a minimal set, to make it easier to understand the problem.
-
-\Simulator{} is our mechanism for providing this information. \Simulator{} models
-the network in a single simulation process, thereby providing arbitrary control over hardware
-failures, message delays and other failure modes. \Simulator{} distinguishes
-between ``internal'' events that happen throughout the normal course of the
-system execution (\eg{} message sends and receives), and ``external'' events
-injected into the system (\eg{} link failures). We describe the details
-of the simulator in the next section.
-
-The key insight behind
-\simulator{} is that fault localization is significantly easier with the
-ability to selectively filter
-out external events from the system execution and observing how the system
-plays out in isolation.
-With complete control over the
-system execution, we are able to programmatically (i) track the lifetime of
-policy-violations to differentiate persistent from transient errors, and (ii)
-infer the `minimal causal set' of events triggering the problem. We describe
-these components below.
-
-Note that we have implemented policy-violation lifetime tracking, but we are
-still developing the infrastructure for minimal causal set inference.
-Nonetheless, we present our algorithm in this section.
-
-\subsubsection{Policy-Violation Lifetime Tracking} The first step in
-\simulator{} involves detecting policy-violations and prioritizing them based
-on their duration.
-We do so in a relatively straightforward fashion. First, we take as input
-a stream of network events (\eg{} link failures). Event sequences are either
-synthetically generated or gathered from a production trace of failure and topology change
-events, as enabled, \eg{}, by OFRewind~\cite{ofrewind}. We then replay the execution of the
-control plane based on the input trace\colin{Use the word ``Forensically''.
-Need to be more concrete about how this tool actually gets used}. Throughout the system execution,
-the simulator periodically\colin{Reviewer OB: Why not invoke it every time
-there's a new event being evaluated? If the periodic checking is justified,
-what is an appropriate period?} invokes correspondence checking to enumerate all
-policy-violations (defined as any value in $\Omega^{physical}$ not present in
-$\Omega^{virtual}$, or vice versa). When a policy-violation is detected,
-the simulator forks off a branch that investigates the future system behavior
-in a case where no further failure events are played out. Finally, we
-prioritize the policy-violations based on their duration.
-
-\subsubsection{\bf Causal Inference} Having identified persistent
-policy-violations, \simulator{} seeks to identify the `minimal causal set' of
-events leading up to the problem. By `minimal causal set', we mean
-the minimally-sized set of events preceding (defined by the `happens-before'
-relation~\cite{Lamport:1978:TCO:359545.359563}) the onset of the policy-violation, such that
-if any single event were removed the set, the policy-violation would not have resulted.
-% * would not have resulted *in such a long duration event*?
-
-\Simulator{} captures the notion of causality by attaching vector clocks~\cite{Mattern89virtualtime} to
-all control messages in the simulated execution of the system. Our
-simulator runs as a single sequential thread; therefore we convert any partially-ordered input trace
-of network events into a totally-ordered trace by choosing an arbitrary
-sequential ordering that maintains the `happens-before'
-relation.
-
-Without regarding causal constraints, a naive algorithm to infer the minimal
-causal set would be to iteratively
-exclude each event from the system execution, and see if the policy-violation
-still appears. The problem is that we cannot simply ``erase history'';
-antecedent events in the system execution may have depended on the event we
-are excluding.
-
-Our algorithm therefore proceeds as as follows. First, consider
-the state of the system at exactly the point where the given policy-violation
-occurs. The active `causal branches' in the system at this time are (i) the
-most recent event (message send, message receive, or internal state change)
-occurring on every node in the system, and (ii) the message send event for any
-in-flight control packets in the network. Our goal is to prune these causal
-branches until we are left with the minimal causal set at the leaves of the
-pruned branches.
-
-%\begin{figure}[t]
-%    %\hspace{-10pt}
-%    \includegraphics[width=3.25in]{../diagrams/approach/localizing}
-%    \caption[]{\label{fig:localizing} Localizing the minimal causal sequence for a failure in the
-%    event stream}
-%\end{figure}
-
-After having identified the active `causal branches' in the system at the
-onset of the policy-violation, our algorithm essentially performs a
-traversal of the causal graph's (a DAG) topological ordering, pruning leaves that are not
-responsible for the policy-violation. In pseudo-code:
-
-\begin{algorithmic}
-\State $causalSet \gets []$
-\While {$\exists\;\text{\it leaf in causalGraph}$}
-    \State {\it remove leaf from causalGraph}
-    \State $violation \gets runSimulation(causalGraph)$
-    \If {\it not violation}
-        \State $causalSet\;+= leaf$
-    \EndIf
-\EndWhile
-\end{algorithmic}
-
-Here, $runSimulation(DAG)$ executes the system from the beginning of the
-trace, and checks whether the policy-violation occurs at the end of the
-execution. The beginning of the trace starts at some pre-defined point where
-the system was known to be in a quiescent state.
-
-\colin{
-Panda and I realized that the minimal causal set algorithm we presented in the OSDI submission is erroneous.
-
-A few things are wrong with this:
-\begin{itemize}
-\item We can't remove elements of the MCS from the DAG! We should only remove from the DAG if the event is not in the MCS; otherwise, the policy-violation will never be reproduced after the first element is added the MCS, since we took away one of the necessary conditions.
-\item Need to make a distinction between "random events" (e.g. link failures,
-node failures) and "deterministic events" (e.g., a node is programmed to send
-a pong when it receives a ping). In the MCS algorithm, it makes no sense to
-prune out deterministic events... However, the algorithm still needs to take
-in the entire causal DAG (both random and deterministic) to maintain causal dependencies [can't prune arbitrary random events]
-\item We assume that the random events are independent; we need make this
-assumption explicit. But because we assume they are completely independent,
-and because we only manipualate random events, there is no need for vector
-clocks!!
-\end{itemize}
+\colin{Specific benefits of simulator:
+\begin{enumerate}
+\item lifetime tracking
+\item if can't reproduce failure from production, fuzz
+\item discover bugs by periodically invoking corresponsdence checking. (how
+frequently?)
+\item integration test library
+\item interactive exploration
+\end{enumerate}
 }
-
-Note that each iteration of the loop can be performed in parallel by cloning
-the state of the simulator. The serial runtime of the algorithm is therefore
-linear with the number of events in the input trace.
-
-We also note that Lamport's definition of the `happens-before' relation is
-conservatively general, and can include events that are not in fact
-causally-related. In fact, as described here, our algorithm can be viewed as a
-generalization of dependency graph algorithms for hardware fault
-isolation~\cite{577079}. In future work we hope to leverage domain
-knowledge of network control plane
-protocols to provide a more specific definition of causality (\eg{} OpenFlow
-control messages with differing transaction ids are not causally related),
-allowing us to further prune events that are not in fact causally related from the DAG.
 
 \subsubsection{Additional Use-Cases} Besides lifetime tracking and causal analysis, our simulation infrastructure has a
 number of other possible use-cases:
@@ -284,15 +383,3 @@ that are most difficult to anticipate in traditional unit tests.
 As known failure cases are accrued over time, we envision \simulator{} being used to validate
 new and existing SDN platforms.
 
-\subsection{Discussion}
-
-Correspondence checking and \simulator{} serve to isolate the platform layer and
-event sequence responsible for a given error. \projectname{} can be
-complemented by classical debugging techniques (\eg{} log messages and source
-code debugging) to identify the root cause of
-the failure in the code. These techniques are much more
-effective when applied a specific event sequence. Once a
-potential fix has been developed, it can be validated by repeating the
-problematic execution within \projectname{}. Input fuzzing further helps to
-validate whether there are
-related error events that the patch missed.
