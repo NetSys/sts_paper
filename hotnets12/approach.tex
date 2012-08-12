@@ -8,9 +8,9 @@ open source control platform~\cite{floodlight}. Floodlight is distributed across
 multiple controllers for high availability, and provides support for
 virtualization. Switches maintain one hot connection to a master controller and
 several cold connections to replica controllers. The \emph{master} holds the
-authority to issue state changing requests to the switches. The other
-controllers are in \emph{slave} mode and do not perform any state-changes on the
-switch unless they detect that the master has crashed.
+authority to issue state changing commands to the switches. The other
+controllers are in \emph{slave} mode and do not perform any changes to the
+switch configurations unless they detect that the master has crashed.
 
 \begin{figure}[t]
     %\hspace{-10pt}
@@ -74,6 +74,8 @@ the algorithm here, and elaborate in later sections:
 \EndFor
 \end{algorithmic}
 
+\colin{Can we run binary search?}
+
 \noindent In words, the algorithm takes in a log of the system execution,
 prunes each external input in isolation (assuming that inputs are causally
 independent to avoid exponential runtime),
@@ -87,7 +89,7 @@ when the link failure is pruned, no blackhole will occur. The MCS returned
 is therefore the controller crash and the link failure in conjunction.
 
 The crux of our contribution lies in specifying exactly how each
-individual step of this algorithm works. In the rest of the section we will
+individual step of this algorithm works. In the rest of this section we will
 describe our efforts to support \simulator{}, including (i)
 detailing how execution logs are obtained
 and what properties they need, (ii) developing a deterministic network simulator
@@ -99,7 +101,7 @@ checking algorithm for detecting errant behavior.
 \Simulator{} first requires a log of the system execution where a
 policy-violation was originally discovered. Policy-violations
 in a running system might be detected through failed integration tests,
-customer complaints, or runtime invariant checks.
+customer complaints, or online invariant checks.
 
 Since our goal is to identify
 relevant {\em inputs} from the distributed system's log, the log must make a clear
@@ -111,8 +113,8 @@ good operating practices (link failures are typically detected through
 protocols such as IS-IS,
 controllers log crash messages before
 halting in addition to monitoring heartbeats from peers, and VM migrations and
-policy changes are logged centrally for accounting purposes). We discuss in
-\S\ref{sec:discussion} the size of these logs, and truncation that can be
+policy changes are logged centrally for accounting purposes). In
+\S\ref{sec:discussion} we discuss the size of these logs, and truncation that can be
 performed. 
 
 \Simulator{} also depends on a causally ordered log of the
@@ -173,7 +175,7 @@ switches, in a single-threaded process, and running the controllers in
 individual virtual machines that are
 bootstrapped from a static snapshot (including random number generator
 seeds, \etc{}). The switches connect to the controllers as if they were true
-network devices such that the controllers believe they are configuring a true
+network devices, such that the controllers believe they are configuring a true
 network. The simulator interposes on all communication channels,
 allowing it to proceed with the system execution in
 lock step~\cite{Dunlap:2002:REI:844128.844148}:
@@ -183,7 +185,7 @@ For example, link failures are reproduced by disconnecting the edge in
 the simulated network.
 
 Note that the simulator does not need
-to precisely reproduce the failure modes of {\em individual} controllers or switches.
+to accurately reproduce the failure modes of {\em individual} controllers or switches.
 We are only interested in observing the behavior of the overall distributed system, which is
 built under the assumption that individual components will fail.
 Therefore, it is sufficient to use a `blunt hammer' (\eg{}
@@ -209,10 +211,11 @@ causal offspring for any given event. When we prune an input $e$, we then remove
 all of its causal offspring from the set of
 happens-before constraints. Modifying the control software incidentally solves two
 additional problems: the simulator can know exactly when internal controller events
-occur since we can interpose on the causal annotation library, and
-the simulator can infer equivalent internal events between runs despite minor
+occur since it can interpose on the causal annotation library, and
+the simulator can infer equivalent internal events between separate runs of
+the system despite minor
 syntactic differences (\eg{} sequence numbers on packets) by
-uniquely identifying events according to their place in the causal call graph.
+uniquely identifying events according to their place in the causal graph.
 
 %\colin{
 %Note that in the absence of causal annotations it is still feasible to replay
@@ -223,7 +226,7 @@ uniquely identifying events according to their place in the causal call graph.
 \subsection{Correspondence Checking}
 
 Finally, we need a mechanism for deciding
-whether a policy-violation between the views of the controllers and the simulated network
+whether a policy-violation between the network operator's intent and the simulated network
 is present at the end of the system execution.
 We refer to such an algorithm as a {\em decider}.
 
@@ -231,7 +234,7 @@ We develop a particular decider here, which we refer to as correspondence checki
 Correspondence checking does not require
 the troubleshooter to specify invariants. Instead, correspondence checking
 obtains invariants by extracting the policies reflected in the virtual view.
-Correspondence checking leverages the virtual packet algebra
+Correspondence checking builds on the virtual packet algebra
 pioneered in headerspace analysis~\cite{hsa}.
 
 \eat{Furthermore, running correspondence
@@ -241,7 +244,7 @@ the system where policy-violations first manifest themselves.}
 
 Formally, the state of the physical network, the physical view, and the
 logical view can be represented as graphs,
-$G = (V, E)$. Packets are series of bits, $h \in \{0,1\}^L$, in the universe
+$G = (V, E)$. Packets are series of bits, $h \in \{0,1\}^L$ in the universe
 of all possible bit sequences $H = \{0,1\}^L$,
 where $L$ is the maximum number of bits in the header.
 
@@ -273,8 +276,8 @@ transitive closure of $\Psi$:
 Here, $E_{access}$ denotes access links adjacent to end-hosts.
 
 The domain of $\Omega^{physical}$ is the set of pairs of end-hosts in the
-physical network along with packets that they could possibly produce (before
-the outgoing interface has encapsulated them). We define $\Omega^{view}$ in exactly the same way, where
+physical network along with packets they could possibly produce (before
+the packets have been encapsulated). We define $\Omega^{view}$ in exactly the same way, where
 the logical hosts are abstract representations of the hosts in the physical
 network. This definition depends on the observation that end-hosts are represented
 in all layers, even if there is not a one-to-one mapping between the
@@ -305,7 +308,7 @@ network can then be translated into transformation functions.
 Finally, we feed a symbolic packet $x^L$ to each access link of the
 network.\footnote{The rules for process wildcard bits $x^n$ are defined in
 the HSA paper~\cite{hsa}} The end result is a propagation graph representing
-all possible paths taken by a packet injected
+all possible paths taken by any packet injected
 at the access link.
 
 We compute $\Omega$ by traversing the resulting propagation graph. If a packet

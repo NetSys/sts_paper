@@ -4,8 +4,8 @@
 here.
 
 \noindent{\bf How big is the log? How long does this take to run?}
-First note that production control platforms already log most or all external
-inputs to the system. The runtime of the algorithm is $O(l*n)$, where the $l$
+First note that production control platforms already log most, if not all external
+inputs to the system. The runtime of the algorithm is $O(l*n)$, where $l$
 is the length of the execution and $n$ is the number of external inputs to
 prune. If the log is too long to rerun from the beginning for
 every iteration, the operator can take causally-consistent
@@ -46,10 +46,10 @@ the developer's goal is not to debug drunk operators.
 \Simulator{} requires controller-specific modifications, including
 awareness of the API to specify policy changes, awareness of the format of log
 messages, and causal annotation instrumentation. Correspondence checking also
-assumes that it has access to a physical view with a routing table-like format.
+assumes that it has access to views with routing table-like formats.
 
-\noindent{\bf Will control platforms ever become stable enough to not require
-          \simulator{}?}
+\noindent{\bf Will control platforms ever become stable enough that 
+          \simulator{} is unnecessary?}
 We certainly hope so! The field is decades from that point though.
 
 %\noindent{\bf How is this specific to SDN?}
