@@ -77,76 +77,23 @@ Throughout the system execution there were a handful of transient
 policy-violations overlapping with the isolation breach. Nonetheless, our
 simulator was able to identify the correct policy-violation.
 
-\eat{
-\noindent{\bf Network Operator.} An enterprise network
-operator pays a third-party SDN provider to virtualize their network
-and run it in the cloud. The network operator receives a complaint
-from an internal team that two servers cannot reach other, and
-verifies the reachablility problem with {\tt ping}. Unsure
-whether the problem is in her ACL/routing rules
-or in the underlying SDN platform, the
-operator runs correspondence checking on a snapshot of the network state. She
-finds that there is an inconsistency between her policy and the network state,
-and proceeds to call up the third-party SDN provider to complain
-about the problem.
-
-\noindent{\bf SDN Developer.} A developer at the third-party SDN
-company receives the customer's trouble-ticket and begins to investigate the
-problem. The developer examines the system logs and sees a
-long list of link status events, control server reboots, VM migration events,
-and other diagnostic information. These events are numerous (the
-datacenter contains 8,000 switches and more than 100,000 hosts) and
-interleaved, so the developer is unsure what caused the problem.
-The developer feeds a snapshot of the network from before the
-trouble-ticket was issued into the simulator, and
-begins replaying the execution of the system. The developer runs
-correspondence checking and finds a substantial list of policy-violations,
-manifesting as loops, blackholes, and other problems.
-The developer excludes all external events
-unrelated to the two disconnected hosts. As the developer is stepping through the execution, he periodically
-runs correspondence checking and tracks the policy-violations over time. He
-finds that most violations resolve within a short time. However, he
-eventually encounters a blackhole that lasts a considerable time. The
-developer backs up the execution to the point when the blackhole begins, and
-observes a switch failure followed directly by a reboot of the switch's parent
-controller. A correspondence check between the intermediate layers of the SDN
-stack indicate that the problem is present in the
-physical view, but is not manifest in the virtualization layer. The developer adds log statements to the platform's failover
-logic, and re-runs the execution. The developer eventually verifies that the
-controller pushed a routing change to the failed switch's neighbors, but did
-not update the platform's representation of the network state. Upon closer
-examination, the developer finds that the new parent controller for that
-portion of the network assumed that the platform's
-representation of network state was up-to-date. As such, the partially installed flow entries remained
-in the neighboring switches, resulting in the blackhole. The developer fixes
-the platform's recovery code, adds this case to the platform's integration
-test suite, and pushes the change to production.
-}
-
-\noindent{\bf Floodlight: Distributed controller failover race condition} More complex bugs and race conditions occur when controllers need to be
-distributed, and fail-over mechanisms between the individual instances are
-required for fault tolerance. Consider the following case described in the
-Floodlight~\cite{floodlight} source code\footnote{Note this issue was
-independently discovered by the developers of Floodlight.}: For high availability, Floodlight can run as a
-distributed controller, with switches connecting to several replica controllers at the
-same time. In this setup, one controller assumes the role of \emph{master} and
-thereby gains the authority to issue state changing requests to the switches.
-The other controllers are in \emph{slave} mode and thus do not perform any
-state-changes on the switch. Here, a race condition can occur when a switch
-connects to the controllers shortly after the master controller has died, but
-before a new master has been selected. In this case, all controllers will be in
-the slave role and thus will not take responsibility for clearing the switch
-flow table. At some point, one of the controllers is elevated to to
-\emph{master} role and will proceed to manage the newly connected switch, based
-on an inconsistent flow table.
-
-Using \projectname, we were able to reproduce the problem. The
-emulated switches in the simulator support the \emph{role} vendor extension to
-connect to several controllers. The inter-controller synchronization and heartbeat
-protocol is proxied through the simulator for control over the timing. After the
-master controller dies, a new switch is associated with the slave controllers, and
-integrated into the system with an unmerged flow-table, resulting in a persistent
-policy-violation between the flow-table representation in the controller and the switch.
+\noindent{\bf Floodlight: Distributed controller failover race condition} 
+We were able to reproduce the Floodlight problem described in Figure~\ref{fig:example}
+in our deterministic runtime environment\footnote{The code is publicly available},
+and apply \simulator{} successfully.
+We modified the Floodlight software to provide an interface for extracting its
+physical view. We did not add causal
+annotations or interpose on internal events of the controller, but instead used a
+heuristic to wait for $.5$ seconds between injecting inputs to allow the
+controllers to fully react. We ran two of the modified Floodlight controller
+instances, connected to two simulated switches, and injected 200 extraneous link
+and switch failures, with the controller crash and switch connect event\footnote{We used a switch connect
+event rather than a link failure event for logistical reasons, but both
+can trigger the race condition} that triggered the blackhole interleaved among them.
+On ten repeated runs, the algorithm successfully pruned all extraneous
+inputs despite non-determinism in the Floodlight internal events. With full determinism and
+interposition, we expect that the algorithm should work well for less
+fabricated cases.
 
 \subsection{Overhead}
 
