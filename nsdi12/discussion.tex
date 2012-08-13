@@ -12,7 +12,11 @@ every iteration, the operator can take causally-consistent
 snapshots~\cite{Chandy:1985:DSD:214451.214456} of the
 live system and bootstrap the simulator from the nearest quiescent snapshot.
 The length of the execution can also be `compressed' by manipulating timers in the
-controllers while still maintaining happens-before dependencies.
+controllers while still maintaining happens-before dependencies. Lastly, note
+that although the worst-case runtime of \simulator{} must be at least $O(n)$
+(since any of the inputs may be part of the MCS), the average-case runtime of
+the algorithm may be optimized by running multi-key binary search rather than
+linear search.
 
 \noindent{\bf Isn't a global log difficult to obtain?} Some failure events may appear
 multiple times in the log (\eg{} replica servers detecting that a master went down),
