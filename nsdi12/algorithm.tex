@@ -1,0 +1,70 @@
+\documentclass[letterpaper,10pt]{article}
+\usepackage{times,epsfig,url,subfigure,graphics,graphicx,rotating,color,xcolor}
+\usepackage{amssymb,amsmath,amsfonts,algpseudocode,subfigure,xspace}
+
+\newcommand{\tbd}[1]{{\bf [[TBD: {#1}]]}}
+\newcommand{\ie}{{\it i.e.}}
+\newcommand{\eg}{{\it e.g.}}
+\newcommand{\etc}{{\it etc.}}
+\newcommand{\apriori}{{\it a priori}}
+\newcommand{\eat}[1]{}
+
+\newcommand{\justine}[1]{{\color{ForestGreen}\bf JS: {#1}}}
+\newcommand{\andi}[1]{{\color{blue}\bf AW: {#1}}}
+\newcommand{\colin}[1]{{\color{red}\bf CS: {#1}}}
+\newcommand{\scott}[1]{{\color{purple}\bf SS: {#1}}}
+
+\begin{document}
+
+\title{The Wundsam-Shenker Algorithm\textsuperscript{\texttrademark}}
+\date{}
+\maketitle
+
+The problem of finding the MCS can be formulated as a dynamic-programming
+algorithm. 
+
+\begin{verbatim}
+Inputs = log
+IPs = [#inputs + 1][#inputs] // `immediate predecessors`
+IPs[0] = original run's happens-before predecessors
+foreach row in 1..n:
+  pruned = row - 1
+  IPs[row][0...pruned] = IPs[row-1][0...pruned]
+  IPs[row][pruned] = null // prune
+  for successor in (pruned+1)..n:
+    internal_predecessor = peek(IPs[row][0..successor])
+    IPs[row][successor] = internal_predecessor
+  
+  violation = replay(IPs[row])
+  if not violation:
+    // overwrite this row
+    IPs[row] = IPs[row-1]
+
+return all non-empty columns in the last row of IPs
+\end{verbatim}
+
+And the $peek()$ algorithm:
+
+\begin{verbatim}
+def peek(Inputs, IPs, HappensBefore):
+  for input in 0..(IPs.length):
+    if IPs[input] is null:
+      // pruned
+      continue
+    else:
+      play forward until IPs[input]
+      inject Inputs[input]
+
+  internal_events = play forward time window
+  return max(internal_events \intersect original happens-before constraints)
+\end{verbatim}
+
+Complexity analysis:
+
+We define the complexity in terms of the number of events replayed. Each
+iteration of $peek(i)$.
+
+\tbd{If all of my predecessor inputs have been pruned, how do I know when to
+start the peek()?}
+
+\end{document}
