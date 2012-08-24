@@ -1,4 +1,4 @@
-\documentclass[letterpaper,10pt]{article}
+\documentclass[10pt,a4paper,titlepage]{article}
 \usepackage{times,epsfig,url,subfigure,graphics,graphicx,rotating,color,xcolor}
 \usepackage{amssymb,amsmath,amsfonts,algpseudocode,subfigure,xspace}
 
@@ -14,57 +14,112 @@
 \newcommand{\colin}[1]{{\color{red}\bf CS: {#1}}}
 \newcommand{\scott}[1]{{\color{purple}\bf SS: {#1}}}
 
+\pagestyle{empty}
+
 \begin{document}
 
 \title{The Wundsam-Shenker Algorithm\textsuperscript{\texttrademark}}
-\date{}
-\maketitle
+  \date{}
+  \maketitle{}
 
-The problem of finding the MCS can be formulated as a dynamic-programming
-algorithm. 
+The original MCS algorithm assumed that causal dependencies were known
+\apriori. The revised algorithm infers them programatically.
+
+\section*{Revised Algorithm}
+
+Our algorithm performs three steps for each input:
+(i) prune the input, (ii) iteratively infer the causal dependencies for the
+remaining inputs, and (iii) check whether the policy-violation has occurred. If
+the policy-violation {\it did} occur at the end, we reinsert the input, and the causal
+dependencies are the same as the last iteration.
+
+We infer causal dependencies by (a) starting from the first input, (b)
+playing the execution forward for a fixed time window and recording the internal events
+that occur, (c) replaying from the first input again, this time injecting
+the next input when all of its remaining causal dependencies have been met, and (d)
+going to step (a) again for the next input until we have reached the end of
+the log.
+
+Detailed pseudocode for the algorithm follows. The algorithm takes as input a
+totally-ordered log of the (uniquely labeled) inputs and internal events from the production run
+of the system. The algorithm maintains an array of `immediate predecessors', where the
+$ith$ element of the array contains the label of the internal event that
+immediately precedes the $ith$ input. The array is initialized to the immediate
+predecessors from the original (unpruned) log.
 
 \begin{verbatim}
-Inputs = log
-IPs = [#inputs + 1][#inputs] // `immediate predecessors`
-IPs[0] = original run's happens-before predecessors
-foreach row in 1..n:
-  pruned = row - 1
-  IPs[row][0...pruned] = IPs[row-1][0...pruned]
-  IPs[row][pruned] = null // prune
-  for successor in (pruned+1)..n:
-    internal_predecessor = peek(IPs[row][0..successor])
-    IPs[row][successor] = internal_predecessor
+def findMCS(log):
+  ips = [] // `immediate predecessors'
+  foreach input in log:
+    ips[input] = internal event immediately preceding input
   
-  violation = replay(IPs[row])
-  if not violation:
-    // overwrite this row
-    IPs[row] = IPs[row-1]
+  foreach input in log:
+    new_ips = [] // immediate predecessors after pruning input
+    new_ips[0...input] = ips[0...input] // prefix is the same
+    new_ips[input] = null // prune (null means `do not inject')
+    foreach successor_input in (input+1)..n:
+      internal_predecessor = peek(successor_input, new_ips, log)
+      new_ips[successor_input] = internal_predecessor
+    
+    violation = replay_and_check_correspondence(new_ips)
+    if violation:
+      // this input was not a necessary condition
+      ips = new_ips // internal events may have changed
 
-return all non-empty columns in the last row of IPs
+    // else we don't prune, and the causal dependencies are the same as
+    // last iteration
+  
+  return all non-null indices in ips
 \end{verbatim}
 
-And the $peek()$ algorithm:
+The peek algorithm takes the label of the next input to be injected, the prefix of
+immediate predecessors leading up to the next input, and the complete
+happens-before constraints from the original execution, and returns the label
+of the internal event that immediately precedes the next input:
 
 \begin{verbatim}
-def peek(Inputs, IPs, HappensBefore):
-  for input in 0..(IPs.length):
-    if IPs[input] is null:
-      // pruned
+def peek(successor_input, ips, log):
+  for input in 0..(ips.length):
+    if ips[input] is null:
+      // this input was pruned
       continue
     else:
-      play forward until IPs[input]
-      inject Inputs[input]
+      play forward until ips[input]
+      inject input 
 
-  internal_events = play forward time window
-  return max(internal_events \intersect original happens-before constraints)
+  internal_events = play the execution forward for a fixed time window
+  fingerprint(internal_events)
+  return max(internal_events)
 \end{verbatim}
 
-Complexity analysis:
+The fingerprint algorithm is the least clear in my mind. At a high level, it
+should match up internal events from the pruned execution with internal events
+from the original execution. If an internal event appears that did not occur
+in the original execution, it is assigned a null label, otherwise it is
+assigned the same label as the original internal event. The details of how
+this matching is implemented need to be fleshed out.
 
-We define the complexity in terms of the number of events replayed. Each
-iteration of $peek(i)$.
+\section*{Complexity analysis}
 
-\tbd{If all of my predecessor inputs have been pruned, how do I know when to
-start the peek()?}
+We express the runtime complexity of {\tt findMCS} in terms of the number of
+inputs replayed. We begin by observing that each iteration of {\tt peek(i,..)}
+replays {\tt i}
+events. For each input {\tt i}, we invoke {\tt peek(i,..)}, {\tt
+peek(i+1,..)}, {\tt ...}, {\tt peek(N,..)}, for a total of $(N+1) \times
+\frac{N-i}{2}$
+(Gauss' summation) replayed inputs. 
+There are $N$ inputs, for a total of 
+$\Sigma_{i=0}^{N-1} (N+1) \times \frac{N-i}{2} = N^3 + N^2 - \frac{N^3 - N}{2}
+\in O(N^3)$
+replayed inputs.
+
+\subsection*{Snapshotting}
+
+It's possible to reduce our algorithm to $O(N^2)$ by trading off space
+for computation: if we store a snapshot of the system's state after each
+invocation of {\tt peak(i,..)}, then the runtime of {\tt peak(i,...)} becomes
+$O(1)$, since we don't have to replay all events leading up to {\tt i}. 
+Some controllers use many gigabytes of memory though, so it's not clear
+whether it's tractable to store $O(N)$ snapshots.
 
 \end{document}
