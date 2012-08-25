@@ -27,24 +27,25 @@ The original MCS algorithm assumed that causal dependencies were known
 
 \section*{Revised Algorithm}
 
-Our algorithm performs three steps for each input:
-(i) prune the input, (ii) iteratively infer the causal dependencies for the
-remaining inputs, and (iii) check whether the policy-violation has occurred. If
-the policy-violation {\it did} occur at the end, we reinsert the input, and the causal
+Our algorithm performs three steps for each input event:
+(i) prune the input event, (ii) iteratively infer the causal dependencies for the
+remaining input events, and (iii) check whether the policy-violation has occurred. If
+the policy-violation {\it did} occur at the end, we reinsert the input event, and the causal
 dependencies are the same as the last iteration.
 
-We infer causal dependencies by (a) starting from the first input, (b)
+We infer causal dependencies by (a) starting from the first input event, (b)
 playing the execution forward for a fixed time window and recording the internal events
-that occur, (c) replaying from the first input again, this time injecting
-the next input when all of its remaining causal dependencies have been met, and (d)
-going to step (a) again for the next input until we have reached the end of
+that occur, (c) replaying from the first input event again, this time injecting
+the next input event when all of the internal events found in step (b) that
+were its causal dependencies in the original execution have occurred, and (d)
+going to step (a) again for the next input event until we reach the end of
 the log.
 
 Detailed pseudocode for the algorithm follows. The algorithm takes as input a
-totally-ordered log of the (uniquely labeled) inputs and internal events from the production run
+totally-ordered log of the (uniquely labeled) input events and internal events from the production run
 of the system. The algorithm maintains an array of `immediate predecessors', where the
 $ith$ element of the array contains the label of the internal event that
-immediately precedes the $ith$ input. The array is initialized to the immediate
+immediately precedes the $ith$ input event. The array is initialized to the immediate
 predecessors from the original (unpruned) log.
 
 \begin{verbatim}
@@ -72,10 +73,10 @@ def findMCS(log):
   return all non-null indices in ips
 \end{verbatim}
 
-The peek algorithm takes the label of the next input to be injected, the prefix of
-immediate predecessors leading up to the next input, and the complete
+The peek algorithm takes the label of the next input event to be injected, the prefix of
+immediate predecessors leading up to the next input event, and the complete
 happens-before constraints from the original execution, and returns the label
-of the internal event that immediately precedes the next input:
+of the internal event that immediately precedes the next input event:
 
 \begin{verbatim}
 def peek(successor_input, ips, log):
@@ -102,16 +103,16 @@ this matching is implemented need to be fleshed out.
 \section*{Complexity analysis}
 
 We express the runtime complexity of {\tt findMCS} in terms of the number of
-inputs replayed. We begin by observing that each iteration of {\tt peek(i,..)}
+input events replayed. We begin by observing that each iteration of {\tt peek(i,..)}
 replays {\tt i}
-events. For each input {\tt i}, we invoke {\tt peek(i,..)}, {\tt
+events. For each input event {\tt i}, we invoke {\tt peek(i,..)}, {\tt
 peek(i+1,..)}, {\tt ...}, {\tt peek(N,..)}, for a total of $(N+1) \times
 \frac{N-i}{2}$
-(Gauss' summation) replayed inputs. 
-There are $N$ inputs, for a total of 
+(Gauss' summation) replayed input events. 
+There are $N$ input events, for a total of 
 $\Sigma_{i=0}^{N-1} (N+1) \times \frac{N-i}{2} = N^3 + N^2 - \frac{N^3 - N}{2}
 \in O(N^3)$
-replayed inputs.
+replayed input events.
 
 \subsection*{Snapshotting}
 
