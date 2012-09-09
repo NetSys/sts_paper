@@ -60,19 +60,17 @@ controllers that are both necessary and sufficient for triggering the policy-vio
 refer to these events as the {\em minimal causal sequence} (MCS). We show
 the algorithm here, and elaborate in later sections:
 
-\begin{algorithmic}
-\State $MCS \gets []$
-\ForAll {\text{\it external input in log}}
-    \State {\it remove first input from log}
-    \State {\it bootstrap system}
-    \State {\it rerun execution with modified input}
-    \State $violation \gets detect\_violation()$
-    \If {\it not violation}
-        \State {\it add event to MCS}
-        \State {\it reinsert input to front of log}
-    \EndIf
-\EndFor
-\end{algorithmic}
+\begin{Verbatim}[commandchars=\\\{\}]
+Input: E = [e\textsubscript{1}, e\textsubscript{2}, e\textsubscript{3}, e\textsubscript{4}, ... e\textsubscript{n}]
+Output: MCS
+
+MCS = []
+for i in 1 to n:
+  if violation in replay(E - e\textsubscript{i}):
+    E := E - e\textsubscript{i}
+  else:
+    MCS := MCS || e\textsubscript{i}
+\end{Verbatim}
 
 \noindent In words, the algorithm takes in a log of the system execution,
 prunes each external input in isolation (assuming that inputs are causally
