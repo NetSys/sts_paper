@@ -4,7 +4,7 @@
 %invariant checks on a deployed network.
 
 Before presenting our approach, we describe an example bug in the Floodlight
-open source control platform~\cite{floodlight}. Floodlight is distributed across
+open source control platform~\cite{floodlight_bug}. Floodlight is distributed across
 multiple controllers for high availability, and provides support for
 virtualization. Switches maintain one hot connection to a master controller and
 several cold connections to replica controllers. The \emph{master} holds the
@@ -30,7 +30,7 @@ the slave role and thus will not take responsibility for updating the switch
 flow table (E5). At some point, the heartbeats time out and one of the controllers
 elevates itself to the master role (E6). The new master will proceed to manage
 the newly connected switch, but without ever clearing the routing entries for
-the failed link (resulting in a blackhole).
+the failed link (resulting in a persistent blackhole).
 
 \subsection{\SIMULATOR{}}
 \label{sec:causal_analysis}
