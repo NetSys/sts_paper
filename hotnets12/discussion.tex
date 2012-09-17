@@ -4,9 +4,8 @@
 here.
 
 \noindent{\bf How big is the log? How long does this take to run?}
-First note that production control platforms already log most, if not all external
-inputs to the system. The runtime of the algorithm is $O(l*n)$, where $l$
-is the length of the execution and $n$ is the number of external inputs to
+Assuming that it takes constant time to inject an external input, the
+runtime of the algorithm is $O(n^2)$, where $n$ is the number of external inputs to
 prune. If the log is too long to rerun from the beginning for
 every iteration, the operator can take causally-consistent
 snapshots~\cite{Chandy:1985:DSD:214451.214456} of the
@@ -32,8 +31,8 @@ is built in software, the fidelity of our simulated failures
 can be made arbitrarily sophisticated.\footnote{subject to scalability
 limitations of fine-grained simulations}
 
-\noindent{\bf Is it reasonable to assume that external inputs events are
-causally independent?} Developer's need to know how the
+\noindent{\bf What if there are causal dependencies between inputs events?}
+Developer's need to know how the
 distributed system {\it reacts} to external inputs. Understanding why external
 inputs occurred is an orthogonal issue.
 % POSSIBLY CUT IF NOT ENOUGH SPACE

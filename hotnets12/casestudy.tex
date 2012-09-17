@@ -2,11 +2,10 @@
 % running our system on our own code -- we can't tell them that it's our code!
 
 We were able to reproduce the problem shown in Figure~\ref{fig:example} in our
-deterministic runtime environment\footnote{The code is publicly available},
+simulation environment\footnote{The code can be found at \cite{sts_repo}},
 and apply \simulator{} successfully.
 We modified the Floodlight software to provide an interface for extracting its
-physical view. We did not add causal
-annotations or interpose on internal events of the controller, but instead used a
+physical view. We did not interpose on internal events of the controller, but instead used a
 heuristic to wait for $.5$ seconds between injecting inputs to allow the
 controllers to fully react. We ran two of the modified Floodlight controller
 instances, connected to two simulated switches, and injected 200 extraneous link
