@@ -38,16 +38,16 @@ inputs occurred is an orthogonal issue.
 % POSSIBLY CUT IF NOT ENOUGH SPACE
 Consider a drunk network operator who (i) trips on an ethernet cable, and
 consequently (ii) spills his drink on a switch (busting the hardware). Our
-system views (i) and (ii) as causally independent, and that's fine, since 
+system views (i) and (ii) as causally independent, and that's fine, since
 the developer's goal is not to debug drunk operators.
 
 \noindent{\bf Will this approach work on all control platforms?}
 \Simulator{} requires controller-specific modifications, including
-awareness of the API to specify policy changes, awareness of the format of log
-messages, and causal annotation instrumentation. Correspondence checking also
+awareness of the API to specify policy changes and awareness of the format of log
+messages. Correspondence checking also
 assumes that it has access to views with routing table-like formats.
 
-\noindent{\bf Will control platforms ever become stable enough that 
+\noindent{\bf Will control platforms ever become stable enough that
           \simulator{} is unnecessary?}
 We certainly hope so! The field is decades from that point though.
 
