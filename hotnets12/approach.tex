@@ -1,5 +1,5 @@
 
-%Platform developers may discover policy-violations
+%Platform developers may discover correctness violations
 %through customer complaints, integration tests, or by periodically running
 %invariant checks on a deployed network.
 
@@ -37,17 +37,18 @@ the failed link (resulting in a blackhole).
 
 Given a log of the system execution similar to the Floodlight case,
 our goal is to prune events that are not
-necessary for triggering errant behavior. We define errant behavior in terms of {\em policy-violations}:
+necessary for triggering errant behavior. We define errant behavior in terms
+of {\em correctness violations}:
 configurations of the network that are inconsistent
-with the policy. In the example, the policy-violation is between a
+with the policy. In the example, the correctness violation is between a
 reachability policy specified in the logical view (``A can talk to B'')
 and the blackhole in the physical network (``A's packets to B enter the
 blackhole and do not arrive at B'').
 
 There were only two external inputs (E1,E3) shown in our example.
-In production datacenter logs
-a significantly greater number of hardware failures, topology changes,
-and other potential triggering events will be present,
+Production datacenter logs contain
+a significantly larger number of hardware failures, topology changes,
+and other potential triggering events,
 all of which may appear characteristic of normal operating
 conditions at first glance; assuming 8.5 network error events per
 minute~\cite{Greenberg:2009:VSF:1592568.1592576}, 500 VM migrations per
@@ -56,7 +57,8 @@ history of one hour, there would be over 1000 extraneous inputs to the system
 reflected in the log.
 
 We have developed an algorithm, \simulator{}, for automatically inferring the inputs to the
-controllers that are both necessary and sufficient for triggering the policy-violation. We
+controllers that are both necessary and sufficient for triggering the
+correctness violation. We
 refer to these events as the {\em minimal causal sequence} (MCS). We show
 the algorithm here, and elaborate in later sections:
 
@@ -76,7 +78,7 @@ for i in 1 to n:
 prunes each external input in isolation (assuming that inputs are causally
 independent to avoid exponential runtime),
 runs the system forward with the remaining input, checks whether the
-policy-violation is still present, and thereby infers whether that input is
+correctness violation is still present, and thereby infers whether that input is
 necessary for triggering the fault. Going back to our example, suppose the
 log includes many more (extraneous) inputs. Whenever an
 extraneous event is pruned, the blackhole will still persist. When
@@ -95,7 +97,7 @@ checking algorithm for detecting errant behavior.
 \subsection{Distributed Logging}
 
 \Simulator{} first requires a log of the system execution where a
-policy-violation was originally discovered. Policy-violations
+correctness violation was originally discovered. Correctness violations
 in a running system might be detected through failed integration tests,
 customer complaints, or online invariant checks.
 
@@ -134,7 +136,7 @@ on the live deployed system, and start \simulator{} from a quiescent snapshot.
 %
 %Solution/Workaround: once we've run the MCS algorithm, re-run it from an earlier snapshot and see if the MCS changed. Technically this process would have to be applied inductively, but we could parameterize the number snapshots we have to examine.
 %
-%Discussion: it's also not a huge deal if this assumption does not hold. The policy-violation will still be detected -- the only problem is that the MCS will be smaller than it actually is. Moreover, as the software developer starts debugging the problem, she'll eventually notice that some piece of state at the point of the snapshot is incorrect, and therefore she'll notice that she needs to start from an earlier snapshot.
+%Discussion: it's also not a huge deal if this assumption does not hold. The correctness violation will still be detected -- the only problem is that the MCS will be smaller than it actually is. Moreover, as the software developer starts debugging the problem, she'll eventually notice that some piece of state at the point of the snapshot is incorrect, and therefore she'll notice that she needs to start from an earlier snapshot.
 
 \eat{
 \colin{In the simulator, this consistent snapshot is
@@ -222,7 +224,7 @@ uniquely identifying events according to their place in the causal graph.
 \subsection{Correspondence Checking}
 
 Finally, we need a mechanism for deciding
-whether a policy-violation between the network operator's intent and the simulated network
+whether a correctness violation between the network operator's intent and the simulated network
 is present at the end of the system execution.
 We refer to such an algorithm as a {\em decider}.
 
@@ -236,7 +238,7 @@ pioneered in headerspace analysis~\cite{hsa}.
 \eat{Furthermore, running correspondence
 checking between intermediate layers of the SDN stack (logical view versus
 physical view), allow us to identify the component(s) of
-the system where policy-violations first manifest themselves.}
+the system where correctness violations first manifest themselves.}
 
 Formally, the state of the physical network, the physical view, and the
 logical view can be represented as graphs,
@@ -313,7 +315,7 @@ $LOOP$. Otherwise,
 the leaves of the propagation graph define the final outcomes of the input
 packets injected at that access link. Because network policies are defined by
 configuring the logical view, any mismatch between $\Omega^{view}$ and $\Omega^{physical}$
-represents an instance of a policy-violation.
+represents an instance of a correctness violation.
 
 Note that without requiring the troubleshooter to specify invariants,
 correspondence checking represents a somewhat weak notion of
@@ -332,9 +334,9 @@ the time''.
 %
 %Solution: Argue that we don't need to model drunk network operators
 %
-%(xii) We assume that the policy-violation detector algorithm can unambiguously identify violations. [Will the symptom ever be slightly different on the next iteration of the system?]
+%(xii) We assume that the correctness violation detector algorithm can unambiguously identify violations. [Will the symptom ever be slightly different on the next iteration of the system?]
 %
-%Solution: HSA gives a pretty precise determination of the policy-violation
+%Solution: HSA gives a pretty precise determination of the correctness violation
 %
 
 % --------------- Some Relevant thoughts ---------------------
@@ -373,20 +375,26 @@ have caused". Causality says "actually affected the behavior"
 
 number of other possible use-cases:
 
-\colin{Make sure we describe how the policy-violation of interested is
+\colin{Make sure we describe how the correctness violation of interest is
 originally identified by the operator/developer. Also don't forget to
 emphasize the distinction between transient and persistent
 
-Correspondence checking infers all policy-violations in the network at a
+Correspondence checking infers all correctness violations in the network at a
 particular point in time. However, troubleshooters
 need two additional pieces of the diagnostic puzzle.
 
 First, in large distributed
-systems with communication delay and hardware failures, transient policy-violations
-are unavoidable, even common. That is, every time there has been a link failure that the SDN platform has not had time to respond to, or every time there has been a policy change that has not yet propagated down to the physical switches, there is a policy-violation.  Most of these policy violations will be temporary, resolving as soon as the SDN platform has had time to respond.  Some of these policy violations will persist, and that indicates a problem in the SDN platform.  In addition, even some of the ephemeral violations may be harmful (such as those that violate isolation conditions), which again indicate a problem in the SDN platform.
+systems with communication delay and hardware failures, transient correctness violations
+are unavoidable, even common. That is, every time there has been a link
+failure that the SDN platform has not had time to respond to, or every time
+there has been a policy change that has not yet propagated down to the
+physical switches, there is a correctness violation.  Most of these
+correctness
+violations will be temporary, resolving as soon as the SDN platform has had
+time to respond.  Some of these correctness violations will persist, and that indicates a problem in the SDN platform.  In addition, even some of the ephemeral violations may be harmful (such as those that violate isolation conditions), which again indicate a problem in the SDN platform.
 
 Troubleshooters therefore need a mechanism to differentiate
-policy-violations that indicate a problem in the SDN platform from those that merely reflect inherent delays in responding to events; we will call all policy-violations that indicate a problem``pernicious'' violations.
+correctness violations that indicate a problem in the SDN platform from those that merely reflect inherent delays in responding to events; we will call all correctness violations that indicate a problem``pernicious'' violations.
 }
 
 \noindent\textbf{Checking related problems by fuzzing.} Input traces can be \emph{fuzzed}, i.e.,
@@ -446,11 +454,11 @@ the state of the simulator. The serial runtime of the algorithm is therefore
 linear with the number of events in the input trace.}
 } % \eat \subsubsection{Additional Use-Cases}
 
-% --- Policy-Violation Lifetime Tracking ---
+% --- correctness violation Lifetime Tracking ---
 
 \eat{
-\subsubsection{Policy-Violation Lifetime Tracking} The first step in
-\simulator{} involves detecting policy-violations and prioritizing them based
+\subsubsection{correctness violation Lifetime Tracking} The first step in
+\simulator{} involves detecting correctness violations and prioritizing them based
 on their duration.
 We do so in a relatively straightforward fashion. First, we take as input
 a stream of network events (\eg{} link failures). Event sequences are either
@@ -459,11 +467,11 @@ events, as enabled, \eg{}, by OFRewind~\cite{ofrewind} \colin{reviewer A: how is
 We then replay the execution of the
 control plane based on the input trace. Throughout the system execution,
 the simulator periodically invokes correspondence checking to enumerate all
-policy-violations (defined as any value in $\Omega^{physical}$ not present in
-$\Omega^{virtual}$, or vice versa). When a policy-violation is detected,
+correctness violations (defined as any value in $\Omega^{physical}$ not present in
+$\Omega^{virtual}$, or vice versa). When a correctness violation is detected,
 the simulator forks off a branch that investigates the future system behavior
 in a case where no further failure events are played out. Finally, we
-prioritize the policy-violations based on their duration.
+prioritize the correctness violations based on their duration.
 }
 
 % ------ Maybe include this quote from Google -------

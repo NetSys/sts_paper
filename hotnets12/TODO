@@ -140,7 +140,7 @@ clocks, but probably only within the simulator. The reason is that we need to kn
 exactly /when/ to inject inputs to the system under simulation. If we inject
 events willy-nilly, we won't get the same output every time, which is
 obviously problematic if we're trying to infer which events triggered a
-policy-violation.
+correctness violation.
 
 More specifically:
 
@@ -156,7 +156,7 @@ exactly that: they enumerate all of the happens-before constraints (i.e.
 define a partial ordering) for the system execution.
 
 So our simulation algorithm:
-  - assumes that the policy-violation can be reproduced by starting from a
+  - assumes that the correctness violation can be reproduced by starting from a
     snapshot and replaying the inputs in a somewhat sloppy fashion
   - On that first simulated execution, the simulator maintains vector clocks
     for all messages and gathers a set of happens-before contraints for every
@@ -165,7 +165,7 @@ So our simulation algorithm:
     for any given exernal input event are met before injecting it.
 
 
-Note that if the policy-violation can't be reproduced in the simulated
+Note that if the correctness violation can't be reproduced in the simulated
 environment, we might need to use include vector clocks in the production
 network. Getting the timings right in the simulator seems too hard
 otherwise...

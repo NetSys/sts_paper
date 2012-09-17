@@ -51,7 +51,7 @@ conditions from those that push the network into an erroneous state.
 In this paper we seek to eliminate the need to manually identify the inputs
 from logs that lead
 up to software faults, thereby freeing developers to debug the problematic code itself.
-We present an algorithm, \simulator{} for automatically inferring the sequence
+We present an algorithm, \simulator{}, for automatically inferring the sequence
 of inputs that are both necessary and sufficient for
 triggering invalid configurations discovered in executions of the system.
 
@@ -93,7 +93,7 @@ and in \S\ref{sec:conclusion} we conclude.
 % practices
 
 % Feedback on version 2.0:
-% not clear what you mean by "SDN platform", "policy-violation"
+% not clear what you mean by "SDN platform", "correctness violation"
 
 %\subsection{\colin{Feedback from Kay et al.}}
 %\begin{itemize}
@@ -119,7 +119,7 @@ and in \S\ref{sec:conclusion} we conclude.
 %is \simulator{} different than traditional replay debugging?)
 %\item Would be cool to have numbers on how many log events developers have to
 %step through today.
-%\item Would also be cool to have numbers on how many benign policy-violations
+%\item Would also be cool to have numbers on how many benign correctness violations
 %there are at a given point (say, in POX).
 %\item ``Policy-violation'' wasn't well-defined.
 %\item The introduction (prose) was too dense. Frame the problem in terms that
@@ -129,7 +129,7 @@ and in \S\ref{sec:conclusion} we conclude.
 %the reader is much more engaged -- the reader should ``nod along''.
 %\item What exactly are we simulating? Hardware faults? Misconfigurations?
 %(answer: all of the above)
-%\item How exactly does correspondence checking provide a crisp determination of the scope of a policy-violation in the
+%\item How exactly does correspondence checking provide a crisp determination of the scope of a correctness violation in the
 %network as well as the range of inputs that produce it? (answer: you start off
 %with a customer complaint, ``A can't ping B''. Correspondence checking tells
 %you all possible inputs that would experience the blackhole, and what parts of
