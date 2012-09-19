@@ -11,7 +11,9 @@ buildinfo.tex
 *log
 *.make
 *pdf
-*.swp
+.*.sw[a-z]
+*~
+\#*\#
 *.temp
 *bak
 *orig
