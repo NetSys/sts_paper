@@ -184,8 +184,7 @@ Note that the simulator does not need
 to accurately reproduce the failure modes of {\em individual} controllers or switches.
 We are only interested in observing the behavior of the overall distributed system, which is
 built under the assumption that individual components will fail.
-Therefore, it is sufficient to use a `blunt hammer' (\eg{}
-$kill \text{ -}9$) to reproduce individual
+Therefore, it is sufficient to use a `blunt hammer' (\eg{} POSIX's $SIGKILL$) to reproduce individual
 failure events, so long as the remaining controllers react in the same
 way as they did in the actual run.
 
