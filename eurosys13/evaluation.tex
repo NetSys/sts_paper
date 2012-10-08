@@ -6,7 +6,7 @@ quickly found (or reproduced) one bug in each. The bug in Frenetic demonstrates
 the utility of checking correspondence between high-level policies and
 low-level configuration (without needing to specify invariants). The bugs in
 POX and Floodlight demonstrate the importance of \simulator{}'s ability to
-programmatically prioritize persistent policy-violations and infer their minimal
+programmatically prioritize persistent correctness violations and infer their minimal
 causal sets.
 
 For all three cases, only a small code modification to the controller was necessary
@@ -34,7 +34,7 @@ primarily on proactive controllers, can nonetheless be used to
 troubleshoot errors in reactive control platforms.
 
 When running learning switch, the simplest Frenetic application, we encountered
-persistent policy-violations immediately. The propagation graph ($\Omega$) for Frenetic's
+persistent correctness violations immediately. The propagation graph ($\Omega$) for Frenetic's
 runtime representation of the network policy had leaves that were not present
 in the physical network. Upon closer examination, we found that Frenetic's
 runtime system was neglecting to remove old FLOOD routing entries from its
@@ -60,7 +60,7 @@ mechanism between distributed control servers.
 Because the functionality within POX is relatively young, we chose to
 fabricate a bug in POX's distribution failover logic, and independently
 validate that the simulator was able to identify, prioritize, and find the
-minimal causal set for the fabricated policy-violation.
+minimal causal set for the fabricated correctness violation.
 
 In particular, we injected the following bug: a controller replica performs
 updates to switches by (i) updating the persistent datastore storing the state
@@ -72,10 +72,10 @@ is correct. The ACL entry is therefore never installed in the switch, and a
 breach of tenant isolation occurs.
 
 We interleaved this event sequence with a normal system execution trace, and
-determined whether \simulator{} could identify the policy-violation.
+determined whether \simulator{} could identify the correctness violation.
 Throughout the system execution there were a handful of transient
-policy-violations overlapping with the isolation breach. Nonetheless, our
-simulator was able to identify the correct policy-violation.
+correctness violations overlapping with the isolation breach. Nonetheless, our
+simulator was able to identify the correct correctness violation.
 
 \noindent{\bf Floodlight: Distributed controller failover race condition} 
 We were able to reproduce the Floodlight problem described in Figure~\ref{fig:example}

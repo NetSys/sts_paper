@@ -29,8 +29,8 @@ The original MCS algorithm assumed that causal dependencies were known
 
 Our algorithm performs three steps for each input event:
 (i) prune the input event, (ii) iteratively infer the causal dependencies for the
-remaining input events, and (iii) check whether the policy-violation has occurred. If
-the policy-violation {\it did} occur at the end, we reinsert the input event, and the causal
+remaining input events, and (iii) check whether the correctness violation has occurred. If
+the correctness violation {\it did} occur at the end, we reinsert the input event, and the causal
 dependencies are the same as the last iteration.
 
 We infer causal dependencies by (a) starting from the first input event, (b)

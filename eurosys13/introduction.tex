@@ -62,7 +62,7 @@ given point in time, {\it where} in the control software a problem first develop
 \noindent{\bf Correspondence Checking}. We observe that the structure of the
 SDN software stack (as we discuss in the next section) enables a straightforward algorithm for
 checking that control applications' policies are implemented correctly in
-the physical network. Our algorithm enumerates all policy-violations
+the physical network. Our algorithm enumerates all correctness violations
 (\ie{}, any instance where the high-level policies are not properly
 implemented by the SDN control software) present in the network at a given point in
 time, providing a crisp determination of the range of inputs
@@ -71,9 +71,9 @@ and the system component(s) responsible for the fault.
 \noindent{\bf \Simulator{}.} \projectname{} can replay the execution of the
 system against
 a stream of network events (e.g., link failures). This allows us to (i)
-distinguish between policy-violations that are harmless and quickly heal and
+distinguish between correctness violations that are harmless and quickly heal and
 those that are persistent, and (ii) identify the minimal set of events that triggered
-the policy-violation.
+the correctness violation.
 
 % OSDI "Tips":
 %  - Make very clear that we implemented it!
@@ -108,7 +108,7 @@ three popular SDN platforms---Frenetic, Floodlight and POX---we found or reprodu
 isolation breaches and faulty failover logic between distributed controllers.
 We also demonstrated the feasibility of deploying
 \projectname{} on production networks,
-finding that our tools can enumerate all policy-violations in
+finding that our tools can enumerate all correctness violations in
 simulated networks exceeding 25,000 hosts in under 5 seconds.
 
 The rest of this paper is organized as follows. In \S\ref{sec:overview},
@@ -126,7 +126,7 @@ these}
 
 \eat{
  % Feedback on version 2.0:
- % not clear what you mean by "SDN platform", "policy-violation"
+ % not clear what you mean by "SDN platform", "correctness violation"
 \subsection{\colin{Feedback from Kay et al.}}
 \begin{itemize}
 \item Not sure that OSDI PC members will understand the subtleties of this statement: ``it is hard to tell what is broken when the goals are only implicitly expressed in the flow entries themselves.''
@@ -151,7 +151,7 @@ techniques apropro? Why is static checking of a single layer insufficient? How
 is \simulator{} different than traditional replay debugging?)
 \item Would be cool to have numbers on how many log events developers have to
 step through today.
-\item Would also be cool to have numbers on how many benign policy-violations
+\item Would also be cool to have numbers on how many benign correctness violations
 there are at a given point (say, in POX).
 \item ``Policy-violation'' wasn't well-defined.
 \item The introduction (prose) was too dense. Frame the problem in terms that
@@ -161,7 +161,7 @@ a straw-man solution, and show why that doesn't work. This way
 the reader is much more engaged -- the reader should ``nod along''.
 \item What exactly are we simulating? Hardware faults? Misconfigurations?
 (answer: all of the above)
-\item How exactly does correspondence checking provide a crisp determination of the scope of a policy-violation in the
+\item How exactly does correspondence checking provide a crisp determination of the scope of a correctness violation in the
 network as well as the range of inputs that produce it? (answer: you start off
 with a customer complaint, ``A can't ping B''. Correspondence checking tells
 you all possible inputs that would experience the blackhole, and what parts of

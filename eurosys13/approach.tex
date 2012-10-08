@@ -1,9 +1,9 @@
-%Platform developers may discover policy-violations
+%Platform developers may discover correctness violations
 %through customer complaints, integration tests, or by periodically running
 %invariant checks on a deployed network.
 
 Before presenting our approach, we describe an example bug in the Floodlight
-open source control platform~\cite{floodlight}. Floodlight is distributed across
+open source control platform~\cite{floodlight_bug}. Floodlight is distributed across
 multiple controllers for high availability, and provides support for
 virtualization. Switches maintain one hot connection to a master controller and
 several cold connections to replica controllers. The \emph{master} holds the
@@ -29,16 +29,16 @@ the slave role and thus will not take responsibility for updating the switch
 flow table (E5). At some point, the heartbeats time out and one of the controllers
 elevates itself to the master role (E6). The new master will proceed to manage
 the newly connected switch, but without ever clearing the routing entries for
-the failed link (resulting in a blackhole).
+the failed link (resulting in a persistent blackhole).
 
 \subsection{\SIMULATOR{}}
 \label{sec:causal_analysis}
 
 Given a log of the system execution similar to the Floodlight case,
 our goal is to prune events that are not
-necessary for triggering errant behavior. We define errant behavior in terms of {\em policy-violations}:
+necessary for triggering errant behavior. We define errant behavior in terms of {\em correctness violations}:
 configurations of the network that are inconsistent
-with the policy. In the example, the policy-violation is between a
+with the policy. In the example, the correctness violation is between a
 reachability policy specified in the logical view (``A can talk to B'')
 and the blackhole in the physical network (``A's packets to B enter the
 blackhole and do not arrive at B'').
@@ -55,7 +55,7 @@ history of one hour, there would be over 1000 extraneous inputs to the system
 reflected in the log.
 
 We have developed an algorithm, \simulator{}, for automatically inferring the inputs to the
-controllers that are both necessary and sufficient for triggering the policy-violation. We
+controllers that are both necessary and sufficient for triggering the correctness violation. We
 refer to these events as the {\em minimal causal sequence} (MCS). We show
 the algorithm here, and elaborate in later sections:
 
@@ -75,7 +75,7 @@ for i in 1 to n:
 prunes each external input in isolation (assuming that inputs are causally
 independent to avoid exponential runtime),
 runs the system forward with the remaining input, checks whether the
-policy-violation is still present, and thereby infers whether that input is
+correctness violation is still present, and thereby infers whether that input is
 necessary for triggering the fault. Going back to our example, suppose the
 log includes many more (extraneous) inputs. Whenever an
 extraneous event is pruned, the blackhole will still persist. When
@@ -94,7 +94,7 @@ checking algorithm for detecting errant behavior.
 \subsection{Distributed Logging}
 
 \Simulator{} first requires a log of the system execution where a
-policy-violation was originally discovered. Policy-violations
+correctness violation was originally discovered. Policy-violations
 in a running system might be detected through failed integration tests,
 customer complaints, or online invariant checks. \colin{Use the word
 ``Forensically''}
@@ -134,7 +134,7 @@ on the live deployed system, and start \simulator{} from a quiescent snapshot.
 %
 %Solution/Workaround: once we've run the MCS algorithm, re-run it from an earlier snapshot and see if the MCS changed. Technically this process would have to be applied inductively, but we could parameterize the number snapshots we have to examine.
 %
-%Discussion: it's also not a huge deal if this assumption does not hold. The policy-violation will still be detected -- the only problem is that the MCS will be smaller than it actually is. Moreover, as the software developer starts debugging the problem, she'll eventually notice that some piece of state at the point of the snapshot is incorrect, and therefore she'll notice that she needs to start from an earlier snapshot.
+%Discussion: it's also not a huge deal if this assumption does not hold. The correctness violation will still be detected -- the only problem is that the MCS will be smaller than it actually is. Moreover, as the software developer starts debugging the problem, she'll eventually notice that some piece of state at the point of the snapshot is incorrect, and therefore she'll notice that she needs to start from an earlier snapshot.
 
 \eat{
 \colin{In the simulator, this consistent snapshot is
@@ -221,7 +221,7 @@ uniquely identifying events according to their place in the causal graph.
 \subsection{Correspondence Checking}
 
 Finally, we need a mechanism for deciding
-whether a policy-violation between the network operator's intent and the simulated network
+whether a correctness violation between the network operator's intent and the simulated network
 is present at the end of the system execution.
 We refer to such an algorithm as a {\em decider}.
 
@@ -235,7 +235,7 @@ pioneered in headerspace analysis~\cite{hsa}.
 \eat{Furthermore, running correspondence
 checking between intermediate layers of the SDN stack (logical view versus
 physical view), allow us to identify the component(s) of
-the system where policy-violations first manifest themselves.}
+the system where correctness violations first manifest themselves.}
 
 Formally, the state of the physical network, the physical view, and the
 logical view can be represented as graphs,
@@ -312,7 +312,7 @@ $LOOP$. Otherwise,
 the leaves of the propagation graph define the final outcomes of the input
 packets injected at that access link. Because network policies are defined by
 configuring the logical view, any mismatch between $\Omega^{view}$ and $\Omega^{physical}$
-represents an instance of a policy-violation.
+represents an instance of a correctness violation.
 
 \colin{Reviewer OB: Without an introduction and an explanation of how the
 propagation graph is built, and what an example propagation graph looks like,
