@@ -77,13 +77,12 @@ Throughout the system execution there were a handful of transient
 correctness violations overlapping with the isolation breach. Nonetheless, our
 simulator was able to identify the correct correctness violation.
 
-\noindent{\bf Floodlight: Distributed controller failover race condition} 
-We were able to reproduce the Floodlight problem described in Figure~\ref{fig:example}
-in our deterministic runtime environment\footnote{The code is publicly available},
+\noindent{\bf Floodlight: Distributed controller failover race condition}
+We were able to reproduce the problem shown in Figure~\ref{fig:example} in our
+simulation environment\footnote{The code is publicly available},
 and apply \simulator{} successfully.
 We modified the Floodlight software to provide an interface for extracting its
-physical view. We did not add causal
-annotations or interpose on internal events of the controller, but instead used a
+physical view. We did not interpose on internal events of the controller, but instead used a
 heuristic to wait for $.5$ seconds between injecting inputs to allow the
 controllers to fully react. We ran two of the modified Floodlight controller
 instances, connected to two simulated switches, and injected 200 extraneous link
