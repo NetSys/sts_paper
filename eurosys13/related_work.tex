@@ -29,9 +29,14 @@ automates this process.
 NICE~\cite{nice} combines model checking with concolic execution
 to enumerate all possible code paths taken by control software (NOX)
 and identify concrete inputs (\eg{} control message orderings) that cause
-the network to enter invalid configurations. Unlike NICE, by analyzing
-bugs {\em post-hoc} from live runs of the system our approach applies
-to large software systems without suffering from state explosion.
+the network to enter invalid configurations. NICE works well for small
+control programs and a small number of machines, but suffers from exponential
+state
+explosion when run on large systems. For example, NICE took 30 hours to
+model check a network with two switches, two hosts, one learning-switch
+controller, and five concurrent
+messages between the hosts. We chose to avoid state-space explosion by analyzing logs
+{\em post-hoc}, after they have been observed in production.
 
 %-- Invariant Checking? --
 
