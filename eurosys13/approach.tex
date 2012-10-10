@@ -230,6 +230,8 @@ the troubleshooter to specify invariants. Instead, correspondence checking
 obtains invariants by extracting the policies reflected in the virtual view.
 Correspondence checking builds on the virtual packet algebra
 pioneered in headerspace analysis~\cite{hsa}.
+\colin{Crucial misunderstanding: ``Where do you get the policy specification?
+That in itself seems like a hard problem.''}
 
 \eat{Furthermore, running correspondence
 checking between intermediate layers of the SDN stack (logical view versus
@@ -349,7 +351,8 @@ number of other possible use-cases:
 \noindent\textbf{Checking related problems by fuzzing.} Input traces can be
 \emph{fuzzed}~\cite{Miller:1990:ESR:96267.96279}, \ie{},
 randomly perturbed, to expose the system to similar error conditions, and confirm
-that a proposed solution is not just a point-fix.
+that a proposed solution is not just a point-fix. \colin{Need to be more clear
+about what the contraints on the fuzzer are. (permutation or generation?)}
 
 \noindent\textbf{Investigating pathological environment conditions.} The simulator allows for investigation
 of pathological environment conditions difficult to achieve in a real world test bed

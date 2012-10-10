@@ -15,7 +15,8 @@ We seek to build a system that facilitates the process of troubleshooting.
 First and foremost, we hope that \projectname{} can reproduce difficult bugs
 observed in production networks, and automate the process of diagnosing their
 causes. We also envision \projectname{} being used as a common repository for difficult, corner-case
-scenarios known to have caused problems for other control platforms in the past.
+scenarios known to have caused problems for other control platforms in the
+past. \colin{Redundant with "additional use-cases" section of approach}
 Given these potential use cases, we require the design of the system to be
 driven by the following requirements:
 
@@ -28,7 +29,8 @@ of switches.
 \emph{control plane events}. Typical rates of control plane events must thus be
 handled, and control plane events must be modeled precisely. Conversely, we
 don't expect to handle a realistic amount of dataplane traffic, which is
-intractable for a software solution, and largely irrelevant in current networks (because they are mostly proactive, so control planes are not being driven by packet arrivals).
+intractable for a software solution, and largely irrelevant in current networks
+(because they are mostly proactive, so control planes are not being driven by packet arrivals).
 
 \noindent \textbf{(3) Controller choice} Our system should run with existing production
 controllers with minimum additional instrumentation. To allow for wider adoption, we don't want to limit ourselves to
