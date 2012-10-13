@@ -1,10 +1,16 @@
-Modern software-defined networking control platforms are highly complex distributed
-systems. When control software behaves incorrectly, it is difficult
-for developers to identify the exact events that caused the system to enter
-an erroneous state. In this paper we address the problem of automatically
-identifying fault-inducing input from execution logs. We evaluate our
-algorithm and system on three popular SDN platforms---Frenetic, Floodlight and POX---and
-found or reproduced three bugs:
-isolation breaches and faulty failover logic between replicated controllers. \sam{there is a discrepancy between the number of bugs mentioned (3) and the number of things listed after the colon. Maybe something like the following: `'...and found or reproduced three types of bugs, ranging from isolation breaches to faulty failover....`'}
+Software bugs abound in the development of distributed systems, and debugging
+often involves painstaking manual inspection of log files of subtantial
+length. In this paper we answer the question: is it possible to
+selectively forget extraneous inputs from a system log? Na\"ive pruning
+results in incomprehensible divergence from the original execution; we find
+that a small amount of domain knowledge allows us to recognize whether events in
+a pruned execution are semantically equivalent to events in the original
+execution. Modifying the event history means that fully-deterministic replay is
+not possible; we find that a relaxed replay model is still capable of
+aiding troubleshoting for a large range of difficult bugs.
 
-\colin{Design principles pitch?}
+We apply our technique to several software-defined networking control
+platforms---Floodlight, POX, and NOX---and
+were able to isolate the minimum causal sequence of inputs that triggered
+two bugs: faulty failover logic between replicated controllers, and incorrect
+synchronization with the physical network.
