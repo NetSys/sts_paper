@@ -330,23 +330,10 @@ time-dependent policies such as ``No link should be congested more than 1\% of
 the time''.
 
 
-\colin{TODO: discuss additional benefits of a deterministic simulator.
-Integration testing, etc. Use Amin's quote as motivation for the software
-simulator.}
-
-\colin{Specific benefits of simulator:
-\begin{enumerate}
-\item lifetime tracking
-\item if can't reproduce failure from production, fuzz
-\item discover bugs by periodically invoking corresponsdence checking. (how
-frequently?)
-\item integration test library
-\item interactive exploration
-\end{enumerate}
-}
-
 \subsubsection{Additional Use-Cases} Besides lifetime tracking and causal analysis, our simulation infrastructure has a
 number of other possible use-cases:
+
+\colin{Use Amin's quote from ONS to motivate utility of simulator}
 
 \noindent\textbf{Checking related problems by fuzzing.} Input traces can be
 \emph{fuzzed}~\cite{Miller:1990:ESR:96267.96279}, \ie{},
