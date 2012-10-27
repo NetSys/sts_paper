@@ -36,15 +36,14 @@ can be made arbitrarily sophisticated.\footnote{subject to scalability
 limitations of fine-grained simulations}
 
 \noindent{\bf What if there are causal dependencies between inputs events?}
-Developer's need to know how the
+Developers need to know how the
 distributed system {\it reacts} to external inputs. Understanding why external
 inputs occurred is an orthogonal issue.
-% POSSIBLY CUT IF NOT ENOUGH SPACE
-Consider a drunk network operator who (i) trips on an ethernet cable, and
-consequently (ii) spills his drink on a switch (busting the hardware). Our
+Consider a mud slide that causes (i) an network uplink to fail, which subsequently
+causes (ii) a switch to overheat and crash. Our
 system views (i) and (ii) as causally independent, and that's fine, since
-the developer's goal is not to debug drunk operators.
-\colin{Reviewer HB: this argument borders on rediculous}
+the developer's goal is not to reason about the cause of the switch
+overheating.
 
 \noindent{\bf Will this approach work on all control platforms?}
 \Simulator{} requires controller-specific modifications, including
