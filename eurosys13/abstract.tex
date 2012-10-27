@@ -1,14 +1,11 @@
-Software bugs abound in distributed systems, and debugging
+Software bugs abound in distributed systems, and troubleshooting
 often involves painstaking manual inspection of log files.
 In this paper we present a system to selectively prune extraneous
-inputs from logs. We find that na\"ive pruning
+inputs from logs. Our main finding is that na\"ive pruning
 results in incomprehensible divergence from the original execution; we show
 that a small amount of domain knowledge allows us to recognize whether events in
 a pruned execution are semantically equivalent to events in the original
-execution. We also find that fully-determinisitic replay is not possible
-when modifying the event history; our system demonstrates that a relaxed
-replay model is still capable of
-aiding troubleshooting for a large range of difficult bugs.
+execution.
 
 We apply our technique to several software-defined networking control
 platforms---Floodlight, POX, and NOX---and
