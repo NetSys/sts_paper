@@ -43,7 +43,8 @@ Consider a mud slide that causes (i) an network uplink to fail, which subsequent
 causes (ii) a switch to overheat and crash. Our
 system views (i) and (ii) as causally independent, and that's fine, since
 the developer's goal is not to reason about the cause of the switch
-overheating.
+overheating or the cause of the link failure, only how the distributed system reacted to
+those events.
 
 \noindent{\bf Will this approach work on all control platforms?}
 \Simulator{} requires controller-specific modifications, including
