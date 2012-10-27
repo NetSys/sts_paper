@@ -1,16 +1,17 @@
 Software bugs abound in distributed systems, and debugging
-often involves painstaking manual inspection of log files of subtantial
-length. In this paper we answer the question: is it possible to
-selectively forget extraneous inputs from a system log? Na\"ive pruning
-results in incomprehensible divergence from the original execution; we find
+often involves painstaking manual inspection of log files.
+In this paper we present a system to selectively prune extraneous
+inputs from logs. We find that na\"ive pruning
+results in incomprehensible divergence from the original execution; we show
 that a small amount of domain knowledge allows us to recognize whether events in
 a pruned execution are semantically equivalent to events in the original
-execution. Modifying the event history means that fully-deterministic replay is
-not possible; we find that a relaxed replay model is still capable of
-aiding troubleshoting for a large range of difficult bugs.
+execution. We also find that fully-determinisitic replay is not possible
+when modifying the event history; our system demonstrates that a relaxed
+replay model is still capable of
+aiding troubleshooting for a large range of difficult bugs.
 
 We apply our technique to several software-defined networking control
 platforms---Floodlight, POX, and NOX---and
-were able to isolate the minimum causal sequence of inputs that triggered
+are able to isolate the minimum causal sequence of inputs that triggered
 two bugs: faulty failover logic between replicated controllers, and incorrect
 synchronization with the physical network.
