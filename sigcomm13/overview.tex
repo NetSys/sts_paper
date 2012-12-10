@@ -1,3 +1,17 @@
+Use this section to highlight properties of SDN that make it suitable for automated diagnosis:
+\begin{itemize}
+\item Hard dist'sys problems (coordination between nodes, virtualization?, yet it's crucial to get right (consider tenant isolation: HIPA events requires the network to get it right by law!))
+\item SDN controllers quickly converge to quiescence $\rightarrow$ sparse causality graphs! Few events get pruned in  dense causality graphs (e.g. long MapReduce pipelines)
+\item The interactions between components have well-defined syntax and
+semantics (allows us to compare altered histories, as discussed in
+\S\ref{sec:approach})
+\item There are highly asymmetric responsibilities (handful of controllers managing large distributed system), which makes it much easier to superimpose on messages (described in detail in S3).
+\end{itemize}
+
+%--------------------------------------------------------------------%
+%               OLD HOTNETS TEXT
+\eat{
+
 % Peter: useful to your assumptions:
 %is correct: policies, logical layer specification, physical layer model
 %is possibly buggy: logical -> physical layer
@@ -128,3 +142,4 @@ approach to include inputs from the data-plane, subject to performance limitatio
 %\andi{Check with our assumptions, i.e., uncorrelated external events}.
 %Corner-case scenarios, while rare, cannot be ignored because of the distributed
 %nature and large scale of production networks.
+}
