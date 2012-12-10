@@ -111,7 +111,7 @@ controllers log crash messages before
 halting in addition to monitoring heartbeats from peers, and VM migrations and
 policy changes are logged centrally for accounting purposes). In
 \S\ref{sec:discussion} we discuss the size of these logs, and truncation that can be
-performed. 
+performed.
 
 \Simulator{} also depends on a causally ordered log of the
 distributed system's execution. Most production systems already maintain a
@@ -328,7 +328,6 @@ over links. It also assumes that the policies as expressed by the
 configuration of the logical view are correct. Finally, correspondence checking can not verify
 time-dependent policies such as ``No link should be congested more than 1\% of
 the time''.
-
 
 \subsubsection{Additional Use-Cases} Besides lifetime tracking and causal analysis, our simulation infrastructure has a
 number of other possible use-cases:
