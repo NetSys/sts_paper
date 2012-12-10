@@ -4,6 +4,40 @@ but {\em actually}, from a non-linear, non-subjective viewpoint--it's more like 
 big ball of wibbly wobbly... time-y wimey... stuff.''
 \end{aquote}
 
+\begin{itemize}
+\item Networks are amongst the largest distributed systems we have, and distributed systems are complex
+\item bugs crop up all the time, and they're damn hard to fix
+\item In a large system (e.g. a datacenter), the log is huge and it takes a long time to inspect it manually
+\item A 2006 survey found that developers at Microsoft spend ~49\% of their time troubleshooting bugs.
+\item We present a method for automatically pruning extraneous inputs, thereby telling the developer exactly which inputs in the log to look at.
+\item Our technique is based on selectively forgetting inputs in the log.
+\end{itemize}
+
+Why is this hard?
+\begin{itemize}
+\item Pruning via happens-before constraints (potential causality) doesn't do much for you!
+\item We selectively prune events in the past (thereby changing history!), and check whether the modified execution results in a correctness violation.
+\item It's not sufficient to replay the inputs based only on the timings from the original log (we tried!)
+\item So you need to account for internal events (e.g. mastership changes).
+\item Yet the set of internal events changes once you start pruning inputs.
+\item Moreover, the internal events often change subtly after pruning has occurred (e.g. messages may have a different sequence number), and even subtle differences can render executions incomparable.
+\item Our primary contribution is the insight that a little bit of domain knowledge (syntax + semantics of events) can be applied to `fingerprint` internal events (place them into equivalence classes), allowing us to reason about the differences between slightly altered histories.
+\end{itemize}
+
+How is this different than previous work?
+\begin{itemize}
+\item  Our contribution: we're applying delta-debugging to distributed systems -- generalizing across time (no longer a single input file) and space (coordinating multiple machines).
+\item  We're not focused specifically on bugs within a single controller (deterministic replay), although developers can control the granularity of the logs they feed to our tool -- the finer the granularity, the more bugs we'll be able to diagnose.
+\item  We're also not interested in proactively finding bugs (NICE), only reactively.
+\item  Upshot: we don't claim to be able to find the MCS for all possible problems. Nonetheless, the worst case for us is that the developer ends up with what they started: an unpruned input log (either we failed to reproduce it in the first place, or nothing was prunable). We discuss the limitations of our approach in more detail in the 3.1.
+\end{itemize}
+
+Main result from our work: the amount of effort it takes to codify domain knowledge is significantly less than the effort it would take to step through a normal replay debugger by hand for each bug.
+
+% ------------------------------------------------------------------- %
+%    OLD OSDI TEXT:
+\eat{
+
 % Feedback from Ali Ghodsi:
 %  - Why is S/W easier to test than H/W? It's not really this point that's
 %    important either: it's the centralized control plane that makes it easier
@@ -173,4 +207,6 @@ the network are effected)
 \item Cite Frenetic, POX, Floodlight?
 \item What does \projectname{} stand for?
 \end{itemize}
+}
+
 }
