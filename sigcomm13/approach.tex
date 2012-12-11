@@ -29,7 +29,11 @@ would require $O(2^N)$ computation in the worst case. Our algorithm is however g
     \item What to do about multiple matching fingerprints?
     \item overall $O(N^3)$ runtime--snapshots make it $O(N^2)$
   \end{itemize}
-\item We apply domain knowledge to ensure validity of input sequences. For example, it doesn't make sense to replay a link recovery event if we pruned the link failure event that preceded it.
+\item We apply domain knowledge to ensure validity of input sequences. For
+example, it doesn't make sense to replay a link recovery event if we pruned
+the link failure event that preceded it. Note that it's really hard to codify
+the dependencies between some input events (e.g. dataplane drops). See gdoc
+for a discussion.
 \item In S4, we discuss some of the implementation details of handling internal events
 \end{itemize}
 \subsection{Correspondence Checking}

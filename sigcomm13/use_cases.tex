@@ -2,6 +2,9 @@ We built it and it works! \\
 
 A few implementation details:
 \begin{itemize}
+\item Exactly what we log (not dataplane packets!)
+\item Note that it's OK if there are slight re-orderings in the internal
+events during replay: we have buffers.
 \item Lightweight deterministic replay: we instrument gettimeofday() and getrand() for some controllers, since it's easy, and it helps us deal with timeouts properly.
 \item When we alter history, we make a best-effort guess for the
 instrumentation. For example, if the altered execution asks for more rands/dates than we recorded initially. Just feed it more rands generated on-the-fly, and assume somewhat equidistant (in time) requests for datetime.
