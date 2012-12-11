@@ -7,7 +7,7 @@ Automated Diagnosis for Software-Defined Networks
 - Approach: Programmatically alter history to isolate fault inducing inputs
 1. Intro
 - Networks are amongst the largest distributed systems we have, and distributed systems are complex
-→ bugs crop up all the time, and they’re damn hard to fix
+→ bugs crop up all the time, and they're damn hard to fix
 - In a large system (e.g. a datacenter), the log is huge and it takes a long time to inspect it manually
 - A 2006 survey found that developers at Microsoft spend ~49% of their time troubleshooting bugs.
 → We present a method for automatically pruning extraneous inputs, thereby telling the developer exactly which inputs in the log to look at.
@@ -15,9 +15,9 @@ Automated Diagnosis for Software-Defined Networks
 
 
 - Why is this hard?
-  - Pruning via happens-before constraints (potential causality) doesn’t do much for you!
+  - Pruning via happens-before constraints (potential causality) doesn't do much for you!
   → We selectively prune events in the past [thereby changing history!], and check whether the modified execution results in a correctness violation.
-  - It’s not sufficient to replay the inputs based only on the timings from the original log [we tried!]
+  - It's not sufficient to replay the inputs based only on the timings from the original log [we tried!]
   - So you need to account for internal events [e.g. mastership changes]. 
   - Yet the set of internal events changes once you start pruning inputs.
   - Moreover, the internal events often change subtly after pruning has occurred (e.g. messages may have a different sequence number), and even subtle differences can render executions incomparable.
@@ -26,9 +26,9 @@ Automated Diagnosis for Software-Defined Networks
 
 - How is this different than previous work?
   - Our contribution: we're applying delta-debugging to distributed systems -- generalizing across time (no longer a single input file) and space (coordinating multiple machines).
-  - We’re not focused specifically on bugs within a single controller (deterministic replay), although developers can control the granularity of the logs they feed to our tool -- the finer the granularity, the more bugs we’ll be able to diagnose.
-  - We’re also not interested in proactively finding bugs (NICE), only reactively.
-  - Upshot: we don’t claim to be able to find the MCS for all possible problems. Nonetheless, the worst case for us is that the developer ends up with what they started: an unpruned input log (either we failed to reproduce it in the first place, or nothing was prunable). We discuss the limitations of our approach in more detail in the 3.1.
+  - We're not focused specifically on bugs within a single controller (deterministic replay), although developers can control the granularity of the logs they feed to our tool -- the finer the granularity, the more bugs we'll be able to diagnose.
+  - We're also not interested in proactively finding bugs (NICE), only reactively.
+  - Upshot: we don't claim to be able to find the MCS for all possible problems. Nonetheless, the worst case for us is that the developer ends up with what they started: an unpruned input log (either we failed to reproduce it in the first place, or nothing was prunable). We discuss the limitations of our approach in more detail in the 3.1.
 
 
 Main result from our work:
@@ -37,7 +37,7 @@ Main result from our work:
 
 2. Background
 Use this section to highlight properties of SDN that make it suitable for automated diagnosis:
-  - Hard dist’sys problems (coordination between nodes, virtualization?, yet it’s crucial to get right (consider tenant isolation: HIPA events requires the network to get it right by law!))
+  - Hard dist'sys problems (coordination between nodes, virtualization?, yet it's crucial to get right (consider tenant isolation: HIPA events requires the network to get it right by law!))
   - SDN controllers quickly converge to quiescence -> sparse causality graphs! [c]Few events get pruned in  dense causality graphs (e.g. long MapReduce pipelines)
   - The interactions between components have well-defined syntax and semantics (allows us to compare altered histories, as discussed in S3)
   - There are highly asymmetric responsibilities (handful of controllers managing large distributed system), which makes it much easier to superimpose on messages [described in detail in S3].
@@ -45,9 +45,9 @@ Use this section to highlight properties of SDN that make it suitable for automa
 
 3. Approach
 3.1. Non-Goals
-  - Our goal is not to find the root cause of component failures; we’re only interested in how the distributed system reacts to those failures (lightning strike example). Another way of putting this is that we aren’t interested in troubleshooting anything outside of the controller software: if you have a bug in your switch, you should contact your hardware vendor; if you have a bug in your policy specification, take a closer look at what you specified; if you encounter a bug in your OS, get out your kernel debugger. (That said, our tool can tell you whether your switches behave the same as our software implementation: if our tool was unable to reproduce the error, that means that the problem was above or below the control software)
-  - We don’t aim to reproduce bugs involving non-determinism within a single controller (e.g. race-conditions between threads); we’re interested in coarser granularity errors (e.g. incorrect failover logic), which there are plenty of! That said, if the developer is willing to instrument their system to provide finer granularity log messages (e.g. Gautam’s Friday), our approach still applies.
-  - We won’t always find the globally minimum causal sequence, since that would require O(2^N) computation in the worst case. Our algorithm is however guaranteed to find a 1-minimal (locally minimum) causal sequence, meaning that if any event from the sequence is pruned, no persistent correctness violation occurs.
+  - Our goal is not to find the root cause of component failures; we're only interested in how the distributed system reacts to those failures (lightning strike example). Another way of putting this is that we aren't interested in troubleshooting anything outside of the controller software: if you have a bug in your switch, you should contact your hardware vendor; if you have a bug in your policy specification, take a closer look at what you specified; if you encounter a bug in your OS, get out your kernel debugger. (That said, our tool can tell you whether your switches behave the same as our software implementation: if our tool was unable to reproduce the error, that means that the problem was above or below the control software)
+  - We don't aim to reproduce bugs involving non-determinism within a single controller (e.g. race-conditions between threads); we're interested in coarser granularity errors (e.g. incorrect failover logic), which there are plenty of! That said, if the developer is willing to instrument their system to provide finer granularity log messages (e.g. Gautam's Friday), our approach still applies.
+  - We won't always find the globally minimum causal sequence, since that would require O(2^N) computation in the worst case. Our algorithm is however guaranteed to find a 1-minimal (locally minimum) causal sequence, meaning that if any event from the sequence is pruned, no persistent correctness violation occurs.
   - Primarily focused on correctness bugs, not performance bugs -- although this distinction has more to do with invariant checking than MCS finding.
 
 
@@ -57,34 +57,34 @@ Use this section to highlight properties of SDN that make it suitable for automa
  - Describe MCS finding (delta-debugging) algorithm
  - In Section 4, we describe concrete ways in which the algorithm can be put to use
 3.3. Replay
-- It’s not sufficient to replay the remaining inputs based only on the timings from the original log [we tried!]
+- It's not sufficient to replay the remaining inputs based only on the timings from the original log [we tried!]
 - So we incorporate events that are internal to the system under test (e.g. mastership changes), whose causal parents/children we don't explicitly know but can infer, as indicators of when we should inject external inputs (e.g. link failures), whose causal parents we don't know and will never know.
-- We interpose on the controllers’ logging library and control message channels to get access to those internal events.
+- We interpose on the controllers' logging library and control message channels to get access to those internal events.
 - Note that the developer must provide enough logging statements so that relevant internal state changes are captured and visible to our tool. The logging statements must also contain enough context[d] to allow for unambiguous fingerprinting.
-- Naive solution: wait for internal events, but time out on those that don’t show up. Problem: might wait too long. 
+- Naive solution: wait for internal events, but time out on those that don't show up. Problem: might wait too long. 
 - Soundest solution: peek()
-     - Infer which internal events are/aren’t going to occur, so we know exactly how long to wait before injecting
+     - Infer which internal events are/aren't going to occur, so we know exactly how long to wait before injecting
      - How do we know how far to peek() ahead?
      - What to do about multiple matching fingerprints?
      - overall O(N^3) runtime[e]
          - snapshots make it O(N^2)
- - We apply domain knowledge to ensure validity of input sequences. For example, it doesn’t make sense to replay a link recovery event if we pruned the link failure event that preceded it.
+ - We apply domain knowledge to ensure validity of input sequences. For example, it doesn't make sense to replay a link recovery event if we pruned the link failure event that preceded it.
 - In S4, we discuss some of the implementation details of handling internal events
 3.5. Correspondence Checking[f]
 - We need a way to check at the end whether the violation has occurred. We call such an algorithm a decider. 
 - Here we present one decider: correspondence checking. 
-- Note that if you don’t want to instrument controller, or your controller doesn’t have an explicit view, you can also specify your own correctness conditions (e.g. reachability) 
+- Note that if you don't want to instrument controller, or your controller doesn't have an explicit view, you can also specify your own correctness conditions (e.g. reachability) 
 - Overview of HSA
 - We extract correctness specification directly from virtual view / physical view
 - Mathy math
 - Clarify that correctness violations are unambiguous -- if they were ambiguous, we might falsely prune a member of the MCS (bad!)
 - Shortcomings of CC
-    - doesn’t help with performance (e.g. load balancing over internal links)
+    - doesn't help with performance (e.g. load balancing over internal links)
     - assumes that policy specifications themselves are correct
 4. System + Usage Scenarios
  - We built it and it works!
  - A few implementation details:
-    - Lightweight deterministic replay: we instrument gettimeofday() and getrand() for some controllers, since it’s easy, and it helps us deal with timeouts properly.
+    - Lightweight deterministic replay: we instrument gettimeofday() and getrand() for some controllers, since it's easy, and it helps us deal with timeouts properly.
     - When we alter history, we make a best-effort guess for the instrumentation
         - Altered execution asks for more rands/dates than we recorded initially. Just feed it more rands generated on-the-fly, and assume somewhat equidistant (in time) requests for datetime.
 
@@ -104,15 +104,15 @@ Use this section to highlight properties of SDN that make it suitable for automa
   → frees up developers to be more agile in development instead of spending time doing triage and bug hunting.  
 4.3. Forensic Analysis
  - Can be used for forensic analysis after a bug in production
- - Needs a global log. Isn’t that difficult? Vision for a possible approach:
+ - Needs a global log. Isn't that difficult? Vision for a possible approach:
 1. Collect distributed logs from the controllers.
-2. Describe what’s contained in the logs:
+2. Describe what's contained in the logs:
 1. Lamport clocks or accurate NTP so that we can serialize the distributed logs.
 2. Clear distinction between internal and external events
-1. Note that without further modifications to the simulator, we aren’t going to be able to make all possible synthetic inputs indistinguishable (from the controllers’ perspective) from the inputs observed in the production run. We aim to make them indistinguishable, but there are going to be failure modes we can’t reproduce right away. For example, suppose that the controller's faulty behavior is to flood a switch with messages, causing the switch to drop some traffic. However, only switches that are running low on memory are affected by the controller's faulty behavior. To reproduce this failure mode correctly, we would have to modify our software switch to act in the same way that the hardware switch does.
+1. Note that without further modifications to the simulator, we aren't going to be able to make all possible synthetic inputs indistinguishable (from the controllers' perspective) from the inputs observed in the production run. We aim to make them indistinguishable, but there are going to be failure modes we can't reproduce right away. For example, suppose that the controller's faulty behavior is to flood a switch with messages, causing the switch to drop some traffic. However, only switches that are running low on memory are affected by the controller's faulty behavior. To reproduce this failure mode correctly, we would have to modify our software switch to act in the same way that the hardware switch does.
 1. Deal with redundant input events (e.g. controller failure event independently logged by 3 replicas):
 1. Silver bullet is to incorporate reliable failure detectors into your system: log a failure iff the failure occurred. 
-2. Otherwise, root cause analysis algorithms were designed for exactly this purpose: what’s the minimum number of component failures that can explain a set of correlated alarms? 
+2. Otherwise, root cause analysis algorithms were designed for exactly this purpose: what's the minimum number of component failures that can explain a set of correlated alarms? 
 1. Describe size of the logs, and checkpointing to reduce the replay runtime. 
 1. How do we know how far back to look with checkpointing?
 
@@ -124,17 +124,17 @@ Use this section to highlight properties of SDN that make it suitable for automa
      - NOX routing
      - POX distribution?
      - Frenetic?
-     - A bug where our technique didn’t work
+     - A bug where our technique didn't work
   - How much effort did it take to codify domain knowledge? (table with lines of code)
   - How often does ambiguous fingerprinting occur in practice?
   - Runtime Overhead
      - “time compression” benefits
-     - Note that runtime doesn’t really matter! As long as developer time isn’t being used. 
+     - Note that runtime doesn't really matter! As long as developer time isn't being used. 
 6. Discussion
-  - What if there are causal dependencies between inputs events that we don’t capture?
+  - What if there are causal dependencies between inputs events that we don't capture?
   - Are all simulated failures really indistinguishable from actual failures?
   - What about the link failure case where Lamport clocks give an incorrect ordering?
-  - Aren’t these types of bugs (e.g. failover logic) rare? Why should we focus on them? → msoft citation on how many man-hours it takes to debug concurrency errors
+  - Aren't these types of bugs (e.g. failover logic) rare? Why should we focus on them? → msoft citation on how many man-hours it takes to debug concurrency errors
   - Will this approach work on all control platforms? [is this specific to virtualization?]
   - Will control platforms ever become stable enough that troubleshooting tools become unnecessary?
 
@@ -147,11 +147,11 @@ We categorize related work according to field:
 
 Software Engineering
 All of the below focus on single programs (possibly multi-threaded, but always single-core)
-- Delta Debugging: given a failing test case and an input file (e.g. HTML page), run modified binary search on the input file to find the minimum subset that triggers the failure. We attempt to solve the same problem in a distributed setting, where the input is spread across time and space. Zeller also applied DD to a multi-threaded (single-core) programs to identify the minimum set of thread switches from a schedule that reproduces a race condition. DD still hasn’t been applied across space (machines).
-- Sherlog: given a program and production logs that ended in a failure, find the minimum subset of the program execution (both control-flow and data-values) that lead up to the failure. Don’t re-execute the program! Statically analyze the code and the log statements preceding the crash.
-- Treating bugs like allergies: on encountering a crash, back up to a checkpoint, fuzz the environment (e.g., thread scheduling), and restart the program. Helps with availability, but doesn’t help with troubleshooting! We focus on identifying the inputs that caused the bug, so that a developer can fix it. 
-- Execution Synthesis [epfl]: given a program and a bug report, find an execution (thread schedule) that leads up to that failure. Re-executes the program (unlike Sherlog), but doesn’t require runtime recording of any sort [uses symbolic execution instead] 
- - The concept of “fingerprinting” has come up before, in a rather different context (really, they’re breadcrumbs, not fingerprints): Zamfir included stack traces in core dumps to make it easier to figure out what causes deadlocks.
+- Delta Debugging: given a failing test case and an input file (e.g. HTML page), run modified binary search on the input file to find the minimum subset that triggers the failure. We attempt to solve the same problem in a distributed setting, where the input is spread across time and space. Zeller also applied DD to a multi-threaded (single-core) programs to identify the minimum set of thread switches from a schedule that reproduces a race condition. DD still hasn't been applied across space (machines).
+- Sherlog: given a program and production logs that ended in a failure, find the minimum subset of the program execution (both control-flow and data-values) that lead up to the failure. Don't re-execute the program! Statically analyze the code and the log statements preceding the crash.
+- Treating bugs like allergies: on encountering a crash, back up to a checkpoint, fuzz the environment (e.g., thread scheduling), and restart the program. Helps with availability, but doesn't help with troubleshooting! We focus on identifying the inputs that caused the bug, so that a developer can fix it. 
+- Execution Synthesis [epfl]: given a program and a bug report, find an execution (thread schedule) that leads up to that failure. Re-executes the program (unlike Sherlog), but doesn't require runtime recording of any sort [uses symbolic execution instead] 
+ - The concept of “fingerprinting” has come up before, in a rather different context (really, they're breadcrumbs, not fingerprints): Zamfir included stack traces in core dumps to make it easier to figure out what causes deadlocks.
 
 
 Systems & Networking
@@ -165,7 +165,7 @@ distributed system in a simulated environment, enabling us to iteratively prune 
 components (e.g. link failures) needed to explain a collection of alarms. Rather than
 focusing on individual component failures, we seek to minimize inputs that affect the behavior
 of the overall distributed system.
-- Debug Determinism: suggests that replay debuggers should not seek to achieve perfect fidelity -- the utility of the replay can still be high, even if all failure modes can’t be reproduced. Our approach follows this argument: can’t catch everything, but it’s still useful!
+- Debug Determinism: suggests that replay debuggers should not seek to achieve perfect fidelity -- the utility of the replay can still be high, even if all failure modes can't be reproduced. Our approach follows this argument: can't catch everything, but it's still useful!
 
 
 Programming Languages:
@@ -177,27 +177,27 @@ state explosion when run on large systems. For example, NICE took 30 hours to
 model check a network with two switches, two hosts, the MAC-learning
 control program (98 LoC), and five concurrent   
 messages between the hosts. We chose to avoid state-space explosion by analyzing logs post-hoc, after they have been observed in production.
- - Program Slicing [Mark Weiser, ‘81]: given a program and a line of code within that program, find the subset of the program that could possibly affect the result of that line of code. Achieve this by reasoning about control + data flow. We want to do the same thing, except that the “program” is replaced by Dist’Sys events, and “line of code” is replaced by a network misconfiguration.
+ - Program Slicing [Mark Weiser, ‘81]: given a program and a line of code within that program, find the subset of the program that could possibly affect the result of that line of code. Achieve this by reasoning about control + data flow. We want to do the same thing, except that the “program” is replaced by Dist'Sys events, and “line of code” is replaced by a network misconfiguration.
 
 
 8. Conclusion
-- We figured out how to rewrite history! Wasn’t that full of intellectual merit and broader impacts?
+- We figured out how to rewrite history! Wasn't that full of intellectual merit and broader impacts?
 - We chose to focus on SDN, which is heralded as the future of networking. We should apply these techniques elsewhere too!  We envision a new paradigm where domain knowledge is applied to debugging
 ---
 
 
 TODO:
  - Get a citation (perhaps look at bug tracking systems) on the worst case amount of effort developers put into the nastiest bugs.
- - We should have a brainstorming session on what bugs we aren’t able to help with
+ - We should have a brainstorming session on what bugs we aren't able to help with
  - Mozilla redundant bug report pitch?
- - Be more clear about what we are and aren’t logging [Not dataplane packets!]
+ - Be more clear about what we are and aren't logging [Not dataplane packets!]
  - Someone (probably me) needs to dust off the controller distribution (synchronization) code I wrote for POX.
  - Make a new system architecture diagram -- the one in the paper is not good.
  - Emphasize that we require no (or, very limited) knowledge of the codebase.
- - Emphasize not only that dist’systems are complex, but that bugs actually exist in the code!
+ - Emphasize not only that dist'systems are complex, but that bugs actually exist in the code!
  - If we need ideas for diagrams / graphs, refer to delta debugging.
- - It’s really hard to codify the dependencies between some input events (e.g. dataplane drops). See here for a discussion.
- - Note that it’s OK if there are slight re-orderings in the internal events during replay: we have buffers.
+ - It's really hard to codify the dependencies between some input events (e.g. dataplane drops). See here for a discussion.
+ - Note that it's OK if there are slight re-orderings in the internal events during replay: we have buffers.
  - There is a subfield of ML that looks at inferring causal dependencies. Applying their techniques could be useful for codefying domain knowledge about dependencies between input events (e.g., automatically deal with packet drop dependencies)
   
 

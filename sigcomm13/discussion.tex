@@ -1,3 +1,17 @@
+\begin{itemize}
+\item What if there are causal dependencies between inputs events that we don't capture?
+\item Are all simulated failures really indistinguishable from actual failures?
+\item What about the link failure case where Lamport clocks give an incorrect ordering?
+\item Aren't these types of bugs (e.g. failover logic) rare? Why should we
+focus on them? $\rightarrow$ msoft citation on how many man-hours it takes to debug concurrency errors
+\item Will this approach work on all control platforms? (is this specific to virtualization?)
+\item Will control platforms ever become stable enough that troubleshooting tools become unnecessary?
+\end{itemize}
+
+% ----------------------------------------- %
+%           OLD TEXT
+\eat{
+
 % Just realized: b/c of anonymity, the PC can't chastise us for
 % running our system on our own code -- we can't tell them that it's our code!
 \Simulator{} is certainly not without limitations. We discuss several of them
@@ -205,4 +219,6 @@ the number of switches until something broke. We encountered what appears to be
 a limitation of the Linux TCP/IP stack: TCP connection attempts began failing
 beyond 26,680 sockets. Note that 26,680 switches is an order-of-magnitude larger than
 the today's biggest networks.
+}
+
 }

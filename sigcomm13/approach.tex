@@ -1,3 +1,59 @@
+\subsection{Non-Goals}
+\begin{itemize}
+\item Our goal is not to find the root cause of component failures; we're only interested in how the distributed system reacts to those failures (lightning strike example). Another way of putting this is that we aren't interested in troubleshooting anything outside of the controller software: if you have a bug in your switch, you should contact your hardware vendor; if you have a bug in your policy specification, take a closer look at what you specified; if you encounter a bug in your OS, get out your kernel debugger. (That said, our tool can tell you whether your switches behave the same as our software implementation: if our tool was unable to reproduce the error, that means that the problem was above or below the control software)
+\item We don't aim to reproduce bugs involving non-determinism within a single controller (e.g. race-conditions between threads); we're interested in coarser granularity errors (e.g. incorrect failover logic), which there are plenty of! That said, if the developer is willing to instrument their system to provide finer granularity log messages (e.g. Gautam's Friday), our approach still applies.
+\item We won't always find the globally minimum causal sequence, since that
+would require $O(2^N)$ computation in the worst case. Our algorithm is however guaranteed to find a 1-minimal (locally minimum) causal sequence, meaning that if any event from the sequence is pruned, no persistent correctness violation occurs.
+\item Primarily focused on correctness bugs, not performance bugs -- although this distinction has more to do with invariant checking than MCS finding.
+\end{itemize}
+
+\subsection{Algorithm}
+\begin{itemize}
+\item Introduce Floodlight bug as a running example
+\item We selectively forget inputs in the log, and check at the end whether the violation occurred.
+\item Describe MCS finding (delta-debugging) algorithm
+\item In Section 4, we describe concrete ways in which the algorithm can be put to use
+\end{itemize}
+
+\subsection{Replay}
+\begin{itemize}
+\item It's not sufficient to replay the remaining inputs based only on the timings from the original log [we tried!]
+\item So we incorporate events that are internal to the system under test (e.g. mastership changes), whose causal parents/children we don't explicitly know but can infer, as indicators of when we should inject external inputs (e.g. link failures), whose causal parents we don't know and will never know.
+\item We interpose on the controllers' logging library and control message channels to get access to those internal events.
+\item Note that the developer must provide enough logging statements so that relevant internal state changes are captured and visible to our tool. The logging statements must also contain enough context[d] to allow for unambiguous fingerprinting.
+\item Naive solution: wait for internal events, but time out on those that don't show up. Problem: might wait too long. 
+\item Soundest solution: peek()
+  \begin{itemize}
+    \item Infer which internal events are/aren't going to occur, so we know exactly how long to wait before injecting
+    \item How do we know how far to peek() ahead?
+    \item What to do about multiple matching fingerprints?
+    \item overall $O(N^3)$ runtime--snapshots make it $O(N^2)$
+  \end{itemize}
+\item We apply domain knowledge to ensure validity of input sequences. For example, it doesn't make sense to replay a link recovery event if we pruned the link failure event that preceded it.
+\item In S4, we discuss some of the implementation details of handling internal events
+\end{itemize}
+\subsection{Correspondence Checking}
+% Andi: keep concise
+\begin{itemize}
+\item We need a way to check at the end whether the violation has occurred. We call such an algorithm a decider. 
+\item Here we present one decider: correspondence checking. 
+\item Note that if you don't want to instrument controller, or your controller doesn't have an explicit view, you can also specify your own correctness conditions (e.g. reachability) 
+\item Overview of HSA
+\item We extract correctness specification directly from virtual view / physical view
+\item Mathy math
+\item Clarify that correctness violations are unambiguous -- if they were ambiguous, we might falsely prune a member of the MCS (bad!)
+\item Shortcomings of CC
+  \begin{itemize}
+    \item doesn't help with performance (e.g. load balancing over internal links)
+    \item assumes that policy specifications themselves are correct
+  \end{itemize}
+\end{itemize}
+
+
+% ---------------------------------------------- %
+%             OLD TEXT
+\eat{
+
 %Platform developers may discover correctness violations
 %through customer complaints, integration tests, or by periodically running
 %invariant checks on a deployed network.
@@ -466,3 +522,4 @@ switching devices. And then we can inject a number of failure scenarios under
 controlled circumstances to really accelerate our test work.}
 }
 
+}

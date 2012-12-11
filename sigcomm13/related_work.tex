@@ -1,3 +1,56 @@
+We categorize related work according to field:
+
+\noindent{\bf Software Engineering}
+All of the below focus on single programs (possibly multi-threaded, but always single-core)
+\begin{itemize}
+\item Delta Debugging: given a failing test case and an input file (e.g. HTML page), run modified binary search on the input file to find the minimum subset that triggers the failure. We attempt to solve the same problem in a distributed setting, where the input is spread across time and space. Zeller also applied DD to a multi-threaded (single-core) programs to identify the minimum set of thread switches from a schedule that reproduces a race condition. DD still hasn't been applied across space (machines).
+\item Sherlog: given a program and production logs that ended in a failure, find the minimum subset of the program execution (both control-flow and data-values) that lead up to the failure. Don't re-execute the program! Statically analyze the code and the log statements preceding the crash.
+\item Treating bugs like allergies: on encountering a crash, back up to a checkpoint, fuzz the environment (e.g., thread scheduling), and restart the program. Helps with availability, but doesn't help with troubleshooting! We focus on identifying the inputs that caused the bug, so that a developer can fix it.
+\item Execution Synthesis (epfl): given a program and a bug report, find an
+execution (thread schedule) that leads up to that failure. Re-executes the
+program (unlike Sherlog), but doesn't require runtime recording of any sort
+(uses symbolic execution instead).
+\item The concept of `fingerprinting' has come up before, in a rather different context (really, they're breadcrumbs, not fingerprints): Zamfir included stack traces in core dumps to make it easier to figure out what causes deadlocks.
+\end{itemize}
+
+\noindent{\bf Systems and Networking}
+\begin{itemize}
+\item OFRewind: Deterministic replay techniques such as OFRewind allow developers to interactively prune the inputs that lead up to errant behavior. Our technique automates the process of identifying faulty inputs from large input logs.
+\item Tracing tools: allow developers to step through dataplane traces (NDB), or control plane traces (X-trace) to diagnose performance and correctness problems. We focus on automating the triage process.
+\item Causal path tools: such as Pip instrument general-purpose distributed systems
+with code to record, display, and check invariants on causal paths throughout
+live executions. sts observes the causal behavior of the
+distributed system in a simulated environment, enabling us to iteratively prune extraneous input events.
+\item Root cause analysis techniques seek to identify the minimum set of failed
+components (e.g. link failures) needed to explain a collection of alarms. Rather than
+focusing on individual component failures, we seek to minimize inputs that affect the behavior
+of the overall distributed system.
+\item Debug Determinism: suggests that replay debuggers should not seek to achieve perfect fidelity -- the utility of the replay can still be high, even if all failure modes can't be reproduced. Our approach follows this argument: can't catch everything, but it's still useful!
+\end{itemize}
+
+
+\noindent{\bf Programming Languages}
+\begin{itemize}
+\item Model checkers: such as NICE enumerate all possible code paths taken by control software (NOX)
+and identify concrete inputs (e.g.control message orderings) that cause
+the network to enter invalid configurations. NICE works well for small
+control programs and a small number of machines, but suffers from exponential
+state explosion when run on large systems. For example, NICE took 30 hours to
+model check a network with two switches, two hosts, the MAC-learning
+control program (98 LoC), and five concurrent
+messages between the hosts. We chose to avoid state-space explosion by analyzing logs post-hoc, after they have been observed in production.
+\item Program Slicing (Mark Weiser, ‘81): given a program and a line of code
+within that program, find the subset of the program that could possibly affect
+the result of that line of code. Achieve this by reasoning about control +
+data flow. We want to do the same thing, except that the `program' is replaced
+by Dist'Sys events, and `line of code' is replaced by a network misconfiguration.
+\end{itemize}
+
+
+% ----------------------------------------- %
+%          OLD TEXT
+\eat{
+
 \colin{TODO: cite ndb + Nick's keynote}
 
 \colin{Reviewer OD: read Knowledge Plane For The
@@ -131,4 +184,5 @@ differentiate ephemeral from persistent errors.
 % Virtualization definitely won't happen by Monday. But, papers include
 % Martin's presto '10 paper 'Virtualizaing the Network Forwarding Plane'
 
+}
 }

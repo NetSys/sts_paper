@@ -1,3 +1,61 @@
+We built it and it works! \\
+
+A few implementation details:
+\begin{itemize}
+\item Lightweight deterministic replay: we instrument gettimeofday() and getrand() for some controllers, since it's easy, and it helps us deal with timeouts properly.
+\item When we alter history, we make a best-effort guess for the
+instrumentation. For example, if the altered execution asks for more rands/dates than we recorded initially. Just feed it more rands generated on-the-fly, and assume somewhat equidistant (in time) requests for datetime.
+\end{itemize}
+
+OK, so what are the ways developers and operators can put sts into action?
+
+\subsection{Replayable Traces}
+\begin{itemize}
+\item Forget about the algorithm for a second.
+\item This tool gives us replayable traces.
+\item Much better than status quo useful for dev mailing list help (e.g. Murphy and NOX bugs on nox-dev)
+\end{itemize}
+
+\subsection{Testing}
+\begin{itemize}
+\item Simulator gives you complete control over orderings, message drops, node failures, etc.
+\item It also gives us a total ordering of internal/input events
+\item Can play with tricky cases interactively
+  \begin{itemize}
+  \item because of our lightweight instrumentation, traces generated through interactive exploration can be played back at a much faster speed.
+  \end{itemize}
+
+\item Can also automatically generate random inputs $\rightarrow$ replayable integration tests!
+\item Can accumulate a library of tests to run on other controllers.
+\item frees up developers to be more agile in development instead of spending time doing triage and bug hunting.
+\end{itemize}
+
+\subsection{Forensic Analysis}
+
+\begin{itemize}
+\item Can be used for forensic analysis after a bug in production
+\item Needs a global log. Isn't that difficult? Vision for a possible approach:
+\begin{itemize}
+\item Collect distributed logs from the controllers.
+\item Describe what's contained in the logs:
+  \begin{itemize}
+   \item Lamport clocks or accurate NTP so that we can serialize the distributed logs.
+   \item Clear distinction between internal and external events
+  \end{itemize}
+\item Note that without further modifications to the simulator, we aren't going to be able to make all possible synthetic inputs indistinguishable (from the controllers' perspective) from the inputs observed in the production run. We aim to make them indistinguishable, but there are going to be failure modes we can't reproduce right away. For example, suppose that the controller's faulty behavior is to flood a switch with messages, causing the switch to drop some traffic. However, only switches that are running low on memory are affected by the controller's faulty behavior. To reproduce this failure mode correctly, we would have to modify our software switch to act in the same way that the hardware switch does.
+\item Deal with redundant input events (e.g. controller failure event independently logged by 3 replicas):
+  \begin{itemize}
+    \item Silver bullet is to incorporate reliable failure detectors into your system: log a failure iff the failure occurred.
+    \item Otherwise, root cause analysis algorithms were designed for exactly this purpose: what's the minimum number of component failures that can explain a set of correlated alarms?
+  \end{itemize}
+\item Describe size of the logs, and checkpointing to reduce the replay runtime.
+\item How do we know how far back to look with checkpointing?
+\end{itemize}
+\end{itemize}
+
+% --------------------------------------------------
+%    OLD TEXT
+\eat{
 
 % Research question here?
 % Going to be challenging to have this not come across as a software design
@@ -137,3 +195,5 @@ the platform's view of the network state.
 
 \projectname{} is written in roughly 5,000 lines of python, and is publicly
 available. [anon]
+
+}
