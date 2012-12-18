@@ -75,7 +75,8 @@ there: given a single input (\eg~an HTML page)
 for a non-distributed program (\eg~Firefox), it performs a divide-and-conquer
 search, repeatedly running the program on subsets of the input
 until it finds a minimal subset (\eg~a {\tt<SELECT>} tag) that is sufficient
-for triggering a known bug. \colin{Needs a figure.}
+for triggering a known bug. The delta debugging algorithm is shown in
+Figure~\ref{fig:ddmin}. \colin{TDB}
 
 Our problem differs in two dimensions. First, the input to SDN controllers is spread
 across time: it includes many messages, and depends on subtle causal

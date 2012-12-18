@@ -1,25 +1,10 @@
 \documentclass{sig-alternate-10pt}
 
-%\documentclass[letterpaper,twocolumn,10pt]{article}
-%\usepackage{url}
-%\usepackage{usenix,epsfig,endnotes}
-%\usepackage{fullpage}
-%\setlength{\textwidth}{6.75in}
-%\setlength{\oddsidemargin}{-.125in}
-%\usepackage{graphicx}
-\usepackage{times,epsfig,url,graphics,graphicx,rotating,color,xcolor}
-\usepackage{amssymb,amsmath,amsfonts,algpseudocode,xspace}
-\usepackage{fancyvrb}
-\usepackage{fixltx2e}
-
-%\usepackage[letterpaper,hmargin=1in,vmargin=1in]{geometry}
-%\usepackage{natbib}
-%\usepackage{ifpdf}
-%\usepackage{multicol}
-%\usepackage{amsmath, amssymb, amsthm}
-%\usepackage{rotating}
-%\onehalfspacing
-%\newcommand{\tbd}[1]{[{\bf{#1}}]}
+\usepackage{times}
+\usepackage{color}
+%,xcolor,rotating,graphicx,graphics,url,epsfig,
+%amsfonts,algpseudocode,xspace,amsmath,amssymb,fancyvrb,fixltx2e
+\usepackage{fancybox}
 
 \newcommand{\projectname}[1]{{$\text{W}^{3}$}}
 \newcommand{\simulator}[1]{simulation-based causal inference}
@@ -32,28 +17,11 @@
 \newcommand{\apriori}{{\it a priori}}
 \newcommand{\eat}[1]{}
 
-%\usepackage[usenames,dvipsnames]{color}
 \newcommand{\teemu}[1]{{\color{ForestGreen}\bf TK: {#1}}}
 \newcommand{\andi}[1]{{\color{blue}\bf AW: {#1}}}
 \newcommand{\sam}[1]{{\color{orange}\bf SW: {#1}}}
 \newcommand{\colin}[1]{{\color{red}\bf CS: {#1}}}
 \newcommand{\scott}[1]{{\color{purple}\bf SS: {#1}}}
-
-%\setlength{\columnsep}{.25in}
-%\setlength\topmargin{-.5in}
-%\setlength\textheight{8.5in}
-%\usepackage{verbatim}
-%\usepackage[compact]{titlesec}
-%\usepackage[small]{caption}
-%\usepackage{times}
-
-% Squeeze out the whitespace!
-%\setlength{\parskip}{0pt}
-%\setlength{\parsep}{0pt}
-%\setlength{\headsep}{0pt}
-%\titlespacing{\section}{.5pt}{*.2}{*.2}
-%\titlespacing{\subsection}{.5pt}{*.2}{*.2}
-%\titlespacing{\subsubsection}{.5pt}{*.2}{*.2}
 
 % Signed quotes:
 \def\signed #1{{\leavevmode\unskip\nobreak\hfil\penalty50\hskip2em
