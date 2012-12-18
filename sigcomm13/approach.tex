@@ -98,7 +98,31 @@ for a non-distributed program (\eg~Firefox), it performs a divide-and-conquer
 search, repeatedly running the program on subsets of the input
 until it finds a minimal subset (\eg~a {\tt<SELECT>} tag) that is sufficient
 for triggering a known bug. The delta debugging algorithm is shown in
-Figure~\ref{fig:ddmin}. \colin{TDB}
+Figure~\ref{fig:ddmin}.
+
+\begin{figure*}[t]
+\caption{Minimizing Delta Debugging Algorithm}
+\begin{boxedminipage}{\textwidth}
+Input: $\cfail$ s.t. $\test(\cfail) = \FAIL$. Output: $\dfail
+= \ddmin(\cfail)$ s.t. $\dfail \subseteq
+\cfail$, $\test(\dfail) = \FAIL$, and~$\dfail$ is 1-minimal.
+\begin{align*}
+\ddmin(\cfail) &= \ddmin_2(\cfail, 2) \quad \text{where} \\
+\ddmin_2(\dfail, n) &= 
+\begin{cases}
+\ddmin_2(\Delta_i, 2) & \text{\hphantom{else }if $\exists i \in \{1, \dots, n\} \cdot \test(\Delta_i) = \FAIL$ (``reduce to subset'')} \\
+\ddmin_2\bigl(\nabla_i, \max(n - 1, 2)\bigr) & 
+\text{else if $\exists i \in \{1, \dots, n\} \cdot \test(\nabla_i) = \FAIL$ (``reduce to complement'')} \\
+\ddmin_2\bigl(\dfail, \min(|\dfail|, 2n)\bigr) & \text{else if $n < |\dfail|$ (``increase granularity'')} \\
+\dfail & \text{otherwise (``done'').}
+\end{cases}
+\end{align*}
+where $\nabla_i = \dfail - \Delta_i$, $\dfail = \Delta_1 \cup \Delta_2 \cup \dots \cup \Delta_n$, all
+$\Delta_i$ are pairwise disjoint, and $\forall \Delta_i \cdot |\Delta_i| \approx |\dfail| / n$
+holds.
+\end{boxedminipage}
+\label{fig:ddmin}
+\end{figure*}
 
 Our problem differs in two dimensions. First, the input to SDN controllers is spread
 across time: it includes many messages, and depends on subtle causal
