@@ -39,7 +39,7 @@ state explosion when run on large systems. For example, NICE took 30 hours to
 model check a network with two switches, two hosts, the MAC-learning
 control program (98 LoC), and five concurrent
 messages between the hosts. We chose to avoid state-space explosion by analyzing logs post-hoc, after they have been observed in production.
-\item Program Slicing (Mark Weiser, ‘81): given a program and a line of code
+\item Program Slicing (Mark Weiser, `81): given a program and a line of code
 within that program, find the subset of the program that could possibly affect
 the result of that line of code. Achieve this by reasoning about control +
 data flow. We want to do the same thing, except that the `program' is replaced
