@@ -97,7 +97,7 @@ which the technique can be put to use.
 \item So we incorporate events that are internal to the system under test (e.g. mastership changes), whose causal parents/children we don't explicitly know but can infer, as indicators of when we should inject external inputs (e.g. link failures), whose causal parents we don't know and will never know.
 \item We interpose on the controllers' logging library and control message channels to get access to those internal events.
 \item Note that the developer must provide enough logging statements so that relevant internal state changes are captured and visible to our tool. The logging statements must also contain enough context[d] to allow for unambiguous fingerprinting.
-\item Naive solution: wait for internal events, but time out on those that don't show up. Problem: might wait too long. 
+\item Naive solution: wait for internal events, but time out on those that don't show up. Problem: might wait too long.
 \item Soundest solution: peek()
   \begin{itemize}
     \item Infer which internal events are/aren't going to occur, so we know exactly how long to wait before injecting
@@ -113,21 +113,108 @@ for a discussion.
 \item In S4, we discuss some of the implementation details of handling internal events
 \end{itemize}
 \subsection{Correspondence Checking}
-% Andi: keep concise
-\begin{itemize}
-\item We need a way to check at the end whether the violation has occurred. We call such an algorithm a decider. 
-\item Here we present one decider: correspondence checking. 
-\item Note that if you don't want to instrument controller, or your controller doesn't have an explicit view, you can also specify your own correctness conditions (e.g. reachability) 
-\item Overview of HSA
-\item We extract correctness specification directly from virtual view / physical view
-\item Mathy math
-\item Clarify that correctness violations are unambiguous -- if they were ambiguous, we might falsely prune a member of the MCS (bad!)
-\item Shortcomings of CC
-  \begin{itemize}
-    \item doesn't help with performance (e.g. load balancing over internal links)
-    \item assumes that policy specifications themselves are correct
-  \end{itemize}
-\end{itemize}
+
+Finally, we need a mechanism for deciding
+whether a correctness violation is present at the end of the system execution.
+We refer to such an algorithm as a {\em decider}.
+
+While our approach trivially supports generic deciders (\eg~all-pairs reachability or loop-detection),
+we show here that with a small modification to the controller software we can
+extract the network policies already reflected in the
+controller's views and thereby check a much more fine-grained set of invariants.
+We refer to this technique as correspondence checking. Correspondence checking
+builds on the virtual packet algebra
+pioneered in headerspace analysis~\cite{hsa}.
+
+Formally, the state of the physical network, the physical view, and the
+logical view can be represented as graphs,
+$G = (V, E)$. Packets are series of bits, $h \in \{0,1\}^L$ in the universe
+of all possible bit sequences $H = \{0,1\}^L$,
+where $L$ is the maximum number of bits in the header.
+
+Upon receiving a packet,
+forwarding elements apply a transformation function, potentially modifying
+packets before forwarding them on\footnote{Multicast forwarding can expressed
+by extending the range to sets of output tuples}:
+\begin{align*}
+T: (H \times E) \rightarrow (H \times E_{\emptyset})
+\end{align*}
+Here, $E_{\emptyset} \equiv E \cup \emptyset$, signifying that forwarding elements
+may drop packets.
+
+We use $\Psi$ to denote the collection of all transfer functions present in
+the network at a particular point in time. In this model, network traversal is
+simply repeated application of $\Psi$.
+For example, if a header $h$ enters the network through edge
+$e$, its state after $k$ hops will be:
+\begin{align*}
+\Psi^k(h,e) = \Psi(\Psi(\dots \Psi(h,e)\dots))
+\end{align*}
+
+The externally visible behavior of the network can be expressed as the
+transitive closure of $\Psi$:
+\begin{align*}
+\Omega: (H \times E_{access}) \rightarrow (H \times E_{\emptyset}) \\
+\Omega(h,e) = \Psi^{\infty}(h,e)
+\end{align*}
+Here, $E_{access}$ denotes access links adjacent to end-hosts.
+
+The domain of $\Omega^{physical}$ is the set of pairs of end-hosts in the
+physical network along with packets they could possibly produce (before
+the packets have been encapsulated). We define $\Omega^{view}$ in exactly the same way, where
+the logical hosts are abstract representations of the hosts in the physical
+network. This definition depends on the observation that end-hosts are represented
+in all layers, even if there is not a one-to-one mapping between the
+internal vertices of $G^{virtual}$ and $G^{physical}$.
+
+The range of $\Omega$ is the hypothetical final state of the
+input packet if it were injected in the network.
+We use the special value $LOOP$ to distinguish
+a packet dropped by a network device from a packet entering an
+infinite loop (both of which never leave the network).
+
+In SDN, it should always be the case that:
+\begin{align*}
+\Omega^{view} \sim \Omega^{physical}
+\end{align*}
+The equivalence $\sim$ means that the final outcome of any input packet
+injected at a host $a_{physical}$ in the physical network has the same hypothetical final outcome as
+the same input injected at the corresponding $a_{logical}$, and vice versa.
+
+Correspondence checking takes as input a
+snapshot of both the physical network and the
+controllers' state. We first modify the control software to present an
+interface through which the physical and virtual views can be
+extracted. The snapshot is
+then obtained by pausing execution and invoking this interface.
+The routing tables of forwarding elements in the views and the physical
+network can then be translated into transformation functions.
+Finally, we feed a symbolic packet $x^L$ to each access link of the
+network.\footnote{The rules for process wildcard bits $x^n$ are defined in
+the HSA paper~\cite{hsa}} The end result is a propagation graph representing
+all possible paths taken by any packet injected
+at the access link.
+
+We compute $\Omega$ by traversing the resulting propagation graph. If a packet
+enters a loop before exiting the network, we mark the value as
+$LOOP$. Otherwise,
+the leaves of the propagation graph define the final outcomes of the input
+packets injected at that access link. Because network policies are defined by
+configuring the logical view, any mismatch between $\Omega^{view}$ and $\Omega^{physical}$
+represents an instance of a correctness violation. Note that mismatches are
+unambiguous; that is, two slightly differnet correctness violation from
+different runs of the system are always distinguishable.
+
+Note the price of correspondence checking's generality is that it represents
+a somewhat weak notion of
+correctness. Correspondence checking only captures external behavior and
+loops; it does not capture internal behavior such as load-balancing
+over links. It also assumes that the policies as expressed by the
+configuration of the logical view are correct. Finally, correspondence
+checking can not verify
+time-dependent policies such as ``No link should be congested more than 1\% of
+the time''.
+
 
 
 % ---------------------------------------------- %
@@ -303,156 +390,6 @@ syntactic differences (\eg{} sequence numbers on packets).
 %the system execution by naively injecting inputs using timers, although the
 %output of the algorithm is not guaranteed to be exactly correct.
 %}
-
-\subsection{Correspondence Checking}
-
-Finally, we need a mechanism for deciding
-whether a correctness violation between the network operator's intent and the simulated network
-is present at the end of the system execution.
-We refer to such an algorithm as a {\em decider}.
-
-We develop a particular decider here, which we refer to as correspondence checking.
-Correspondence checking does not require
-the troubleshooter to specify invariants. Instead, correspondence checking
-obtains invariants by extracting the policies reflected in the virtual view.
-Correspondence checking builds on the virtual packet algebra
-pioneered in headerspace analysis~\cite{hsa}.
-\colin{Crucial misunderstanding: ``Where do you get the policy specification?
-That in itself seems like a hard problem.''}
-
-\eat{Furthermore, running correspondence
-checking between intermediate layers of the SDN stack (logical view versus
-physical view), allow us to identify the component(s) of
-the system where correctness violations first manifest themselves.}
-
-Formally, the state of the physical network, the physical view, and the
-logical view can be represented as graphs,
-$G = (V, E)$. Packets are series of bits, $h \in \{0,1\}^L$ in the universe
-of all possible bit sequences $H = \{0,1\}^L$,
-where $L$ is the maximum number of bits in the header.
-
-Upon receiving a packet,
-forwarding elements apply a transformation function, potentially modifying
-packets before forwarding them on\footnote{Multicast forwarding can expressed
-by extending the range to sets of output tuples}:
-\begin{align*}
-T: (H \times E) \rightarrow (H \times E_{\emptyset})
-\end{align*}
-Here, $E_{\emptyset} \equiv E \cup \emptyset$, signifying that forwarding elements
-may drop packets.
-
-We use $\Psi$ to denote the collection of all transfer functions present in
-the network at a particular point in time. In this model, network traversal is
-simply repeated application of $\Psi$.
-For example, if a header $h$ enters the network through edge
-$e$, its state after $k$ hops will be:
-\begin{align*}
-\Psi^k(h,e) = \Psi(\Psi(\dots \Psi(h,e)\dots))
-\end{align*}
-
-The externally visible behavior of the network can be expressed as the
-transitive closure of $\Psi$:
-\begin{align*}
-\Omega: (H \times E_{access}) \rightarrow (H \times E_{\emptyset}) \\
-\Omega(h,e) = \Psi^{\infty}(h,e)
-\end{align*}
-Here, $E_{access}$ denotes access links adjacent to end-hosts.
-
-The domain of $\Omega^{physical}$ is the set of pairs of end-hosts in the
-physical network along with packets they could possibly produce (before
-the packets have been encapsulated). We define $\Omega^{view}$ in exactly the same way, where
-the logical hosts are abstract representations of the hosts in the physical
-network. This definition depends on the observation that end-hosts are represented
-in all layers, even if there is not a one-to-one mapping between the
-internal vertices of $G^{virtual}$ and $G^{physical}$.
-
-The range of $\Omega$ is the hypothetical final state of the
-input packet if it were injected in the network.
-We use the special value $LOOP$ to distinguish
-a packet dropped by a network device from a packet entering an
-infinite loop (both of which never leave the network).
-
-In SDN, it should always be the case that:
-\begin{align*}
-\Omega^{view} \sim \Omega^{physical}
-\end{align*}
-The equivalence $\sim$ means that the final outcome of any input packet
-injected at a host $a_{physical}$ in the physical network has the same hypothetical final outcome as
-the same input injected at the corresponding $a_{logical}$, and vice versa.
-
-Correspondence checking takes as input a
-snapshot of both the physical network and the
-controllers' state. We first modify the control software to present an
-interface through which the physical and virtual views can be
-extracted. The snapshot is
-then obtained by pausing execution and invoking this interface.
-The routing tables of forwarding elements in the views and the physical
-network can then be translated into transformation functions.
-Finally, we feed a symbolic packet $x^L$ to each access link of the
-network.\footnote{The rules for process wildcard bits $x^n$ are defined in
-the HSA paper~\cite{hsa}} The end result is a propagation graph representing
-all possible paths taken by any packet injected
-at the access link.
-
-We compute $\Omega$ by traversing the resulting propagation graph. If a packet
-enters a loop before exiting the network, we mark the value as
-$LOOP$. Otherwise,
-the leaves of the propagation graph define the final outcomes of the input
-packets injected at that access link. Because network policies are defined by
-configuring the logical view, any mismatch between $\Omega^{view}$ and $\Omega^{physical}$
-represents an instance of a correctness violation.
-
-\colin{Reviewer OB: Without an introduction and an explanation of how the
-propagation graph is built, and what an example propagation graph looks like,
-it is difficult to grasp the performance and correctness of the techniques
-proposed in the paper.}
-
-Note that without requiring the troubleshooter to specify invariants,
-correspondence checking represents a somewhat weak notion of
-correctness. Correspondence checking only captures external behavior and
-loops; it does not capture internal behavior such as load-balancing
-over links. It also assumes that the policies as expressed by the
-configuration of the logical view are correct. Finally, correspondence checking can not verify
-time-dependent policies such as ``No link should be congested more than 1\% of
-the time''.
-
-\subsubsection{Additional Use-Cases} Besides lifetime tracking and causal analysis, our simulation infrastructure has a
-number of other possible use-cases:
-
-\colin{Use Amin's quote from ONS to motivate utility of simulator}
-
-\noindent\textbf{Checking related problems by fuzzing.} Input traces can be
-\emph{fuzzed}~\cite{Miller:1990:ESR:96267.96279}, \ie{},
-randomly perturbed, to expose the system to similar error conditions, and confirm
-that a proposed solution is not just a point-fix. \colin{Need to be more clear
-about what the constraints on the fuzzer are. (permutation or generation?)}
-
-\noindent\textbf{Investigating pathological environment conditions.} The simulator allows for investigation
-of pathological environment conditions difficult to achieve in a real world test bed
-(\eg{}, correlated failure rates, extremely long delays etc.). This enables
-investigation of situations that have a high potential for triggering errors.
-
-\noindent\textbf{Interactive exploration.} Troubleshooters can also interactively bisect
-the trace or modify specific events to further pinpoint the cause for a failure.
-This is useful as soon as a suspect event sequence has been identified.
-
-\noindent\textbf{Regression/Integration Test Library.} In traditional software engineering practices,
-integration tests are an
-important part of the software development cycle: developers feed end-to-end
-input through the system, and verify that the system execution satisfies
-certain safety and liveness properties. As additional failure cases are encountered in
-production, new cases can be added to a suite of integration tests to
-ensure robust operation of the system in future versions of the system.
-
-Although the practice of accumulating an integration test suite over time is
-commonplace in other fields of computer science, the field of networking
-simply did not have the requisite software infrastructure to realize this practice before the emergence
-of SDN. \Simulator{} can be viewed as our realization
-of this development practice, applied to network controllers. Our simulator's fine-grained control over
-failure scenarios allows us to test corner-case network conditions -- those
-that are most difficult to anticipate in traditional unit tests.
-As known failure cases are accrued over time, we envision \simulator{} being used to validate
-new and existing SDN platforms.
 
 \eat{
 
