@@ -1,6 +1,22 @@
+
 We built it and it works! \\
 
+%We simulate the entire network, including hosts and
+%switches, in a single-threaded process, and running the controllers in
+%individual virtual machines that are
+%bootstrapped from a static snapshot (including random number generator
+%seeds, \etc{}). The switches connect to the controllers as if they were true
+%network devices, such that the controllers believe they are configuring a true
+%network. The simulator interposes on all communication channels,
+%allowing it to proceed with the system execution in
+%lock step~\cite{Dunlap:2002:REI:844128.844148}:
+%pausing the controller VMs between each logical timestep and delaying messages
+%arbitrarily. The simulator then reproduces the external inputs from the log.
+%For example, link failures are reproduced by disconnecting the edge in
+%the simulated network.
+
 A few implementation details:
+
 \begin{itemize}
 \item Exactly what we log (not dataplane packets!)
 \item Note that it's OK if there are slight re-orderings in the internal
@@ -20,6 +36,17 @@ OK, so what are the ways developers and operators can put sts into action?
 \end{itemize}
 
 \subsection{Testing}
+%\colin{Use Amin's quote from ONS to motivate utility of simulator}
+%\colin{Amin Vahdat:
+%I understand another key benefit of SDN/OpenFlow is being able to play with a
+%lot of "what if" scenarios to enable you to fine-tune the network before going
+%live.
+%
+%Exactly. So one of the key benefits we have is a very nice emulation and
+%simulation environment where the exact same control software that would be
+%running on servers might be controlling a combination of real and emulated
+%switching devices. And then we can inject a number of failure scenarios under
+%controlled circumstances to really accelerate our test work.}
 \begin{itemize}
 \item Simulator gives you complete control over orderings, message drops, node failures, etc.
 \item It also gives us a total ordering of internal/input events
@@ -27,11 +54,29 @@ OK, so what are the ways developers and operators can put sts into action?
   \begin{itemize}
   \item because of our lightweight instrumentation, traces generated through interactive exploration can be played back at a much faster speed.
   \end{itemize}
-
 \item Can also automatically generate random inputs $\rightarrow$ replayable integration tests!
 \item Can accumulate a library of tests to run on other controllers.
 \item frees up developers to be more agile in development instead of spending time doing triage and bug hunting.
 \end{itemize}
+
+%In traditional software engineering practices,
+%integration tests are an
+%important part of the software development cycle: developers feed end-to-end
+%input through the system, and verify that the system execution satisfies
+%certain safety and liveness properties. As additional failure cases are encountered in
+%production, new cases can be added to a suite of integration tests to
+%ensure robust operation of the system in future versions of the system.
+%
+%Although the practice of accumulating an integration test suite over time is
+%commonplace in other fields of computer science, the field of networking
+%simply did not have the requisite software infrastructure to realize this practice before the emergence
+%of SDN. \Simulator{} can be viewed as our realization
+%of this development practice, applied to network controllers. Our simulator's fine-grained control over
+%failure scenarios allows us to test corner-case network conditions -- those
+%that are most difficult to anticipate in traditional unit tests.
+%As known failure cases are accrued over time, we envision \simulator{} being used to validate
+%new and existing SDN platforms.
+
 
 \subsection{Forensic Analysis}
 
@@ -46,6 +91,13 @@ OK, so what are the ways developers and operators can put sts into action?
    \item Clear distinction between internal and external events
   \end{itemize}
 \item Note that without further modifications to the simulator, we aren't going to be able to make all possible synthetic inputs indistinguishable (from the controllers' perspective) from the inputs observed in the production run. We aim to make them indistinguishable, but there are going to be failure modes we can't reproduce right away. For example, suppose that the controller's faulty behavior is to flood a switch with messages, causing the switch to drop some traffic. However, only switches that are running low on memory are affected by the controller's faulty behavior. To reproduce this failure mode correctly, we would have to modify our software switch to act in the same way that the hardware switch does.
+%Note that the simulator does not need
+%to accurately reproduce the failure modes of {\em individual} controllers or switches.
+%We are only interested in observing the behavior of the overall distributed system, which is
+%built under the assumption that individual components will fail.
+%Therefore, it is sufficient to use a `blunt hammer' (\eg{} POSIX's {\em SIGKILL}) to reproduce individual
+%failure events, so long as the remaining controllers react in the same
+%way as they did in the actual run.
 \item Deal with redundant input events (e.g. controller failure event independently logged by 3 replicas):
   \begin{itemize}
     \item Silver bullet is to incorporate reliable failure detectors into your system: log a failure iff the failure occurred.
@@ -54,6 +106,7 @@ OK, so what are the ways developers and operators can put sts into action?
 \item Describe size of the logs, and checkpointing to reduce the replay runtime.
 \item How do we know how far back to look with checkpointing?
 \end{itemize}
+%\item What about the link failure case where Lamport clocks give an incorrect ordering?
 \end{itemize}
 
 % --------------------------------------------------
@@ -63,19 +116,6 @@ OK, so what are the ways developers and operators can put sts into action?
 
 \subsubsection{Additional Use-Cases} Besides lifetime tracking and causal analysis, our simulation infrastructure has a
 number of other possible use-cases:
-
-\colin{Use Amin's quote from ONS to motivate utility of simulator}
-\colin{Amin Vahdat:
-I understand another key benefit of SDN/OpenFlow is being able to play with a
-lot of "what if" scenarios to enable you to fine-tune the network before going
-live.
-
-Exactly. So one of the key benefits we have is a very nice emulation and
-simulation environment where the exact same control software that would be
-running on servers might be controlling a combination of real and emulated
-switching devices. And then we can inject a number of failure scenarios under
-controlled circumstances to really accelerate our test work.}
-
 
 \noindent\textbf{Checking related problems by fuzzing.} Input traces can be
 \emph{fuzzed}~\cite{Miller:1990:ESR:96267.96279}, \ie{},
@@ -250,7 +290,7 @@ symbolic packet propagation to a large number of subtasks. Correspondence
 checking currently requires a small code change to the controller to fetch
 the platform's view of the network state.
 
-\projectname{} is written in roughly 5,000 lines of python, and is publicly
+\projectname{} is written in roughly 10,000 lines of python, and is publicly
 available. [anon]
 
 }

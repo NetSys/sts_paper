@@ -8,7 +8,13 @@ big ball of wibbly wobbly... time-y wimey... stuff.''
 \item Networks are amongst the largest distributed systems we have, and distributed systems are complex
 \item bugs crop up all the time, and they're damn hard to fix
 \item In a large system (e.g. a datacenter), the log is huge and it takes a long time to inspect it manually
-\item A 2006 survey found that developers at Microsoft spend ~49\% of their time troubleshooting bugs.
+\item A 2006 survey found that developers at Microsoft spend ~49\% of their time troubleshooting bugs. 70\% of the concurrency bugs reported to Microsoft take days to months
+to fix~\cite{msoft_concurrency}. Same study, almost 75\% of respondents
+considered reproducibility to be hard or very hard.
+\item Moreover, software reliability is really important.
+\colin{``Meeting Customer Expectations about Reliability'' is the second highest
+priority for networking professionals, according to a market
+report~\cite{market_report}}
 \item We present a method for automatically pruning extraneous inputs, thereby telling the developer exactly which inputs in the log to look at.
 \item Our technique is based on selectively forgetting inputs in the log.
 \end{itemize}
@@ -62,14 +68,9 @@ Main result from our work: the amount of effort it takes to codify domain knowle
 %   attacking" is really lecturing the reader  ...  of course context and scope of
 %   any research problem is important.
 
-
 \colin{``Meeting Customer Expectations about Reliability'' is the second highest
 priority for networking professionals, according to a market
 report~\cite{market_report}}
-
-\colin{70\% of the concurrency bugs reported to Microsoft take days to months
-to fix~\cite{msoft_concurrency}. Same study, almost 75\% of respondents
-considered reproducibility to be hard or very hard}
 
 Given their critical role in enterprises, one might expect that networks
 would come with a well-developed suite of troubleshooting tools. However,

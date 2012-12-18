@@ -1,6 +1,6 @@
 \subsection{Case Studies}
 \begin{itemize}
-\item POX trivial type error bug to start
+\item POX trivial type error bugs to start
 \item Floodlight failover re-cap
 \item NOX routing
 \item POX distribution?
@@ -18,6 +18,20 @@
 \begin{itemize}
 \item `time compression' benefits
 \item Note that runtime doesn't really matter! As long as developer time isn't being used. 
+% Scalability:
+%We also tested the extreme limits of the simulator's scalability, pushing up
+%the number of switches until something broke. We encountered what appears to be
+%a limitation of the Linux TCP/IP stack: TCP connection attempts began failing
+%beyond 26,680 sockets. Note that 26,680 switches is an order-of-magnitude larger than
+%the today's biggest networks.
+
+% Optimizations:
+%If the log is too long to rerun from the beginning for
+%every iteration, the operator can take causally-consistent
+%snapshots~\cite{Chandy:1985:DSD:214451.214456} of the
+%live system and bootstrap the simulator from the nearest quiescent snapshot.
+%The length of the execution can also be `compressed' by manipulating timers in the
+%controllers while still maintaining happens-before dependencies.
 \end{itemize}
 
 % ------------------------------------- %
