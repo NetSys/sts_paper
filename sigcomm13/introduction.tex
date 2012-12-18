@@ -12,9 +12,9 @@ big ball of wibbly wobbly... time-y wimey... stuff.''
 to fix~\cite{msoft_concurrency}. Same study, almost 75\% of respondents
 considered reproducibility to be hard or very hard.
 \item Moreover, software reliability is really important.
-\colin{``Meeting Customer Expectations about Reliability'' is the second highest
+``Meeting Customer Expectations about Reliability'' is the second highest
 priority for networking professionals, according to a market
-report~\cite{market_report}}
+report~\cite{market_report}. % Software bugs cost $59B in 2002: bit.ly/V2Z7Al
 \item We present a method for automatically pruning extraneous inputs, thereby telling the developer exactly which inputs in the log to look at.
 \item Our technique is based on selectively forgetting inputs in the log.
 \end{itemize}
@@ -32,10 +32,10 @@ Why is this hard?
 
 How is this different than previous work?
 \begin{itemize}
-\item  Our contribution: we're applying delta-debugging to distributed systems -- generalizing across time (no longer a single input file) and space (coordinating multiple machines).
-\item  We're not focused specifically on bugs within a single controller (deterministic replay), although developers can control the granularity of the logs they feed to our tool -- the finer the granularity, the more bugs we'll be able to diagnose.
-\item  We're also not interested in proactively finding bugs (NICE), only reactively.
-\item  Upshot: we don't claim to be able to find the MCS for all possible problems. Nonetheless, the worst case for us is that the developer ends up with what they started: an unpruned input log (either we failed to reproduce it in the first place, or nothing was prunable). We discuss the limitations of our approach in more detail in the 3.1.
+\item Our contribution: we're applying delta debugging~\cite{Zeller:2002:SIF:506201.506206} to distributed systems -- generalizing across time (no longer a single input file) and space (coordinating multiple machines).
+\item We're not focused specifically on bugs within a single controller (deterministic replay), although developers can control the granularity of the logs they feed to our tool -- the finer the granularity, the more bugs we'll be able to diagnose.
+\item We're also not interested in proactively finding bugs (NICE~\cite{nice}), only reactively.
+\item Upshot: we don't claim to be able to find the MCS for all possible problems. Nonetheless, the worst case for us is that the developer ends up with what they started: an unpruned input log (either we failed to reproduce it in the first place, or nothing was prunable). We discuss the limitations of our approach in more detail in the 3.1.
 \end{itemize}
 
 Main result from our work: the amount of effort it takes to codify domain knowledge is significantly less than the effort it would take to step through a normal replay debugger by hand for each bug.
