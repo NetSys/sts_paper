@@ -1,35 +1,52 @@
 We have developed a technique, \simulator{}, for automatically identifying
 a minimal set of fault-inducing inputs from logs. Before diving into the
-details, we clarify the scope of our tool's value.
+details, we clarify the scope of our tool's use.
 
 \subsection{Non-Goals}
 \label{subsec:non_goals}
-\begin{itemize}
-% Possibly another one?:
-%\projectname{} is a troubleshooting tool, not a debugger; by
-%this we mean that \projectname{} helps identify and localize network
-%problems (what, where, and when?), but it does not help identify exactly which
-%line of code causes the error (why?).
 
-% And another:
-%We focus on a \emph{proactive} mode of
-%operation where forwarding state updates are triggered by policy or topology
-%changes, not data-plane events.
-\item Our goal is not to find the root cause of component failures; we're only interested in how the distributed system reacts to those failures (lightning strike example). Another way of putting this is that we aren't interested in troubleshooting anything outside of the controller software: if you have a bug in your switch, you should contact your hardware vendor; if you have a bug in your policy specification, take a closer look at what you specified; if you encounter a bug in your OS, get out your kernel debugger. (That said, our tool can tell you whether your switches behave the same as our software implementation: if our tool was unable to reproduce the error, that means that the problem was above or below the control software)
-%Developers need to know how the
-%distributed system {\it reacts} to external inputs. Understanding why external
-%inputs occurred is an orthogonal issue.
-%Consider a mud slide that causes (i) an network uplink to fail, which subsequently
-%causes (ii) a switch to overheat and crash. Our
-%system views (i) and (ii) as causally independent, and that's fine, since
-%the developer's goal is not to reason about the cause of the switch
-%overheating or the cause of the link failure, only how the distributed system reacted to
-%those events.
-\item We don't aim to reproduce bugs involving non-determinism within a single controller (e.g. race-conditions between threads); we're interested in coarser granularity errors (e.g. incorrect failover logic), which there are plenty of! That said, if the developer is willing to instrument their system to provide finer granularity log messages (e.g. Gautam's Friday), our approach still applies.
-\item We won't always find the globally minimum causal sequence, since that
-would require $O(2^N)$ computation in the worst case. Our algorithm is however guaranteed to find a 1-minimal (locally minimum) causal sequence, meaning that if any event from the sequence is pruned, no persistent correctness violation occurs.
-\item Primarily focused on correctness bugs, not performance bugs -- although this distinction has more to do with invariant checking than MCS finding.
-\end{itemize}
+\noindent{\bf Troubleshooting vs Debugging.} Our technique is a troubleshooting tool, not a debugger;
+by this we mean that \simulator{} helps identify and localize inputs that
+trigger erroneous behavior, but it does not directly identify exactly which
+line(s) of code cause the error.
+
+\noindent{\bf Bugs Outside the Control Software.} Our goal is not to find the root
+cause of individual component failures in the system; we're only interested in
+errors in the way the control software consequently behaves.
+Consider a mud slide that causes (i) an network uplink to fail, which subsequently
+causes (ii) a switch to overheat and crash. Our
+system is agnostic to (ii)'s causal dependence on (i). Instead, we focus on
+how the control software reacts to the occurrence of (i) and/or (ii).
+If there is a bug in your switch, you should contact your hardware vendor;
+if you have a bug in your policy specification, you should take a closer look at what you specified.
+That said, our tool can show whether switches behave the same as our software
+implementation: if our tool was unable to reproduce the error, that means that
+the problem was above or below the control software.
+
+\noindent{\bf Non-determinism Within Individual Controllers.} Our tool is not designed to reproduce bugs
+involving non-determinism within a single controller (\eg~race-conditions between threads);
+we focus on coarser granularity errors (\eg~incorrect failover logic), which we find plenty of
+in \S\ref{subsec:case_studies}.
+That said, if the developer is willing to instrument their system to
+provide finer granularity log messages (\cf~\cite{Geels:2006:RDD:1267359.1267386}),
+our approach easily supports deterministic replay.
+
+\noindent{\bf Globally vs Locally Minimal Input Sequences.}
+Delta debugging is not guaranteed to find the globally minimum
+causal sequence from an input trace, since this requires $O(2^N)$ computation in the worst case.
+Delta debugging is however guaranteed to find a 1-minimal (locally minimal) causal sequence,
+meaning that if any input from the sequence is pruned, no correctness violation
+occurs~\cite{Zeller:2002:SIF:506201.506206}.
+
+\noindent{\bf Correctness vs Performance.}
+We are primarily focused on correctness bugs, not performance bugs. That said, this
+ distinction primarily relates to invariant checking, and not to the
+ task of finding an minimal causal set.
+
+\noindent{\bf Proactive vs Reactive Configuration.} We focus primarily on
+\emph{proactive} configuration, where controllers react to policy and topology changes, but
+ not necessarily individual packets or flows events in the dataplane.
+Production controllers typically adopt this model for performance reasons~\cite{nicira}.
 
 \subsection{Algorithm}
 \label{subsec:algorithm}
@@ -270,7 +287,7 @@ the leaves of the propagation graph define the final outcomes of the input
 packets injected at that access link. Because network policies are defined by
 configuring the logical view, any mismatch between $\Omega^{view}$ and $\Omega^{physical}$
 represents an instance of a correctness violation. Note that mismatches are
-unambiguous; that is, two slightly differnet correctness violation from
+unambiguous; that is, two slightly different correctness violation from
 different runs of the system are always distinguishable.
 
 Note the price of correspondence checking's generality is that it represents
