@@ -11,7 +11,6 @@
 %We focus on a \emph{proactive} mode of
 %operation where forwarding state updates are triggered by policy or topology
 %changes, not data-plane events.
-
 \item Our goal is not to find the root cause of component failures; we're only interested in how the distributed system reacts to those failures (lightning strike example). Another way of putting this is that we aren't interested in troubleshooting anything outside of the controller software: if you have a bug in your switch, you should contact your hardware vendor; if you have a bug in your policy specification, take a closer look at what you specified; if you encounter a bug in your OS, get out your kernel debugger. (That said, our tool can tell you whether your switches behave the same as our software implementation: if our tool was unable to reproduce the error, that means that the problem was above or below the control software)
 %Developers need to know how the
 %distributed system {\it reacts} to external inputs. Understanding why external
@@ -137,7 +136,7 @@ develop a generic invariant checking algorithm
 for detecting errant behavior. In Section 4, we describe concrete ways in
 which the technique can be put to use.
 
-\subsection{}
+\subsection{Simulation}
 \label{subsec:replay}
 
 \begin{itemize}
