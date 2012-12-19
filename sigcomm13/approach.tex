@@ -48,7 +48,7 @@ We are primarily focused on correctness bugs, not performance bugs. That said, t
  not necessarily individual packets or flows events in the dataplane.
 Production controllers typically adopt this model for performance reasons~\cite{nicira}.
 
-\subsection{Algorithm}
+\subsection{Delta Debugging}
 \label{subsec:algorithm}
 
 We start by describing an example bug in the Floodlight
@@ -117,7 +117,7 @@ software engineering community, gets us part of the way
 there: given a single input (\eg~an HTML page)
 for a non-distributed program (\eg~Firefox), it performs a divide-and-conquer
 search, repeatedly running the program on subsets of the input
-until it finds a minimal subset (\eg~a {\tt<SELECT>} tag) that is sufficient
+until it finds a minimal subset (\eg~a single tag) that is sufficient
 for triggering a known bug. The delta debugging algorithm is shown in
 Figure~\ref{fig:ddmin}.
 
@@ -154,7 +154,7 @@ SDN controllers.
 
 In particular, our problem differs in two dimensions. First, the input to SDN controllers is spread
 across time: it includes many messages, and depends on subtle causal
-relationships. Second, the input is spread across space: it involving
+relationships. Second, the input is spread across space: it involves
 many nodes which run asynchronously and may fail at any time.
 In the rest of this section, we describe how we (i)
 coordinate replay across the distributed nodes in SDN networks,
@@ -166,7 +166,29 @@ which the technique can be put to use.
 \subsection{Simulation}
 \label{subsec:replay}
 
-The $replay$ function in Figure~\ref{fig:ddmin} involves.
+Unlike the example applications described
+in~\cite{Zeller:2002:SIF:506201.506206}, the system we are testing is not a
+single program--it is all the nodes and links of a distributed system,
+including controllers, switches, and end-hosts. Running consecutive executions
+on an actual network would be prohibitively costly and prone to
+non-deterministic behavior. We therefore simulate the entire dataplane, including hosts and
+switches, in a single process. We then run the original control software on
+top of this simulator; the switches connect to the controllers as if they were true
+network devices, such that the controllers believe they are configuring a true
+network. The simulator interposes on all communication channels, allowing
+fine-grained control over message orderings. The architecture is depicted in
+Figure~\ref{}.
+
+\begin{figure}[t]
+    %\hspace{-10pt}
+    \includegraphics[width=3.25in]{../diagrams/architecture/Debugger_Architecture.pdf}
+    \caption[]{\label{fig:architecture} Simulation Infrastructure. sts
+    simulates the network, and interposes on all communication channels.}
+\end{figure}
+
+The simulator then reproduces the external inputs from the log.
+For example, link failures are reproduced by disconnecting the edge in
+the simulated network.
 
 \begin{itemize}
 \item It's not sufficient to replay the remaining inputs based only on the timings from the original log [we tried!]
@@ -174,7 +196,7 @@ The $replay$ function in Figure~\ref{fig:ddmin} involves.
 %Second, we need to know precisely {\em when} to inject inputs to the controllers;
 %without maintaining the exact happens-before dependencies reflected in the
 %log the output of the simulated system execution may not be the same.
-%
+
 %We can inject an external input $e$ at exactly the point where all other
 %events (both external and internal) that precede it in the happens-before
 %relation ($\{i \mid i \rightarrow e\}$) have occurred. Unfortunately the problem is made
