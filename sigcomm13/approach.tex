@@ -147,21 +147,26 @@ holds.
 \label{fig:ddmin}
 \end{figure*}
 
-Our problem differs in two dimensions. First, the input to SDN controllers is spread
+The crux of our contribution lies in extending the delta debugging technique
+to a distributed setting; our work demonstrates that
+delta debugging can be used to localize fault-inducing inputs from execution traces of
+SDN controllers.
+
+In particular, our problem differs in two dimensions. First, the input to SDN controllers is spread
 across time: it includes many messages, and depends on subtle causal
 relationships. Second, the input is spread across space: it involving
 many nodes which run asynchronously and may fail at any time.
-
-The crux of our contribution lies in extending the delta debugging technique
-to a distributed setting. In the rest of this section, we describe how we (i)
-cope with alterations to the causal history of an execution and coordinate
-replay across the distributed nodes in SDN networks, as well as (ii)
+In the rest of this section, we describe how we (i)
+coordinate replay across the distributed nodes in SDN networks,
+(ii) cope with alterations to the causal history of an execution, and (iii)
 develop a generic invariant checking algorithm
-for detecting errant behavior. In Section 4, we describe concrete ways in
+for detecting errant behavior. In \S\ref{sec:architecture}, we describe concrete ways in
 which the technique can be put to use.
 
 \subsection{Simulation}
 \label{subsec:replay}
+
+The $replay$ function in Figure~\ref{fig:ddmin} involves.
 
 \begin{itemize}
 \item It's not sufficient to replay the remaining inputs based only on the timings from the original log [we tried!]
