@@ -17,3 +17,4 @@ buildinfo.tex
 *.temp
 *bak
 *orig
+*out
