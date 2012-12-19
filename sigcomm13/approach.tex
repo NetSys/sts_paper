@@ -1,3 +1,7 @@
+We have developed a technique, \simulator{}, for automatically identifying
+a minimal set of fault-inducing inputs from logs. Before diving into the
+details, we clarify the scope of our tool's value.
+
 \subsection{Non-Goals}
 \label{subsec:non_goals}
 \begin{itemize}
@@ -30,8 +34,9 @@ would require $O(2^N)$ computation in the worst case. Our algorithm is however g
 \subsection{Algorithm}
 \label{subsec:algorithm}
 
-Before presenting our approach, we describe an example bug in the Floodlight
-open source control platform~\cite{floodlight_bug}. Floodlight is distributed across
+We start by describing an example bug in the Floodlight
+open source control platform~\cite{floodlight_bug}, and later show how our
+technique is applied to this bug. Floodlight is distributed across
 multiple controllers for high availability, and provides support for
 virtualization. Switches maintain one hot connection to a master controller and
 several cold connections to replica controllers. The \emph{master} holds the
@@ -102,7 +107,7 @@ Figure~\ref{fig:ddmin}.
 \begin{figure*}[t]
 \caption{Minimizing Delta Debugging Algorithm From~\cite{Zeller:2002:SIF:506201.506206}}
 \begin{boxedminipage}{\textwidth}
-Input: $\cfail$ s.t. $\test(\cfail) = \FAIL$. Output: $\dfail
+Input: $\cfail$ s.t. $\cfail$ is a trace and $\test(\cfail) = \FAIL$. Output: $\dfail
 = \ddmin(\cfail)$ s.t. $\dfail \subseteq
 \cfail$, $\test(\dfail) = \FAIL$, and~$\dfail$ is 1-minimal.
 \begin{align*}
@@ -116,8 +121,10 @@ Input: $\cfail$ s.t. $\test(\cfail) = \FAIL$. Output: $\dfail
 \dfail & \text{otherwise (``done'').}
 \end{cases}
 \end{align*}
-where $\nabla_i = \dfail - \Delta_i$, $\dfail = \Delta_1 \cup \Delta_2 \cup \dots \cup \Delta_n$, all
-$\Delta_i$ are pairwise disjoint, and $\forall \Delta_i \cdot |\Delta_i| \approx |\dfail| / n$
+where $\test(T)$ denotes the state of the system after executing the trace $T$,
+$\FAIL$ denotes a correctness violation, \\
+$\nabla_i = \dfail - \Delta_i$, $\dfail = \Delta_1 \cup \Delta_2 \cup \dots \cup \Delta_n$, all
+$\Delta_i$ are pairwise disjoint sequences of inputs, and $\forall \Delta_i \cdot |\Delta_i| \approx |\dfail| / n$
 holds.
 \end{boxedminipage}
 \label{fig:ddmin}
@@ -284,7 +291,6 @@ the time''.
 %Platform developers may discover correctness violations
 %through customer complaints, integration tests, or by periodically running
 %invariant checks on a deployed network.
-
 
 \subsection{\SIMULATOR{}}
 \label{sec:causal_analysis}
