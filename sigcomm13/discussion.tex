@@ -3,6 +3,10 @@
 \Simulator{} is certainly not without limitations. We discuss several of them
 here.
 
+\noindent{\bf What if multiple internal events
+are in the same equivalence class as a single event in the original trace?}
+Great question. \colin{Pending Sam's formalism}
+
 \noindent{\bf Are all simulated failures really indistinguishable
 from actual failures?}
 Maybe not, but since the simulator
@@ -20,6 +24,12 @@ to extract the polices from the virtual view.
 \noindent{\bf Will control platforms ever become stable enough that
           \simulator{} is unnecessary?}
 We certainly hope so! The field is decades from that point though.
+
+\noindent{\bf Is this technique specific to SDN?}
+We believe that our technique is applicable to most control plane systems,
+for example NAS controllers or MapReduce job trackers. The components of our
+tool that are specific to SDN are the simulator and the masks for control
+messages.
 
 %\begin{itemize}
 %\item Aren't these types of bugs (e.g. failover logic) rare? Why should we
