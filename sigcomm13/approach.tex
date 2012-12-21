@@ -188,8 +188,8 @@ Figure~\ref{fig:architecture}.
 \end{figure}
 
 Given a sequence of inputs (\eg~link failures, controller crashes, host migrations,
-or policy changes) chosen by the delta debugging algorithm\footnote{We discuss
-how the original sequence of inputs is obtained in \S~\ref{sec:architecture}}, the
+or policy changes) chosen by the delta debugging algorithm,\footnote{We discuss
+how the original sequence of inputs is obtained in \S~\ref{sec:architecture}} the
 simulator replays these inputs to the control software. For example, link failures are
 reproduced by disconnecting the edge in the simulated network, and sending a
 port status message from the adjacent switches to their parent controllers.
@@ -229,7 +229,7 @@ tool. To achieve truly deterministic replay, these log statements would need to
 be highly granular, capturing information such as thread scheduling decisions;
 we show in \S\ref{subsec:case_studies}
 however that pre-existing, course granular log statements are sufficient to
-successfully reproduce many bugs\footnote{We discuss this problem further in \S\ref{subsec:domain_knowledge}}.
+successfully reproduce many bugs.\footnote{We discuss this problem further in \S\ref{subsec:domain_knowledge}}
 
 Unfortunately, event scheduling is made substantially more complicated by the fact
 that the delta debugging algorithm is pruning inputs to the
