@@ -13,14 +13,14 @@ line(s) of code cause the error.
 \noindent{\bf Bugs Outside the Control Software.} Our goal is not to find the root
 cause of individual component failures in the system; we're only interested in
 errors in the way the control software consequently behaves.
-Consider a mud slide that causes (i) an network uplink to fail, which subsequently
+Consider a mud slide that causes (i) a network uplink to fail, which subsequently
 causes (ii) a switch to overheat and crash. Our
 system is agnostic to (ii)'s causal dependence on (i). Instead, we focus on
-how the control software reacts to the occurrence of (i) and/or (ii).
+how the distributed system as a whole reacts to the occurrence of (i) and/or (ii).
 If there is a bug in your switch, you should contact your hardware vendor;
 if you have a bug in your policy specification, you should take a closer look at what you specified.
 That said, our tool can show whether switches behave the same as our software
-implementation: if our tool was unable to reproduce the error, that means that
+implementation; if our tool was unable to reproduce the error, that means that
 the problem was above or below the control software.
 
 \noindent{\bf Non-determinism Within Individual Controllers.} Our tool is not designed to reproduce bugs
@@ -29,7 +29,7 @@ we focus on coarser granularity errors (\eg~incorrect failover logic), which we 
 in \S\ref{subsec:case_studies}.
 That said, if the developer is willing to instrument their system to
 provide finer granularity log messages (\cf~\cite{Geels:2006:RDD:1267359.1267386}),
-our approach easily supports deterministic replay.
+our approach readily supports deterministic replay.
 
 \noindent{\bf Globally vs Locally Minimal Input Sequences.}
 Delta debugging is not guaranteed to find the globally minimum
@@ -39,9 +39,9 @@ meaning that if any input from the sequence is pruned, no correctness violation
 occurs~\cite{Zeller:2002:SIF:506201.506206}.
 
 \noindent{\bf Correctness vs Performance.}
-We are primarily focused on correctness bugs, not performance bugs. That said, this
- distinction primarily relates to invariant checking, and not to the
- task of finding an minimal causal set.
+We are primarily focused on correctness bugs, not performance bugs. That said,
+the  distinction primarily relates to invariant checking, and not to the
+ task of finding a minimal causal set.
 
 \noindent{\bf Proactive vs Reactive Configuration.} We focus primarily on
 \emph{proactive} configuration, where controllers react to policy and topology changes, but
@@ -57,7 +57,7 @@ technique is applied to this bug. Floodlight is distributed across
 multiple controllers for high availability, and provides support for
 virtualization. Switches maintain one hot connection to a master controller and
 several cold connections to replica controllers. The \emph{master} holds the
-authority to issue state changing commands to the switches. The other
+authority to modify the configuration of switches, while the other
 controllers are in \emph{slave} mode and do not perform any changes to the
 switch configurations unless they detect that the master has crashed.
 
@@ -75,10 +75,10 @@ originally discovered by the developers of Floodlight~\cite{floodlight_bug}} dep
 Figure~\ref{fig:example}:
 a link fails (E1), and the switch attempts to notify the controllers (E2,E4) shortly after the master
 controller has died (E3), but before a new master has been selected (E6). In this case, all live controllers are in
-the slave role and thus will not take responsibility for updating the switch
+the slave role and will not take responsibility for updating the switch
 flow table (E5). At some point, the heartbeats time out and one of the controllers
 elevates itself to the master role (E6). The new master will proceed to manage
-the newly connected switch, but without ever clearing the routing entries for
+the switch, but without ever clearing the routing entries for
 the failed link (resulting in a persistent blackhole).
 
 There were only two external inputs (E1,E3) shown in our example.
@@ -183,7 +183,7 @@ Figure~\ref{fig:architecture}.
 \begin{figure}[t]
     %\hspace{-10pt}
     \includegraphics[width=3.25in]{../diagrams/architecture/Debugger_Architecture.pdf}
-    \caption[]{\label{fig:architecture} Simulation Infrastructure. sts
+    \caption[]{\label{fig:architecture} Simulation infrastructure. sts
     simulates the network, and interposes on all communication channels.}
 \end{figure}
 
@@ -218,15 +218,16 @@ inputs internal events would be perturbed, resulting in a different output.
 Formally, we need to inject an external input $e$ at exactly the point when all other
 events (both external and internal) that precede it in the happens-before
 relation ($\{i \mid i \rightarrow e\}$) from the original execution have occurred.
-While the input events are given to us, we become aware of internal events by
+While the input and internal events from the original run are given to us,
+we become aware of internal events throughout replay by
 (i) interposing on the controllers' logging library and notifying the
 simulation process whenever an log statement is executed, and (ii) monitoring
-control message receipts both between controllers and between switches and
+control message receipts between controllers and between switches and
 controllers. Note that the developer must provide enough logging statements
 so that relevant internal state changes are captured and visible to our
-tool. To be completely deterministic, these log statements would need to
-include information about every thread scheduling decision
-and every instruction executed; we show in \S\ref{subsec:case_studies}
+tool. To achieve truly deterministic replay, these log statements would need to
+be highly granular, capturing information such as thread scheduling decisions;
+we show in \S\ref{subsec:case_studies}
 however that pre-existing, course granular log statements are sufficient to
 successfully reproduce many bugs\footnote{We discuss this problem further in \S\ref{subsec:domain_knowledge}}.
 
@@ -240,7 +241,10 @@ all differ by one if a single control message in the beginning of the trace
 does not occur.
 
 Our solution is to define domain-specific masks over
-semantically extraneous fields of the message. A few examples of masked fields are shown
+semantically extraneous\footnote{*Extraneous with respect to comparing two
+separate traces. For example, the buffer id is chosen at random, so
+it is meaningless to compare buffer ids across separate runs.} fields of
+the message. A few examples of masked fields are shown
 in Table~\ref{tab:fingerprints}. These masks define equivalence classes
 of internal events, which allow us to compare different runs of the simulation.
 Formally, we consider an internal event $i'$ observed in an altered trace
@@ -269,21 +273,22 @@ define equivalence classes.}
 
 The second implication of altering the original trace is that
 some internal events from the original run may not occur after
-pruning certain inputs. Likewise, new internal events not present in the original run
+pruning certain inputs--likewise, new internal events not present in the original run
 may occur.
 
-We have developed two event scheduling algorithms to cope with this
+We have developed two event scheduling algorithms, each with increasing
+complexity, to cope with this
 issue. The first is simpler, but somewhat less robust. We refer to it as
 \emph{waiting replay}, and it is shown in Figure~\ref{fig:simple_algorithm}.
-Simply put, it wait for internal events,
-but times out and proceeds if they do not show up.
+Simply put, it waits for internal events matching those in the original run,
+but times out and proceeds if they do not occur.
 
-\begin{figure}[h]
+\begin{figure}
 \begin{boxedminipage}{\linewidth}
 \begin{Verbatim}[commandchars=\\\{\}]
 for e\textsubscript{i} in trace:
   if e\textsubscript{i} is an internal event:
-    \textDelta = |time(e\textsubscript{i}) - time(e\textsubscript{i-1})| + \textepsilon
+    \textDelta = |e\textsubscript{i}.time - e\textsubscript{i-1}.time| + \textepsilon
     wait up to \textDelta seconds for e\textsubscript{i}
   else: // input
     inject e\textsubscript{i}
@@ -293,31 +298,80 @@ for e\textsubscript{i} in trace:
 \label{fig:simple_algorithm}
 \end{figure}
 
-In most cases, waiting replay successfully reproduces the original correctness
+In most cases waiting replay successfully reproduces the original correctness
 violation, assuming \textepsilon~is larger than variations in execution speeds
 between internal events. If the value of \textepsilon~is too large, however, we may end up
 waiting too long for the happens-before predecessors of an input $e_i$
 such that a successor of $e_i$ occurs before we have injected $e_i$.
 
-Our second algorithm addresses this issue, but
-adds a factor of $N$ in the number of inputs to the overall runtime. We refer to it as \emph{peeking
-replay}, and it is shown in Figure~\ref{fig:peek}.
+Our second event scheduling algorithm addresses this possibility, but
+adds a factor of $n$ in the number of replayed inputs to the overall runtime. We refer to it as \emph{peeking
+replay}, and it is shown in Figure~\ref{fig:peek}. Simply put, peeking replay
+attempts to precompute which internal events are and aren't going to occur,
+so that it can know exactly how long to wait before injecting inputs in the
+final replay. Because waiting replay is often sufficient for reproducing
+errors, we switch over to peeking replay only when waiting replay is
+insufficient.
 
-\begin{itemize}
-\item Soundest solution: peek()
-  \begin{itemize}
-    \item Infer which internal events are/aren't going to occur, so we know exactly how long to wait before injecting
-    \item How do we know how far to peek() ahead?
-    \item What to do about multiple matching fingerprints?
-    \item overall $O(N^3)$ runtime--snapshots make it $O(N^2)$
-  \end{itemize}
-\item We apply domain knowledge to ensure validity of input sequences. For
-example, it doesn't make sense to replay a link recovery event if we pruned
-the link failure event that preceded it. Note that it's really hard to codify
-the dependencies between some input events (e.g. dataplane drops). See gdoc
-for a discussion.
-\item In~\S\ref{sec:architecture}, we discuss some of the implementation details of handling internal events
-\end{itemize}
+\begin{figure}
+\begin{boxedminipage}{\linewidth}
+\begin{Verbatim}[commandchars=\\\{\}]
+inputs = [e\textsubscript{1}, e\textsubscript{2}, ..., e\textsubscript{n}]
+new\_trace = []
+
+for i in 1 to n-1:
+  waiting\_replay(new\_trace + [e\textsubscript{i}], \textepsilon=0)
+  start recording internal events
+  \textDelta = |e\textsubscript{i+1}.time - e\textsubscript{i}.time| + \textepsilon
+  wait \textDelta seconds
+  remove successors of e\textsubscript{i} from \textbackslash
+    recorded internal events
+  new\_trace += [e\textsubscript{i}]
+  new\_trace += recorded internal events
+
+waiting\_replay(new\_trace + [e\textsubscript{n}], \textepsilon=0)
+\end{Verbatim}
+\end{boxedminipage}
+\caption{Peeking Replay Algorithm}
+\label{fig:peek}
+\end{figure}
+
+Both waiting and peeking replay leave an open question as to what value
+\textepsilon~should be set to. In our current implementation,
+we set \textepsilon~somewhat
+arbitrarily to $100$ milliseconds, and this has worked for most of our
+failure cases.
+
+The overall runtime of pruning and replay differs for best and worst
+cases. In the best case, the delta debugging algorithm terminates after $O(log n)$
+invocations of $replay$, where $n$ is the number of inputs in the original
+trace~\cite{Zeller:2002:SIF:506201.506206}. Each invocation of waiting replay
+injects $n$ inputs, for an overall runtime of $O(nlog n)$ for
+waiting replay. The worst case runtime of delta debugging is $O(n^2)$ in the
+number of invocations of $replay$~\cite{Zeller:2002:SIF:506201.506206}.
+Therefore the overall worst case runtime is $O(n^3)$ if waiting replay is used.
+
+Peeking replay adds another factor of $n$ to the overall runtime: for each input event
+$e_i$, it invokes waiting replay with inputs $e_1,\dots,e_i$, for a total of
+$n \times \frac{n+1}{2} \in O(n^2)$ replayed inputs. Therefore in the
+best case, the overall runtime of delta debugging with peeking replay is
+$O(n^2log n)$, and the worst case is $O(n^4)$. Note that this extra factor of
+$n$ in computational complexity can be converted to a factor of $n$ in storage
+if peek stores snapshots of
+the controllers' state rather than replaying each prefix from the beginning.
+\colin{Forward pointer to what we do about multiple matching fingerprints?}
+\colin{Optimization: Pruning types of inputs}
+
+We make another optimization to delta debugging by applying domain knowledge
+about which input sequences are and are not valid, since some of the input subsequences
+chosen by unmodified delta debugging may not be meaningful. For example, it does not make sense
+to replay a link recovery event if we pruned
+the link failure event that preceded it. Likewise, pruning a host migration
+implies that we need to update the subsequent host migration event's source location.
+Note that beyond component failures and host migration, other dependencies between
+inputs are significantly more complicated to model. At the
+moment, our tool does not support policy changes or dataplane packet drops for
+this reason.
 
 \subsection{Correspondence Checking}
 \label{subsec:cc}
