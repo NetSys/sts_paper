@@ -4,17 +4,16 @@ addition to the Hassel network invariant checking library~\cite{hsa}. The code
 for \projectname~is publicly available,\footnote{URL omitted due to anonymity requirements}
 and used by \colin{N} software development teams outside of our own.
 
-In the rest of this section, we highlight salient features of the
-\projectname~architecture. Furthermore, we describe three ways \projectname~can be used
+In the rest of this section, we highlight salient points of \projectname's
+design. Furthermore, we describe three ways \projectname~can be used
 by SDN developers and operators.
 
-The inputs types supported by \projectname~are shown in Table~\ref{tab:inputs}.
-Note that we place limited emphasis on dataplane events; packet forwarding in
-\projectname's software switches is largely intended to support host discovery
-applications. \projectname's software switches run OpenFlow~\cite{openflow},
-but they forward packets at relatively low rates.
-The advantage of low-throughput switches is that we are able to simulate
-networks of very large sizes, as we show in \S\ref{subsec:runtime}.
+The input types supported by \projectname~are shown in Table~\ref{tab:inputs}.
+Controllers are notified of link, switch, and host migration events
+via OpenFlow messages~\cite{openflow} sent by software switches.
+Although the software switches support packet forwarding, we
+have chosen to deemphasize dataplane performance in favor of
+being able to simulate networks of very large sizes. % as we show in \S\ref{subsec:runtime}.
 % We hope to support policy changes in the future (Quantum)
 
 \begin{table}
@@ -36,9 +35,8 @@ Control message delay & \\
 \label{tab:inputs}
 \end{table}
 
-\projectname~has a few mechanisms in place to mitigate non-determinism in the case that the
-control software under test is not instrumented for deterministic replay.
-To handle slight alterations in the order in which messages are received from the
+We designed \projectname~to be as resilient to non-determinism as possible.
+To handle slight alterations in the order messages are received from the
 controller(s) across executions, \projectname~buffers all incoming messages and
 deterministically chooses the order they are
 passed to the software switches. To handle alterations in the order messages
@@ -46,26 +44,27 @@ are received (and consumed) by the controller(s), we \colin{TBD}.
 
 So long as the controller under test supports OpenFlow, \projectname~requires
 no modifications to the control software. That said, we make several optional
-modifications to mitigate non-determinism when appropriate. By interposing on
-the controllers' logging library and notifying \projectname~whenever a log statement is executed,
-\projectname~can account for relevant internal state changes while scheduling inputs.
-Overriding {\tt gettimeofday()} and {\tt getrand()} and allowing
-\projectname~to calculate the return values allows us to cope with alterations in execution
+modifications to further mitigate non-determinism when appropriate. Interposing on
+the controllers' logging library allows us to notify \projectname~whenever a log statement is executed
+so that \projectname~can account for relevant internal state changes while scheduling inputs.
+Routing {\tt gettimeofday()} and {\tt getrand()} through
+\projectname~makes replay more resilient to alterations in execution
 speeds.\footnote{When the pruned trace differs from the original, we make a
 best-effort guess at what the return values of these calls should be. For example,
 if the altered execution invokes {\tt gettimeofday()} more times than were recorded
 in the initial run, we interpolate the time values of neighboring events}.
 As an added benefit, overriding {\tt gettimeofday()} allows us to ``compress''
-time in some cases,\footnote{Similar to~\cite{Gupta06toinfinity}} increasing runtime.
+runtime in some cases.\footnote{Similar to~\cite{Gupta06toinfinity}}
 
 \projectname~can be used in a number of ways. We outline three use-cases here.
 
 \subsection{Testing}
 
-The main way \projectname~is used is as a simulation and testing framework.
-\projectname~gives complete control over event orderings, message drops, node
-failures, \etc, which is especially useful for exploring corner cases.
-Amin Vahdat of Google describes the value in using their network simulator to
+\projectname~is primarily used as a simulation and testing framework.
+With complete control over event orderings, message drops, node
+failures, \etc, \projectname~is especially useful for exploring corner cases
+and ``what if'' questions. Along these lines, Amin Vahdat
+has testified to the value of using Google's network simulator to
 fine-tune the network before pushing to production~\cite{vadhat}:
 \begin{quote}
 ``One of the key benefits we have is a very nice emulation and
@@ -75,34 +74,22 @@ switching devices. And then we can inject a number of failure scenarios under
 controlled circumstances to really accelerate our test work.''
 \end{quote}
 
-\begin{itemize}
-\item It also gives us a total ordering of internal/input events
-\item Can play with tricky cases interactively
-  \begin{itemize}
-  \item because of our lightweight instrumentation, traces generated through interactive exploration can be played back at a much faster speed.
-  \end{itemize}
-\item Can also automatically generate random inputs $\rightarrow$ replayable integration tests!
-\item Can accumulate a library of tests to run on other controllers.
-\item frees up developers to be more agile in development instead of spending time doing triage and bug hunting.
-\end{itemize}
+In testing mode, \projectname~generates random or interactively chosen input
+sequences, feeds them to controller(s), and monitors invariants at chosen
+intervals. Driving the
+execution of the system in this way allows \projectname~to record a
+totally-ordered log of the events in the system to be replayed later.
 
-%In traditional software engineering practices,
-%integration tests are an
-%important part of the software development cycle: developers feed end-to-end
-%input through the system, and verify that the system execution satisfies
-%certain safety and liveness properties. As additional failure cases are encountered in
-%production, new cases can be added to a suite of integration tests to
-%ensure robust operation of the system in future versions of the system.
-%
-%Although the practice of accumulating an integration test suite over time is
-%commonplace in other fields of computer science, the field of networking
-%simply did not have the requisite software infrastructure to realize this practice before the emergence
-%of SDN. \Simulator{} can be viewed as our realization
-%of this development practice, applied to network controllers. Our simulator's fine-grained control over
-%failure scenarios allows us to test corner-case network conditions -- those
-%that are most difficult to anticipate in traditional unit tests.
-%As known failure cases are accrued over time, we envision \simulator{} being used to validate
-%new and existing SDN platforms.
+As additional failure cases are encountered, new cases can be added
+to a suite of integration tests. We envision a repository of test
+cases being used to validate the correct behavior of other SDN controllers, as
+well as future versions of the same software.
+
+Automatically generating integration tests and identifying minimal causal sets
+of the inputs for failing tests frees developers to be more agile in
+development, spending less time writing test cases, doing triage and bug hunting.
+
+\colin{Mozilla redundant bug pitch?}
 
 \subsection{Replayable Traces}
 
@@ -119,8 +106,6 @@ attached, so that no
 effort is wasted replicating the issue. With the help of print statements or a
 debugger, developers can also iteratively run the trace as many times as
 needed to identify the line(s) of code responsible for the problem.
-
-\colin{Mozilla redundant bug pitch?}
 
 \subsection{Forensic Analysis}
 
