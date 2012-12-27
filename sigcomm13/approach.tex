@@ -343,10 +343,11 @@ arbitrarily to $100$ milliseconds, and this has worked for most of our
 failure cases.
 
 The overall runtime of pruning and replay differs for best and worst
-cases. In the best case, the delta debugging algorithm terminates after $O(log n)$
+cases. In the best case, the delta debugging algorithm terminates after
+$O(log\,n)$
 invocations of $replay$, where $n$ is the number of inputs in the original
 trace~\cite{Zeller:2002:SIF:506201.506206}. Each invocation of waiting replay
-injects $n$ inputs, for an overall runtime of $O(nlog n)$ for
+injects $n$ inputs, for an overall runtime of $O(nlog\,n)$ for
 waiting replay. The worst case runtime of delta debugging is $O(n^2)$ in the
 number of invocations of $replay$~\cite{Zeller:2002:SIF:506201.506206}.
 Therefore the overall worst case runtime is $O(n^3)$ if waiting replay is used.
@@ -355,7 +356,7 @@ Peeking replay adds another factor of $n$ to the overall runtime: for each input
 $e_i$, it invokes waiting replay with inputs $e_1,\dots,e_i$, for a total of
 $n \times \frac{n+1}{2} \in O(n^2)$ replayed inputs. Therefore in the
 best case, the overall runtime of delta debugging with peeking replay is
-$O(n^2log n)$, and the worst case is $O(n^4)$. Note that this extra factor of
+$O(n^2log\,n)$, and the worst case is $O(n^4)$. Note that this extra factor of
 $n$ in computational complexity can be converted to a factor of $n$ in storage
 if peek stores snapshots of
 the controllers' state rather than replaying each prefix from the beginning.
