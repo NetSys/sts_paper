@@ -5,13 +5,13 @@ for \projectname~is publicly available,\footnote{URL omitted due to anonymity re
 and used by \colin{N} software development teams outside of our own.
 
 In the rest of this section, we highlight salient points of \projectname's
-design. Furthermore, we describe three ways \projectname~can be used
+design. Furthermore, we describe three ways \projectname~can be put to use
 by SDN developers and operators.
 
 The input types supported by \projectname~are shown in Table~\ref{tab:inputs}.
 Controllers are notified of link, switch, and host migration events
 via OpenFlow messages~\cite{openflow} sent by software switches.
-Although the software switches support packet forwarding, we
+Although the software switches do support packet forwarding, we
 have chosen to deemphasize dataplane performance in favor of
 being able to simulate networks of very large sizes. % as we show in \S\ref{subsec:runtime}.
 % We hope to support policy changes in the future (Quantum)
@@ -42,17 +42,19 @@ deterministically chooses the order they are
 passed to the software switches. To handle alterations in the order messages
 are received (and consumed) by the controller(s), we \colin{TBD}.
 
-So long as the controller under test supports OpenFlow, \projectname~requires
-no modifications to the control software. That said, we make several optional
-modifications to further mitigate non-determinism when appropriate. Interposing on
-the controllers' logging library allows us to notify \projectname~whenever a log statement is executed
-so that \projectname~can account for relevant internal state changes while scheduling inputs.
+\projectname~requires
+no modifications to the control software so long as the control software under test supports OpenFlow.
+That said, we make several optional
+modifications to further mitigate non-determinism when appropriate. With a
+small change to the control software's logging library \projectname~can be
+notified whenever a log statement is executed
+and thereby account for relevant internal state changes while scheduling inputs.
 Routing {\tt gettimeofday()} and {\tt getrand()} through
 \projectname~makes replay more resilient to alterations in execution
 speeds.\footnote{When the pruned trace differs from the original, we make a
 best-effort guess at what the return values of these calls should be. For example,
 if the altered execution invokes {\tt gettimeofday()} more times than were recorded
-in the initial run, we interpolate the time values of neighboring events}.
+in the initial run, we interpolate the time values of neighboring events}
 As an added benefit, overriding {\tt gettimeofday()} allows us to ``compress''
 runtime in some cases.\footnote{Similar to~\cite{Gupta06toinfinity}}
 
@@ -64,8 +66,7 @@ runtime in some cases.\footnote{Similar to~\cite{Gupta06toinfinity}}
 With complete control over event orderings, message drops, node
 failures, \etc, \projectname~is especially useful for exploring corner cases
 and ``what if'' questions. Along these lines, Amin Vahdat
-has testified to the value of using Google's network simulator to
-fine-tune the network before pushing to production~\cite{vadhat}:
+has testified to the value of Google's SDN network simulator~\cite{vadhat}:
 \begin{quote}
 ``One of the key benefits we have is a very nice emulation and
 simulation environment where the exact same control software that would be
@@ -78,18 +79,25 @@ In testing mode, \projectname~generates random or interactively chosen input
 sequences, feeds them to controller(s), and monitors invariants at chosen
 intervals. Driving the
 execution of the system in this way allows \projectname~to record a
-totally-ordered log of the events in the system to be replayed later.
+totally-ordered log of the events to be replayed later.
 
-As additional failure cases are encountered, new cases can be added
-to a suite of integration tests. We envision a repository of test
-cases being used to validate the correct behavior of other SDN controllers, as
-well as future versions of the same software.
+As additional failure cases are encountered they can be added
+to a suite of integration tests and later used to validate the correct
+behavior of future versions of the software. And because \projectname~makes
+limited assumptions about the control software under test, the overall SDN community
+could collect a repository of test cases to validate a variety of
+SDN control platforms.
 
-Automatically generating integration tests and identifying minimal causal sets
-of the inputs for failing tests frees developers to be more agile in
-development, spending less time writing test cases, doing triage and bug hunting.
-
-\colin{Mozilla redundant bug pitch?}
+Automatically generating integration tests and identifying
+minimal causal sequences frees developers to be more agile in
+development, decreasing the time they spend writing test cases,
+performing triage, and
+hunting bugs. Beyond making test cases easier to reason about, minimal causal
+sets serve to consolidate redundant test cases and thereby reduce time wasted
+investigating multiple bug reports that ultimately have the same root
+cause~\cite{Zeller:2002:SIF:506201.506206}.
+Specifically, if two test failures have the same minimal causal sequence, it is
+likely that the same underlying bug is being triggered.
 
 \subsection{Replayable Traces}
 
