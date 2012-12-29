@@ -1,53 +1,6 @@
 We have developed a technique, \simulator{}, for automatically identifying
-a minimal set of fault-inducing inputs from logs. Before diving into the
-details, we clarify the scope of our tool's use.
-
-\subsection{Non-Goals}
-\label{subsec:non_goals}
-
-\noindent{\bf Troubleshooting vs Debugging.} Our technique is a troubleshooting tool, not a debugger;
-by this we mean that \simulator{} helps identify and localize inputs that
-trigger erroneous behavior, but it does not directly identify exactly which
-line(s) of code cause the error.
-
-\noindent{\bf Bugs Outside the Control Software.} Our goal is not to find the root
-cause of individual component failures in the system; we're only interested in
-errors in the way the control software consequently behaves.
-Consider a mud slide that causes (i) a network uplink to fail, which subsequently
-causes (ii) a switch to overheat and crash. Our
-system is agnostic to (ii)'s causal dependence on (i). Instead, we focus on
-how the distributed system as a whole reacts to the occurrence of (i) and/or (ii).
-If there is a bug in your switch, you should contact your hardware vendor;
-if you have a bug in your policy specification, you should take a closer look at what you specified.
-That said, our tool can show whether switches behave the same as our software
-implementation; if our tool was unable to reproduce the error, that means that
-the problem was above or below the control software.
-
-\noindent{\bf Non-determinism Within Individual Controllers.} Our tool is not designed to reproduce bugs
-involving non-determinism within a single controller (\eg~race-conditions between threads);
-we focus on coarser granularity errors (\eg~incorrect failover logic), which we find plenty of
-in \S\ref{subsec:case_studies}.
-That said, if the developer is willing to instrument their system to
-provide finer granularity log messages (\cf~\cite{Geels:2006:RDD:1267359.1267386}),
-our approach readily supports deterministic replay.
-
-\noindent{\bf Globally vs Locally Minimal Input Sequences.}
-Delta debugging is not guaranteed to find the globally minimal
-causal sequence from an input trace, since this requires $O(2^N)$ computation in the worst case.
-Delta debugging is however guaranteed to find a 1-minimal (locally minimal) causal sequence,
-meaning that if any input from the sequence is pruned, no correctness violation
-occurs~\cite{Zeller:2002:SIF:506201.506206}. \scott{Modify: with single event
-order}
-
-\noindent{\bf Correctness vs Performance.}
-We are primarily focused on correctness bugs, not performance bugs. That said,
-our approach is largely agnostic to what kinds of invariants are
-checked~\ref{subsec:cc}.
-
-\noindent{\bf Proactive vs Reactive Configuration.} We focus primarily on
-\emph{proactive} configuration, where controllers react to policy and topology changes, but
- not necessarily individual packets or flows events in the dataplane.
-Production controllers typically adopt this model for performance reasons~\cite{nicira}.
+a minimal set of fault-inducing inputs from logs. Here we detail the specifics
+of our technique.
 
 \subsection{Delta Debugging}
 \label{subsec:algorithm}
