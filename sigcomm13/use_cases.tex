@@ -117,34 +117,61 @@ needed to identify the line(s) of code responsible for the problem.
 
 \subsection{Forensic Analysis}
 
-\begin{itemize}
-\item Can be used for forensic analysis after a bug in production
-\item Needs a global log. Isn't that difficult? Vision for a possible approach:
-\begin{itemize}
-\item Collect distributed logs from the controllers.
-\item Describe what's contained in the logs:
-  \begin{itemize}
-   \item Lamport clocks or accurate NTP so that we can serialize the distributed logs.
-   \item Clear distinction between internal and external events
-  \end{itemize}
-\item Note that without further modifications to the simulator, we aren't going to be able to make all possible synthetic inputs indistinguishable (from the controllers' perspective) from the inputs observed in the production run. We aim to make them indistinguishable, but there are going to be failure modes we can't reproduce right away. For example, suppose that the controller's faulty behavior is to flood a switch with messages, causing the switch to drop some traffic. However, only switches that are running low on memory are affected by the controller's faulty behavior. To reproduce this failure mode correctly, we would have to modify our software switch to act in the same way that the hardware switch does.
-%Note that the simulator does not need
-%to accurately reproduce the failure modes of {\em individual} controllers or switches.
-%We are only interested in observing the behavior of the overall distributed system, which is
-%built under the assumption that individual components will fail.
-%Therefore, it is sufficient to use a `blunt hammer' (\eg{} POSIX's {\em SIGKILL}) to reproduce individual
-%failure events, so long as the remaining controllers react in the same
-%way as they did in the actual run.
-\item Deal with redundant input events (e.g. controller failure event independently logged by 3 replicas):
-  \begin{itemize}
-    \item Silver bullet is to incorporate reliable failure detectors into your system: log a failure iff the failure occurred.
-    \item Otherwise, root cause analysis algorithms were designed for exactly this purpose: what's the minimum number of component failures that can explain a set of correlated alarms?
-  \end{itemize}
-\item Describe size of the logs, and checkpointing to reduce the replay runtime.
-\item How do we know how far back to look with checkpointing?
-\end{itemize}
-%\item What about the link failure case where Lamport clocks give an incorrect ordering?
-\end{itemize}
+Perhaps the most valuable use case for \simulator~is forensic analysis of
+production logs; correctness violations encountered in production are
+high priority, and often time consuming to diagnose. While we have not
+implemented this functionality, we present a sketch for
+how forensic analysis could be performed with \simulator.
+
+\Simulator~takes as input a single, totally-ordered log of the events in the
+distributed system. Production systems maintain a log at each node,
+necessitating some instrumentation and preprocessing before \simulator~can be
+invoked.
+
+Production system would need to include Lamport
+clocks on each message~\cite{Lamport:1978:TCO:359545.359563} or have
+sufficiently accurate clock
+synchronization~\cite{corbett2012spanner} to obtain a global ordering
+consistent with the happens-before relation.
+Note that it is permissible for \simulator~to reorder concurrent events from
+the production run so long as the happens-before relation is
+maintained~\cite{tel2000introduction}.
+
+The distributed logs would also need to make a clear distinction between internal events
+(log messages, message sends/receipts), and input events (\eg~node failures). Further,
+the input events would need to be logged in sufficient detail for \simulator~to be able to
+reproduce a synthetic version of the input that is indistinguishable to the control software
+from the original input event. There will of course be some input events that cannot be reproduced
+synthetically without significant complexity in what the simulator needs to model.
+For example, suppose that the controller's faulty behavior is to flood a switch with messages,
+causing the switch to drop some traffic. However, only switches that are running low on memory
+are affected by the controller's faulty behavior. To reproduce this failure mode correctly,
+the simulator would need to model the memory levels of its software switches to match the hardware behavior.
+That said, the fidelity of the software simulation is bounded only by the time invested to model
+the subtleties of failure modes.
+
+Without care, a single input event may appear multiple times in the
+distributed logs. A failure of the master node, for example, could be independently
+detected and logged by all other replicas. The most robust way to
+avoid redundant input events is to employ perfect failure
+detectors~\cite{chandra1996unreliable}, which have the property that a
+failure is logged iff
+the failure actually occurred.\footnote{Perfect failure detectors are
+typically implemented by explicitly killing slow
+nodes}. Ensuring that a single failure detector is in charge of logging node failure
+events guarantees that redundant inputs are eliminated. Alternatively, root cause analysis
+algorithms~\cite{577079} or manual inspection could be employed to consolidate redundant
+alarms.
+
+Finally, some care may need to be taken to prevent the logs from growing so large that
+\simulator's runtime becomes intractable. Here, causally consistent
+snapshots~\cite{Chandy:1985:DSD:214451.214456} can minimize the number of inputs \simulator~needs
+to examine. Specifically, with causally consistent snapshots of the distributed
+system taken at regular intervals \simulator~can bootstrap its simulation from the last snapshot before the failure.
+If the MCS starting from this snapshot is empty, it can iteratively move backwards, starting from earlier
+snapshots.\footnote{Technically the MCS may contain inputs from the very beginning of the execution. Arguably though,
+the state that was induced by these inputs is reflected in each snapshot, and programmers would be able to detect
+errant configurations by examining that state with a debugger}
 
 % --------------------------------------------------
 %    OLD TEXT
