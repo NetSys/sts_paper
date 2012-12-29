@@ -14,6 +14,12 @@ program (unlike Sherlog), but doesn't require runtime recording of any sort
 
 \noindent{\bf Systems and Networking}
 \begin{itemize}
+\item Network simulators and emulators such as
+Mininet~\cite{Lantz:2010:NLR:1868447.1868466} and NS3~\cite{ns3}
+are used to prototype and test control software. These frameworks are focused
+primarily on performance fidelity. In contrast, \projectname~is focused on
+precise event orderings, which is significantly harder to achieve in an
+emulated framework.
 \item OFRewind~\cite{ofrewind}: Deterministic replay techniques such as OFRewind allow developers to interactively prune the inputs that lead up to errant behavior. Our technique automates the process of identifying faulty inputs from large input logs.
 \item Tracing tools: allow developers to step through dataplane traces (NDB~\cite{handigol2012debugger}), or control plane traces (X-trace~\cite{fonseca2007x}) to diagnose performance and correctness problems. We focus on automating the triage process.
 \item Causal path tools: such as Pip~\cite{pip} instrument general-purpose distributed systems
