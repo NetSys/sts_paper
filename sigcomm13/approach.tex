@@ -32,11 +32,12 @@ provide finer granularity log messages (\cf~\cite{Geels:2006:RDD:1267359.1267386
 our approach readily supports deterministic replay.
 
 \noindent{\bf Globally vs Locally Minimal Input Sequences.}
-Delta debugging is not guaranteed to find the globally minimum
+Delta debugging is not guaranteed to find the globally minimal
 causal sequence from an input trace, since this requires $O(2^N)$ computation in the worst case.
 Delta debugging is however guaranteed to find a 1-minimal (locally minimal) causal sequence,
 meaning that if any input from the sequence is pruned, no correctness violation
-occurs~\cite{Zeller:2002:SIF:506201.506206}.
+occurs~\cite{Zeller:2002:SIF:506201.506206}. \scott{Modify: with single event
+order}
 
 \noindent{\bf Correctness vs Performance.}
 We are primarily focused on correctness bugs, not performance bugs. That said,
