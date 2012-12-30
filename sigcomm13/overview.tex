@@ -1,6 +1,6 @@
 We begin by sketching the architecture of SDN networks and
 describing the correctness challenges encountered by operators and
-implementers of SDN control platforms. We place particular emphasis on the
+implementers of SDN control software. We place particular emphasis on the
 properties of SDN that make it suitable for automated diagnosis.
 
 \subsection{SDN control software}
@@ -16,18 +16,18 @@ resource allocations, traffic engineering objectives, or middlebox
 processing.
 
 For fault-tolerance, production SDN control software is typically
-distributed across multiple control servers. For scalability, the responsibility for
+distributed across multiple servers. For scalability, the responsibility for
 managing the network can be partitioned through sharding.
 Onix~\cite{onix}, for example, partitions a
-graph of the network state across either an eventually-consistent
-distributed-hash table or a
+graph of the network state across either an eventually consistent
+distributed hash table or a
 transactional database.
 %allowing control applications to make their own
 %tradeoffs in choosing consistency models and degree of fault tolerance.
 
-In this distributed setting, controllers must coordinate among themselves
-when reacting to changes from below (state changes in the network), or
-changes from above (policy).
+In this distributed setting, controllers must coordinate amongst themselves
+when reacting to state change in the network, or
+policy changes from above.
 Coordination in SDN is not exempt from the well-known class of faults
 inherent to all distributed systems, such as
 inconsistent reads, race conditions over message arrivals, and
@@ -50,7 +50,7 @@ objects while ensuring that critical invariants such as isolation between
 tenants are upheld at all times makes the task of constructing
 SDN control software highly complex. Ultimately, complexity brings with it
 bugs, and roughly ~50\% of developers' time is spent troubleshooting
-~\cite{msoft_concurrency}.
+~\cite{msoft_concurrency}. % Cut this last sentence?
 
 Luckily, SDN has several properties that make it particularly amenable to an
 automated troubleshooting approach such as ours. Most importantly, SDN control software
@@ -71,7 +71,7 @@ well-defined--a property that is crucial for
 enabling us to compare altered histories (described in \S\ref{subsec:replay}).
 Moreover, controllers are relatively small in number compared to the size of
 overall network, which makes it much easier to superimpose
-on messages (described in detail in~\S\ref{sec:architecture}).
+on messages (described in detail in~\S\ref{subsec:replay}).
 
 \subsection{Non-Goals}
 \label{subsec:non_goals}
@@ -81,7 +81,7 @@ details, we clarify the scope of our tool's use.
 
 \noindent{\bf Troubleshooting vs Debugging.} Our technique is a troubleshooting tool, not a debugger;
 by this we mean that \simulator{} helps identify and localize inputs that
-trigger erroneous behavior, but it does not directly identify exactly which
+trigger erroneous behavior, but it does not directly identify which
 line(s) of code cause the error.
 
 \noindent{\bf Bugs Outside the Control Software.} Our goal is not to find the root
@@ -91,10 +91,10 @@ Consider a mud slide that causes (i) a network uplink to fail, which subsequentl
 causes (ii) a switch to overheat and crash. Our
 system is agnostic to (ii)'s causal dependence on (i). Instead, we focus on
 how the distributed system as a whole reacts to the occurrence of (i) and/or (ii).
-If there is a bug in your switch, you should contact your hardware vendor;
-if you have a bug in your policy specification, you should take a closer look at what you specified.
+If there is a bug in your switch, you need to contact your hardware vendor;
+if you have a bug in your policy specification, you need to take a closer look at what you specified.
 That said, our tool can show whether switches behave the same as our software
-implementation; if our tool was unable to reproduce the error, that means that
+implementation: if our tool was unable to reproduce the error, that means that
 the problem was above or below the control software.
 
 \noindent{\bf Non-determinism Within Individual Controllers.} Our tool is not designed to reproduce bugs
@@ -118,7 +118,7 @@ We are primarily focused on correctness bugs, not performance bugs. That said,
 our approach is largely agnostic to what kinds of invariants are
 checked (see \S\ref{subsec:cc}).
 
-\noindent{\bf Proactive vs Reactive Configuration.} We focus primarily on
+\noindent{\bf Proactive vs Reactive Configuration.} \colin{cut?} We focus primarily on
 \emph{proactive} configuration, where controllers react to policy and topology changes, but
  not necessarily individual packets or flows events in the dataplane.
 Production controllers typically adopt this model for performance reasons~\cite{nicira}.

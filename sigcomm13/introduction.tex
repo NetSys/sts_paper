@@ -29,13 +29,13 @@ take days to months to fix, and almost 75\% of
 respondents considered reproducibility to be hard or very hard.
 To make matters worse, the number of hardware failures,
 policy changes, host migrations, and other inputs to SDN controllers can
-be quite large in production environments. Microsoft Research,
-for example, reports 8.5 network error events per minute per
+be quite large in production environments. Microsoft Research
+reports 8.5 network error events per minute per
 datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}.
 Consequently, it is often difficult to distinguish events that are
 characteristic of normal operating
 conditions from those that push the network into an erroneous state.
-Despite the prevalence of failures, maintaining uptime is of critical importance; according to one
+And despite the prevalence of failures, maintaining uptime is of critical importance; according to one
 survey, ``meeting customer expectations about reliability'' is the second highest
 priority for networking professionals~\cite{market_report}.
 \scott{More SDN war stories, anecdotes
@@ -44,9 +44,9 @@ from Nicira, Big Switch}
 % Software bugs cost $59 billion in 2002: bit.ly/V2Z7Al
 
 A substantial part of the troubleshooting process today involves manually
-identifying fault-inducing inputs
-from logs of system executions where invalid configurations
-were discovered. When asked to describe their
+identifying relevant inputs
+from logs where invalid configurations
+were discovered. It is reasonable then that when asked to describe their
 ideal tool, most admins said ``automated troubleshooting''~\cite{Zeng:Survey}.
 
 In this paper we take a step towards realizing automated troubleshooting.
@@ -62,20 +62,20 @@ to apply the delta debugging algorithm~\cite{Zeller:2002:SIF:506201.506206}:
 selectively prune events in the past and check at the end of
 the modified execution whether the correctness violation remains.
 
-Unlike the original intended use of delta debugging (minimizing a single
-input file for a non-distributed program), the inputs in SDN logs are spread across
+Unlike the original intended use of delta debugging--minimizing a single
+input file for a non-distributed program--the inputs in SDN logs are spread across
 time and involve multiple machines. Adapting delta debugging to a distributed
-setting requires much care when replaying modified inputs;
+setting requires much care when replaying modified inputs:
 na\"ively replaying by simply maintaining relative timing between inputs often
 fails to trigger the original correctness
 violation. Input scheduling
 needs to take internal events (\eg~mastership changes) into account to
 preserve happens-before constraints. Yet by pruning inputs, the internal events
-subtly change (consider the sequence numbers of packets),
+subtly change (consider the sequence numbers of packets, for example),
 and some internal events that occurred in the original
 run may not occur after pruning prior inputs.
 Our primary contribution is the insight that a small amount of domain knowledge
-(codifcation of the syntax and semantics of events) can be applied to
+(codification of the syntax and semantics of events) can be applied to
 place internal events into equivalence classes, allowing us to reason about the
 differences between slightly altered histories.
 
@@ -86,11 +86,11 @@ SDN control software.
 %such as NICE~\cite{nice}, which work well for verifying crucial pieces of
 %code but suffer from exponential
 %state explosion when run on large systems.
-\Simulator~is focused on erroneous
+Likewise, \simulator~is focused on erroneous
 behavior of the overall distributed system (\eg~incorrect
 failover logic), but is not specifically designed to troubleshoot bugs within a single controller
 (\cf~deterministic replay~\cite{Dunlap:2002:REI:844128.844148}). The upshot of
-this is our technique is not able to minimize all possible failures, such as
+this is that our technique is not able to minimize all possible failures, such as
 data races between threads. Nonetheless, the worst case for us is that the developer ends up with what they started:
 an unpruned log.
 
@@ -180,7 +180,7 @@ and the system component(s) responsible for the fault.
 system against
 a stream of network events (e.g., link failures). This allows us to (i)
 distinguish between correctness violations that are harmless and quickly heal and
-those that are persistent, and (ii) identify the minimal set of events that triggered
+those that are persistent, and (ii) identify the minimal sequence of events that triggered
 the correctness violation.
 
 % OSDI "Tips":

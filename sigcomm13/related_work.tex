@@ -16,14 +16,14 @@ debugging~\cite{Zeller:2002:SIF:506201.506206} as well seeks to find a minimal
 subset of an input (always a single file) that leads to a failure. As one
 example, delta debugging has been applied to multi-threaded (single-core) programs
 to identify the minimum set of thread
-switches from a thread schedule (also a single file) that reproduces
+switches from a thread schedule (a single file) that reproduces
 a race condition~\cite{choi2002isolating}.
 All of these techniques focus on troubleshooting single, non-distributed programs.
 
 Rx~\cite{qin2005rx} is a technique for improving availability: upon
 encountering a crash, it starts from a previous checkpoint, fuzzes
-the environment (\eg~random number generator values) to avoid triggering the same bug,
-and restarts the program. While this work is not directly relevant to troubleshooting,
+the environment (\eg~random number generator seeds) to avoid triggering the same bug,
+and restarts the program. While Rx is not directly relevant to troubleshooting,
 our work can be viewed as perturbing the inputs rather than the environment
 prior to a failure.
 
@@ -61,7 +61,7 @@ Finally, the programming languages community has developed
 a wide range of verification and static analysis techniques.
 
 Model checkers such as NICE~\cite{nice} enumerate all possible code paths taken by control software (NOX)
-and identify concrete inputs (\eg~control message orderings) that cause
+and identify concrete inputs that cause
 the network to enter invalid configurations. NICE works well for small
 control programs and a small number of machines, but suffers from exponential
 state explosion when run on large systems. For example, NICE took 30 hours to
@@ -73,7 +73,7 @@ post-hoc, after they have been observed in production.
 Program slicing~\cite{weiser1981program} is a technique for finding the
 minimal subset
 of a program that could possibly affect (either through control flow or data
-flow) the result of a given line of code.
+flow) the result of a particular line of code.
 Our technique can be viewed in this light as a form of program slicing, except
 that our `program' is a distributed event schedule,
 and the end result we are interested in is the network misconfiguration at the end of the

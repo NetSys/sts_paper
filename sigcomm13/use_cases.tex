@@ -12,7 +12,7 @@ The input types supported by \projectname~are shown in Table~\ref{tab:inputs}.
 Controllers are notified of link, switch, and host migration events
 via OpenFlow messages~\cite{openflow} sent by software switches.
 Although the software switches do support packet forwarding, we
-have chosen to deemphasize dataplane performance in favor of
+have chosen to de-emphasize dataplane performance in favor of
 being able to simulate networks of large sizes. % as we show in \S\ref{subsec:runtime}.
 % We hope to support policy changes in the future (Quantum)
 
@@ -38,7 +38,7 @@ Control message delay & \\
 We designed \projectname~to be as resilient to non-determinism as possible.
 \projectname~handles slight alterations in the order messages are received from the
 controller(s) across executions by buffering all incoming messages and
-deterministically chooses the order they are
+deterministically choosing the order they are
 passed to the software switches. \projectname~handles alterations in the order messages
 are received (and consumed) by the controller(s) by \colin{TBD}.
 
@@ -47,7 +47,7 @@ no modifications to the control software so long as the control software under t
 That said, we make several optional
 modifications to further mitigate non-determinism when appropriate. With a
 small change to the control software's logging library \projectname~can be
-notified whenever a log statement is executed
+notified whenever a log statement is executed,
 and thereby account for relevant internal state changes while scheduling inputs.
 Routing {\tt gettimeofday()} and {\tt getrand()} through
 \projectname~makes replay more resilient to alterations in execution
@@ -93,7 +93,7 @@ development, decreasing the time they spend writing test cases,
 performing triage, and
 hunting bugs. Beyond making test cases easier to reason about, minimal causal
 sets serve to consolidate redundant test cases and thereby reduce time wasted
-investigating bug reports that ultimately have the same root
+investigating bug reports the same root
 cause~\cite{Zeller:2002:SIF:506201.506206}:
 if two test failures have the same minimal causal sequence, it is
 likely that the same underlying bug is being triggered.
@@ -106,7 +106,7 @@ reproduce the bug as carefully as possible and hope that someone else is able
 to replicate the issue.
 
 With \projectname, developers can readily record errant executions and
-exchange replayable traces with eachother.
+exchange replayable traces with each-other.
 Replayable traces shorten the debugging cycle, and increase chances that others
 will be able to help. For example, bug reports can be filed with a replayable trace
 attached, so that no
@@ -122,31 +122,32 @@ high priority, and often time consuming to diagnose. While we have not
 implemented this functionality, we present a sketch of
 how forensic analysis could be performed with \simulator.
 
-\Simulator~takes as input a single, totally-ordered log of the events in the
-distributed system. Production systems maintain a log at each node.
+While \simulator~takes as input a single, totally-ordered log of the events in the
+distributed system, production systems maintain a log at each node.
 Instrumentation and preprocessing steps are therefore needed before \simulator~can be
 invoked.
 
-Production system would need to include Lamport
+Production systems would need to include Lamport
 clocks on each message~\cite{Lamport:1978:TCO:359545.359563} or have
 sufficiently accurate clock
 synchronization~\cite{corbett2012spanner} to obtain a partial global ordering
 consistent with the happens-before relation.
-Note that a total ordering is not needed, because it is permissible
+Note that a total ordering is not needed, since it is permissible
 for \simulator~to reorder concurrent events from
 the production run so long as the happens-before relation is
 maintained~\cite{Fischer:1985:IDC:3149.214121}.
 
 The distributed logs would also need to make a clear distinction between internal events
 (log messages, message sends/receipts), and input events (\eg~node failures). Further,
-the input events would need to be logged in sufficient detail for \simulator~to be able to
+the input events would need to be logged in sufficient detail for \simulator~to
 reproduce a synthetic version of the input that is indistinguishable to the control software
 from the original input event. There will of course be some input events that cannot be reproduced
 synthetically without significant complexity in what the simulator needs to model.
 For example, suppose that the controller's faulty behavior is to flood a switch with messages,
-causing the switch to drop some traffic. However, only switches that are running low on memory
+causing the switch to drop some traffic. Yet only switches that are running low on memory
 are affected by the controller's faulty behavior. To reproduce this failure mode correctly,
-the simulator would need to model the memory levels of its software switches to match the hardware behavior.
+the simulator would need to model the memory levels of its software switches to match the
+hardware behavior exactly.
 
 Without care, a single input event may appear multiple times in the
 distributed logs. A failure of the master node, for example, could be independently
