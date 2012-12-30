@@ -1,55 +1,83 @@
-We categorize related work according to field.
+Our work spans three fields: software engineering, systems and networking, and
+programming languages.
 
 \noindent{\bf Software Engineering}
-All of the below focus on single programs (possibly multi-threaded, but always single-core)
-\begin{itemize}
-\item Delta Debugging~\cite{Zeller:2002:SIF:506201.506206}: given a failing test case and an input file (e.g. HTML page), run modified binary search on the input file to find the minimum subset that triggers the failure. We attempt to solve the same problem in a distributed setting, where the input is spread across time and space. Zeller also applied DD to a multi-threaded (single-core) programs to identify the minimum set of thread switches from a schedule that reproduces a race condition. DD still hasn't been applied across space (machines).
-\item Sherlog~\cite{Yuan:2010:SED:1736020.1736038}: given a program and production logs that ended in a failure, find the minimum subset of the program execution (both control-flow and data-values) that lead up to the failure. Don't re-execute the program! Statically analyze the code and the log statements preceding the crash.
-\item Treating bugs like allergies~\cite{qin2005rx}: on encountering a crash, back up to a checkpoint, fuzz the environment (e.g., thread scheduling), and restart the program. Helps with availability, but doesn't help with troubleshooting! We focus on identifying the inputs that caused the bug, so that a developer can fix it.
-\item Execution Synthesis~\cite{Zamfir:2010:EST:1755913.1755946}: given a program and a bug report, find an
-execution (thread schedule) that leads up to that failure. Re-executes the
-program (unlike Sherlog), but doesn't require runtime recording of any sort
-(uses symbolic execution instead).
-\end{itemize}
+The software engineering community has developed a long line of tools for automating
+aspects of the troubleshooting process.
+
+Sherlog~\cite{Yuan:2010:SED:1736020.1736038} takes as input production logs from a
+program that ended in a failure, and applies static analysis to identify the minimum subset of the
+program execution (both code paths and data values) that lead up to the failure.
+Along a similar vein, execution
+synthesis~\cite{Zamfir:2010:EST:1755913.1755946} takes a program and a bug
+report as input, and employs symbolic execution to find a thread schedule that will
+reproduce the failure. Delta
+debugging~\cite{Zeller:2002:SIF:506201.506206} as well seeks to find a minimal
+subset of an input (always a single file) that leads to a failure. As one
+example, delta debugging has been applied to multi-threaded (single-core) programs
+to identify the minimum set of thread
+switches from a thread schedule (also a single file) that reproduces
+a race condition~\cite{choi2002isolating}.
+All of these techniques focus on troubleshooting single, non-distributed programs.
+
+Rx~\cite{qin2005rx} is a technique for improving availability: upon
+encountering a crash, it starts from a previous checkpoint, fuzzes
+the environment (\eg~random number generator values) to avoid triggering the same bug,
+and restarts the program. While this work is not directly relevant to troubleshooting,
+our work can be viewed as perturbing the inputs rather than the environment
+prior to a failure.
 
 \noindent{\bf Systems and Networking}
-\begin{itemize}
-\item Network simulators and emulators such as
-Mininet~\cite{Lantz:2010:NLR:1868447.1868466} and NS3~\cite{ns3}
-are used to prototype and test control software. These frameworks are focused
-primarily on performance fidelity. In contrast, \projectname~is focused on
-precise event orderings, which is significantly harder to achieve in an
-emulated framework.
-\item OFRewind~\cite{ofrewind}: Deterministic replay techniques such as OFRewind allow developers to interactively prune the inputs that lead up to errant behavior. Our technique automates the process of identifying faulty inputs from large input logs.
-\item Tracing tools: allow developers to step through dataplane traces (NDB~\cite{handigol2012debugger}), or control plane traces (X-trace~\cite{fonseca2007x}) to diagnose performance and correctness problems. We focus on automating the triage process.
-\item Causal path tools: such as Pip~\cite{pip} instrument general-purpose distributed systems
+The systems and networking community has also developed a substantial
+literature on tools for testing and troubleshooting.
+
+Network simulators and emulators such as
+Mininet~\cite{Lantz:2010:NLR:1868447.1868466} and ns-3~\cite{ns3}
+are used to prototype and test control software. Most of these frameworks are focused
+primarily on performance fidelity. In contrast, \projectname~is a simulator focused on
+precise event orderings, which is significantly harder to achieve with
+emulation.
+
+Replay techniques such as OFRewind~\cite{ofrewind} allow developers to interactively
+trace and prune the inputs that lead up to errant behavior. Tracing tools provide a view
+requests' paths through the dataplane~\cite{handigol2012debugger} or control
+plane~\cite{fonseca2007x}. Frameworks for tracing such as Pip~\cite{pip} extend this
+concept and instrument general-purpose distributed systems
 with code to record, display, and check invariants on causal paths throughout
-live executions. sts observes the causal behavior of the
-distributed system in a simulated environment, enabling us to iteratively prune extraneous input events.
-\item Root cause analysis~\cite{577079} techniques seek to identify the minimum set of failed
-components (e.g. link failures) needed to explain a collection of alarms. Rather than
+live executions. All of these techniques involve some amount of human
+intervention; we focus on automating the diagnosis process.
+
+Root cause analysis techniques~\cite{577079} seek to identify the minimum set of failed
+components (\eg~link failures) needed to explain a collection of alarms. Rather than
 focusing on individual component failures, we seek to minimize inputs that affect the behavior
 of the overall distributed system.
-\item Debug Determinism~\cite{zamfir2011debug}: suggests that replay debuggers should not seek to achieve perfect fidelity -- the utility of the replay can still be high, even if all failure modes can't be reproduced. Our approach follows this argument: can't catch everything, but it's still useful!
-\end{itemize}
+
+% Debug Determinism~\cite{zamfir2011debug}: suggests that replay debuggers should not seek to achieve
+% perfect fidelity -- the utility of the replay can still be high, even if all failure modes can't be reproduced.
+% Our approach follows this argument: can't catch everything, but it's still useful!
 
 \noindent{\bf Programming Languages}
-\begin{itemize}
-\item Model checkers: such as NICE~\cite{nice} enumerate all possible code paths taken by control software (NOX)
-and identify concrete inputs (e.g.control message orderings) that cause
+Finally, the programming languages community has developed
+a wide range of verification and static analysis techniques.
+
+Model checkers such as NICE~\cite{nice} enumerate all possible code paths taken by control software (NOX)
+and identify concrete inputs (\eg~control message orderings) that cause
 the network to enter invalid configurations. NICE works well for small
 control programs and a small number of machines, but suffers from exponential
 state explosion when run on large systems. For example, NICE took 30 hours to
 model check a network with two switches, two hosts, the MAC-learning
 control program (98 LoC), and five concurrent
-messages between the hosts. We chose to avoid state-space explosion by analyzing logs post-hoc, after they have been observed in production.
-\item Program Slicing~\cite{weiser1981program}: given a program and a line of code
-within that program, find the subset of the program that could possibly affect
-the result of that line of code. Achieve this by reasoning about control +
-data flow. We want to do the same thing, except that the `program' is replaced
-by Dist'Sys events, and `line of code' is replaced by a network misconfiguration.
-\end{itemize}
+messages between the hosts~\cite{nice}. We chose to avoid state-space explosion by analyzing logs
+post-hoc, after they have been observed in production.
 
+Program slicing~\cite{weiser1981program} is a technique for finding the
+minimal subset
+of a program that could possibly affect (either through control flow or data
+flow) the result of a given line of code.
+Our technique can be viewed in this light as a form of program slicing, except
+that our `program' is a distributed event schedule,
+and the end result we are interested in is the network misconfiguration at the end of the
+execution.
 
 % ----------------------------------------- %
 %          OLD TEXT
