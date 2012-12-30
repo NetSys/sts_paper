@@ -3,6 +3,9 @@ describing the correctness challenges encountered by operators and
 implementers of SDN control platforms. We place particular emphasis on the
 properties of SDN that make it suitable for automated diagnosis.
 
+\subsection{SDN control software}
+\label{subsec:control_software}
+
 SDN networks are managed by software running on a set of network-attached
 servers called `controllers'. It is the job of the controllers to configure
 the network in a way that complies with the intentions of network
@@ -46,11 +49,8 @@ In conjunction, the challenges of maintaining virtualized and distributed
 objects while ensuring that critical invariants such as isolation between
 tenants are upheld at all times makes the task of constructing
 SDN control software highly complex. Ultimately, complexity brings with it
-bugs, and much of developers' time is spent troubleshooting; a commonly cited
-number in the software-engineering community is that
-developers spend over 50\% of their time
-debugging~\cite{msoft_concurrency}. \colin{Cite Nikhil's survey of network
-operators, re: troubleshooting}
+bugs, and roughly ~50\% of developers' time is spent troubleshooting
+~\cite{msoft_concurrency}.
 
 Luckily, SDN has several properties that make it particularly amenable to an
 automated troubleshooting approach such as ours. Most importantly, SDN control software

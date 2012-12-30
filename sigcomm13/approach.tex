@@ -148,7 +148,7 @@ simulator replays these inputs to the control software. For example, link failur
 reproduced by disconnecting the edge in the simulated network, and sending a
 port status message from the adjacent switches to their parent controllers.
 
-The relative timing of the inputs injected by the simulator is crucial for ensuring that the
+The timing of the inputs injected by the simulator is crucial for ensuring that the
 execution is the same as the original run. Na\"ively injecting inputs often fails to
 trigger the original correctness violation, even without having pruned any
 events. In particular, we tried and failed to reproduce errors when scheduling inputs
@@ -265,7 +265,7 @@ attempts to precompute which internal events are and aren't going to occur,
 so that it can know exactly how long to wait before injecting inputs in the
 final replay. Because waiting replay is often sufficient for reproducing
 errors, we switch over to peeking replay only when waiting replay is
-insufficient.
+insufficient. \colin{Mention that causal annotations might help}
 
 \begin{figure}
 \begin{boxedminipage}{\linewidth}

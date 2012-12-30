@@ -4,49 +4,112 @@ but {\em actually}, from a non-linear, non-subjective viewpoint--it's more like 
 big ball of wibbly wobbly... time-y wimey... stuff.''
 \end{aquote}
 
-\begin{itemize}
-\item Networks are among the largest distributed systems we have, and distributed systems are complex
-\item bugs crop up all the time, and they're damn hard to fix
-\item In a large system (e.g. a datacenter), the log is huge and it takes a long time to inspect it manually
-\item A 2006 survey found that developers at Microsoft spend ~49\% of their time troubleshooting bugs. 70\% of the concurrency bugs reported to Microsoft take days to months
-to fix~\cite{msoft_concurrency}. Same study, almost 75\% of respondents
-considered reproducibility to be hard or very hard.
-\item Replication in SDN is especially hard to get right.
+% Assuming SIGCOMM, not SOSP (less emphasis on general dst'sys)
+Today's software-defined networking control platforms are highly complex,
+distributing state between replicated
+servers~\cite{floodlight},
+providing isolation and resource arbitration between multiple
+tenants~\cite{Casado:2010:VNF:1921151.1921162}, or
+globally optimizing network utilization~\cite{urs}.
+Most of this complexity comes from
+fundamentally difficult distributed systems challenges that the networking community has
+relatively little experience
+solving in tightly coupled environments. % (not fully distributed)
 For example, as Google's Urs H$\ddot{\mathrm{o}}$elzle recently
-noted at the Open Networking Summit~\cite{urs}: ``[Coordination
-between replicated controllers] is going to
+noted at the Open Networking Summit~\cite{urs}: ``[Coordination between replicated controllers] is going to
 cause some angst, and justifiably, in the industry''. As SDN control software
 is used to manage larger and more sophisticated networks,
-we expect its complexity to increase. \scott{More SDN war stories, anectodes
+we expect its complexity to increase.
+
+With complexity inevitably come
+bugs, and bug diagnosis is expensive and time consuming. A 2006 survey found
+that developers at Microsoft spend 49\% of their
+time troubleshooting bugs~\cite{msoft_concurrency}. The same study found that 70\% of the reported concurrency bugs
+take days to months to fix, and almost 75\% of
+respondents considered reproducibility to be hard or very hard.
+To make matters worse, the number of hardware failures,
+policy changes, host migrations, and other inputs to SDN controllers can
+be quite large in production environments. Microsoft Research,
+for example, reports 8.5 network error events per minute per
+datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}.
+Consequently, it is often difficult to distinguish events that are
+characteristic of normal operating
+conditions from those that push the network into an erroneous state.
+Despite the prevalence of failures, maintaining uptime is of critical importance; according to one
+survey, ``meeting customer expectations about reliability'' is the second highest
+priority for networking professionals~\cite{market_report}.
+\scott{More SDN war stories, anecdotes
 from Nicira, Big Switch}
-\item Moreover, software reliability is really important.
-``Meeting Customer Expectations about Reliability'' is the second highest
-priority for networking professionals, according to a market
-report~\cite{market_report}. % Software bugs cost $59B in 2002: bit.ly/V2Z7Al
-\item We present a method for automatically pruning extraneous inputs, thereby telling the developer exactly which inputs in the log to look at.
-\item Our technique is based on selectively forgetting inputs in the log.
-\end{itemize}
 
-Why is this hard?
-\begin{itemize}
-\item Pruning via happens-before constraints (potential causality) doesn't do much for you!
-\item We selectively prune events in the past (thereby changing history!), and check whether the modified execution results in a correctness violation.
-\item It's not sufficient to replay the inputs based only on the timings from the original log (we tried!)
-\item So you need to account for internal events (e.g. mastership changes).
-\item Yet the set of internal events changes once you start pruning inputs.
-\item Moreover, the internal events often change subtly after pruning has occurred (e.g. messages may have a different sequence number), and even subtle differences can render executions incomparable.
-\item Our primary contribution is the insight that a little bit of domain knowledge (syntax + semantics of events) can be applied to `fingerprint` internal events (place them into equivalence classes), allowing us to reason about the differences between slightly altered histories.
-\end{itemize}
+% Software bugs cost $59 billion in 2002: bit.ly/V2Z7Al
 
-How is this different than previous work?
-\begin{itemize}
-\item Our contribution: we're applying delta debugging~\cite{Zeller:2002:SIF:506201.506206} to distributed systems -- generalizing across time (no longer a single input file) and space (coordinating multiple machines).
-\item We're not focused specifically on bugs within a single controller (deterministic replay), although developers can control the granularity of the logs they feed to our tool -- the finer the granularity, the more bugs we'll be able to diagnose.
-\item We're also not interested in proactively finding bugs (NICE~\cite{nice}), only reactively.
-\item Upshot: we don't claim to be able to find the MCS for all possible problems. Nonetheless, the worst case for us is that the developer ends up with what they started: an unpruned input log (either we failed to reproduce it in the first place, or nothing was prunable). We discuss the limitations of our approach in more detail in the 3.1.
-\end{itemize}
+A substantial part of the troubleshooting process today involves manually
+identifying fault-inducing inputs
+from logs of system executions where invalid configurations
+were discovered. When asked to describe their
+ideal tool, most admins said ``automated troubleshooting''~\cite{Zeng:Survey}.
 
-Main result from our work: the amount of effort it takes to codify domain knowledge is significantly less than the effort it would take to step through a normal replay debugger by hand for each bug.
+In this paper we take a step towards realizing automated troubleshooting.
+% thereby freeing developers to debug the problematic code itself.
+We present an algorithm, \simulator, for automatically pruning extraneous
+inputs from logs. What remains is a sequence of inputs that are both necessary and sufficient for
+triggering a given bug.
+
+Pruning only concurrent inputs (those that do not have a
+happens-before chain~\cite{Lamport:1978:TCO:359545.359563} leading to the correctness violation)
+does not yield a significant reduction in the log size. Our approach is
+to apply the delta debugging algorithm~\cite{Zeller:2002:SIF:506201.506206}:
+selectively prune events in the past and check at the end of
+the modified execution whether the correctness violation remains.
+
+Unlike the original intended use of delta debugging (minimizing a single
+input file for a non-distributed program), the inputs in SDN logs are spread across
+time and involve multiple machines. Adapting delta debugging to a distributed
+setting requires much care when replaying modified inputs;
+na\"ively replaying by simply maintaining relative timing between inputs often
+fails to trigger the original correctness
+violation. Input scheduling
+needs to take internal events (\eg~mastership changes) into account to
+preserve happens-before constraints. Yet by pruning inputs, the internal events
+subtly change (consider the sequence numbers of packets),
+and some internal events that occurred in the original
+run may not occur after pruning prior inputs.
+Our primary contribution is the insight that a small amount of domain knowledge
+(codifcation of the syntax and semantics of events) can be applied to
+place internal events into equivalence classes, allowing us to reason about the
+differences between slightly altered histories.
+
+Unlike previous work on troubleshooting dataplane behavior~\cite{handigol2012debugger}
+and checking network invariants~\cite{hsa,anteater}, \simulator~is focused on troubleshooting
+SDN control software.
+%\Simulator~is complementary to proactive bug-finding techniques
+%such as NICE~\cite{nice}, which work well for verifying crucial pieces of
+%code but suffer from exponential
+%state explosion when run on large systems.
+\Simulator~is focused on erroneous
+behavior of the overall distributed system (\eg~incorrect
+failover logic), but is not specifically designed to troubleshoot bugs within a single controller
+(\cf~deterministic replay~\cite{Dunlap:2002:REI:844128.844148}). The upshot of
+this is our technique is not able to minimize all possible failures, such as
+data races between threads. Nonetheless, the worst case for us is that the developer ends up with what they started:
+an unpruned log.
+
+Even the modest improvement of being able to minimize input
+logs represents a
+substantial improvement over the status quo;
+to the best of our knowledge, painstaking analysis of detailed logs is the
+current state-of-the-art in SDN platform troubleshooting.
+% Main result from our work: the amount of effort it takes to codify domain knowledge is significantly less than the effort
+% it would take to step through a normal replay debugger by hand for each bug.
+
+% Cut?
+The rest of this paper is organized as follows. In \S\ref{sec:overview},
+we present an overview of the SDN stack and its failure modes.
+In \S\ref{sec:approach} we present \simulator{} in detail.
+We discuss use cases for \simulator{} in \S\ref{sec:architecture},
+and explore case studies and a performance evaluation in
+\S\ref{sec:evaluation}. We end by discussing the limitations of our
+approach (\S\ref{sec:discussion}) and related work (\S\ref{sec:related_work}).
 
 % ------------------------------------------------------------------- %
 %    OLD OSDI TEXT:

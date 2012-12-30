@@ -2,11 +2,11 @@ Software bugs abound in distributed systems, and troubleshooting
 is a tedious, time consuming task.
 In this paper we present a technique for automatically identifying
 a minimal set of fault-inducing inputs from logs. Our technique works by
-iteratively altering the history of the logs and comparing divergent histories
-with domain knowledge about semantic equivalence of events.
+iteratively altering the history of the logs, and comparing divergent histories
+by applying domain knowledge about semantic equivalence of events.
 
 We apply our technique to several software-defined networking control
 platforms---Floodlight, POX, and NOX---and
 are able to isolate the minimal sequence of inputs that triggered
-two bugs: faulty failover logic between replicated controllers, and incorrect
+\colin{N} bugs: faulty failover logic between replicated controllers, and incorrect
 synchronization with the physical network.
