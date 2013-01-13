@@ -2,7 +2,7 @@
 \S\ref{sec:approach}. \projectname~is implemented in roughly 10,000 lines of Python in
 addition to the Hassel network invariant checking library~\cite{hsa}. The code
 for \projectname~is publicly available,\footnote{URL omitted due to anonymity requirements}
-and used by \colin{N} software development teams outside of our own.
+and three industrial SDN companies have expressed interest in adopting it.\colin{Cite?}
 
 In the rest of this section, we highlight salient points of \projectname's
 design. Furthermore, we describe three ways \projectname~can be put to use
@@ -35,17 +35,18 @@ Control message delay & \\
 \label{tab:inputs}
 \end{table}
 
-We designed \projectname~to be as resilient to non-determinism as possible.
-\projectname~handles slight alterations in the order messages are received from the
-controller(s) across executions by buffering all incoming messages and
-deterministically choosing the order they are
-passed to the software switches. \projectname~handles alterations in the order messages
-are received (and consumed) by the controller(s) by \colin{TBD}.
+We designed \projectname~to be as resilient to non-determinism as possible
+while minimizing modifications to control software.
+\projectname ensures a deterministic order of messages despite
+non-determinism in operating system I/O scheduling
+by multiplexing all sockets in the controller process
+onto a single true socket. \projectname~currently
+overrides socket functionality within the control software itself, but
+deterministic I/O could also be achieved without code modifications by
+loading a shim layer on top of
+libc (similar to liblog~\cite{Geels:2006:RDD:1267359.1267386}).
 
-\projectname~requires
-no modifications to the control software so long as the control software under test supports OpenFlow.
-That said, we make several optional
-modifications to further mitigate non-determinism when appropriate. With a
+With a
 small change to the control software's logging library \projectname~can be
 notified whenever a log statement is executed,
 and thereby account for relevant internal state changes while scheduling inputs.
@@ -56,7 +57,7 @@ best-effort guess at what the return values of these calls should be. For exampl
 if the altered execution invokes {\tt gettimeofday()} more times than were recorded
 in the initial run, we interpolate the time values of neighboring events}
 As an added benefit, overriding {\tt gettimeofday()} allows us to `compress'
-runtime in some cases.\footnote{Similar to~\cite{Gupta06toinfinity}}
+runtime in some cases (similar to~\cite{Gupta06toinfinity}).
 
 \projectname~can be used in a number of ways. We outline three use-cases here.
 
