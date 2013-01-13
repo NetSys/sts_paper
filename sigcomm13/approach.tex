@@ -272,9 +272,11 @@ replay}, and it is shown in Figure~\ref{fig:peek}. Simply put, peeking replay
 attempts to precompute which internal events are and aren't going to occur
 so that it can know exactly how long to wait before injecting inputs in the
 final replay. Because waiting replay is often sufficient for reproducing
-errors, we switch over to peeking replay only when waiting replay fails to
-reproduce the correctness violation.
-insufficient. \colin{Mention that causal annotations might help}
+errors, we switch over to peeking replay only when waiting replay detects a
+successor occuring before it has injected the next input.\colin{Should
+formally describe a hybrid algorithm--only invoke peek() for one interval, and
+only when a successor has been observed}
+\colin{Mention that causal annotations might help}
 
 \begin{figure}
 \begin{boxedminipage}{\linewidth}
