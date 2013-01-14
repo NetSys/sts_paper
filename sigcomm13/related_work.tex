@@ -17,7 +17,9 @@ subset of an input (always a single file) that leads to a failure. As one
 example, delta debugging has been applied to multi-threaded (single-core) programs
 to identify the minimum set of thread
 switches from a thread schedule (a single file) that reproduces
-a race condition~\cite{choi2002isolating}.
+a race condition~\cite{choi2002isolating}. Chronus presents a simpler search
+algorithm than delta debugging that is specific to configuration
+debugging~\cite{whitaker2004configuration}.
 All of these techniques focus on troubleshooting single, non-distributed programs.
 
 Rx~\cite{qin2005rx} is a technique for improving availability: upon
@@ -32,7 +34,7 @@ The systems and networking community has also developed a substantial
 literature on tools for testing and troubleshooting.
 
 Network simulators and emulators such as
-Mininet~\cite{Lantz:2010:NLR:1868447.1868466} and ns-3~\cite{ns3}
+Mininet~\cite{handigol2012reproducible} and ns-3~\cite{ns3}
 are used to prototype and test control software. Most of these frameworks are focused
 primarily on performance fidelity. In contrast, \projectname~is a simulator focused on
 precise event orderings, which is significantly harder to achieve with
@@ -47,7 +49,8 @@ with code to record, display, and check invariants on causal paths throughout
 live executions. All of these techniques involve some amount of human
 intervention; we focus on automating the diagnosis process.
 
-Root cause analysis techniques~\cite{yemini1996} seek to identify the minimum set of failed
+Root cause analysis~\cite{yemini1996} and dependency inference~\cite{Kandula:2009:DDE:1592568.1592597}
+techniques seek to identify the minimum set of failed
 components (\eg~link failures) needed to explain a collection of alarms. Rather than
 focusing on individual component failures, we seek to minimize inputs that affect the behavior
 of the overall distributed system.
@@ -60,6 +63,7 @@ of the overall distributed system.
 Finally, the programming languages community has developed
 a wide range of verification and static analysis techniques.
 
+% NICE isn't *really* from the PL community
 Model checkers such as NICE~\cite{nice} enumerate all possible code paths taken by control software (NOX)
 and identify concrete inputs that cause
 the network to enter invalid configurations. NICE works well for small
