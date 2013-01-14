@@ -34,20 +34,25 @@ The systems and networking community has also developed a substantial
 literature on tools for testing and troubleshooting.
 
 Network simulators and emulators such as
-Mininet~\cite{handigol2012reproducible} and ns-3~\cite{ns3}
-are used to prototype and test control software. Most of these frameworks are focused
-primarily on performance fidelity. In contrast, \projectname~is a simulator focused on
+Mininet~\cite{handigol2012reproducible}, ns-3~\cite{ns3}, or ModelNet~\cite{Vahdat:2002:SAL:844128.844154}
+are used to prototype and test network software. Most of these frameworks are focused
+primarily on performance fidelity or scalability experiments. In contrast, \projectname~is a simulator focused on
 precise event orderings and replayable executions, which is significantly harder to achieve with
 emulation.
 
 Replay techniques such as OFRewind~\cite{ofrewind} allow developers to interactively
-trace and prune the inputs that lead up to errant behavior. Tracing tools provide a view
-requests' paths through the dataplane~\cite{handigol2012debugger} or control
-plane~\cite{fonseca2007x}. Frameworks for tracing such as Pip~\cite{pip} extend this
+trace and prune the inputs that lead up to errant behavior. We focus on automating this diagnosis process.
+
+Tracing tools provide a view
+of requests' paths through the dataplane~\cite{handigol2012debugger} or control
+plane~\cite{fonseca2007x}. Tracing frameworks such as Pip~\cite{pip} extend this
 concept and instrument general-purpose distributed systems
-with code to record, display, and check invariants on causal paths throughout
-live executions. All of these techniques involve some amount of human
-intervention; we focus on automating the diagnosis process.
+with code to record, display, and check invariants against developer
+expectations on causal paths throughout
+live executions. Other tracing frameworks automatically identify anomalous
+traces and `root cause' transitions within anomalous traces by constructing
+ Markov chains from a large collection of traces and identifying low probability paths~\cite{barham2004using}.
+Our approach identifies the exact minimal causal set of inputs without depending on probabilistic models.
 
 Root cause analysis~\cite{yemini1996} and dependency inference~\cite{Kandula:2009:DDE:1592568.1592597}
 techniques seek to identify the minimum set of failed
@@ -64,9 +69,9 @@ Finally, the programming languages community has developed
 a wide range of verification and static analysis techniques.
 
 % NICE isn't *really* from the PL community
-Model checkers such as NICE~\cite{nice} enumerate all possible code paths taken by control software (NOX)
+Model checkers such as MACE~\cite{Killian:2007:MLS:1250734.1250755} and NICE~\cite{nice} enumerate all possible code paths taken by control software (NOX)
 and identify concrete inputs that cause
-the network to enter invalid configurations. NICE works well for small
+the network to enter invalid configurations. Model checking works well for small
 control programs and a small number of machines, but suffers from exponential
 state explosion when run on large systems. For example, NICE took 30 hours to
 model check a network with two switches, two hosts, the MAC-learning
