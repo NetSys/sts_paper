@@ -87,11 +87,17 @@ switching devices. And then we can inject a number of failure scenarios under
 controlled circumstances to really accelerate our test work.''
 \end{quote}
 
-In testing mode, \projectname~generates random or interactively chosen input
-sequences, feeds them to controller(s), and monitors invariants at chosen
+\projectname~can be used to generates randomly chosen input
+sequences, feed them to controller(s), and monitor invariants at chosen
 intervals. Driving the
 execution of the system in this way allows \projectname~to record a
 totally-ordered log of the events to be replayed later.
+
+\projectname~can also be used interactively to generate replayable integration
+tests.\footnote{Similar to~\cite{automated_tests}} Generating test cases by
+interactively specifying inputs represents a
+significant improvement over how developers generate tests today: manually writing
+code.
 
 As additional failure cases are encountered they can be added
 to a suite of integration tests and later used to validate the correct
