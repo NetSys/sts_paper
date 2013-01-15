@@ -209,6 +209,14 @@ i' \mathrel{\&} mask &= i \mathrel{\&} mask
 and $i$ is placed between $i'$'s preceding and succeeding inputs in the
 happens-before relation. \colin{Pending Sam's formalism}
 
+\begin{figure}[t]
+    %\hspace{-10pt}
+    \includegraphics[width=3.25in]{../diagrams/state_machines/controller_switch.pdf}
+    \caption[]{\label{fig:state_machines} State machines for the switch and
+    controllers in the example Floodlight bug. \colin{TODO: broadcast
+    notification?}}
+\end{figure}
+
 \begin{table}
 \centering
 \begin{tabular}{|l|l|}
@@ -225,13 +233,6 @@ define equivalence classes.}
 \label{tab:fingerprints}
 \end{table}
 
-\begin{figure}[t]
-    %\hspace{-10pt}
-    \includegraphics[width=3.25in]{../diagrams/state_machines/controller_switch.pdf}
-    \caption[]{\label{fig:state_machines} State machines for the switch and
-    controllers in the example Floodlight bug. \colin{TODO: broadcast
-    notification?}}
-\end{figure}
 
 The second implication of altering the original trace is that
 some internal events from the original run may not occur after

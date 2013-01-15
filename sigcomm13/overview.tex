@@ -118,10 +118,12 @@ We are primarily focused on correctness bugs, not performance bugs. That said,
 our approach is largely agnostic to what kinds of invariants are
 checked (see \S\ref{subsec:cc}).
 
-\noindent{\bf Proactive vs Reactive Configuration.} \colin{cut?} We focus primarily on
+\noindent{\bf Proactive vs Reactive Configuration.} We focus primarily on
 \emph{proactive} configuration, where controllers react to policy and topology changes, but
- not necessarily individual packets or flows events in the dataplane.
-Production controllers typically adopt this model for performance reasons.
+ not necessarily individual packets or flows events in the dataplane.\footnote{
+Production controllers typically adopt this model for performance reasons}
+The main challenge in extending our approach to reactive controllers is
+achieving efficient simulation of dataplane messages.
 
 %--------------------------------------------------------------------%
 %               OLD HOTNETS TEXT
