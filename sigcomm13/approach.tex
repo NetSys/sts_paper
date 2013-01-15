@@ -107,9 +107,9 @@ across time: it includes many messages, and depends on subtle causal
 relationships. Second, the input is spread across space: it involves
 many nodes which run asynchronously and may fail at any time.
 In the rest of this section, we describe how we
-replay inputs to control software
-and cope with alterations to the causal history of an execution.
-In \S\ref{sec:architecture}, we describe concrete ways \simulator~
+replay inputs to control software,
+cope with alterations to the causal history of an execution, and check
+invariants. In \S\ref{sec:architecture}, we describe concrete ways \simulator~
 can be put to use.
 
 \subsection{Simulation}
@@ -340,7 +340,6 @@ history}
 
 \colin{Paragraph on optimizations}
 
-\eat{ % Cutting this makes me le sad
 \subsection{Correspondence Checking}
 \label{subsec:cc}
 
@@ -348,16 +347,20 @@ Finally, we need a mechanism for deciding
 whether a correctness violation is present at the end of the system execution.
 We refer to such an algorithm as a {\em decider}.
 
-While our approach supports generic deciders (\eg~all-pairs reachability or loop detection),
-we show here that with a small modification to the control software we can
+Our approach supports generic deciders (\eg~all-pairs reachability or loop detection),
+provided by frameworks such as HSA~\cite{hsa} or Anteater~\cite{anteater}.
+With a small modification to the control software, however, we can
 extract the network policies already reflected in the
 controller's data structures and thereby check a much more fine-grained set of invariants.
 We refer to this technique as correspondence checking. Correspondence checking
 builds on the virtual packet algebra
 pioneered in headerspace analysis~\cite{hsa}.
 
-Formally, the state of the physical network, the physical view, and the
-logical view can be represented as graphs,
+Formally, the state of the physical network, the physical view (the
+data structure maintained by the controllers for tracking the current state of the physical
+network), and the
+logical view (the data structure maintained by the controllers for storing
+network policies in a routing table-like format) can be represented as graphs,
 $G = (V, E)$. Packets are series of bits, $h \in \{0,1\}^L$ in the universe
 of all possible bit sequences $H = \{0,1\}^L$,
 where $L$ is the maximum number of bits in the header.
@@ -444,7 +447,6 @@ configuration of the logical view are correct. Finally, correspondence
 checking can not verify
 time-dependent policies such as ``No link should be congested more than 1\% of
 the time''.
-}
 
 % ---------------------------------------------- %
 %             OLD TEXT
