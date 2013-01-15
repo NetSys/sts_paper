@@ -6,7 +6,7 @@
 \usepackage{xspace}
 \usepackage{pifont}
 \usepackage{fancyvrb}
-\definecolor{MyDarkBlue}{rgb}{0,0.08,0.45} 
+\definecolor{MyDarkBlue}{rgb}{0,0.08,0.45}
 \usepackage[pdftex]{hyperref}
 \hypersetup{
     colorlinks,%
@@ -17,15 +17,72 @@
 }
 \usepackage{fixltx2e}
 \usepackage{textgreek}
+\usepackage[sort]{cite}
 %,xcolor,rotating,graphicx,graphics,url,epsfig,
 %amsfonts,algpseudocode,xspace,amsmath,amssymb,fancyvrb,fixltx2e
+
+% Ethan hacks:----------
+%\setlength{\pdfpagewidth}{8.5truein}
+%\setlength{\pdfpageheight}{11truein}
+
+%%% format things for making pretty tables using booktabs package
+%\usepackage{multirow}
+%\usepackage{booktabs}
+%\setlength{\heavyrulewidth}{0.10em}
+%\setlength{\lightrulewidth}{0.05em}
+%\setlength{\cmidrulewidth}{\lightrulewidth}
+%\setlength{\cmidrulekern}{0em}%
+%
+%\let\oldthebibliography=\thebibliography
+%\let\endoldthebibliography=\endthebibliography
+%\renewenvironment{thebibliography}[1]{%
+%\begin{oldthebibliography}{#1}%
+%\setlength{\itemsep}{-.3ex}%
+%}%
+%{%
+%\end{oldthebibliography}%
+%}
+
+%\textfloatsep 10pt plus 3pt minus 2pt   % Space between main text and floats
+
+%\newcommand{\squishlist}{
+%   \begin{list}{$\bullet$}
+%    { \setlength{\itemsep}{0pt}      \setlength{\parsep}{3pt}
+%      \setlength{\topsep}{3pt}       \setlength{\partopsep}{0pt}
+%      \setlength{\leftmargin}{1.5em} \setlength{\labelwidth}{1em}
+%      \setlength{\labelsep}{0.5em} } }
+%
+%\newcommand{\squishlisttwo}{
+%   \begin{list}{$\bullet$}
+%    { \setlength{\itemsep}{0pt}    \setlength{\parsep}{0pt}
+%      \setlength{\topsep}{0pt}     \setlength{\partopsep}{0pt}
+%      \setlength{\leftmargin}{2em} \setlength{\labelwidth}{1.5em}
+%      \setlength{\labelsep}{0.5em} } }
+%
+%\newcommand{\squishend}{
+%    \end{list}  }
+%
+%
+%\def\compactify{\itemsep=2pt \topsep=3pt \partopsep=1pt \parsep=1pt \leftmargin=1.5em}
+%\let\latexusecounter=\usecounter
+%\newenvironment{CompactEnumerate}
+%  {\def\usecounter{\compactify\latexusecounter}
+%   \begin{enumerate}}
+%   {\end{enumerate}\let\usecounter=\latexusecounter}
+%\newenvironment{CompactItemize}
+%   {\def\usecounter{\compactify\latexusecounter}
+%   \begin{itemize}}
+%   {\end{itemize}\let\usecounter=\latexusecounter}
+%
 
 % Macros:
 \newcommand{\projectname}{{STS}}
 \newcommand{\projectmeaning}{the SDN Troubleshooting Simulator}
-\newcommand{\simulator}{simulation-based causal inference}
-\newcommand{\Simulator}{Simulation-based causal inference}
-\newcommand{\SIMULATOR}{Simulation-based Causal Inference}
+
+% Used to be: simulation-based causal inference
+\newcommand{\simulator}{distributed delta debugging}
+\newcommand{\Simulator}{Distributed delta debugging}
+\newcommand{\SIMULATOR}{Distributed Delta Debugging}
 \newcommand{\tbd}[1]{{\bf [[TBD: {#1}]]}}
 \newcommand{\ie}{{\it i.e.}}
 \newcommand{\eg}{{\it e.g.}}
@@ -115,8 +172,9 @@
 
 % TODO: Include acknowledgements section
 
+%{\scriptsize
 \bibliographystyle{abbrv} \bibliography{bib}
-
+%}
 %\input{appendix}
 
 %\theendnotes

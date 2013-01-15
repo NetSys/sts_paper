@@ -29,29 +29,26 @@ take days to months to fix, and almost 75\% of
 respondents considered reproducibility to be hard or very hard.
 To make matters worse, the number of hardware failures,
 policy changes, host migrations, and other inputs to SDN controllers can
-be quite large in production environments. Microsoft Research
+be quite large in production environments--Microsoft Research
 reports 8.5 network error events per minute per
 datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}.
-Consequently, it is often difficult to distinguish events that are
+In such an environment it is often difficult to distinguish events that are
 characteristic of normal operating
 conditions from those that push the network into an erroneous state.
-And despite the prevalence of failures, maintaining uptime is of critical importance; according to one
-survey, ``meeting customer expectations about reliability'' is the second highest
-priority for networking professionals~\cite{market_report}.
+It is no wonder that that when asked to describe their
+ideal tool, most admins said ``automated troubleshooting''~\cite{Zeng:Survey}.
 \scott{More SDN war stories, anecdotes
 from Nicira, Big Switch}
 
-% Software bugs cost $59 billion in 2002: bit.ly/V2Z7Al
+%And despite the prevalence of failures, maintaining uptime is of critical importance; according to one
+%survey, ``meeting customer expectations about reliability'' is the second highest
+%priority for networking professionals~\cite{market_report}.
 
-A substantial part of the troubleshooting process today involves manually
-identifying relevant inputs
-from logs where invalid configurations
-were discovered. It is reasonable then that when asked to describe their
-ideal tool, most admins said ``automated troubleshooting''~\cite{Zeng:Survey}.
+% Software bugs cost $59 billion in 2002: bit.ly/V2Z7Al
 
 In this paper we take a step towards realizing automated troubleshooting.
 % thereby freeing developers to debug the problematic code itself.
-We present an algorithm, \simulator, for automatically pruning extraneous
+We present a technique, \simulator, for automatically pruning extraneous
 inputs from logs. What remains is a sequence of inputs that are both necessary and sufficient for
 triggering a given bug.
 

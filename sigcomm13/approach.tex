@@ -1,13 +1,13 @@
-We have developed a technique, \simulator{}, for automatically identifying
+We have developed a technique, \simulator, for automatically identifying
 a minimal sequence of fault-inducing inputs from logs. Here we detail the specifics
-of our technique.
+of \simulator.
 
 \subsection{Delta Debugging}
 \label{subsec:algorithm}
 
 We start by describing an example bug in the Floodlight
-open source control platform~\cite{floodlight_bug}, and later show how our
-technique is applied to this bug. Floodlight is distributed across
+open source control platform~\cite{floodlight_bug} to illustrate the mechanics
+of our technique. Floodlight is distributed across
 multiple controllers for high availability, and provides support for
 virtualization. Switches maintain one hot connection to a master controller and
 several cold connections to replica controllers. The \emph{master} holds the
@@ -101,7 +101,7 @@ holds.
 \label{fig:ddmin}
 \end{figure*}
 
-Our problem differs from that solved by unmodified delta debugging in two dimensions.
+Our problem differs from the original formulation of delta debugging in two dimensions.
 First, input to SDN controllers is spread
 across time: it includes many messages, and depends on subtle causal
 relationships. Second, the input is spread across space: it involves
@@ -109,8 +109,8 @@ many nodes which run asynchronously and may fail at any time.
 In the rest of this section, we describe how we
 replay inputs to control software
 and cope with alterations to the causal history of an execution.
-In \S\ref{sec:architecture}, we describe concrete ways in
-which the technique can be put to use.
+In \S\ref{sec:architecture}, we describe concrete ways \simulator~
+can be put to use.
 
 \subsection{Simulation}
 \label{subsec:replay}
@@ -140,7 +140,7 @@ Given a sequence of inputs (\eg~link failures, controller crashes, host migratio
 or policy changes) and an invariant checking probe (provided by frameworks
 such as HSA~\cite{hsa} or Anteater~\cite{anteater}), the simulator invokes
 the delta debugging algorithm to identify the minimal causal set. The
-simulator replays each subsequence selected by the delta debugging algorithm
+simulator is responsible for replaying the intermediate input subsequences
 to the control software. For example, link failures are
 reproduced by disconnecting the edge in the simulated network, and sending a
 port status message from the adjacent switches to their parent controller(s).

@@ -1,7 +1,30 @@
 % Just realized: b/c of anonymity, the PC can't chastise us for
 % running our system on our own code -- we can't tell them that it's our code!
-\Simulator{} is certainly not without limitations. We discuss several of them
+\Simulator~is certainly not without limitations. We discuss several of them
 here.
+
+\noindent{\bf Is \simulator~specific to SDN?}
+\colin{revamp with formalism}
+Luckily, SDN has several properties that make it particularly amenable to an
+automated troubleshooting approach such as ours. Most importantly, SDN control software
+quickly converges to quiescence--that is, SDN controllers become idle when no policy or
+topology changes occur for a period of time. In contrast to long-running iterative computations,
+this means that individual inputs to the system have a relatively isolated effect on the outcome
+of the computation; if we prune one input from the log and replay the execution, it is unlikely
+that the new outcome will be radically different from the original. If this were not the case, our
+technique would not be able to significantly decrease the size of execution traces, as will will become clear in
+\S\ref{subsec:algorithm}.
+
+SDN's architecture also facilitates the implementation of our troubleshooting
+tool. The syntax and semantics of interfaces between components of the system (\eg~OpenFlow
+between controllers and switches~\cite{openflow}, or
+OpenStack Quantum's API between
+the control application and the network hypervisor~\cite{quantum}), are
+well-defined--a property that is crucial for
+enabling us to compare altered histories (described in \S\ref{subsec:replay}).
+Moreover, controllers are relatively small in number compared to the size of
+overall network, which makes it much easier to superimpose
+on messages (described in detail in~\S\ref{subsec:replay}).
 
 \noindent{\bf Are all simulated failures really indistinguishable
 from actual failures?}
