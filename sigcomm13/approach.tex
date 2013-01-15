@@ -101,20 +101,15 @@ holds.
 \label{fig:ddmin}
 \end{figure*}
 
-The crux of our contribution lies in extending the delta debugging technique
-to a distributed setting; our work demonstrates that
-delta debugging can be used to localize fault-inducing inputs from execution traces of
-SDN controllers.
-
-In particular, our problem differs in two dimensions. First, input to SDN controllers is spread
+Our problem differs from that solved by unmodified delta debugging in two dimensions.
+First, input to SDN controllers is spread
 across time: it includes many messages, and depends on subtle causal
 relationships. Second, the input is spread across space: it involves
 many nodes which run asynchronously and may fail at any time.
-In the rest of this section, we describe how we (i)
-coordinate replay across distributed nodes,
-(ii) cope with alterations to the causal history of an execution, and (iii)
-develop a generic invariant checking algorithm
-for detecting errant behavior. In \S\ref{sec:architecture}, we describe concrete ways in
+In the rest of this section, we describe how we
+replay inputs to control software
+and cope with alterations to the causal history of an execution.
+In \S\ref{sec:architecture}, we describe concrete ways in
 which the technique can be put to use.
 
 \subsection{Simulation}
@@ -142,9 +137,11 @@ Figure~\ref{fig:architecture}.
 \end{figure}
 
 Given a sequence of inputs (\eg~link failures, controller crashes, host migrations,
-or policy changes) chosen by the delta debugging algorithm,\footnote{We discuss
-how the original sequence of inputs is obtained in \S~\ref{sec:architecture}} the
-simulator replays these inputs to the control software. For example, link failures are
+or policy changes) and an invariant checking probe (provided by frameworks
+such as HSA~\cite{hsa} or Anteater~\cite{anteater}), the simulator invokes
+the delta debugging algorithm to identify the minimal causal set. The
+simulator replays each subsequence selected by the delta debugging algorithm
+to the control software. For example, link failures are
 reproduced by disconnecting the edge in the simulated network, and sending a
 port status message from the adjacent switches to their parent controller(s).
 
@@ -232,7 +229,6 @@ Log statements & varargs parameters to printf \\
 define equivalence classes.}
 \label{tab:fingerprints}
 \end{table}
-
 
 The second implication of altering the original trace is that
 some internal events from the original run may not occur after
@@ -343,6 +339,9 @@ this reason.
 \colin{Make sure we emphasize that there is no `right answer', since modified
 history}
 
+\colin{Paragraph on optimizations}
+
+\eat{ % Cutting this makes me le sad
 \subsection{Correspondence Checking}
 \label{subsec:cc}
 
@@ -446,7 +445,7 @@ configuration of the logical view are correct. Finally, correspondence
 checking can not verify
 time-dependent policies such as ``No link should be congested more than 1\% of
 the time''.
-
+}
 
 % ---------------------------------------------- %
 %             OLD TEXT
