@@ -69,7 +69,7 @@ Finally, the programming languages community has developed
 a wide range of verification and static analysis techniques.
 
 % NICE isn't *really* from the PL community
-Model checkers such as MACE~\cite{Killian:2007:MLS:1250734.1250755} and NICE~\cite{nice} enumerate all possible code paths taken by control software (NOX)
+Model checkers such as Mace~\cite{Killian:2007:MLS:1250734.1250755} and NICE~\cite{nice} enumerate all possible code paths taken by control software (NOX)
 and identify concrete inputs that cause
 the network to enter invalid configurations. Model checking works well for small
 control programs and a small number of machines, but suffers from exponential
@@ -214,14 +214,6 @@ correctness. In addition, these systems assume that invariants should hold at
 all times; we observe that in an eventually-consistent system such as SDN,
 transient correctness violations are inevitable. We built \simulator{} to help troubleshooters
 differentiate ephemeral from persistent errors.
-
-% If we manage to run multiple applications by Monday, we should cite papers
-% on consistency and cross-layer debugging:
-%X-Trace~\cite{xtrace}
-% Vector Clocks
-% Onix
-% Virtualization definitely won't happen by Monday. But, papers include
-% Martin's presto '10 paper 'Virtualizaing the Network Forwarding Plane'
 
 }
 }
