@@ -215,8 +215,7 @@ happens-before relation.
     \includegraphics[width=3.25in]{../diagrams/state_machines/controller_switch.pdf}
     \caption[]{\label{fig:state_machines} Simplified state machines for the switch and
     controllers in the example Floodlight bug. Double outlined states
-    respresent correctness violations--a blackhole in this case. \colin{TODO: broadcast
-    notification?}}
+    respresent presence of the blackhole.}
 \end{figure}
 
 \begin{table}
@@ -235,17 +234,17 @@ define equivalence classes.}
 \label{tab:fingerprints}
 \end{table}
 
-A more problematic implication of altering the original trace is that
+A deeper implication of altering the original trace is that
 some internal events from the original run may not occur after
 pruning certain inputs--conversely, new internal events not present in the original run
 may occur. Consider the simplified state machines for the switch and
 controllers from the Floodlight case shown in
-Figure~\ref{fig:state_machines}. If the link failure input is pruned, the
-switch will not make the internal state transition from `Safe` to
-`Notify Master` as it did in the original execution.
+Figure~\ref{fig:state_machines}. If link failure input is pruned, the
+switch will not make the transition to `Notify Parents', and the master will
+consequently not make the transition to and from `Send Flush'.
 
-We have developed two event scheduling algorithms to cope with this
-issue. The first is simpler, but somewhat less robust. We refer to it as
+We have developed two event scheduling algorithms to accout for altered
+internal events. The first is simpler, but somewhat less robust. We refer to it as
 \emph{waiting replay}, and it is shown in Figure~\ref{fig:simple_algorithm}.
 Simply put, it waits for internal events matching those in the original run,
 but times out and proceeds if they do not occur.
@@ -318,10 +317,10 @@ where {\em multiple} internal events in the same
 equivalence class a single internal event in the original execution.
 Ambiguous equivalences mean that more than one possibility exists for where
 the next input should be
-injected. For example, if $i_2$ and $i_3$ are internal events observed
+injected while still maintaining happens-before contstraints. For example, if $i_2$ and $i_3$ are internal events observed
 during replay that are both in the same equivalence class as a single event $i_1$ from the
 original run, one might inject the next input after $i_2$ or after $i_3$.
-As we have proven elsewhere\footnote{URL omitted for anonymity reasons},
+As we have proven elsewhere,\footnote{URL omitted for anonymity reasons}
 all possibilities need to be explored to guarantee that if a path through the
 distributed state machine leading to
 the correctness violation from the original execution exists, that path will be taken. In the worst case,
