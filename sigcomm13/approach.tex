@@ -313,13 +313,37 @@ waited too long upon observing a successor of the input to be injected.
 Although the hybrid algorithm has the same worst case runtime as peeking
 replay, the average case runtime is significantly better.
 
-Both waiting and peeking replay need to support an important case.
-As we have proven elsewhere\footnote{URL omitted for anonymity reasons}.
-Refer to state machine somewhere.
+Waiting and peeking replay both need to account for the pathological case
+where {\em multiple} internal events in the same
+equivalence class a single internal event in the original execution.
+Ambiguous equivalences mean that more than one possibility exists for where
+the next input should be
+injected. For example, if $i_2$ and $i_3$ are internal events observed
+during replay that are both in the same equivalence class as a single event $i_1$ from the
+original run, one might inject the next input after $i_2$ or after $i_3$.
+As we have proven elsewhere\footnote{URL omitted for anonymity reasons},
+all possibilities need to be explored to guarantee that if a path through the
+distributed state machine leading to
+the correctness violation from the original execution exists, that path will be taken. In the worst case,
+this implies an exponential number of possibilies to be explored during
+replay.
 
-In the best case, the delta debugging algorithm terminates after
+Luckily, ambiguous equivalent internal events are extremely rare in the
+control software we evaluated, as we
+show in \S\ref{subsec:runtime}. We have proven elsewhere that ambiguity only
+occurs when a subpath exists in the distributed state machine that contains two or
+more equivalent internal edges without an intermediate input event edge.
+We conjecture that such transitions are not common in control plane systems,
+which are designed to quiesce quickly (\ie~take a small number of internal
+transitions after any input event). Consider the state machines in Figure~\ref{fig:state_machines}:
+it is not possible to traverse the same internal event edge (``Receive Link
+Failure Notification'' or ``Receive Flush'') without traversing an
+intermediate input event edge (``Link Failure'' or ``Master Failure'').
+\colin{TODO: need a figure that shows generalized event scheduling}
+
+Assuming no ambiguities occur, the delta debugging algorithm terminates after
 $O(log\,n)$
-invocations of $replay$, where $n$ is the number of inputs in the original
+invocations of $replay$ in the best case, where $n$ is the number of inputs in the original
 trace~\cite{Zeller:2002:SIF:506201.506206}. Each invocation of waiting replay
 injects $n$ inputs, for an overall runtime of $O(nlog\,n)$ for
 waiting replay. The worst case runtime of delta debugging is $O(n^2)$ in the
