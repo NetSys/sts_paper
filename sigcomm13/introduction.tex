@@ -35,10 +35,9 @@ datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}.
 In such an environment it is often difficult to distinguish events that are
 characteristic of normal operating
 conditions from those that push the network into an erroneous state.
-It is no wonder that that when asked to describe their
+It is no suprise then that when asked to describe their
 ideal tool, most admins said ``automated troubleshooting''~\cite{Zeng:Survey}.
-\scott{More SDN war stories, anecdotes
-from Nicira, Big Switch}
+\scott{More SDN war stories, anecdotes from Nicira, Big Switch}
 
 %And despite the prevalence of failures, maintaining uptime is of critical importance; according to one
 %survey, ``meeting customer expectations about reliability'' is the second highest
@@ -46,56 +45,48 @@ from Nicira, Big Switch}
 
 % Software bugs cost $59 billion in 2002: bit.ly/V2Z7Al
 
-In this paper we take a step towards realizing automated troubleshooting.
-% thereby freeing developers to debug the problematic code itself.
-We present a technique, \simulator, for automatically pruning extraneous
-inputs from logs. What remains is a sequence of inputs that are both necessary and sufficient for
-triggering a given bug.
+If the network enters an invalid configuration (\eg~isolation between tenants
+is violated), then the control plane has a bug. Our goal is
+to automatically identify the exact external inputs (\eg~link failures) that
+triggered the bug. Our technique, \simulator, achieves this by iteratively
+pruning inputs from the original run, replaying the altered history, and
+checking whether the networks remains in an invalid configuration.
+\scott{Needs an example}
 
 Pruning only concurrent inputs (those that do not have a
-happens-before chain~\cite{Lamport:1978:TCO:359545.359563} leading to the correctness violation)
-does not yield a significant reduction in the log size. Our approach is
-to apply the delta debugging algorithm~\cite{Zeller:2002:SIF:506201.506206}:
-selectively prune events in the past and check at the end of
-the modified execution whether the correctness violation remains.
-
-Unlike the original intended use of delta debugging--minimizing a single
-input file for a non-distributed program--the inputs in SDN logs are spread across
-time and involve multiple machines. Adapting delta debugging to a distributed
-setting requires much care when replaying modified inputs:
+happens-before chain~\cite{Lamport:1978:TCO:359545.359563} leading to the
+invalid configuration) does not significantly reduce the number of inputs.
+Our approach is to extend delta debugging~\cite{Zeller:2002:SIF:506201.506206}--an algorithm for
+minimizing test cases for a single program--to a distributed environment, where inputs
+are spread across time and involve multiple machines. Adapting delta debugging to a distributed
+setting requires much care when replaying modified histories:
 na\"ively replaying by simply maintaining relative timing between inputs often
-fails to trigger the original correctness
-violation. Input scheduling
-needs to take internal events (\eg~mastership changes) into account to
-preserve happens-before constraints. Yet by pruning inputs, the internal events
-subtly change (consider the sequence numbers of packets, for example),
-and some internal events that occurred in the original
+fails to trigger the original bug.
+Correct replay must take internal
+state changes into account. Yet by pruning inputs, the internal events
+subtly change (\eg~the sequence numbers of packets may all differ), and some
+internal events that occurred in the original
 run may not occur after pruning prior inputs.
-Our primary contribution is the insight that a small amount of domain knowledge
-(codification of the syntax and semantics of events) can be applied to
-place internal events into equivalence classes, allowing us to reason about the
+Our key insight is that a small amount of domain knowledge codifying the
+syntax and semantics of internal events
+allows us to reason about the
 differences between slightly altered histories.
 
 Unlike previous work on troubleshooting dataplane behavior~\cite{handigol2012debugger}
 and checking network invariants~\cite{hsa,anteater,khurshid2012veriflow},
 \simulator~is focused on troubleshooting SDN control software.
-%\Simulator~is complementary to proactive bug-finding techniques
-%such as NICE~\cite{nice}, which work well for verifying crucial pieces of
-%code but suffer from exponential
-%state explosion when run on large systems.
-Likewise, \simulator~is focused on erroneous
-behavior of the overall distributed system (\eg~incorrect
-failover logic), but is not specifically designed to troubleshoot bugs within a single controller
-(\cf~deterministic replay~\cite{Dunlap:2002:REI:844128.844148}). The upshot of
-this is that our technique is not able to minimize all possible failures, such as
-data races between threads. Nonetheless, the worst case for us is that the developer ends up with what they started:
-an unpruned log.
+Literature in this space includes proactive bug-finding techniques
+such as NICE~\cite{nice}, and deterministic replay techniques such as
+liblog~\cite{Geels:2006:RDD:1267359.1267386} and OFRewind~\cite{ofrewind}.
+Our work is complementary; it is focused on automatically characterizing erroneous behavior of the
+overall distributed system rather than faults in individual nodes, and trades off
+replay fidelity and completeness in favor in favor of runtime tractability.
 
-Even the modest improvement of being able to minimize input
-logs represents a
-substantial improvement over the status quo;
+Even the modest improvement of automatic input minimization
+represents a substantial improvement over the status quo;
 to the best of our knowledge, painstaking analysis of detailed logs is the
 current state-of-the-art in SDN platform troubleshooting.
+
 % Main result from our work: the amount of effort it takes to codify domain knowledge is significantly less than the effort
 % it would take to step through a normal replay debugger by hand for each bug.
 

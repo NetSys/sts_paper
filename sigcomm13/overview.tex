@@ -75,10 +75,14 @@ the problem was above or below the control software.
 \noindent{\bf Non-determinism Within Individual Controllers.} Our tool is not designed to reproduce bugs
 involving non-determinism within a single controller (\eg~race-conditions between threads);
 we focus on coarser granularity errors (\eg~incorrect failover logic), which we find plenty of
-in \S\ref{subsec:case_studies}.
-That said, if the developer is willing to instrument their system to
+in \S\ref{subsec:case_studies}. The upshot of
+this is that our technique is not able to minimize all possible failures, such as
+data races between threads.
+Nonetheless, the worst case for us is that the developer ends up with what they started:
+an unpruned log. That said, if the developer is willing to instrument their system to
 provide finer granularity log messages (\cf~\cite{Geels:2006:RDD:1267359.1267386}),
 our approach readily supports deterministic replay.
+
 
 \noindent{\bf Globally vs Locally Minimal Input Sequences.}
 Our approach is not guaranteed to find the globally minimal
@@ -98,7 +102,7 @@ checked.
 not necessarily individual packets or flows events in the
 dataplane.\footnote{Production controllers typically adopt this model for performance reasons}
 The main challenge in extending our approach to reactive controllers is
-achieving efficient simulation of dataplane messages.
+achieving efficient simulation of dataplane traffic.
 
 %--------------------------------------------------------------------%
 %               OLD HOTNETS TEXT

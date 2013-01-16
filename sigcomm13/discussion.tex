@@ -8,12 +8,14 @@ here.
 Luckily, SDN has several properties that make it particularly amenable to an
 automated troubleshooting approach such as ours. Most importantly, SDN control software
 quickly converges to quiescence--that is, SDN controllers become idle when no policy or
-topology changes occur for a period of time. In contrast to long-running iterative computations,
+topology changes occur for a period of time. In contrast to long-running
+iterative computations \scott{explain},
 this means that individual inputs to the system have a relatively isolated effect on the outcome
 of the computation; if we prune one input from the log and replay the execution, it is unlikely
-that the new outcome will be radically different from the original. If this were not the case, our
+that the new outcome will be radically different from the original
+\scott{Rephrase: many inputs are unimportant, but some are important}. If this were not the case, our
 technique would not be able to significantly decrease the size of execution traces, as will will become clear in
-\S\ref{subsec:algorithm}.
+\S\ref{subsec:algorithm}. \scott{Term: short causal chains}
 
 SDN's architecture also facilitates the implementation of our troubleshooting
 tool. The syntax and semantics of interfaces between components of the system (\eg~OpenFlow

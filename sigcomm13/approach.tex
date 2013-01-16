@@ -12,7 +12,7 @@ multiple controllers for high availability, and provides support for
 virtualization. Switches maintain one hot connection to a master controller and
 several cold connections to replica controllers. The \emph{master} holds the
 authority to modify the configuration of switches, while the other
-controllers are in \emph{slave} mode and do not perform any changes to the
+controllers are in \emph{backup} mode and do not perform any changes to the
 switch configurations unless they detect that the master has crashed.
 
 \begin{figure}[t]
@@ -29,8 +29,8 @@ originally discovered by the developers of Floodlight~\cite{floodlight_bug}} dep
 Figure~\ref{fig:example}:
 a link fails (E1), and the switch attempts to notify the controllers (E2,E4) shortly after the master
 controller has died (E3), but before a new master has been selected (E6). In this case, all live controllers are in
-the slave role and will not take responsibility for updating the switch
-flow table (E5). At some point, the heartbeats time out and one of the controllers
+the backup role and will not take responsibility for updating the switch
+flow table (E5). At some point, a backup notices the master failure and
 elevates itself to the master role (E6). The new master will proceed to manage
 the switch, but without ever clearing the routing entries for
 the failed link (resulting in a persistent blackhole).
@@ -43,7 +43,7 @@ all of which may appear characteristic of normal operating
 conditions at first glance; assuming 8.5 network error events per
 minute~\cite{Greenberg:2009:VSF:1592568.1592576}, 500 VM migrations per
 hour~\cite{Soundararajan:2010:CBS:1899928.1899941}, and a relevant execution
-history of one hour, there would be over 1000 extraneous inputs to the system
+history of one hour, there would be over 1000 inputs to the system
 reflected in the log.
 
 Given a log of the system execution similar to the Floodlight case,
@@ -141,7 +141,7 @@ Given a sequence of inputs (\eg~link failures, controller crashes, host migratio
 or policy changes) and an invariant checking probe (provided by frameworks
 such as HSA~\cite{hsa} or Anteater~\cite{anteater}), the simulator invokes
 the delta debugging algorithm to identify the minimal causal set. The
-simulator is responsible for replaying intermediate input subsequences
+simulator is then responsible for replaying intermediate input subsequences
 chosen by delta debugging. For example, link failures are
 reproduced by disconnecting the edge in the simulated network, and sending a
 port status message from the adjacent switches to their parent controller(s).

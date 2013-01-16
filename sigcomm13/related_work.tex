@@ -6,13 +6,13 @@ The software engineering community has developed a long line of tools for automa
 aspects of the troubleshooting process.
 
 Sherlog~\cite{Yuan:2010:SED:1736020.1736038} takes as input production logs from a
-program that ended in a failure, and applies static analysis to identify the minimum subset of the
+program that ended in a failure, and applies static analysis to infer the
 program execution (both code paths and data values) that lead up to the failure.
 Along a similar vein, execution
 synthesis~\cite{Zamfir:2010:EST:1755913.1755946} takes a program and a bug
 report as input, and employs symbolic execution to find a thread schedule that will
 reproduce the failure. Delta
-debugging~\cite{Zeller:2002:SIF:506201.506206} as well seeks to find a minimal
+debugging~\cite{Zeller:2002:SIF:506201.506206} seeks to find a minimal
 subset of an input (always a single file) that leads to a failure. As one
 example, delta debugging has been applied to multi-threaded (single-core) programs
 to identify the minimum set of thread
