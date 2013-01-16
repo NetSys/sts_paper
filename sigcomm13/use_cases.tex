@@ -1,8 +1,8 @@
 \projectname~(\projectmeaning) is our realization of the techniques described in
 \S\ref{sec:approach}. \projectname~is implemented in roughly 10,000 lines of Python in
 addition to the Hassel network invariant checking library~\cite{hsa}. The code
-for \projectname~is publicly available.\footnote{URL omitted due to anonymity requirements}
-Three industrial SDN companies to date have expressed interest in adopting it.\colin{Cite?}
+for \projectname~is publicly available,\footnote{URL omitted due to anonymity requirements}
+and three industrial SDN companies to date have expressed interest in adopting it.\colin{Cite?}
 
 In the rest of this section, we highlight salient points of \projectname's
 design. Furthermore, we describe three ways \projectname~can be put to use
@@ -37,7 +37,7 @@ Control message delay & \\
 
 We designed \projectname~to be as resilient to non-determinism as possible
 while minimizing modifications to control software.
-\projectname ensures a deterministic order of messages despite
+\projectname~ensures a deterministic order of messages despite
 non-determinism in operating system I/O scheduling
 by multiplexing all sockets in the controller process
 onto a single true socket. \projectname~currently
@@ -53,7 +53,7 @@ and Floodlight} to gain better visibility into the control software's internal s
 transitions and achieve better replay synchronization: whenever a log
 statement--a proxy for relevant state-changes--is executed, we
 block the control software and notify \projectname~that a new state transition
-is about to occur. \projectname then logs this event for later replay and
+is about to occur. \projectname~then logs this event for later replay and
 sends an acknowledgment to unblock the controller.
 Additionally routing {\tt gettimeofday()} and {\tt getrand()} through
 \projectname~makes replay more resilient to alterations in execution
@@ -62,7 +62,7 @@ best-effort guess at what the return values of these calls should be. For exampl
 if the altered execution invokes {\tt gettimeofday()} more times than were recorded
 in the initial run, we interpolate the time values of neighboring events}
 As an added benefit, overriding {\tt gettimeofday()} allows us to `compress'
-runtime in some cases (similar to~\cite{Gupta06toinfinity}).
+runtime in some cases (similar to time-warped emulation~\cite{Gupta06toinfinity}).
 
 \projectname~can be used in a number of ways. We outline three use-cases here.
 \colin{Present these as a workflow instead?}
@@ -94,9 +94,9 @@ execution of the system in this way allows \projectname~to record a
 totally-ordered log of the events to be replayed later.
 
 \projectname~can also be used interactively to generate replayable integration
-tests.\footnote{Similar to~\cite{automated_tests}} Generating test cases by
+tests.\footnote{Similar to Nebut et al.~\cite{automated_tests}} Generating test cases by
 interactively specifying inputs represents a
-significant improvement over how developers generate tests today: manually writing
+significant improvement over how developers produce tests today: manually writing
 code.
 
 As additional failure cases are encountered they can be added
@@ -105,12 +105,13 @@ behavior of future versions of the software. And because \projectname~makes
 limited assumptions about the control software under test, the overall SDN community
 could collect a repository of test cases to validate different SDN control platforms.
 
-Automatically generating integration tests and identifying
-minimal causal sequences frees developers to be more agile in
-development, decreasing the time they spend writing test cases,
-performing triage, and
-hunting bugs. Beyond making test cases easier to reason about, minimal causal
-sets serve to consolidate redundant test cases and thereby reduce time wasted
+Automatically generating integration tests frees developers to be more agile in
+development, decreasing the time they spend writing test cases.
+Automatically identifying minimal causal sequences gives developers
+intuition about what code path might be triggered by the fault-inducing
+inputs, and helps decrease time spent performing triage.
+Minimal causal sets also serve to consolidate redundant test cases
+and thereby reduce time wasted
 investigating bug reports the same root
 cause~\cite{Zeller:2002:SIF:506201.506206}:
 if two test failures have the same minimal causal sequence, it is
@@ -125,7 +126,7 @@ to replicate the issue.
 
 With \projectname, developers can readily record errant executions and
 exchange replayable traces with each-other.\footnote{This is essentially a
-realization of the vision outlined in~\cite{lin2009towards}} Replayable traces shorten the debugging cycle, and increase chances that others
+realization of the vision outlined by Lin et al.~\cite{lin2009towards}} Replayable traces shorten the debugging cycle, and increase chances that others
 will be able to help. For example, bug reports can be filed with a replayable trace
 attached, so that no
 effort is wasted replicating the issue. With the help of print statements or a
@@ -162,8 +163,8 @@ reproduce a synthetic version of the input that is indistinguishable to the cont
 from the original input event. There will of course be some input events that cannot be reproduced
 synthetically without significant complexity in what the simulator needs to model.
 For example, suppose that the controller's faulty behavior is to flood a switch with messages,
-causing the switch to drop some traffic. Yet only switches that are running low on memory
-are affected by the controller's faulty behavior. To reproduce this failure mode correctly,
+causing the switch to drop some traffic, yet only switches that are running low on memory
+are affected by the controller's faulty behavior. To reproduce this failure mode correctly
 the simulator would need to model the memory levels of its software switches to match the
 hardware behavior exactly.
 
@@ -186,9 +187,11 @@ snapshots~\cite{Chandy:1985:DSD:214451.214456} can minimize the number of inputs
 to examine. Specifically, with causally consistent snapshots of the distributed
 system taken at regular intervals, \simulator~can bootstrap its simulation from the last snapshot before the failure.
 If the MCS starting from this snapshot is empty, it can iteratively move backwards, starting from earlier
-snapshots.\footnote{Technically the MCS may contain inputs from the very beginning of the execution. Arguably though,
-the state that was induced by these inputs is reflected in each snapshot, and programmers would be able to detect
-this by examining that state with a debugger.}
+snapshots.\footnote{Technically the MCS may contain inputs from the very
+beginning of the execution. Nonetheless the state that was induced by these inputs is
+reflected in each snapshot, and
+programmers would arguably be able to detect that they need to start with an
+earlier snapshot by examining the controllers' internal state with a debugger.}
 
 % --------------------------------------------------
 %    OLD TEXT
