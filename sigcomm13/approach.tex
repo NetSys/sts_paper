@@ -175,7 +175,7 @@ we become aware of internal events throughout replay by
 (i) monitoring
 control message receipts between controllers and between switches and
 controllers, and (ii) interposing on the controllers' logging library and notifying the
-simulation process whenever log statement (which serve to mark relevent state
+simulation process whenever log statement (which serve to mark relevant state
 transitions) is executed. Note that to achieve truly deterministic
 replay, these log statements would need to
 be highly granular, capturing information such as thread scheduling decisions;
@@ -215,7 +215,7 @@ happens-before relation.
     \includegraphics[width=3.25in]{../diagrams/state_machines/controller_switch.pdf}
     \caption[]{\label{fig:state_machines} Simplified state machines for the switch and
     controllers in the example Floodlight bug. Double outlined states
-    respresent presence of the blackhole.}
+    represent presence of the blackhole.}
 \end{figure}
 
 \begin{table}
@@ -243,7 +243,7 @@ Figure~\ref{fig:state_machines}. If link failure input is pruned, the
 switch will not make the transition to `Notify Parents', and the master will
 consequently not make the transition to and from `Send Flush'.
 
-We have developed two event scheduling algorithms to accout for altered
+We have developed two event scheduling algorithms to account for altered
 internal events. The first is simpler, but somewhat less robust. We refer to it as
 \emph{waiting replay}, and it is shown in Figure~\ref{fig:simple_algorithm}.
 Simply put, it waits for internal events matching those in the original run,
@@ -317,20 +317,20 @@ where {\em multiple} internal events in the same
 equivalence class a single internal event in the original execution.
 Ambiguous equivalences mean that more than one possibility exists for where
 the next input should be
-injected while still maintaining happens-before contstraints. For example, if $i_2$ and $i_3$ are internal events observed
+injected while still maintaining happens-before constraints. For example, if $i_2$ and $i_3$ are internal events observed
 during replay that are both in the same equivalence class as a single event $i_1$ from the
 original run, one might inject the next input after $i_2$ or after $i_3$.
 As we have proven elsewhere,\footnote{URL omitted for anonymity reasons}
 all possibilities need to be explored to guarantee that if a path through the
 distributed state machine leading to
 the correctness violation from the original execution exists, that path will be taken. In the worst case,
-this implies an exponential number of possibilies to be explored during
+this implies an exponential number of possibilities to be explored during
 replay.
 
 Luckily, ambiguous equivalent internal events are extremely rare in the
 control software we evaluated, as we
 show in \S\ref{subsec:runtime}. We have proven elsewhere that ambiguity only
-occurs when a subpath exists in the distributed state machine that contains two or
+occurs when a sub-path exists in the distributed state machine that contains two or
 more equivalent internal edges without an intermediate input event edge.
 We conjecture that such transitions are not common in control plane systems,
 which are designed to quiesce quickly (\ie~take a small number of internal
@@ -365,7 +365,7 @@ arbitrarily to $100$ milliseconds, and this has worked for \colin{most} of our
 failure cases. In general, larger values of \textepsilon~are preferable to
 smaller values (disregarding runtime considerations), since we can always
 detect when we have waited too long (\viz~when a successor of the next input
-has occured), but we cannot detect when we have timed out
+has occurred), but we cannot detect when we have timed out
 early on an internal event that is in fact going to occur.
 
 In practice we also make optimization to the overall delta debugging
