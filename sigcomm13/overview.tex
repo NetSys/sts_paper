@@ -52,7 +52,9 @@ SDN control software highly complex and bug-prone.
 
 \subsection{Limitations}
 \label{subsec:non_goals}
-\andi{Move this subsection to the end of section 3}
+\andi{Move this subsection. Most of these points are not actually non-goals but limitations / trade offs 
+of our approach. People won't understand the implications before they know the details of the approach.
+Maybe we should state our goal/contributions bigger/in bold in Intro.}
 
 Before diving into the
 details, we clarify the scope of our technique's use.
@@ -103,6 +105,10 @@ not necessarily individual packets or flows events in the
 dataplane.\footnote{Production controllers typically adopt this model for performance reasons}
 The main challenge in extending our approach to reactive controllers is
 achieving efficient simulation of dataplane traffic.
+
+\subsection{Environment / Workflow}
+\andi{maybe discuss in Section 2 what our expected environment / workflow is, so people know what
+to expect. Do we position this as a developer tool? What's our input?}
 
 %--------------------------------------------------------------------%
 %               OLD HOTNETS TEXT

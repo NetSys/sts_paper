@@ -36,6 +36,8 @@ the switch, but without ever clearing the routing entries for
 the failed link (resulting in a persistent blackhole).
 
 There were only two external inputs (E1,E3) shown in our example.
+\andi{Don't reference production datacenter logs here. Otherwise we'll get the 
+``Ha-Ha---you can't actually instrument a datacenter`` reaction}
 Production datacenter logs contain
 a significantly larger number of hardware failures, topology changes,
 and other potential triggering events,
@@ -115,12 +117,18 @@ ways \simulator~can be put to use.
 \subsection{Simulation}
 \label{subsec:replay}
 
+\andi{Section is way to long. Split in~,e.g., 1) Architecture 2) Event Scheduling
+3) Dealing with Divergence 4) Finger-printing 5) Computational Complexity. Emphasize that dealing with divergence
+is important, and only tractable b/c of domain knowledge}
+
 Unlike the example applications described
 by Zeller et al.~\cite{Zeller:2002:SIF:506201.506206}, the system we are troubleshooting is not a
 single program--it is all the nodes and links of a distributed system,
 including controllers, switches, and end-hosts. Replaying traces
 on an actual network would be prohibitively costly and overly prone to
-non-deterministic behavior. We therefore simulate the entire dataplane, including hosts and
+non-deterministic behavior. We therefore simulate the entire dataplane \andi{Saying dataplane here is problematic
+because it sweats scalability problems. Say we simulate the control-plane behavior of the network?}
+, including hosts and
 switches, in a single process. We then run the control software on
 top of this simulator and connect the software switches to the controllers as if they were true
 network devices, such that the controllers believe they are configuring a true

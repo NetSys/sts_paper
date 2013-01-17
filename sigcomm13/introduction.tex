@@ -15,7 +15,7 @@ Most of this complexity comes from
 fundamentally difficult distributed systems challenges that the networking community has
 relatively little experience
 solving in tightly coupled environments. % (not fully distributed)
-For example, as Google's Urs H$\ddot{\mathrm{o}}$elzle recently
+For example, Google's Urs H$\ddot{\mathrm{o}}$elzle recently
 noted at the Open Networking Summit~\cite{urs}: ``[Coordination between replicated controllers] is going to
 cause some angst, and justifiably, in the industry''. As SDN control software
 is used to manage larger and more sophisticated networks,
@@ -63,7 +63,9 @@ setting requires much care when replaying modified histories:
 na\"ively replaying by simply maintaining relative timing between inputs often
 fails to trigger the original bug.
 Correct replay must take internal
-state changes into account. Yet by pruning inputs, the internal events
+state changes into account. \andi{We should emphasize the divergence problem more. This is
+not some subtle extension of getting the timing right, but a fundamental limitation with changing history
+that has stopped people from sucessfully applying such approaches.} Yet by pruning inputs, the internal events
 subtly change (\eg~the sequence numbers of packets may all differ), and some
 internal events that occurred in the original
 run may not occur after pruning prior inputs.
@@ -72,6 +74,8 @@ syntax and semantics of internal events
 allows us to reason about the
 differences between slightly altered histories.
 
+\andi{This still feel to hand-waivey - we can even get collisions with OFRewind.
+Need to be very careful in our distinction.}
 Unlike previous work on troubleshooting dataplane behavior~\cite{handigol2012debugger}
 and checking network invariants~\cite{hsa,anteater,khurshid2012veriflow},
 \simulator~is focused on troubleshooting SDN control software.
