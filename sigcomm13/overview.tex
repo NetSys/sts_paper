@@ -50,7 +50,7 @@ objects while ensuring that critical invariants such as isolation between
 tenants are upheld at all times make
 SDN control software highly complex and bug-prone.
 
-\subsection{Non-Goals}
+\subsection{Limitations}
 \label{subsec:non_goals}
 
 Before diving into the
@@ -82,7 +82,6 @@ Nonetheless, the worst case for us is that the developer ends up with what they 
 an unpruned log. That said, if the developer is willing to instrument their system to
 provide finer granularity log messages (\cf~\cite{Geels:2006:RDD:1267359.1267386}),
 our approach readily supports deterministic replay.
-
 
 \noindent{\bf Globally vs Locally Minimal Input Sequences.}
 Our approach is not guaranteed to find the globally minimal

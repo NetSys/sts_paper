@@ -361,7 +361,7 @@ the controllers' state rather than replaying each prefix from the beginning.
 Both waiting and peeking replay leave an open question as to what value
 \textepsilon~should be set to. In our current implementation,
 we set \textepsilon~somewhat
-arbitrarily to $100$ milliseconds, and this has worked for \colin{most} of our
+arbitrarily to $100$ milliseconds, and this has worked for \num{most} of our
 failure cases. In general, larger values of \textepsilon~are preferable to
 smaller values (disregarding runtime considerations), since we can always
 detect when we have waited too long (\viz~when a successor of the next input
