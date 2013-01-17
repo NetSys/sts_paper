@@ -277,7 +277,7 @@ violation, assuming \textepsilon~is larger than variations in execution speeds
 between internal events. If the value of \textepsilon~is too large, however, we may end up
 waiting too long for the happens-before predecessors of an input $e_i$ such that a
 successor of $e_i$ occurs before we have injected $e_i$,
-potentially resulting in an altered output.
+potentially resulting in an altered output. \sam{Is it worth noting that this isn't necessarily a problem? If a successor occurs, it means it wasn't causally related to $e_i$, but the ordering still might matter for further successors.}
 
 Our second event scheduling algorithm addresses this possibility, but
 adds a factor of $n$ in the number of replayed inputs to the overall
