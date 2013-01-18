@@ -55,14 +55,17 @@ statement--a proxy for relevant state-changes--is executed, we
 block the control software and notify \projectname~that a new state transition
 is about to occur. \projectname~then logs this event for later replay and
 sends an acknowledgment to unblock the controller.
-Additionally routing {\tt gettimeofday()} and {\tt getrand()} through
-\projectname~makes replay more resilient to alterations in execution
+Additionally routing the {\tt gettimeofday()} syscall 
+through \projectname~makes replay more resilient to alterations in execution
 speeds.\footnote{When the pruned trace differs from the original, we make a
 best-effort guess at what the return values of these calls should be. For example,
 if the altered execution invokes {\tt gettimeofday()} more times than were recorded
 in the initial run, we interpolate the time values of neighboring events}
 As an added benefit, overriding {\tt gettimeofday()} allows us to `compress'
 runtime in some cases (similar to time-warped emulation~\cite{Gupta06toinfinity}).
+Our current implementation does not account other sources of non-determinism,
+such as asynchronous signals, random number generators,
+or the {\tt ecx} x86 instruction~\cite{Dunlap:2002:REI:844128.844148}.
 
 \projectname~can be used in a number of ways. We outline three use-cases here.
 \colin{Present these as a workflow instead?}
@@ -71,6 +74,10 @@ runtime in some cases (similar to time-warped emulation~\cite{Gupta06toinfinity}
 % Need to do a better job of discussing how we stop controllers from getting
 % ahead of eachother. How do we interpose on intra-controller communication?
 % (as shown in one of our diagrams)
+% How do we ensure the same scheduling order of controller processes? (see
+% Section 4.5 of ReVirt). We observe that the controllers do not use any shared
+% memory communication.
+% Processes being interrupted while they are executing a syscall?
 
 \subsection{Testing}
 
