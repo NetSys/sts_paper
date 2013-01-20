@@ -55,7 +55,7 @@ statement--a proxy for relevant state-changes--is executed, we
 block the control software and notify \projectname~that a new state transition
 is about to occur. \projectname~then logs this event for later replay and
 sends an acknowledgment to unblock the controller.
-Additionally routing the {\tt gettimeofday()} syscall 
+Additionally routing the {\tt gettimeofday()} syscall
 through \projectname~makes replay more resilient to alterations in execution
 speeds.\footnote{When the pruned trace differs from the original, we make a
 best-effort guess at what the return values of these calls should be. For example,
@@ -81,6 +81,8 @@ or the {\tt ecx} x86 instruction~\cite{Dunlap:2002:REI:844128.844148}.
 
 \subsection{Testing}
 
+\colin{Point out that developers can interactively query (and modify) the
+state of the simulated network during debugging}
 \projectname~is primarily used as a simulation and testing framework.
 With complete control over event orderings, message drops, node
 failures, \etc, \projectname~is especially useful for exploring corner cases
