@@ -1,28 +1,21 @@
-\begin{aquote}{Steven Moffat}
-``People assume that time is a strict progression of cause to effect,
-but {\em actually}, from a non-linear, non-subjective viewpoint--it's more like a
-big ball of wibbly wobbly... time-y wimey... stuff.''
-\end{aquote}
+%\begin{aquote}{Steven Moffat}
+%``People assume that time is a strict progression of cause to effect,
+%but {\em actually}, from a non-linear, non-subjective viewpoint--it's more like a
+%big ball of wibbly wobbly... time-y wimey... stuff.''
+%\end{aquote}
 
-% Assuming SIGCOMM, not SOSP (less emphasis on general dst'sys)
-Today's software-defined networking control platforms are highly complex,
-distributing state between replicated
-servers~\cite{floodlight},
-providing isolation and resource arbitration between multiple
-tenants~\cite{Casado:2010:VNF:1921151.1921162}, and
-globally optimizing network utilization~\cite{urs}.
-Most of this complexity comes from
-fundamentally difficult distributed systems challenges that the networking community has
-relatively little experience
-solving in tightly coupled environments. % (not fully distributed)
-For example, Google's Urs H$\ddot{\mathrm{o}}$elzle recently
-noted at the Open Networking Summit~\cite{urs}: ``[Coordination between replicated controllers] is going to
-cause some angst, and justifiably, in the industry''. As SDN control software
-is used to manage larger and more sophisticated networks,
-we expect its complexity to increase.
+Would World War \rom{1} have occurred if Archduke Ferdinand had not been shot?
+If it were possible to prune and replay historical events, historians could
+experimentally answer questions such as these.
 
-With complexity inevitably come
-bugs, and bug diagnosis is expensive and time consuming. A 2006 survey found
+Unlike political history, computer system traces can be pruned and
+replayed. As we show in this paper, it is possible to programmatically answer
+questions
+of the form ``If this event had not been present, would the output have
+significantly differed?''.
+
+The ability to programmatically answer such questions is especially useful for bug diagnosis,
+a highly expensive and time consuming process. A 2006 survey found
 that developers at Microsoft spend 49\% of their
 time troubleshooting bugs~\cite{msoft_concurrency}. The same study found that 70\% of the reported concurrency bugs
 take days to months to fix, and almost 75\% of
@@ -39,10 +32,26 @@ It is no surprise then that when asked to describe their
 ideal tool, most admins said ``automated troubleshooting''~\cite{Zeng:Survey}.
 \scott{More SDN war stories, anecdotes from Nicira, Big Switch}
 
+Troubleshooting is especially problematic for developers of software-defined
+networks. Modern SDN control platforms are highly complex,
+distributing state between replicated
+servers~\cite{floodlight},
+providing isolation and resource arbitration between multiple
+tenants~\cite{Casado:2010:VNF:1921151.1921162}, and
+globally optimizing network utilization~\cite{urs}.
+Most of this complexity comes from
+fundamentally difficult distributed systems challenges that the networking community has
+relatively little experience
+solving in tightly coupled environments. % (not fully distributed)
+For example, Google's Urs H$\ddot{\mathrm{o}}$elzle recently
+noted at the Open Networking Summit~\cite{urs}: ``[Coordination between replicated controllers] is going to
+cause some angst, and justifiably, in the industry''. As SDN control software
+is used to manage larger and more sophisticated networks,
+we expect its complexity to increase.
+
 %And despite the prevalence of failures, maintaining uptime is of critical importance; according to one
 %survey, ``meeting customer expectations about reliability'' is the second highest
 %priority for networking professionals~\cite{market_report}.
-
 % Software bugs cost $59 billion in 2002: bit.ly/V2Z7Al
 
 If the network enters an invalid configuration (\eg~isolation between tenants

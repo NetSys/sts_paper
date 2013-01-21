@@ -18,6 +18,11 @@
 \usepackage{fixltx2e}
 \usepackage{textgreek}
 \usepackage[sort]{cite}
+
+\makeatletter
+\newcommand*{\rom}[1]{\expandafter\@slowromancap\romannumeral #1@}
+\makeatother
+
 %,xcolor,rotating,graphicx,graphics,url,epsfig,
 %amsfonts,algpseudocode,xspace,amsmath,amssymb,fancyvrb,fixltx2e
 
@@ -131,8 +136,8 @@
 \begin{document}
     \date{}
 
-\title{Selective Recall}
-\subtitle{Automated Bug Characterization for Software-Defined Networks}
+\title{How Did We Get Into This Mess?}
+\subtitle{Isolating Fault-inducing Inputs to SDN Control Software}
     \author{Paper \#2, 14 pages}
     \maketitle
    \thispagestyle{empty}
