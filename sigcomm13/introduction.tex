@@ -53,7 +53,7 @@ ideal tool, most admins said ``automated troubleshooting''~\cite{Zeng:Survey}.
 %priority for networking professionals~\cite{market_report}.
 % Software bugs cost $59 billion in 2002: bit.ly/V2Z7Al
 
-If the network enters an invalid configuration (\eg~isolation between tenants
+If the network enters a permanently invalid configuration (\eg~isolation between tenants
 is violated), then the control plane has a bug. Our goal is
 to automatically identify the exact external inputs (\eg~link failures) that
 triggered the bug. Our technique, \simulator, achieves this by iteratively
@@ -68,9 +68,6 @@ Our approach is to extend delta debugging~\cite{Zeller:2002:SIF:506201.506206}--
 minimizing test cases for a single program--to a distributed environment, where inputs
 are spread across time and involve multiple machines.
 
-%\andi{We should emphasize the divergence problem more. This is
-%not some subtle extension of getting the timing right, but a fundamental limitation with changing history
-%that has stopped people from sucessfully applying such approaches.}
 The main difficulty in applying delta debugging to a distributed
 setting is coping with diverged histories. Traditional replay
 techniques~\cite{Dunlap:2002:REI:844128.844148,Geels:2006:RDD:1267359.1267386}
@@ -82,19 +79,19 @@ internal state changes that occurred in the original
 run may not occur after pruning prior inputs.
 Our approach is to apply
 a small amount of domain knowledge codifying the
-syntax and semantics of events,
-allowing us to reason about the
+syntax and semantics of events. Masking over semantically insignificant
+information allows us to reason about the
 differences between slightly altered histories and reliably reproduce the
 error throughout the pruning process.
 
 Related tools such as {\tt ndb}~\cite{handigol2012debugger} provide
-a historical view into dataplane (mis)behavior. \Simulator~instead provides
+a historical view into dataplane (mis)behavior. In contrast, \simulator~provides
 information about precisely what caused the network to
 enter an invalid
 configuration in the first place. Record and replay techniques such as
 OFRewind~\cite{ofrewind} and liblog~\cite{Geels:2006:RDD:1267359.1267386}
-can be used to gather similar information, but they depend on manual pruning
-and analysis to do so. As far as we know, our work
+can achieve the same end, but they depend on manual inspection and pruning
+to do so. As far as we know, our work
 is the first to programmatically isolate fault-inducing inputs to a distributed
 system.
 
