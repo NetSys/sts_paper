@@ -1,10 +1,6 @@
 We begin by sketching the architecture of SDN networks and
 describing the correctness challenges encountered by operators and
-implementers of SDN control software. We then clarify the scope of our
-technique's use.
-
-\subsection{SDN Control Software Challenges}
-\label{subsec:control_software}
+implementers of SDN control software.
 
 SDN networks are managed by software running on a set of network-attached
 servers called `controllers'. It is the job of the controllers to configure
@@ -50,63 +46,7 @@ objects while ensuring that critical invariants such as isolation between
 tenants are upheld at all times make
 SDN control software highly complex and bug-prone.
 
-\subsection{Limitations}
-\label{subsec:non_goals}
-\andi{Move this subsection. Most of these points are not actually non-goals but limitations / trade offs 
-of our approach. People won't understand the implications before they know the details of the approach.
-Maybe we should state our goal/contributions bigger/in bold in Intro.}
-
-Before diving into the
-details, we clarify the scope of our technique's use.
-
-\noindent{\bf Troubleshooting vs Debugging.} Our technique is a troubleshooting tool, not a debugger;
-by this we mean that \simulator{} helps identify and localize inputs that
-trigger erroneous behavior, but it does not directly identify which
-line(s) of code cause the error.
-
-\noindent{\bf Bugs Outside the Control Software.} Our goal is not to find the root
-cause of individual component failures in the system (\eg~misbehaving routers,
-link failures). Instead, we focus on
-how the distributed system as a whole reacts to the occurrence of inputs such
-as component failures.
-If there is a bug in your switch, you need to contact your hardware vendor;
-if you have a bug in your policy specification, you need to take a closer look at what you specified.
-That said, our tool can show whether switches behave the same as our software
-implementation: if our tool was unable to reproduce the error, that means that
-the problem was above or below the control software.
-
-\noindent{\bf Non-determinism Within Individual Controllers.} Our tool is not designed to reproduce bugs
-involving non-determinism within a single controller (\eg~race-conditions between threads);
-we focus on coarser granularity errors (\eg~incorrect failover logic), which we find plenty of
-in \S\ref{subsec:case_studies}. The upshot of
-this is that our technique is not able to minimize all possible failures, such as
-data races between threads.
-Nonetheless, the worst case for us is that the developer ends up with what they started:
-an unpruned log. That said, if the developer is willing to instrument their system to
-provide finer granularity log messages (\cf~\cite{Geels:2006:RDD:1267359.1267386}),
-our approach readily supports deterministic replay.
-
-\noindent{\bf Globally vs Locally Minimal Input Sequences.}
-Our approach is not guaranteed to find the globally minimal
-causal sequence from an input trace, since this requires $O(2^N)$ computation in the worst case.
-The delta debugging algorithm we employ however is guaranteed to find a 1-minimal
-(locally minimal) causal sequence~\cite{Zeller:2002:SIF:506201.506206},
-meaning that if any input from the sequence is pruned, no correctness violation
-occurs.
-
-\noindent{\bf Correctness vs Performance.}
-We are primarily focused on correctness bugs, not performance bugs. That said,
-our approach is largely agnostic to what invariants are
-checked.
-
-\noindent{\bf Proactive vs Reactive Configuration.} We focus primarily on
-\emph{proactive} configuration, where controllers react to policy and topology changes, but
-not necessarily individual packets or flows events in the
-dataplane.\footnote{Production controllers typically adopt this model for performance reasons}
-The main challenge in extending our approach to reactive controllers is
-achieving efficient simulation of dataplane traffic. \sam{Also, proactive is more common than reactive amongst existing SDN controller frameworks/implementations, so this is a reasonable thing to focus on.}
-
-\subsection{Environment / Workflow}
+% \subsection{Environment / Workflow}
 \andi{maybe discuss in Section 2 what our expected environment / workflow is, so people know what
 to expect. Do we position this as a developer tool? What's our input?}
 

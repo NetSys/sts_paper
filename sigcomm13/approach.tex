@@ -1,5 +1,6 @@
 We have developed a technique, \simulator, for automatically identifying
-a minimal sequence of fault-inducing inputs from logs. Here we detail the specifics
+a minimal sequence of inputs responsibly for triggering a given
+bug. Here we detail the specifics
 of \simulator.
 
 We start by describing an example bug in the Floodlight
@@ -22,7 +23,7 @@ switch configurations unless they detect that the master has crashed.
 
 The failover logic in Floodlight is not implemented correctly, leading to the
 following race condition\footnote{Note that this issue was
-originally discovered by the developers of Floodlight~\cite{floodlight_bug}} depicted in
+originally documented by the developers of Floodlight~\cite{floodlight_bug}} depicted in
 Figure~\ref{fig:example}:
 a link fails (E1), and the switch attempts to notify the controllers (E2,E4) shortly after the master
 controller has died (E3), but before a new master has been selected (E6). In this case, all live controllers are in
@@ -33,10 +34,10 @@ the switch, but without ever clearing the routing entries for
 the failed link (resulting in a persistent blackhole).
 
 There were only two external inputs (E1,E3) shown in our example.
-\andi{Don't reference production datacenter logs here. Otherwise we'll get the 
-``Ha-Ha---you can't actually instrument a datacenter`` reaction}
-Production datacenter logs contain
-a significantly larger number of hardware failures, topology changes,
+Even relatively simple cases may contain extraneous inputs, making it difficult
+for a troubleshooter to reason about the underlying root cause.
+In the worst case, operators may need to examine logs from a production
+network, which contain a substantial number of hardware failures, topology changes,
 and other potential triggering events,
 all of which may appear characteristic of normal operating
 conditions at first glance; assuming 8.5 network error events per
@@ -45,7 +46,7 @@ hour~\cite{Soundararajan:2010:CBS:1899928.1899941}, and a relevant execution
 history of one hour, there would be over 1000 inputs to the system
 reflected in the log.
 
-Given a log of the system execution similar to the Floodlight case,
+Given a trace of the system execution similar to the Floodlight case,
 our goal is to prune events that are not
 necessary for triggering errant behavior. We define errant behavior in terms
 of {\em correctness violations}:
@@ -115,21 +116,16 @@ for correctness violations. In \S\ref{sec:architecture}, we describe concrete
 ways \simulator~can be put to use.
 
 \subsection{Simulation}
-\label{subsec:replay}
-
-\andi{Section is way to long. Split in~,e.g., 1) Architecture 2) Event Scheduling
-3) Dealing with Divergence 4) Finger-printing 5) Computational Complexity. Emphasize that dealing with divergence
-is important, and only tractable b/c of domain knowledge}
+\label{subsec:simulation}
 
 Unlike the example applications described
 by Zeller et al.~\cite{Zeller:2002:SIF:506201.506206}, the system we are troubleshooting is not a
 single program--it is all the nodes and links of a distributed system,
 including controllers, switches, and end-hosts. Replaying traces
 on an actual network would be prohibitively costly and overly prone to
-non-deterministic behavior. We therefore simulate the entire dataplane \andi{Saying dataplane here is problematic
-because it sweats scalability problems. Say we simulate the control-plane behavior of the network?}
-, including hosts and
-switches, in a single process. We then run the control software on
+non-deterministic behavior. We therefore simulate the entire control-plane,
+with support for minimal data-plane behavior,
+in a single process. We then run the control software on
 top of this simulator and connect the software switches to the controllers as if they were true
 network devices, such that the controllers believe they are configuring a true
 network. This setup allows the simulator to interpose on all communication
@@ -147,12 +143,15 @@ Figure~\ref{fig:architecture}.
 
 Given a sequence of inputs (\eg~link failures, controller crashes, host migrations,
 or policy changes) and an invariant checking probe (provided by frameworks
-such as HSA~\cite{hsa} or Anteater~\cite{anteater}), the simulator invokes
+such as HSA~\cite{hsa,hsa_realtime} or Anteater~\cite{anteater,khurshid2012veriflow}), the simulator invokes
 the delta debugging algorithm to identify the minimal causal set. The
 simulator is then responsible for replaying intermediate input subsequences
 chosen by delta debugging. For example, link failures are
 reproduced by disconnecting the edge in the simulated network, and sending a
 port status message from the adjacent switches to their parent controller(s).
+
+\subsection{Replay}
+\label{subsec:replay}
 
 The timing of the inputs injected by the simulator is crucial for ensuring that the
 execution is the same as the original run. Na\"ively injecting inputs often fails to
@@ -193,6 +192,9 @@ successfully reproduce many bugs.\footnote{We discuss this problem further in \S
 %Note that the developer must provide enough logging statements
 %so that relevant internal state changes are captured and visible to our
 %tool.
+
+\subsection{Fingerprinting}
+\label{subsec:fingerprinting}
 
 Event scheduling is made substantially more complicated by the fact
 that the delta debugging algorithm is pruning inputs from the history of the
@@ -242,6 +244,9 @@ define equivalence classes.}
 \label{tab:fingerprints}
 \end{table}
 
+\subsection{Coping With Divergence}
+\label{subsec:divergence}
+
 A deeper implication of altering the original trace is that
 some internal events from the original run may not occur after
 pruning certain inputs--conversely, new internal events not present in the original run
@@ -249,7 +254,10 @@ may occur. Consider the simplified state machines for the switch and
 controllers from the Floodlight case shown in
 Figure~\ref{fig:state_machines}. If link failure input is pruned, the
 switch will not make the transition to `Notify Parents', and the master will
-consequently not make the transition to and from `Send Flush'.
+consequently not make the transition to and from `Send Flush'. Without being
+able to equate events from alternate histories, it is nearly impossible to resolve
+divergences like this in a way that ensures that the original bug is still
+triggered.
 
 We have developed two event scheduling algorithms to account for altered
 internal events. The first is simpler, but somewhat less robust. We refer to it as
@@ -277,7 +285,8 @@ violation, assuming \textepsilon~is larger than variations in execution speeds
 between internal events. If the value of \textepsilon~is too large, however, we may end up
 waiting too long for the happens-before predecessors of an input $e_i$ such that a
 successor of $e_i$ occurs before we have injected $e_i$,
-potentially resulting in an altered output. \sam{Is it worth noting that this isn't necessarily a problem? If a successor occurs, it means it wasn't causally related to $e_i$, but the ordering still might matter for further successors.}
+potentially resulting in an altered output.
+% \sam{Is it worth noting that this isn't necessarily a problem? If a successor occurs, it means it wasn't causally related to $e_i$, but the ordering still might matter for further successors.}
 
 Our second event scheduling algorithm addresses this possibility, but
 adds a factor of $n$ in the number of replayed inputs to the overall
@@ -348,6 +357,9 @@ Failure Notification'' or ``Receive Flush'') without traversing an
 intermediate input event edge (``Link Failure'' or ``Master Failure'').
 \colin{TODO: need a figure that shows generalized event scheduling}
 
+\subsection{Complexity}
+\label{subsec:complexity}
+
 Assuming no ambiguities occur, the delta debugging algorithm terminates after
 $O(log\,n)$
 invocations of $replay$ in the best case, where $n$ is the number of inputs in the original
@@ -365,6 +377,9 @@ $O(n^2log\,n)$, and the worst case is $O(n^4)$. Note that this extra factor of
 $n$ in computational complexity can be converted to a factor of $n$ in storage
 complexity if peek stores snapshots of
 the controllers' state rather than replaying each prefix from the beginning.
+
+\subsection{Parameters}
+\label{subsec:params}
 
 Both waiting and peeking replay leave an open question as to what value
 \textepsilon~should be set to. In our current implementation,
@@ -396,12 +411,14 @@ dealing with modified histories}.
 \subsection{Correspondence Checking}
 \label{subsec:cc}
 
+\num{Cut if no space.}
 Finally, we need a mechanism for deciding
 whether a correctness violation is present at the end of the system execution.
 We refer to such an algorithm as a {\em decider}.
 
 \Simulator~supports generic deciders (\eg~all-pairs reachability or loop detection),
-provided by frameworks such as Hassel~\cite{hsa} or Anteater~\cite{anteater}.
+provided by frameworks such as Hassel~\cite{hsa,hsa_realtime} or
+Anteater~\cite{anteater,khurshid2012veriflow}.
 With a small modification to the control software however, we can
 extract the network policies already reflected in the
 controller's data structures and thereby check a much more fine-grained set of invariants.
@@ -500,6 +517,59 @@ configuration of the logical view are correct. Finally, correspondence
 checking can not verify
 time-dependent policies such as ``No link should be congested more than 1\% of
 the time''.
+
+\subsection{Limitations}
+\label{subsec:non_goals}
+
+Having detailed the specifics of \simulator, we now
+clarify the scope of its technique's use.
+
+\noindent{\bf Troubleshooting vs Debugging.} Our technique is a troubleshooting tool, not a debugger;
+by this we mean that \simulator{} helps identify and localize inputs that
+trigger erroneous behavior, but it does not directly identify which
+line(s) of code cause the error.
+
+\noindent{\bf Bugs Outside the Control Software.} Our goal is not to find the root
+cause of individual component failures in the system (\eg~misbehaving routers,
+link failures). Instead, we focus on
+how the distributed system as a whole reacts to the occurrence of inputs such
+as component failures.
+If there is a bug in your switch, you need to contact your hardware vendor;
+if you have a bug in your policy specification, you need to take a closer look at what you specified.
+That said, our tool can show whether switches behave the same as our software
+implementation: if our tool was unable to reproduce the error, that means that
+the problem was above or below the control software.
+
+\noindent{\bf Non-determinism Within Individual Controllers.} Our tool is not designed to reproduce bugs
+involving non-determinism within a single controller (\eg~race-conditions between threads);
+we focus on coarser granularity errors (\eg~incorrect failover logic), which we find plenty of
+in \S\ref{subsec:case_studies}. The upshot of
+this is that our technique is not able to minimize all possible failures, such as
+data races between threads.
+Nonetheless, the worst case for us is that the developer ends up with what they started:
+an unpruned log. That said, if the developer is willing to instrument their system to
+provide finer granularity log messages (\cf~\cite{Geels:2006:RDD:1267359.1267386}),
+our approach readily supports deterministic replay.
+
+\noindent{\bf Globally vs Locally Minimal Input Sequences.}
+Our approach is not guaranteed to find the globally minimal
+causal sequence from an input trace, since this requires $O(2^N)$ computation in the worst case.
+The delta debugging algorithm we employ however is guaranteed to find a 1-minimal
+(locally minimal) causal sequence~\cite{Zeller:2002:SIF:506201.506206},
+meaning that if any input from the sequence is pruned, no correctness violation
+occurs.
+
+\noindent{\bf Correctness vs Performance.}
+We are primarily focused on correctness bugs, not performance bugs. That said,
+our approach is largely agnostic to what invariants are
+checked.
+
+\noindent{\bf Proactive vs Reactive Configuration.} We focus primarily on
+\emph{proactive} configuration, where controllers react to policy and topology changes, but
+not necessarily individual packets or flows events in the
+dataplane.\footnote{Production controllers typically adopt this model for performance reasons}
+The main challenge in extending our approach to reactive controllers is
+achieving efficient simulation of dataplane traffic.
 
 % ---------------------------------------------- %
 %             OLD TEXT

@@ -2,7 +2,7 @@
 \S\ref{sec:approach}. \projectname~is implemented in roughly 10,000 lines of Python in
 addition to the Hassel network invariant checking library~\cite{hsa}. The code
 for \projectname~is publicly available,\footnote{URL omitted due to anonymity requirements}
-and three industrial SDN companies to date have expressed interest in adopting it.\colin{Cite?}
+and three industrial SDN companies to date have expressed interest in adopting it.
 
 In the rest of this section, we highlight salient points of \projectname's
 design. Furthermore, we describe three ways \projectname~can be put to use
@@ -81,8 +81,6 @@ or the {\tt ecx} x86 instruction~\cite{Dunlap:2002:REI:844128.844148}.
 
 \subsection{Testing}
 
-\colin{Point out that developers can interactively query (and modify) the
-state of the simulated network during debugging}
 \projectname~is primarily used as a simulation and testing framework.
 With complete control over event orderings, message drops, node
 failures, \etc, \projectname~is especially useful for exploring corner cases
@@ -97,13 +95,18 @@ controlled circumstances to really accelerate our test work.''
 \end{quote}
 
 \projectname~can be used to generates randomly chosen input
-sequences, feed them to controller(s), and monitor invariants at chosen
+sequences~\cite{Miller:1990:ESR:96267.96279}, feed them to controller(s), and monitor invariants at chosen
 intervals. Driving the
 execution of the system in this way allows \projectname~to record a
 totally-ordered log of the events to be replayed later.
 
 \projectname~can also be used interactively to generate replayable integration
-tests.\footnote{Similar to Nebut et al.~\cite{automated_tests}} Generating test cases by
+tests.\footnote{Similar to Nebut et al.~\cite{automated_tests}} In interactive
+mode developers can
+examine the state of any part of the simulated network,
+observe and manipulate messages, and follow their
+intuition to induce orderings that they believe may trigger bugs.
+Generating test cases by
 interactively specifying inputs represents a
 significant improvement over how developers produce tests today: manually writing
 code.
@@ -144,10 +147,12 @@ needed to identify the line(s) of code responsible for the problem.
 
 \subsection{Forensic Analysis}
 
-Perhaps the most valuable use case for \simulator~is forensic analysis of
-production logs--correctness violations encountered in production are
-high priority, and often time consuming to diagnose. While we have not
-implemented this functionality, we present a sketch of
+The above two use cases are implemented and exercised in \projectname~today.
+Although we have not yet implemented the requisite infrastructure,
+forensic analysis of production logs may be the most valuable; correctness
+violations encountered in production are
+high priority, and often time consuming to diagnose.
+Here we present a sketch of
 how forensic analysis could be performed with \simulator.
 
 While \simulator~takes as input a single, totally-ordered log of the events in the

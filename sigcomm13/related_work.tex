@@ -5,28 +5,29 @@ programming languages.
 The software engineering community has developed a long line of tools for automating
 aspects of the troubleshooting process.
 
-Sherlog~\cite{Yuan:2010:SED:1736020.1736038} takes as input production logs from a
-program that ended in a failure, and applies static analysis to infer the
+Sherlog~\cite{Yuan:2010:SED:1736020.1736038} takes production logs from a
+single program that ended in a failure as input, and applies static analysis to infer the
 program execution (both code paths and data values) that lead up to the failure.
 Along a similar vein, execution
 synthesis~\cite{Zamfir:2010:EST:1755913.1755946} takes a program and a bug
 report as input, and employs symbolic execution to find a thread schedule that will
 reproduce the failure. Delta
 debugging~\cite{Zeller:2002:SIF:506201.506206} seeks to find a minimal
-subset of an input (always a single file) that leads to a failure. As one
-example, delta debugging has been applied to multi-threaded (single-core) programs
+subset of an input (always a single file) that leads to a failure. Delta debugging
+has been applied to multi-threaded (single-core) programs
 to identify the minimum set of thread
 switches from a thread schedule (a single file) that reproduces
 a race condition~\cite{choi2002isolating}. Chronus presents a simpler search
 algorithm than delta debugging that is specific to configuration
 debugging~\cite{whitaker2004configuration}.
-All of these techniques focus on troubleshooting single, non-distributed programs.
+All of these techniques focus on troubleshooting single, non-distributed
+systems.
 
 Rx~\cite{qin2005rx} is a technique for improving availability: upon
 encountering a crash, it starts from a previous checkpoint, fuzzes
 the environment (\eg~random number generator seeds) to avoid triggering the same bug,
-and restarts the program. While Rx is not directly relevant to troubleshooting,
-our work can be viewed as perturbing the inputs rather than the environment
+and restarts the program. Our
+approach perturbs the inputs rather than the environment
 prior to a failure.
 
 \noindent{\bf Systems and Networking}
@@ -40,21 +41,27 @@ primarily on performance fidelity or scalability experiments. In contrast, \proj
 precise event orderings and replayable executions, which is significantly harder to achieve with
 emulation.
 
-Record and replay techniques such as OFRewind~\cite{ofrewind} allow developers
+Record and replay techniques such as OFRewind~\cite{ofrewind} and
+liblog~\cite{Geels:2006:RDD:1267359.1267386} allow developers
 to interacively step through and examine the inputs that lead up to errant behavior.
 We focus on automating this diagnosis process.
 
-\colin{X-trace is not really a control-plane tracer}
 Tracing tools provide a view
-of requests' paths through the dataplane~\cite{handigol2012debugger} or control
-plane~\cite{fonseca2007x}. Tracing frameworks such as Pip~\cite{pip} extend this
-concept and instrument general-purpose distributed systems
-with code to record, display, and check invariants against developer
-expectations on causal paths throughout
-live executions. Other tracing frameworks automatically identify anomalous
+of requests' paths through the
+system~\cite{handigol2012debugger,fonseca2007x}. In contrast, \simulator~provides
+information about precisely what caused the network to
+enter an invalid
+configuration in the first place.
+
+Trace analysis frameworks such as Pip~\cite{pip} allow developers
+to programmatically check whether their expections about the structure of
+recorded causal
+traces hold. Other tracing techniques~\cite{barham2004using} automatically identify anomalous
 traces and `root cause' transitions within anomalous traces by constructing
-a probabilistic state machine from a large collection of traces and identifying low probability paths~\cite{barham2004using}.
-Our approach identifies the exact minimal causal set of inputs without depending on probabilistic models.
+a probabilistic state machine from a large collection of traces and
+identifying low probability paths.
+Our approach identifies the exact minimal causal set of inputs without
+depending on probabilistic models.
 
 % Could remove dependency inference citation if strapped for space
 Root cause analysis~\cite{yemini1996} and dependency inference~\cite{Kandula:2009:DDE:1592568.1592597}
@@ -69,7 +76,20 @@ of the overall distributed system.
 
 \noindent{\bf Programming Languages}
 Finally, the programming languages community has developed
-a wide range of verification and static analysis techniques.
+numerous verification and static analysis techniques.
+
+\eat{
+Program slicing~\cite{weiser1981program} is a technique for finding the
+minimal subset
+of a program that could possibly affect (either through control flow or data
+flow) the result of a particular line of code.
+Our technique can be viewed in this light as a form of program slicing,
+except
+that our `program' is a distributed event schedule,
+and the end result we are interested in is the network misconfiguration at
+he end of the
+execution.
+}
 
 % NICE isn't *really* from the PL community
 Model checkers such as Mace~\cite{Killian:2007:MLS:1250734.1250755} and NICE~\cite{nice} enumerate all possible code paths taken by control software (NOX)
@@ -82,14 +102,6 @@ control program (98 LoC), and five concurrent
 messages between the hosts~\cite{nice}. We chose to avoid state-space explosion by analyzing logs
 post-hoc, after they have been observed in production.
 
-Program slicing~\cite{weiser1981program} is a technique for finding the
-minimal subset
-of a program that could possibly affect (either through control flow or data
-flow) the result of a particular line of code.
-Our technique can be viewed in this light as a form of program slicing, except
-that our `program' is a distributed event schedule,
-and the end result we are interested in is the network misconfiguration at the end of the
-execution.
 
 % ----------------------------------------- %
 %          OLD TEXT
