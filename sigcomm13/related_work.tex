@@ -5,7 +5,7 @@ programming languages.
 The software engineering community has developed a long line of tools for automating
 aspects of the troubleshooting process.
 
-Sherlog~\cite{Yuan:2010:SED:1736020.1736038} takes production logs from a
+Sherlog~\cite{Yuan:2010:SED:1736020.1736038} takes on-site logs from a
 single program that ended in a failure as input, and applies static analysis to infer the
 program execution (both code paths and data values) that lead up to the failure.
 Along a similar vein, execution
@@ -41,8 +41,8 @@ primarily on performance fidelity or scalability experiments. In contrast, \proj
 precise event orderings and replayable executions, which is significantly harder to achieve with
 emulation.
 
-Record and replay techniques such as OFRewind~\cite{ofrewind} and
-liblog~\cite{Geels:2006:RDD:1267359.1267386} allow developers
+Control plane replay tools such as OFRewind~\cite{ofrewind}, and
+deterministic replay tools such as liblog~\cite{Geels:2006:RDD:1267359.1267386} allow developers
 to interactively step through and examine the inputs that lead up to errant behavior.
 We focus on automating this diagnosis process.
 
@@ -92,15 +92,16 @@ execution.
 }
 
 % NICE isn't *really* from the PL community
-Model checkers such as Mace~\cite{Killian:2007:MLS:1250734.1250755} and NICE~\cite{nice} enumerate all possible code paths taken by control software (NOX)
+Model checkers such as Mace~\cite{Killian:2007:MLS:1250734.1250755} and
+NICE~\cite{nice} enumerate all possible code paths taken by control software (NOX)
 and identify concrete inputs that cause
 the network to enter invalid configurations. Model checking works well for small
 control programs and a small number of machines, but suffers from exponential
 state explosion when run on large systems. For example, NICE took 30 hours to
 model check a network with two switches, two hosts, the MAC-learning
 control program (98 LoC), and five concurrent
-messages between the hosts~\cite{nice}. We chose to avoid state-space explosion by analyzing logs
-post-hoc, after they have been observed in production.
+messages between the hosts~\cite{nice}. We chose to avoid state-space explosion
+by analyzing errant traces post-hoc.
 
 
 % ----------------------------------------- %

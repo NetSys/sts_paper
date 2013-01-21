@@ -12,8 +12,7 @@ The input types supported by \projectname~are shown in Table~\ref{tab:inputs}.
 Controllers are notified of link, switch, and host migration events
 via OpenFlow messages~\cite{openflow} sent by software switches.
 Although the software switches do support packet forwarding, we
-have chosen to de-emphasize dataplane performance in favor of
-being able to simulate networks of large sizes. % as we show in \S\ref{subsec:runtime}.
+have not focused on simulating high-throughout dataplane behavior.
 % We hope to support policy changes in the future (Quantum)
 
 \begin{table}
@@ -37,25 +36,31 @@ Control message delay & \\
 
 We designed \projectname~to be as resilient to non-determinism as possible
 while minimizing modifications to control software.
-\projectname~ensures a deterministic order of messages despite
+\projectname~optionally ensures a deterministic order of messages despite
 non-determinism in operating system I/O scheduling
 by multiplexing all sockets in the controller process
-onto a single true socket. \projectname~currently
+onto a single true socket. \footnote{An alternative approach would be to employ a
+distributed mutex to ensure reliable message ordering~\cite{lin2009towards}.}
+\projectname~currently
 overrides socket functionality within the control software itself, but
 deterministic I/O could also be achieved without code modifications by
 loading a shim layer on top of
 libc (similar to liblog~\cite{Geels:2006:RDD:1267359.1267386}).
 
-We also make a
+\projectname~needs visibility into the control software's internal state
+changes to reliably reproduce the system execution. We achieve this by
+making a
 small change to the control software's logging library\footnote{Currently
 supported for POX
-and Floodlight} to gain better visibility into the control software's internal state
-transitions and achieve better replay synchronization: whenever a log
-statement--a proxy for relevant state-changes--is executed, we
+and Floodlight}: whenever a log
+statement is executed, we
 block the control software and notify \projectname~that a new state transition
 is about to occur. \projectname~then logs this event for later replay and
-sends an acknowledgment to unblock the controller.
-Additionally routing the {\tt gettimeofday()} syscall
+sends an acknowledgment to unblock the controller. During replay,
+the control software is forced to block at internal state transition points
+until \projectname~gives explicit acknowledgment.
+
+Routing the {\tt gettimeofday()} syscall
 through \projectname~makes replay more resilient to alterations in execution
 speeds.\footnote{When the pruned trace differs from the original, we make a
 best-effort guess at what the return values of these calls should be. For example,
@@ -65,7 +70,7 @@ As an added benefit, overriding {\tt gettimeofday()} allows us to `compress'
 runtime in some cases (similar to time-warped emulation~\cite{Gupta06toinfinity}).
 Our current implementation does not account other sources of non-determinism,
 such as asynchronous signals, random number generators,
-or the {\tt ecx} x86 instruction~\cite{Dunlap:2002:REI:844128.844148}.
+or interruptable instructions (\eg~x86's {\tt ecx})~\cite{Dunlap:2002:REI:844128.844148}.
 
 \projectname~can be used in a number of ways. We outline three use-cases here.
 \colin{Present these as a workflow instead?}
@@ -83,8 +88,8 @@ or the {\tt ecx} x86 instruction~\cite{Dunlap:2002:REI:844128.844148}.
 
 \projectname~is primarily used as a simulation and testing framework.
 With complete control over event orderings, message drops, node
-failures, \etc, \projectname~is especially useful for exploring corner cases
-and ``what if'' questions. Along these lines, Amin Vahdat
+failures, \etc, \projectname~is especially useful for exploring corner cases.
+Along these lines, Amin Vahdat
 has testified to the value of Google's SDN network simulator~\cite{vadhat}:
 \begin{quote}
 ``One of the key benefits we have is a very nice emulation and
@@ -94,22 +99,18 @@ switching devices. And then we can inject a number of failure scenarios under
 controlled circumstances to really accelerate our test work.''
 \end{quote}
 
-\projectname~can be used to generates randomly chosen input
+\projectname~can be used to generate randomly chosen input
 sequences~\cite{Miller:1990:ESR:96267.96279}, feed them to controller(s), and monitor invariants at chosen
 intervals. Driving the
 execution of the system in this way allows \projectname~to record a
 totally-ordered log of the events to be replayed later.
 
 \projectname~can also be used interactively to generate replayable integration
-tests.\footnote{Similar to Nebut et al.~\cite{automated_tests}} In interactive
+tests, similar to Nebut et al.~\cite{automated_tests}. In interactive
 mode developers can
 examine the state of any part of the simulated network,
 observe and manipulate messages, and follow their
 intuition to induce orderings that they believe may trigger bugs.
-Generating test cases by
-interactively specifying inputs represents a
-significant improvement over how developers produce tests today: manually writing
-code.
 
 As additional failure cases are encountered they can be added
 to a suite of integration tests and later used to validate the correct
@@ -136,9 +137,9 @@ mailing lists or coworkers. The status quo today is to describe the conditions n
 reproduce the bug as carefully as possible and hope that someone else is able
 to replicate the issue.
 
-With \projectname, developers can readily record errant executions and
-exchange replayable traces with each-other.\footnote{This is essentially a
-realization of the vision outlined by Lin et al.~\cite{lin2009towards}} Replayable traces shorten the debugging cycle, and increase chances that others
+With \projectname, developers can record errant executions in the simulated
+environment, and exchange replayable traces to be re-simulated again at other
+developer's machines. Replayable traces shorten the debugging cycle, and increase chances that others
 will be able to help. For example, bug reports can be filed with a replayable trace
 attached, so that no
 effort is wasted replicating the issue. With the help of print statements or a
@@ -148,10 +149,10 @@ needed to identify the line(s) of code responsible for the problem.
 \subsection{Forensic Analysis}
 
 The above two use cases are implemented and exercised in \projectname~today.
-Although we have not yet implemented the requisite infrastructure,
-forensic analysis of production logs may be the most valuable; correctness
+Forensic analysis of production logs, while not currently implemented,
+may be more valuable yet: correctness
 violations encountered in production are
-high priority, and often time consuming to diagnose.
+high priority and often time consuming to diagnose.
 Here we present a sketch of
 how forensic analysis could be performed with \simulator.
 

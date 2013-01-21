@@ -16,10 +16,6 @@ works out of the box. Some log statements may need to be added if there is
 insufficient synchronization for reproducing errors across replayed
 executions.
 
-\noindent{\bf Will control platforms ever become stable enough that
-          \simulator{} is unnecessary?}
-We certainly hope so! The field is decades from that point though.
-
 \noindent{\bf Why SDN?}
 SDN has several properties that make it particularly amenable to an
 automated troubleshooting approach such as ours. Most importantly, SDN control software
@@ -45,6 +41,10 @@ which share the same properties,  such example NAS controllers or MapReduce job 
 The components of our
 tool that are specific to SDN are the simulator and the masks for control
 messages.
+
+\noindent{\bf Will control platforms ever become stable enough that
+          \simulator{} is unnecessary?}
+We certainly hope so! The field is decades from that point though.
 
 %\begin{itemize}
 %\item Aren't these types of bugs (e.g. failover logic) rare? Why should we
