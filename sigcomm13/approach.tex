@@ -2,9 +2,6 @@ We have developed a technique, \simulator, for automatically identifying
 a minimal sequence of fault-inducing inputs from logs. Here we detail the specifics
 of \simulator.
 
-\subsection{Delta Debugging}
-\label{subsec:algorithm}
-
 We start by describing an example bug in the Floodlight
 open source control platform~\cite{floodlight_bug} to illustrate the mechanics
 of our technique. Floodlight is distributed across
@@ -67,6 +64,9 @@ extraneous event is pruned, the blackhole will still persist. When
 the controller crash is pruned, the blackhole will be resolved properly, and
 when the link failure is pruned, no blackhole will occur. The MCS returned
 is therefore the controller crash and the link failure in conjunction.
+
+\subsection{Delta Debugging}
+\label{subsec:algorithm}
 
 Delta debugging~\cite{Zeller:2002:SIF:506201.506206}, a technique from the
 software engineering community, gets us part of the way

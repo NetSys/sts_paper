@@ -12,7 +12,7 @@ the ability to prune and replay system traces allows one to verify whether
 certain unfavorable outcomes occur in alternate histories.
 
 Software bug diagnosis, a highly expensive and time consuming process, would benefit
-greatly from a tool for programmatically answering such questions. A 2006 survey found
+greatly from technology for programmatically answering such questions. A 2006 survey found
 that developers at Microsoft spend 49\% of their
 time troubleshooting bugs~\cite{msoft_concurrency}. The same study found that 70\% of the reported concurrency bugs
 take days to months to fix, and almost 75\% of
@@ -41,13 +41,13 @@ policy changes, host migrations, and other inputs to SDN control software
 observed in production environments. As one data point, Microsoft Research
 reports 8.5 network error events per minute per
 datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}.
-Troubleshooters find little immediate use from large traces,
-since they are often forced to manually distinguish events that are
+Troubleshooters find little immediate use from logs containing many events
+prior to a fault,
+since they are often forced to manually filter events that are
 characteristic of normal operating
-conditions from those that push the network into an erroneous state before
-they can make headway in fixing the root cause.
+conditions before they can make headway in diagnosing the problem.
 It is no surprise that when asked to describe their
-ideal tool, most admins said ``automated troubleshooting''~\cite{Zeng:Survey}.
+ideal tool, most network admins said ``automated troubleshooting''~\cite{Zeng:Survey}.
 
 %And despite the prevalence of failures, maintaining uptime is of critical importance; according to one
 %survey, ``meeting customer expectations about reliability'' is the second highest
@@ -60,13 +60,15 @@ to automatically identify the exact external inputs (\eg~link failures) that
 triggered the bug. Our technique, \simulator, achieves this by iteratively
 pruning inputs from the original run, replaying the altered history, and
 checking whether the networks remains in an invalid configuration.
-\scott{Needs an example}
+% \scott{Needs an example}
+% Colin: we haven't said "in this paper, we do X" anywhere in the
+% introduction. Maybe not a problem.
 
 Pruning only concurrent inputs (those that do not have a
 happens-before chain~\cite{Lamport:1978:TCO:359545.359563} leading to the
 invalid configuration) does not significantly reduce the number of inputs.
 Our approach is to extend delta debugging~\cite{Zeller:2002:SIF:506201.506206}--an algorithm for
-minimizing test cases for a single program--to a distributed environment, where inputs
+minimizing test cases for individual programs--to a distributed environment, where inputs
 are spread across time and involve multiple machines.
 
 The main difficulty in applying delta debugging to a distributed
@@ -74,16 +76,15 @@ setting is coping with diverged histories. Traditional replay
 techniques~\cite{Dunlap:2002:REI:844128.844148,Geels:2006:RDD:1267359.1267386}
 reliably reproduce errors by recording the exact sequence of inputs to the
 software under test.
-Pruning inputs however, causes the remaining events to
+Pruning inputs, however, may cause the remaining events to
 subtly change (\eg~the sequence numbers of packets may all differ), and some
-internal state changes that occurred in the original
-run may not occur after pruning prior inputs.
-Our approach is to apply
-a small amount of domain knowledge codifying the
+events that occurred in the original
+run may not occur.
+Our approach is to apply a small amount of domain knowledge codifying the
 syntax and semantics of events. Masking over semantically insignificant
 information allows us to reason about
-differences between slightly altered histories and thereby reliably reproduce the
-error throughout the pruning process.
+differences between slightly altered histories and thereby reproduce the error
+whenever possible throughout the pruning process.
 
 Related tools such as {\tt ndb}~\cite{handigol2012debugger} provide
 a historical view into dataplane (mis)behavior. In contrast, \simulator~provides
@@ -98,8 +99,8 @@ system.
 
 Even the modest improvement of automatic input minimization
 represents a substantial improvement over the status quo;
-to the best of our knowledge, painstaking analysis of detailed logs is the
-current state-of-the-art in SDN platform troubleshooting.
+to the best of our knowledge, painstaking manual analysis of logs is the
+{\em de facto} method of troubleshooting production SDN control software.
 
 % Main result from our work: the amount of effort it takes to codify domain knowledge is significantly less than the effort
 % it would take to step through a normal replay debugger by hand for each bug.
