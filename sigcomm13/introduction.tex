@@ -4,14 +4,15 @@
 %big ball of wibbly wobbly... time-y wimey... stuff.''
 %\end{aquote}
 
-Would World War \rom{1} have occurred if Archduke Ferdinand had not been shot?
-Unlike political history, it is possible to prune and replay traces of computer
-system behavior, making it feasible to answer
-questions of the form ``If this event had not been present, would the
-system's configuration have differed significantly?''.
+Many historians ascribe the start of World War \rom{1} to the shooting of Archduke Ferdinand,
+but others point out that the underlying causes of the war went beyond that single act.
+Would WW\rom{1} still have occurred without the shooting? Unfortunately we can never know such
+historical counterfactuals for sure. In computer systems however, it is possible to do better:
+the ability to prune and replay system traces allows one to verify whether
+certain unfavorable outcomes occur in alternate histories.
 
-Tools for programmatically answering such questions are useful for bug diagnosis,
-a highly expensive and time consuming process. A 2006 survey found
+Software bug diagnosis, a highly expensive and time consuming process, would benefit
+greatly from a tool for programmatically answering such questions. A 2006 survey found
 that developers at Microsoft spend 49\% of their
 time troubleshooting bugs~\cite{msoft_concurrency}. The same study found that 70\% of the reported concurrency bugs
 take days to months to fix, and almost 75\% of
@@ -41,11 +42,11 @@ observed in production environments. As one data point, Microsoft Research
 reports 8.5 network error events per minute per
 datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}.
 Troubleshooters find little immediate use from large traces,
-since they are forced to manually distinguish events that are
+since they are often forced to manually distinguish events that are
 characteristic of normal operating
 conditions from those that push the network into an erroneous state before
 they can make headway in fixing the root cause.
-It is no surprise then that when asked to describe their
+It is no surprise that when asked to describe their
 ideal tool, most admins said ``automated troubleshooting''~\cite{Zeng:Survey}.
 
 %And despite the prevalence of failures, maintaining uptime is of critical importance; according to one
@@ -80,8 +81,8 @@ run may not occur after pruning prior inputs.
 Our approach is to apply
 a small amount of domain knowledge codifying the
 syntax and semantics of events. Masking over semantically insignificant
-information allows us to reason about the
-differences between slightly altered histories and reliably reproduce the
+information allows us to reason about
+differences between slightly altered histories and thereby reliably reproduce the
 error throughout the pruning process.
 
 Related tools such as {\tt ndb}~\cite{handigol2012debugger} provide
@@ -105,10 +106,10 @@ current state-of-the-art in SDN platform troubleshooting.
 
 % Cut?
 The rest of this paper is organized as follows. In \S\ref{sec:overview},
-we present an overview of the SDN stack and its failure modes.
-In \S\ref{sec:approach} we present \simulator{} in detail.
-We discuss use cases for \simulator{} in \S\ref{sec:architecture},
-and explore case studies and a performance evaluation in
+we present a brief overview of the SDN stack and its failure modes.
+In \S\ref{sec:approach} we present \simulator~in detail.
+We discuss use cases for \simulator~in \S\ref{sec:architecture},
+and describe case studies and a performance evaluation in
 \S\ref{sec:evaluation}. We end by discussing the limitations of our
 approach (\S\ref{sec:discussion}) and related work (\S\ref{sec:related_work}).
 
