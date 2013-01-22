@@ -34,17 +34,11 @@ prior to a failure.
 The systems and networking community has also developed a substantial
 literature on tools for testing and troubleshooting.
 
-Network simulators and emulators such as
-Mininet~\cite{handigol2012reproducible}, ns-3~\cite{ns3}, or ModelNet~\cite{Vahdat:2002:SAL:844128.844154}
-are used to prototype and test network software. Most of these frameworks are focused
-primarily on performance fidelity or scalability experiments. In contrast, \projectname~is a simulator focused on
-precise event orderings and replayable executions, which is significantly harder to achieve with
-emulation.
-
-Control plane replay tools such as OFRewind~\cite{ofrewind}, and
-deterministic replay tools such as liblog~\cite{Geels:2006:RDD:1267359.1267386} allow developers
+Record and replay tools such as OFRewind~\cite{ofrewind} and
+liblog~\cite{Geels:2006:RDD:1267359.1267386} allow developers
 to interactively step through and examine the inputs that lead up to errant behavior.
 We focus on automating this diagnosis process.
+% More on why deterministic replay isn't feasible with pruning
 
 Tracing tools provide a view
 of requests' paths through the
@@ -62,6 +56,13 @@ a probabilistic state machine from a large collection of traces and
 identifying low probability paths.
 Our approach identifies the exact minimal causal set of inputs without
 depending on probabilistic models.
+
+Network simulators such as
+Mininet~\cite{handigol2012reproducible}, ns-3~\cite{ns3}, and ModelNet~\cite{Vahdat:2002:SAL:844128.844154}
+are used to prototype and test network software.
+Our focus on comparing diverged histories requires us
+to provide precise replay of event sequences, which is in tension with the performance
+fidelity goals of pre-existing simulators.
 
 % Could remove dependency inference citation if strapped for space
 Root cause analysis~\cite{yemini1996} and dependency inference~\cite{Kandula:2009:DDE:1592568.1592597}

@@ -4,10 +4,15 @@
 %big ball of wibbly wobbly... time-y wimey... stuff.''
 %\end{aquote}
 
-Many historians ascribe the start of World War \rom{1} to the shooting of Archduke Ferdinand,
-but others point out that the underlying causes of the war went beyond that single act.
-Would WW\rom{1} still have occurred without the shooting? Unfortunately we can never know such
-historical counterfactuals for sure. In computer systems however, it is possible to do better:
+Would World War \rom{1} still have occurred if Archduke Ferdinand had not been
+shot? That is, was the event of his death intrinsic to the precipitation of the war, or
+was it extraneous? Unfortunately we can never know such
+historical counterfactuals for sure.
+
+XXX
+
+In computing, we often need to answer similar questions.
+In computer systems however, it is possible to do better:
 the ability to prune and replay system traces allows one to verify whether
 certain unfavorable outcomes occur in alternate histories.
 
@@ -85,6 +90,11 @@ syntax and semantics of events. Masking over semantically insignificant
 information allows us to reason about
 differences between slightly altered histories and thereby reproduce the error
 whenever possible throughout the pruning process.
+
+\colin{Rather than `apply domain knowledge': `operating at the application
+layer rather than I/O and interrupts is the only way to get access to the semantic information to be able to
+reason about divergence. Make it so that we don't have to apologize for
+heuristics.}
 
 Related tools such as {\tt ndb}~\cite{handigol2012debugger} provide
 a historical view into dataplane (mis)behavior. In contrast, \simulator~provides
