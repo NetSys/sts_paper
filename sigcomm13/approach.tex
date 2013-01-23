@@ -220,7 +220,8 @@ Formally, we consider an internal event $i'$ observed in an altered trace
 equivalent to an internal event $i$ from the original trace iff all unmasked
 fields have the same value
 and $i$ occurs between $i'$'s preceding and succeeding inputs in the
-happens-before relation.
+happens-before relation. By masking the syntax of two messages, we can compare them
+based on their semantics.
 
 \begin{figure}[t]
     %\hspace{-10pt}
@@ -331,8 +332,11 @@ waited too long upon observing a successor of the input to be injected.
 Although the hybrid algorithm has the same worst case runtime as peeking
 replay, the average case runtime is significantly better.
 
+% Everything below here should be toned down. We can put this stuff in a tech report elsewhere.
+
 Waiting and peeking replay both need to account for the pathological case
-where {\em multiple} internal events in the same
+where {\em multiple} internal events
+in the same
 equivalence class a single internal event in the original execution.
 Ambiguous equivalences mean that more than one possibility exists for where
 the next input should be
