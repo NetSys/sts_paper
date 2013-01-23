@@ -5,22 +5,24 @@
 %\end{aquote}
 
 Would World War \rom{1} still have occurred if Archduke Ferdinand had not been
-shot? That is, was the event of his death intrinsic to the precipitation of the war, or
-was it extraneous? Unfortunately we can never know such
+shot? In the absense of political criticism from the Soviet Union,
+would the American civil rights movement have succeeded? That is,
+were those prior events intrinsic to the
+precipitation of the historical outcome, or
+were they extraneous? Unfortunately we can never know such
 historical counterfactuals for sure.
 
-XXX
-
-In computing, we often need to answer similar questions.
-In computer systems however, it is possible to do better:
-the ability to prune and replay system traces allows one to verify whether
-certain unfavorable outcomes occur in alternate histories.
+In computing we often need to answer similar questions,
+\eg~``Was the link failure necessary for triggering the routing loop?''.
+In this paper we address the problem of programmatically answering
+counterfactual questions of this form in the context of software-defined
+networks.
 
 Software bug diagnosis, a highly expensive and time consuming process, would benefit
-greatly from technology for programmatically answering such questions. A 2006 survey found
+greatly from technology for answering such questions. A 2006 survey found
 that developers at Microsoft spend 49\% of their
 time troubleshooting bugs~\cite{msoft_concurrency}. The same study found that 70\% of the reported concurrency bugs
-take days to months to fix, and almost 75\% of
+take days to months to fix, and 74\% of
 respondents considered reproducibility to be hard or very hard.
 
 Developers of software-defined networks are not at all exempt from the need to
@@ -42,11 +44,11 @@ we expect its complexity to increase.
 % Scott: needs more SDN war stories from VMW, BSN
 
 The troubleshooting process is hindered by the large number of hardware failures,
-policy changes, host migrations, and other inputs to SDN control software
-observed in production environments. As one data point, Microsoft Research
+policy changes, host migrations, and other inputs to SDN control software.
+As one data point, Microsoft Research
 reports 8.5 network error events per minute per
 datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}.
-Troubleshooters find little immediate use from logs containing many events
+Troubleshooters find little immediate use from traces containing many events
 prior to a fault,
 since they are often forced to manually filter events that are
 characteristic of normal operating
@@ -79,22 +81,15 @@ are spread across time and involve multiple machines.
 The main difficulty in applying delta debugging to a distributed
 setting is coping with diverged histories. Traditional replay
 techniques~\cite{Dunlap:2002:REI:844128.844148,Geels:2006:RDD:1267359.1267386}
-reliably reproduce errors by recording the exact sequence of inputs to the
-software under test.
-Pruning inputs, however, may cause the remaining events to
+reliably reproduce errors by precisely recording the low-level I/O operations of
+software under test. Pruning inputs, however, may cause the remaining events to
 subtly change (\eg~the sequence numbers of packets may all differ), and some
 events that occurred in the original
-run may not occur.
-Our approach is to apply a small amount of domain knowledge codifying the
-syntax and semantics of events. Masking over semantically insignificant
-information allows us to reason about
-differences between slightly altered histories and thereby reproduce the error
-whenever possible throughout the pruning process.
-
-\colin{Rather than `apply domain knowledge': `operating at the application
-layer rather than I/O and interrupts is the only way to get access to the semantic information to be able to
-reason about divergence. Make it so that we don't have to apologize for
-heuristics.}
+run may not occur. Our approach is to record and replay at the application layer,
+where we have access to the syntax and semantics of messages passed
+throughout the system. In this way we can reason about slightly altered
+histories by masking over semantically insignificant
+information.
 
 Related tools such as {\tt ndb}~\cite{handigol2012debugger} provide
 a historical view into dataplane (mis)behavior. In contrast, \simulator~provides
