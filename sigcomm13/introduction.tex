@@ -15,8 +15,7 @@ historical counterfactuals for sure.
 In computing we often need to answer similar questions,
 \eg~``Was the link failure necessary for triggering the routing loop?''.
 In this paper we address the problem of programmatically answering
-counterfactual questions of this form in the context of software-defined
-networks.
+questions of this form. % in the context of software-defined networks.
 
 Software bug diagnosis, a highly expensive and time consuming process, would benefit
 greatly from technology for answering such questions. A 2006 survey found
@@ -87,7 +86,7 @@ subtly change (\eg~the sequence numbers of packets may all differ), and some
 events that occurred in the original
 run may not occur. Our approach is to record and replay at the application layer,
 where we have access to the syntax and semantics of messages passed
-throughout the system. In this way we can reason about slightly altered
+throughout the distributed system. In this way we can reason about slightly altered
 histories by masking over semantically insignificant
 information.
 
