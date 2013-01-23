@@ -71,15 +71,49 @@ is therefore the controller crash and the link failure in conjunction.
 \subsection{Delta Debugging}
 \label{subsec:algorithm}
 
-Delta debugging~\cite{Zeller:2002:SIF:506201.506206}, a technique from the
+Delta debugging~\cite{Zeller:1999:YMP:318773.318946}, a technique from the
 software engineering community, gets us part of the way
 there: given a single input (\eg~an HTML page)
 for a non-distributed program (\eg~Firefox), it performs a divide-and-conquer
 search, repeatedly running the program on subsets of the input
 until it finds a minimal subset (\eg~a single tag) that is sufficient
-for triggering a known bug. The delta debugging algorithm is shown in
-Figure~\ref{fig:ddmin}.
+for triggering a known bug. Specifically, it finds a 1-minimal
+(locally minimal) causal sequence~\cite{Zeller:1999:YMP:318773.318946},
+meaning that if any input from the sequence is pruned, no correctness violation
+occurs. The delta debugging algorithm is shown in
+Figure~\ref{fig:ddmin} (with $test$ replaced by $replay$).
 
+\begin{figure*}[t]
+\caption{Automated Delta Debugging Algorithm From~\cite{Zeller:1999:YMP:318773.318946}}
+\begin{boxedminipage}{\textwidth}
+Input: $\cfail$ s.t. $\cfail$ is a trace and $\test(\cfail) = \FAIL$. Output: $\dfail
+= \ddmin(\cfail)$ s.t. $\dfail \subseteq
+\cfail$, $\test(\dfail) = \FAIL$, and~$\dfail$ is 1-minimal.
+\begin{align*}
+\ddmin(\cfail) &= \ddmin_2(\cfail, \emptyset) \quad \text{where} \\
+\ddmin_2(\dfail, R) &=
+\begin{cases}
+\dfail & \text{\hphantom{else }if $|\dfail| = 1$ (``base case'')} \\
+\ddmin_2\bigl(\done, R\bigr) &
+\text{else if $\test(\done \cup R) = \FAIL$ (``in $\done$'')} \\
+\ddmin_2\bigl(\dtwo, R\bigr) &
+\text{else if $\test(\dtwo \cup R) = \FAIL$ (``in $\dtwo$'')} \\
+\ddmin_2\bigl(\done, \dtwo \cup R\bigr) \cup \ddmin_2\bigl(\dtwo, \done \cup
+R\bigr) & \text{otherwise (``interference'')}
+\end{cases}
+\end{align*}
+\begin{center}
+where $\test(T)$ denotes the state of the system after executing the trace $T$,
+$\FAIL$ denotes a correctness violation, \\
+$\done \subset \dfail$, $\dtwo \subset \dfail$, $\done \cup \dtwo = \dfail$, $\done \cap
+\dtwo = \emptyset$, and $|\done| \approx |\dtwo| \approx |\dfail| / 2$
+hold.
+\end{center}
+\end{boxedminipage}
+\label{fig:ddmin}
+\end{figure*}
+
+\eat{ % Original O(n^2) algorithm
 \begin{figure*}[t]
 \caption{Minimizing Delta Debugging Algorithm From~\cite{Zeller:2002:SIF:506201.506206}}
 \begin{boxedminipage}{\textwidth}
@@ -105,6 +139,7 @@ holds.
 \end{boxedminipage}
 \label{fig:ddmin}
 \end{figure*}
+}
 
 Our problem differs from the original formulation of delta debugging in two dimensions.
 First, input to SDN controllers is spread
@@ -366,16 +401,23 @@ Assuming no ambiguities occur, the delta debugging algorithm terminates after
 $O(log\,n)$
 invocations of $replay$ in the best case, where $n$ is the number of inputs in the original
 trace~\cite{Zeller:2002:SIF:506201.506206}. Each invocation of waiting replay
-injects $n$ inputs, for an overall runtime of $O(nlog\,n)$ for
-waiting replay. The worst case runtime of delta debugging is $O(n^2)$ in the
-number of invocations of $replay$~\cite{Zeller:2002:SIF:506201.506206}.
-Therefore the overall worst case runtime is $O(n^3)$ if waiting replay is used.
+replays $n$ inputs, for an overall runtime of $O(nlog\,n)$ for
+waiting replay. The worst case runtime of delta debugging is $O(n)$ in the
+number of invocations of $replay$.
+\footnote{Note that delta debugging as presented
+in~\cite{Zeller:1999:YMP:318773.318946} assumes that no unresolved test
+outcomes occur. We ensure that this assumption holds by filtering inputs
+sequences that we know are invalid (\eg~link recoveries without a preceding
+link failure). Their follow-on
+paper~\cite{Zeller:2002:SIF:506201.506206} also removes this assumption,
+but doing so adds a factor of $N$ to the runtime.}
+Therefore the overall worst case runtime is $O(n^2)$ if waiting replay is used.
 
 Peeking replay adds another factor of $n$ to the overall runtime: for each input event
 $e_i$, it invokes waiting replay with inputs $e_1,\dots,e_i$, for a total of
 $n \times \frac{n+1}{2} \in O(n^2)$ replayed inputs. Therefore in the
 best case, the overall runtime of delta debugging with peeking replay is
-$O(n^2log\,n)$, and the worst case is $O(n^4)$. Note that this extra factor of
+$O(nlog\,n)$, and the worst case is $O(n^3)$. Note that this extra factor of
 $n$ in computational complexity can be converted to a factor of $n$ in storage
 complexity if peek stores snapshots of
 the controllers' state rather than replaying each prefix from the beginning.
@@ -407,7 +449,7 @@ inputs are significantly more complicated to model.
 
 \colin{Mention that causal
 annotations and selective pruning help.} \colin{Make sure we emphasize that there is no `right answer', since we're
-dealing with modified histories}.
+dealing with modified histories.}
 
 \subsection{Correspondence Checking}
 \label{subsec:cc}
@@ -555,8 +597,8 @@ our approach readily supports deterministic replay.
 \noindent{\bf Globally vs Locally Minimal Input Sequences.}
 Our approach is not guaranteed to find the globally minimal
 causal sequence from an input trace, since this requires $O(2^N)$ computation in the worst case.
-The delta debugging algorithm we employ however is guaranteed to find a 1-minimal
-(locally minimal) causal sequence~\cite{Zeller:2002:SIF:506201.506206},
+The delta debugging algorithm we employ however is guaranteed to find a
+locally minimal causal sequence~\cite{Zeller:1999:YMP:318773.318946},
 meaning that if any input from the sequence is pruned, no correctness violation
 occurs.
 
