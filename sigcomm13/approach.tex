@@ -404,13 +404,14 @@ trace~\cite{Zeller:2002:SIF:506201.506206}. Each invocation of waiting replay
 replays $n$ inputs, for an overall runtime of $O(nlog\,n)$ for
 waiting replay. The worst case runtime of delta debugging is $O(n)$ in the
 number of invocations of $replay$.
-\footnote{Note that delta debugging as presented
-in~\cite{Zeller:1999:YMP:318773.318946} assumes that no unresolved test
+\footnote{Note that this version of delta debugging
+assumes that no unresolved test
 outcomes occur. We ensure that this assumption holds by filtering inputs
 sequences that we know are invalid (\eg~link recoveries without a preceding
-link failure). Their follow-on
-paper~\cite{Zeller:2002:SIF:506201.506206} also removes this assumption,
-but doing so adds a factor of $N$ to the runtime.}
+link failure), as in Section 6~\cite{Zeller:1999:YMP:318773.318946}. The
+author's follow-on
+paper~\cite{Zeller:2002:SIF:506201.506206} removes the need for the assumption,
+but adds a factor of $N$ to the runtime.}
 Therefore the overall worst case runtime is $O(n^2)$ if waiting replay is used.
 
 Peeking replay adds another factor of $n$ to the overall runtime: for each input event
