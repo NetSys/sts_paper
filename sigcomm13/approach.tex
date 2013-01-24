@@ -601,7 +601,7 @@ causal sequence from an input trace, since this requires $O(2^N)$ computation in
 The delta debugging algorithm we employ however is guaranteed to find a
 locally minimal causal sequence~\cite{Zeller:1999:YMP:318773.318946},
 meaning that if any input from the sequence is pruned, no correctness violation
-occurs.
+occurs. \colin{Need to mention monotonicity, consistency, unambiguity here}
 
 \noindent{\bf Correctness vs Performance.}
 We are primarily focused on correctness bugs, not performance bugs. That said,

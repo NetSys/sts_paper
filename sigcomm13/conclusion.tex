@@ -1,15 +1,14 @@
 SDN is widely heralded as the ``future of networking'', and its purpose is to make
-it easy to manage networks. Achieving this end requires coordination
-between distributed controllers, a task that is highly prone to errors.
+it easy to manage networks. Achieving this end at scale forces platform developers to directly
+confront asynchrony and partial failure, problems that are inherent to all distributed
+systems and notoriously difficult to get right.
 
 In this paper we developed a technique for automatically
-identifying fault-inducing input from execution logs, with the
-goal of allowing developers to focus their efforts on debugging the problematic
-code itself rather than reproducing the error in the first place.
+identifying a minimal sequence of inputs responsible for triggering a given bug.
 We have have applied this system to several available SDN platforms, and
-were able to find or reproduce bugs in all the platforms we investigated,
-despite several noted limitations.
-\colin{Needs joke about historical counterfactuals}
+were able to find or reproduce bugs in all the platforms we investigated.
+%Now we just need to provide a mechanism for the next question: would that date
+%have panned out if I hadn't spilt the wine?
 
 % Two ideas that have been put on the backburner:
 % - distinguishing persistent violations from transient
