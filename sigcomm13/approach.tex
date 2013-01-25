@@ -160,8 +160,8 @@ by Zeller et al.~\cite{Zeller:2002:SIF:506201.506206}, the system we are trouble
 single program--it is all the nodes and links of a distributed system,
 including controllers, switches, and end-hosts. Replaying traces
 on an actual network would be prohibitively costly and overly prone to
-non-deterministic behavior. We therefore simulate the entire control-plane,
-with support for minimal data-plane behavior,
+non-deterministic behavior. We therefore simulate the entire control-plane
+(with support for minimal data-plane behavior)
 in a single process. We then run the control software on
 top of this simulator and connect the software switches to the controllers as if they were true
 network devices, such that the controllers believe they are configuring a true
@@ -180,18 +180,33 @@ Figure~\ref{fig:architecture}.
 
 Given a sequence of inputs (\eg~link failures, controller crashes, host migrations,
 or policy changes) and an invariant checking probe (provided by frameworks
-such as HSA~\cite{hsa,hsa_realtime} or Anteater~\cite{anteater,khurshid2012veriflow}), the simulator invokes
-the delta debugging algorithm to identify the minimal causal set. The
-simulator is then responsible for replaying intermediate input subsequences
+such as HSA~\cite{hsa,hsa_realtime} or Anteater~\cite{anteater,khurshid2012veriflow}),
+delta debugging finds a minimal causal set. The
+simulator is responsible for replaying intermediate input subsequences
 chosen by delta debugging. For example, link failures are
 reproduced by disconnecting the edge in the simulated network, and sending a
 port status message from the adjacent switches to their parent controller(s).
 
+The input subsequences chosen by delta debugging are not always valid. For
+example, it is not sensible to replay a link recovery event without a
+preceding link failure event; nor is it sensible to replay a host migration
+event without modifying the starting position when a preceding host
+migration event has been pruned. The simulator checks
+validity before replaying a given subsequence to account for this
+possibility.\footnote{Handling invalid inputs is crucial for
+ensuring that the delta debugging algorithm we employ~\cite{Zeller:1999:YMP:318773.318946}
+is guaranteed to find a minimal causal set, since it assumes that no unresolved
+test outcomes occur. The author of delta debugging wrote a follow-on
+paper~\cite{Zeller:2002:SIF:506201.506206} that removes the need for the assumption,
+but the algorithmic complexity increases by a factor of $N$ in doing so.}
+
 \subsection{Replay}
 \label{subsec:replay}
 
-The timing of the inputs injected by the simulator is crucial for ensuring that the
-execution is the same as the original run. Na\"ively injecting inputs often fails to
+% Needs a back pointer. "Once a subsequence has been chosen,"...
+The timing of the inputs injected by the simulator is crucial for reliably
+reproducing the
+correctness violation. Na\"ively injecting inputs often fails to
 trigger the original correctness violation, even without having pruned any
 events. In particular, we tried and failed to reproduce errors when scheduling inputs
 with the following simple algorithm:
@@ -206,21 +221,28 @@ maintaining the relative timing between inputs is not sufficient.
 The problem with the simple scheduling algorithm is that it does not take into
 account events that are internal to the control software, such as
 message receipts, timers going off, or internal state
-changes like the backup node in the Floodlight example deciding to elevate itself to master.
+changes like the backup node in the Floodlight example deciding to elevate
+itself to master; if the ordering of inputs and internal events is
+perturbed, the final output may differ.
 Consider for example that if a controller's garbage collector happens to run
-while we replay inputs, it is feasible that the delicate ordering between
-inputs internal events would be perturbed, resulting in a different output.
+while we replay inputs, it may delay an internal state transition until
+after an input that preceded it in the original run has been injected.
 
-Formally, we need to inject an external input $e$ at exactly the point when all other
+The challenge is to ensure that causal relationships
+are maintained. Formally, to be guaranteed to reproduce the original correctness violation
+we need to
+inject an external input $e$ at exactly the point when all other
 events (both external and internal) that precede it in the happens-before
-relation ($\{i \mid i \rightarrow e\}$) from the original execution have occurred.
+relation ($\{i \mid i \rightarrow e\}$) from the original execution have
+occurred~\cite{Fischer:1985:IDC:3149.214121}.
+
 While the input and internal events from the original run are given to us,
 we become aware of internal events throughout replay by
 (i) monitoring
 control message receipts between controllers and between switches and
 controllers, and (ii) interposing on the controllers' logging library and notifying the
-simulation process whenever log statement (which serve to mark relevant state
-transitions) is executed. Note that to achieve truly deterministic
+simulation process whenever log statements (which serve to mark relevant state
+transitions) are executed. Note that to achieve truly deterministic
 replay, these log statements would need to
 be highly granular, capturing information such as thread scheduling decisions;
 we show in \S\ref{subsec:case_studies}
@@ -233,30 +255,34 @@ successfully reproduce many bugs.\footnote{We discuss this problem further in \S
 \subsection{Fingerprinting}
 \label{subsec:fingerprinting}
 
-Event scheduling is made substantially more complicated by the fact
+Replay is made substantially more complicated by the fact
 that the delta debugging algorithm is pruning inputs from the history of the
 execution, thereby changing the resulting internal events generated by the control
-software. One implication of this is that the syntax of the internal events may differ
-slightly from their equivalent internal events in the original
-execution. Consider for example that sequence numbers of control packets may
-all differ by one if a single control message in the beginning of the trace
-does not occur.
+software. In particular, internal events may differ syntactically (\eg~sequence numbers
+of control packets may all differ), old internal events from the original
+execution may not occur after pruning, and new internal events that were not
+observed at all in the original execution may appear.
 
-Our solution is to define domain-specific masks over
-semantically extraneous\footnote{Extraneous with respect to comparing two
-separate traces. For example, the buffer id is chosen at random, so
-it is meaningless to compare buffer ids across separate runs. One consequence
-of masks is that bugs involving masked fields are outside the purview of
-\simulator.} fields of
-the message. A few examples of masked fields are shown
-in Table~\ref{tab:fingerprints}. These masks define equivalence classes
-of internal events, which allow us to compare different runs of the simulation.
-Formally, we consider an internal event $i'$ observed in an altered trace
+Our first observation is that many internal events are {\em functionally
+equivalent}, in the sense that they
+have the same effect on the state of the system with respect to triggering the
+correctness violation (despite syntactic differences). For example, flow
+modification messages may cause switches to make the same change to their forwarding behavior
+even if the transaction identifier of the messages differ.
+
+We leverage this observation by defining
+domain-specific masks over semantically extraneous fields of
+internal events.\footnote{One consequence
+of applying masks is that bugs involving masked fields are outside the purview of
+\simulator.} A few examples of masked fields are shown
+in Table~\ref{tab:fingerprints}.
+
+These masks define equivalence classes
+of internal events. Formally, we consider an internal event $i'$ observed in an altered trace
 equivalent to an internal event $i$ from the original trace iff all unmasked
 fields have the same value
 and $i$ occurs between $i'$'s preceding and succeeding inputs in the
-happens-before relation. By masking the syntax of two messages, we can compare them
-based on their semantics.
+happens-before relation. 
 
 \begin{figure}[t]
     %\hspace{-10pt}
@@ -282,149 +308,132 @@ define equivalence classes.}
 \label{tab:fingerprints}
 \end{table}
 
-\subsection{Coping With Divergence}
+\subsection{Coping With Absent Internal Events}
 \label{subsec:divergence}
 
-A deeper implication of altering the original trace is that
-some internal events from the original run may not occur after
-pruning certain inputs--conversely, new internal events not present in the original run
-may occur. Consider the simplified state machines for the switch and
+Given an equivalence relation over internal events, replay
+is responsible for maintaining equivalent happens-before constraints from the
+original execution.
+But syntactic differences are not the
+only possible change induced by pruning: internal events from the original
+may also cease to appear.
+
+Disappearance of internal events is determined by the structure of the control
+software's state machine (which is not assumed to be known). Consider the simplified state machines for the switch and
 controllers from the Floodlight case shown in
-Figure~\ref{fig:state_machines}. If link failure input is pruned, the
+Figure~\ref{fig:state_machines}. If the link failure input is pruned, the
 switch will not make the transition to `Notify Parents', and the master will
-consequently not make the transition to and from `Send Flush'. Without being
-able to equate events from alternate histories, it is nearly impossible to resolve
-divergences like this in a way that ensures that the original bug is still
-triggered.
+consequently not make the transition to and from `Send Flush'.
 
-We have developed two event scheduling algorithms to account for altered
-internal events. The first is simpler, but somewhat less robust. We refer to it as
-\emph{waiting replay}, and it is shown in Figure~\ref{fig:simple_algorithm}.
-Simply put, it waits for internal events matching those in the original run,
-but times out and proceeds if they do not occur.
+In the hope that absent internal events are not actually relevant
+for triggering the correctness violation, we proceed with replay.
+Specifically, our approach is to wait for expected equivalent internal events, but time out and proceed
+if they do not occur within a certain time \textepsilon.
 
-\begin{figure}
-\begin{boxedminipage}{\linewidth}
-\begin{Verbatim}[commandchars=\\\{\}]
-for e\textsubscript{i} in trace:
-  if e\textsubscript{i} is an internal event:
-    \textDelta = |e\textsubscript{i}.time - e\textsubscript{i-1}.time| + \textepsilon
-    wait up to \textDelta seconds for e\textsubscript{i}
-  else: // input
-    inject e\textsubscript{i}
-\end{Verbatim}
-\end{boxedminipage}
-\caption{Waiting Replay Algorithm}
-\label{fig:simple_algorithm}
-\end{figure}
-
-In most cases waiting replay successfully reproduces the original correctness
+In most cases this approach successfully reproduces the original correctness
 violation, assuming \textepsilon~is larger than variations in execution speeds
 between internal events. If the value of \textepsilon~is too large, however, we may end up
 waiting too long for the happens-before predecessors of an input $e_i$ such that a
-successor of $e_i$ occurs before we have injected $e_i$,
-potentially resulting in an altered output.
+successor of $e_i$ occurs before $e_i$ has been injected
+(thereby violating the remaining happens-before constraints).
 % \sam{Is it worth noting that this isn't necessarily a problem? If a successor occurs, it means it wasn't causally related to $e_i$, but the ordering still might matter for further successors.}
 
-Our second event scheduling algorithm addresses this possibility, but
-adds a factor of $n$ in the number of replayed inputs to the overall
-runtime. We refer to it as \emph{peeking replay}, and it is shown in Figure~\ref{fig:peek}.
-Simply put, peeking replay
-attempts to precompute which internal events are and aren't going to occur
-between any adjacent pair of inputs
-so that it can know exactly how long to wait before injecting inputs in the
-final replay.
+If the event scheduling algorithm detects that it has waited too long, it
+replays the trace from the beginning up until the immediately prior input, this time
+knowing exactly which internal events in the current input interval are
+and are not going to occur before injecting the next input.\footnote{An alternative
+would be to take a snapshot of the controllers' state at every injected input
+and start from the latest snapshot} The overall event scheduling algorithm
+is shown in Figure~\ref{fig:peek}.
 
 \begin{figure}
 \begin{boxedminipage}{\linewidth}
 \begin{Verbatim}[commandchars=\\\{\}]
-inputs = [e\textsubscript{1}, e\textsubscript{2}, ..., e\textsubscript{n}]
-new\_trace = []
+trace = [e\textsubscript{1}, e\textsubscript{2}, ..., e\textsubscript{j}]
+// e\textsubscript{1} is always an input
 
-for i in 1 to n-1:
-  waiting\_replay(new\_trace + [e\textsubscript{i}], \textepsilon=0)
-  start recording internal events
-  \textDelta = |e\textsubscript{i+1}.time - e\textsubscript{i}.time| + \textepsilon
-  wait \textDelta seconds
-  remove successors of e\textsubscript{i} from \textbackslash
-    recorded internal events
-  new\_trace += [e\textsubscript{i}]
-  new\_trace += recorded internal events
-
-waiting\_replay(new\_trace + [e\textsubscript{n}], \textepsilon=0)
+function replay(trace):
+  bootstrap the simulation
+  for e\textsubscript{i} in trace:
+    if e\textsubscript{i} is an internal event and
+          e\textsubscript{i} is not marked absent:
+      \textDelta = |e\textsubscript{i}.time - e\textsubscript{i-1}.time| + \textepsilon
+      wait up to \textDelta seconds for e\textsubscript{i}
+      if e\textsubscript{i} did not occur:
+        mark e\textsubscript{i} absent
+    else if e\textsubscript{i} is an input:
+      if a successor of e\textsubscript{i} occurred:
+        // waited too long
+        return replay(epsilon, trace)
+      else:
+        inject e\textsubscript{i}
 \end{Verbatim}
 \end{boxedminipage}
-\caption{Peeking Replay Algorithm}
+\caption{Replay Algorithm Pseudocode.\colin{Not actually correct! Waiting or not
+waiting potentially induces changes. Also,
+potentially recurses infinitely if not deterministic}}
 \label{fig:peek}
 \end{figure}
 
-% TODO: not quite true!
-In practice we employ a hybrid algorithm
-that defaults to waiting replay and only
-peeks during intervals where it has waited too long.
-This is possible because waiting replay can always detect when it has
-waited too long upon observing a successor of the input to be injected.
-Although the hybrid algorithm has the same worst case runtime as peeking
-replay, the average case runtime is significantly better.
+\subsection{Coping With New Internal Events}
+\label{subsec:new_events}
 
-% Everything below here should be toned down. We can put this stuff in a tech report elsewhere.
-
-Waiting and peeking replay both need to account for the pathological case
-where {\em multiple} internal events
-in the same
-equivalence class a single internal event in the original execution.
-Ambiguous equivalences mean that more than one possibility exists for where
-the next input should be
-injected while still maintaining happens-before constraints. For example, if $i_2$ and $i_3$ are internal events observed
+The last possible change induced by input pruning is the occurrence of new
+internal events that were not observed in the original trace.
+Ultimately, new events leave open multiple possibilities for where
+the next input should be injected.
+For example, if $i_2$ and $i_3$ are internal events observed
 during replay that are both in the same equivalence class as a single event $i_1$ from the
 original run, one might inject the next input after $i_2$ or after $i_3$.
-As we have proven elsewhere,\footnote{URL omitted for anonymity reasons}
-all possibilities need to be explored to guarantee that if a path through the
-distributed state machine leading to
-the correctness violation from the original execution exists, that path will be taken. In the worst case,
+
+It is theoretically always possible to construct two state machines that lead
+to differing outcomes: one that only leads to the correctness violation when the next input
+is injected before a new internal event, and one that only leads to the
+correctness violation when the next input is injected after a new internal
+event. In other words, to be guaranteed to traverse any existing suffix that leads
+to the correctness violation, it is necessary to recursively branch, trying both
+possibilities for every new internal event. In the worst case,
 this implies an exponential number of possibilities to be explored during
 replay.
 
-Luckily, ambiguous equivalent internal events are extremely rare in the
-control software we evaluated, as we
-show in \S\ref{subsec:runtime}. We have proven elsewhere that ambiguity only
-occurs when a sub-path exists in the distributed state machine that contains two or
-more equivalent internal edges without an intermediate input event edge.
-We conjecture that such transitions are not common in control plane systems,
-which are designed to quiesce quickly (\ie~take a small number of internal
-transitions after any input event). Consider the state machines in Figure~\ref{fig:state_machines}:
-it is not possible to traverse the same internal event edge (``Receive Link
-Failure Notification'' or ``Receive Flush'') without traversing an
-intermediate input event edge (``Link Failure'' or ``Master Failure'').
-\colin{TODO: need a figure that shows generalized event scheduling}
+Luckily, crucially ambiguous new internal events are \num{extremely rare} in the
+control software we evaluated. Our heuristic when waiting for expected internal
+events is to proceed normally if there are intermediate new internal events,
+always injecting the next input when the last expected predecessor
+either occurs or times out. As we show in \S\ref{subsec:case_studies},
+the minimal causal sets produced using this heuristic are \num{substantially} smaller
+than the original event traces.
+
+We conjecture that this is because SDN is a control plane system,
+and is designed to quiesce quickly (\ie~take a small number of internal
+transitions after any input event, and stop at highly connected vertices).
+As an illustration, consider the state machines
+in Figure~\ref{fig:state_machines}:
+the controllers quickly converge to a single state (either ``Master'' or
+``Failure''), as do the switches (``Safe'').
 
 \subsection{Complexity}
 \label{subsec:complexity}
 
-Assuming no ambiguities occur, the delta debugging algorithm terminates after
+The delta debugging algorithm terminates after
 $O(log\,n)$
 invocations of $replay$ in the best case, where $n$ is the number of inputs in the original
-trace~\cite{Zeller:2002:SIF:506201.506206}. Each invocation of waiting replay
-replays $n$ inputs, for an overall runtime of $O(nlog\,n)$ for
-waiting replay. The worst case runtime of delta debugging is $O(n)$ in the
-number of invocations of $replay$.
-\footnote{Note that this version of delta debugging
-assumes that no unresolved test
-outcomes occur. We ensure that this assumption holds by filtering inputs
-sequences that we know are invalid (\eg~link recoveries without a preceding
-link failure), as in Section 6~\cite{Zeller:1999:YMP:318773.318946}. The
-author's follow-on
-paper~\cite{Zeller:2002:SIF:506201.506206} removes the need for the assumption,
-but adds a factor of $N$ to the runtime.}
-Therefore the overall worst case runtime is $O(n^2)$ if waiting replay is used.
+trace~\cite{Zeller:1999:YMP:318773.318946}. In the worst case, the complexity
+of delta debugging algorithm is $O(n)$.
 
-Peeking replay adds another factor of $n$ to the overall runtime: for each input event
-$e_i$, it invokes waiting replay with inputs $e_1,\dots,e_i$, for a total of
-$n \times \frac{n+1}{2} \in O(n^2)$ replayed inputs. Therefore in the
-best case, the overall runtime of delta debugging with peeking replay is
-$O(nlog\,n)$, and the worst case is $O(n^3)$. Note that this extra factor of
-$n$ in computational complexity can be converted to a factor of $n$ in storage
-complexity if peek stores snapshots of
+If the event scheduling algorithm
+never needs to back up, it replays $n$ inputs,
+for an overall runtime of $O(nlog\,n)$ replayed inputs in the best case, and $O(n^2)$ in the worst case.
+Conversely, if the event scheduling
+needs to back up in every iteration, another factor of $n$ is added to the
+runtime: for each input event
+$e_i$, it replays inputs $e_1,\dots,e_i$, for a total of
+$n \times \frac{n+1}{2} \in O(n^2)$ replayed inputs. In other words, the
+overall worst case is $O(n^3)$ in the number of replayed inputs.
+
+Note that the extra factor of
+$n$ in computational complexity due to backing up can be converted to a factor of $n$ in storage
+complexity if we instead stored snapshots of
 the controllers' state rather than replaying each prefix from the beginning.
 
 \subsection{Parameters}
@@ -439,15 +448,6 @@ detect when we have waited too long (\viz~when a successor of the next input
 has occurred), but we cannot detect when we have timed out
 early on an internal event that is in fact going to occur.
 
-In practice we also make optimization to the overall delta debugging
-algorithm: since some of the input subsequences
-chosen by unmodified delta debugging may not be valid, we apply domain knowledge
-about input validity to avoid exploring certain subsequences. For example, it does
-not make sense to replay a link recovery event if we pruned
-the link failure event that preceded it. Likewise, pruning a host migration
-implies that we need to update the subsequent host migration event's source location.
-Beyond component failures and host migration, other dependencies between
-inputs are significantly more complicated to model.
 %At the
 %moment, our tool does not support policy changes or dataplane packet drops for
 %this reason.
@@ -570,7 +570,24 @@ the time''.
 \label{subsec:non_goals}
 
 Having detailed the specifics of \simulator, we now
-clarify the scope of its technique's use.
+clarify the scope of our technique's use.
+
+\noindent{\bf Partial Visibility.} Our event scheduling algorithm assumes that
+it has visibility into the occurrence of all relevant internal events. In
+practice most relevant internal state changes are already marked by logging
+statements, but developers may need to add additional
+logging statements to ensure reliable replay.
+
+\noindent{\bf Non-determinism Within Individual Controllers.} Our tool is not designed to reproduce bugs
+involving non-determinism within a single controller (\eg~race-conditions between threads);
+we focus on coarser granularity errors (\eg~incorrect failover logic), which we find plenty of
+in \S\ref{subsec:case_studies}. The upshot of
+this is that our technique is not able to minimize all possible failures, such as
+data races between threads.
+Nonetheless, the worst case for us is that the developer ends up with what they started:
+an unpruned log. That said, if the developer is willing to instrument their system to
+provide finer granularity log messages (\cf~\cite{Geels:2006:RDD:1267359.1267386}),
+our approach readily supports deterministic replay.
 
 \noindent{\bf Troubleshooting vs Debugging.} Our technique is a troubleshooting tool, not a debugger;
 by this we mean that \simulator{} helps identify and localize inputs that
@@ -587,17 +604,6 @@ if you have a bug in your policy specification, you need to take a closer look a
 That said, our tool can show whether switches behave the same as our software
 implementation: if our tool was unable to reproduce the error, that means that
 the problem was above or below the control software.
-
-\noindent{\bf Non-determinism Within Individual Controllers.} Our tool is not designed to reproduce bugs
-involving non-determinism within a single controller (\eg~race-conditions between threads);
-we focus on coarser granularity errors (\eg~incorrect failover logic), which we find plenty of
-in \S\ref{subsec:case_studies}. The upshot of
-this is that our technique is not able to minimize all possible failures, such as
-data races between threads.
-Nonetheless, the worst case for us is that the developer ends up with what they started:
-an unpruned log. That said, if the developer is willing to instrument their system to
-provide finer granularity log messages (\cf~\cite{Geels:2006:RDD:1267359.1267386}),
-our approach readily supports deterministic replay.
 
 \noindent{\bf Globally vs Locally Minimal Input Sequences.}
 Our approach is not guaranteed to find the globally minimal

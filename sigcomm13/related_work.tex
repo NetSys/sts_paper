@@ -101,9 +101,10 @@ control programs and a small number of machines, but suffers from exponential
 state explosion when run on large systems. For example, NICE took 30 hours to
 model check a network with two switches, two hosts, the MAC-learning
 control program (98 LoC), and five concurrent
-messages between the hosts~\cite{nice}. We chose to avoid state-space explosion
-by analyzing errant traces post-hoc.
-
+messages between the hosts~\cite{nice}. Rather than exploring all
+possibilities, we take as input a particular event trace that is known to trigger the
+bug, and enumerate subsets of that event trace in the hope of finding shorter
+code paths that still trigger the bug.
 
 % ----------------------------------------- %
 %          OLD TEXT

@@ -5,17 +5,18 @@
 %\end{aquote}
 
 Would World War \rom{1} still have occurred if Archduke Ferdinand had not been
-shot? In the absense of political criticism from the Soviet Union,
-would the American civil rights movement have succeeded? That is,
+shot? Would slavery be abolished in the United States if Abraham Lincoln had
+not been elected? That is,
 were those prior events intrinsic to the
 precipitation of the historical outcome, or
 were they extraneous? Unfortunately we can never know such
 historical counterfactuals for sure.
 
 In computing we often need to answer similar questions,
-\eg~``Was the link failure necessary for triggering the routing loop?''.
+\eg~``Was the link failure necessary for triggering the routing loop?'',
+or ``Were the top search results dependent on the straggler requests?''.
 In this paper we address the problem of programmatically answering
-questions of this form. % in the context of software-defined networks.
+questions of this form in the context of software-defined networking.
 
 Software bug diagnosis, a highly expensive and time consuming process, would benefit
 greatly from technology for answering such questions. A 2006 survey found
@@ -86,9 +87,8 @@ subtly change (\eg~the sequence numbers of packets may all differ), and some
 events that occurred in the original
 run may not occur. Our approach is to record and replay at the application layer,
 where we have access to the syntax and semantics of messages passed
-throughout the distributed system. In this way we can reason about slightly altered
-histories by masking over semantically insignificant
-information.
+throughout the distributed system. In this way we can recognize functionally
+equivalent messages, allowing us to proceed despite slightly altered histories.
 
 Related tools such as {\tt ndb}~\cite{handigol2012debugger} provide
 a historical view into dataplane (mis)behavior. In contrast, \simulator~provides
