@@ -311,7 +311,7 @@ define equivalence classes.}
 \label{tab:fingerprints}
 \end{table}
 
-\subsection{Coping With Absent Internal Events}
+\subsection{Handling Absent Internal Events}
 \label{subsec:divergence}
 
 Given an equivalence relation over internal events, replay
@@ -378,7 +378,7 @@ potentially recurses infinitely if not deterministic}}
 \label{fig:peek}
 \end{figure}
 
-\subsection{Coping With New Internal Events}
+\subsection{Handling New Internal Events}
 \label{subsec:new_events}
 
 The last possible change induced by input pruning is the occurrence of new
@@ -438,6 +438,8 @@ Note that the extra factor of
 $n$ in computational complexity due to backing up can be converted to a factor of $n$ in storage
 complexity if we instead stored snapshots of
 the controllers' state rather than replaying each prefix from the beginning.
+
+\colin{Mention parralelization. Each DD subset is independent!}
 
 \subsection{Parameters}
 \label{subsec:params}
