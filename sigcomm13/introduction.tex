@@ -5,7 +5,7 @@
 %\end{aquote}
 
 Would World War \rom{1} still have occurred if Archduke Ferdinand had not been
-shot? Would slavery be abolished in the United States today if Abraham Lincoln had
+shot? Would slavery be abolished in the United States if Abraham Lincoln had
 not been elected? That is,
 were those prior events intrinsic to the
 precipitation of the historical outcome, or
@@ -15,7 +15,7 @@ historical counterfactuals for sure.
 In computing we often need to answer similar questions,
 \eg~``Was the link failure necessary for triggering the routing loop?''
 or ``Were the top search results dependent on the straggler requests?''.
-And unlike history, it often possible to find answers to such
+And unlike human history, it often possible to find answers to such
 dependency questions. In this paper we address the problem of programmatically answering
 them in the context of software-defined networking.
 
@@ -51,9 +51,8 @@ reports 8.5 network error events per minute per
 datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}.
 Troubleshooters find little immediate use from traces containing many events
 prior to a fault,
-since they are often forced to manually filter events that are
-characteristic of normal operating
-conditions before they can make headway in diagnosing the problem.
+since they are often forced to manually filter extraneous events
+before they can even gain an intuition as to what might be the root cause.
 It is no surprise that when asked to describe their
 ideal tool, most network admins said ``automated troubleshooting''~\cite{Zeng:Survey}.
 
@@ -67,10 +66,7 @@ is violated), then the control plane has a bug. Our goal is
 to automatically identify the exact external inputs (\eg~link failures) that
 triggered the bug. Our technique, \simulator, achieves this by iteratively
 pruning inputs from the original run, replaying the altered history, and
-checking whether the networks remains in an invalid configuration.
-% \scott{Needs an example}
-% Colin: we haven't said "in this paper, we do X" anywhere in the
-% introduction. Maybe not a problem.
+checking whether the network remains in an invalid configuration.
 
 Pruning only concurrent inputs (those that do not have a
 happens-before chain~\cite{Lamport:1978:TCO:359545.359563} leading to the

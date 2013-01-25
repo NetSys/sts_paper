@@ -1,20 +1,17 @@
 % Just realized: b/c of anonymity, the PC can't chastise us for
 % running our system on our own code -- we can't tell them that it's our code!
-\Simulator~is certainly not without limitations. We discuss several of them
-here.
+\Simulator~leaves open several questions, which we discuss here.
 
 \noindent{\bf Are all simulated failures really indistinguishable
 from actual failures?}
 Maybe not, but since the simulator
 is built in software, the fidelity of our simulated failures
 can be made arbitrarily sophisticated.\footnote{Subject to scalability
-limitations of fine-grained simulations}
+limitations of fine-grained simulations.}
 
 \noindent{\bf Will this approach work on all control platforms?}
 So long as the controller under test supports OpenFlow 1.0, \simulator{}
-works out of the box. Some log statements may need to be added if there is
-insufficient synchronization for reproducing errors across replayed
-executions.
+works out of the box.
 
 \noindent{\bf Why SDN?}
 SDN has several properties that make it particularly amenable to an
@@ -38,7 +35,7 @@ on messages.
 
 In future work we hope to measure the effectiveness of our
 technique on other control plane systems
-that share the same properties, such example NAS controllers or MapReduce job trackers.
+that share the same properties, such example NAS controllers.
 
 \noindent{\bf Will control platforms ever become stable enough that
           \simulator{} is unnecessary?}

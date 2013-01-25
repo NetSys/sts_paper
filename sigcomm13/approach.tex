@@ -2,8 +2,7 @@
 
 We have developed a technique, \simulator, for automatically identifying
 a minimal sequence of inputs responsibly for triggering a given
-bug. Here we detail the specifics
-of \simulator.
+bug. Here we detail the specifics of \simulator.
 
 We start by describing an example bug in the Floodlight
 open source control platform~\cite{floodlight_bug} to illustrate the mechanics
@@ -20,12 +19,12 @@ switch configurations unless they detect that the master has crashed.
     \includegraphics[width=3.25in]{../diagrams/case_study/example_bug.pdf}
     \caption[]{\label{fig:example} Floodlight failover bug. External inputs
                are depicted as red dots, internal events are depicted as black
-               dots, and the dotted messages line depicts a timeout.}
+               dots, and the dotted message line depicts a timeout.}
 \end{figure}
 
 The failover logic in Floodlight is not implemented correctly, leading to the
 following race condition\footnote{Note that this issue was
-originally documented by the developers of Floodlight~\cite{floodlight_bug}} depicted in
+originally documented by the developers of Floodlight~\cite{floodlight_bug}.} depicted in
 Figure~\ref{fig:example}:
 a link fails (E1), and the switch attempts to notify the controllers (E2,E4) shortly after the master
 controller has died (E3), but before a new master has been selected (E6). In this case, all live controllers are in
@@ -54,7 +53,7 @@ necessary for triggering errant behavior. We define errant behavior in terms
 of {\em correctness violations}:
 configurations of the network that are inconsistent
 with the policy. In the example, the correctness violation is between a
-reachability policy specified in the logical view (``A can talk to B'')
+reachability policy specified in the logical switch (``A can talk to B'')
 and the blackhole in the physical network (``A's packets to B enter the
 blackhole and do not arrive at B'').
 
@@ -63,7 +62,7 @@ Specifically, our technique identifies a minimal sequence of inputs
 to the controllers that is sufficient for triggering a known correctness violation. We
 refer to such inputs as a {\em minimal causal sequence} (MCS). Going back to our example,
 suppose the log includes many more (extraneous) inputs. Whenever an
-extraneous event is pruned, the blackhole will still persist. When
+extraneous event is pruned, the blackhole will still persist: when
 the controller crash is pruned, the blackhole will be resolved properly, and
 when the link failure is pruned, no blackhole will occur. The MCS returned
 is therefore the controller crash and the link failure in conjunction.
@@ -73,12 +72,12 @@ is therefore the controller crash and the link failure in conjunction.
 
 Delta debugging~\cite{Zeller:1999:YMP:318773.318946}, a technique from the
 software engineering community, gets us part of the way
-there: given a single input (\eg~an HTML page)
+to our goal: given a single input (\eg~an HTML page)
 for a non-distributed program (\eg~Firefox), it performs a divide-and-conquer
 search, repeatedly running the program on subsets of the input
 until it finds a minimal subset (\eg~a single tag) that is sufficient
-for triggering a known bug. Specifically, it finds a 1-minimal
-(locally minimal) causal sequence~\cite{Zeller:1999:YMP:318773.318946},
+for triggering a known bug. Specifically, it finds a locally minimal
+causal sequence~\cite{Zeller:1999:YMP:318773.318946},
 meaning that if any input from the sequence is pruned, no correctness violation
 occurs. The delta debugging algorithm is shown in
 Figure~\ref{fig:ddmin} (with `$test$' replaced by `$replay$').
@@ -88,7 +87,7 @@ Figure~\ref{fig:ddmin} (with `$test$' replaced by `$replay$').
 \begin{boxedminipage}{\textwidth}
 Input: $\cfail$ s.t. $\cfail$ is a trace and $\test(\cfail) = \FAIL$. Output: $\dfail
 = \ddmin(\cfail)$ s.t. $\dfail \subseteq
-\cfail$, $\test(\dfail) = \FAIL$, and~$\dfail$ is 1-minimal.
+\cfail$, $\test(\dfail) = \FAIL$, and~$\dfail$ is minimal.
 \begin{align*}
 \ddmin(\cfail) &= \ddmin_2(\cfail, \emptyset) \quad \text{where} \\
 \ddmin_2(\dfail, R) &=
@@ -156,12 +155,12 @@ ways \simulator~can be put to use.
 \label{subsec:simulation}
 
 Unlike the example applications described
-by Zeller et al.~\cite{Zeller:2002:SIF:506201.506206}, the system we are troubleshooting is not a
+by the original delta debugging paper~\cite{Zeller:1999:YMP:318773.318946}, the system we are troubleshooting is not a
 single program--it is all the nodes and links of a distributed system,
 including controllers, switches, and end-hosts. Replaying traces
 on an actual network would be prohibitively costly and overly prone to
-non-deterministic behavior. We therefore simulate the entire control-plane
-(with support for minimal data-plane behavior)
+non-deterministic behavior. We therefore simulate the control-plane
+behavior of network devices (with support for minimal data-plane behavior)
 in a single process. We then run the control software on
 top of this simulator and connect the software switches to the controllers as if they were true
 network devices, such that the controllers believe they are configuring a true
@@ -188,8 +187,8 @@ reproduced by disconnecting the edge in the simulated network, and sending a
 port status message from the adjacent switches to their parent controller(s).
 
 The input subsequences chosen by delta debugging are not always valid. For
-example, it is not sensible to replay a link recovery event without a
-preceding link failure event; nor is it sensible to replay a host migration
+example, it is not sensible to recovery event without a
+preceding failure event; nor is it sensible to replay a host migration
 event without modifying the starting position when a preceding host
 migration event has been pruned. The simulator checks
 validity before replaying a given subsequence to account for this
@@ -197,8 +196,11 @@ possibility.\footnote{Handling invalid inputs is crucial for
 ensuring that the delta debugging algorithm we employ~\cite{Zeller:1999:YMP:318773.318946}
 is guaranteed to find a minimal causal set, since it assumes that no unresolved
 test outcomes occur. The author of delta debugging wrote a follow-on
-paper~\cite{Zeller:2002:SIF:506201.506206} that removes the need for the assumption,
-but the algorithmic complexity increases by a factor of $N$ in doing so.}
+paper~\cite{Zeller:2002:SIF:506201.506206} that removes the need for this assumption,
+but incurs an additional factor of $N$ in complexity in doing so.}
+Currently our simulator accounts for validity of all network state change
+events (shown in Table \ref{tab:inputs}), but does not support policy changes,
+which have more complex semantics.
 
 \subsection{Replay}
 \label{subsec:replay}
@@ -226,7 +228,7 @@ itself to master; if the ordering of inputs and internal events is
 perturbed, the final output may differ.
 Consider for example that if a controller's garbage collector happens to run
 while we replay inputs, it may delay an internal state transition until
-after an input that preceded it in the original run has been injected.
+after an input that depended on it the original run has been injected.
 
 The challenge is to ensure that causal relationships
 are maintained. Formally, to be guaranteed to reproduce the original correctness violation
@@ -234,20 +236,21 @@ we need to
 inject an external input $e$ at exactly the point when all other
 events (both external and internal) that precede it in the happens-before
 relation ($\{i \mid i \rightarrow e\}$) from the original execution have
-occurred~\cite{Fischer:1985:IDC:3149.214121}.
+occurred~\cite{tel2000introduction}.
 
 While the input and internal events from the original run are given to us,
 we become aware of internal events throughout replay by
 (i) monitoring
-control message receipts between controllers and between switches and
-controllers, and (ii) interposing on the controllers' logging library and notifying the
+control message receipts between controllers and switches,
+and (ii) interposing on the controllers' logging library and notifying the
 simulation process whenever log statements (which serve to mark relevant state
 transitions) are executed. Note that to achieve truly deterministic
 replay, these log statements would need to
 be highly granular, capturing information such as thread scheduling decisions;
 we show in \S\ref{subsec:case_studies}
 however that pre-existing, course granular log statements are sufficient to
-successfully reproduce many bugs.\footnote{We discuss this problem further in \S\ref{subsec:domain_knowledge}}
+successfully reproduce many bugs.\footnote{We discuss this problem further in
+\S\ref{subsec:domain_knowledge}.}
 %Note that the developer must provide enough logging statements
 %so that relevant internal state changes are captured and visible to our
 %tool.
@@ -282,7 +285,7 @@ of internal events. Formally, we consider an internal event $i'$ observed in an 
 equivalent to an internal event $i$ from the original trace iff all unmasked
 fields have the same value
 and $i$ occurs between $i'$'s preceding and succeeding inputs in the
-happens-before relation. 
+happens-before relation.
 
 \begin{figure}[t]
     %\hspace{-10pt}
@@ -339,22 +342,22 @@ successor of $e_i$ occurs before $e_i$ has been injected
 % \sam{Is it worth noting that this isn't necessarily a problem? If a successor occurs, it means it wasn't causally related to $e_i$, but the ordering still might matter for further successors.}
 
 If the event scheduling algorithm detects that it has waited too long, it
-replays the trace from the beginning up until the immediately prior input, this time
-knowing exactly which internal events in the current input interval are
-and are not going to occur before injecting the next input.\footnote{An alternative
+replays the trace from the beginning up until the immediately prior input,\footnote{An alternative
 would be to take a snapshot of the controllers' state at every injected input
-and start from the latest snapshot} The overall event scheduling algorithm
+and start from the latest snapshot.} this time
+knowing exactly which internal events in the current input interval are
+and are not going to occur before injecting the next input. The overall event scheduling algorithm
 is shown in Figure~\ref{fig:peek}.
 
 \begin{figure}
 \begin{boxedminipage}{\linewidth}
 \begin{Verbatim}[commandchars=\\\{\}]
-trace = [e\textsubscript{1}, e\textsubscript{2}, ..., e\textsubscript{j}]
+subsequence = [e\textsubscript{1}, e\textsubscript{2}, ..., e\textsubscript{j}]
 // e\textsubscript{1} is always an input
 
-function replay(trace):
+function replay(subsequence):
   bootstrap the simulation
-  for e\textsubscript{i} in trace:
+  for e\textsubscript{i} in subsequence:
     if e\textsubscript{i} is an internal event and
           e\textsubscript{i} is not marked absent:
       \textDelta = |e\textsubscript{i}.time - e\textsubscript{i-1}.time| + \textepsilon
@@ -364,7 +367,7 @@ function replay(trace):
     else if e\textsubscript{i} is an input:
       if a successor of e\textsubscript{i} occurred:
         // waited too long
-        return replay(epsilon, trace)
+        return replay(subsequence)
       else:
         inject e\textsubscript{i}
 \end{Verbatim}
@@ -386,25 +389,25 @@ For example, if $i_2$ and $i_3$ are internal events observed
 during replay that are both in the same equivalence class as a single event $i_1$ from the
 original run, one might inject the next input after $i_2$ or after $i_3$.
 
-It is theoretically always possible to construct two state machines that lead
+In the general case it is always possible to construct two state machines that lead
 to differing outcomes: one that only leads to the correctness violation when the next input
 is injected before a new internal event, and one that only leads to the
 correctness violation when the next input is injected after a new internal
 event. In other words, to be guaranteed to traverse any existing suffix that leads
 to the correctness violation, it is necessary to recursively branch, trying both
-possibilities for every new internal event. In the worst case,
-this implies an exponential number of possibilities to be explored during
-replay.
+possibilities for every new internal event. This implies an exponential number of
+possibilities to be explored in the worst case.
 
 Luckily, crucially ambiguous new internal events are \num{extremely rare} in the
 control software we evaluated. Our heuristic when waiting for expected internal
 events is to proceed normally if there are intermediate new internal events,
-always injecting the next input when the last expected predecessor
+always injecting the next input when its last expected predecessor
 either occurs or times out. As we show in \S\ref{subsec:case_studies},
 the minimal causal sets produced using this heuristic are \num{substantially} smaller
-than the original event traces.
+than the original event traces. \colin{Should strengthen this claim. The
+controllers we examined must have state machines that are amenable..}
 
-We conjecture that this is because SDN is a control plane system,
+We conjecture that ambiguous new internal events are rare because SDN is a control plane system,
 and is designed to quiesce quickly (\ie~take a small number of internal
 transitions after any input event, and stop at highly connected vertices).
 As an illustration, consider the state machines
@@ -421,7 +424,7 @@ invocations of $replay$ in the best case, where $n$ is the number of inputs in t
 trace~\cite{Zeller:1999:YMP:318773.318946}. In the worst case, the complexity
 of delta debugging algorithm is $O(n)$.
 
-If the event scheduling algorithm
+If the replay algorithm
 never needs to back up, it replays $n$ inputs,
 for an overall runtime of $O(nlog\,n)$ replayed inputs in the best case, and $O(n^2)$ in the worst case.
 Conversely, if the event scheduling
@@ -471,7 +474,7 @@ dealing with modified histories.}
 \label{subsec:cc}
 
 \num{Cut if no space.}
-Finally, we need a mechanism for deciding
+At the end of replaying a given subsequence, we need a mechanism for deciding
 whether a correctness violation is present at the end of the system execution.
 We refer to such an algorithm as a {\em decider}.
 
@@ -497,7 +500,7 @@ where $L$ is the maximum number of bits in the header.
 Upon receiving a packet,
 forwarding elements apply a transformation function, potentially modifying
 packets before forwarding them on\footnote{Multicast forwarding can expressed
-by extending the range to sets of output tuples}:
+by extending the range to sets of output tuples.}:
 \begin{align*}
 T: (H \times E) \rightarrow (H \times E_{\emptyset})
 \end{align*}
@@ -553,7 +556,7 @@ The routing tables of forwarding elements in the views and the physical
 network can then be translated into transformation functions.
 Finally, we feed a symbolic packet $x^L$ to each access link of the
 network.\footnote{The rules for process wildcard bits $x^n$ are defined in
-the HSA paper~\cite{hsa}} The end result is a propagation graph representing
+the HSA paper~\cite{hsa}.} The end result is a propagation graph representing
 all possible paths taken by any packet injected
 at the access link.
 
@@ -600,7 +603,7 @@ an unpruned log. That said, if the developer is willing to instrument their syst
 provide finer granularity log messages (\cf~\cite{Geels:2006:RDD:1267359.1267386}),
 our approach readily supports deterministic replay.
 
-\noindent{\bf Troubleshooting vs Debugging.} Our technique is a troubleshooting tool, not a debugger;
+\noindent{\bf Troubleshooting vs. Debugging.} Our technique is a troubleshooting tool, not a debugger;
 by this we mean that \simulator{} helps identify and localize inputs that
 trigger erroneous behavior, but it does not directly identify which
 line(s) of code cause the error.
@@ -613,10 +616,9 @@ as component failures.
 If there is a bug in your switch, you need to contact your hardware vendor;
 if you have a bug in your policy specification, you need to take a closer look at what you specified.
 That said, our tool can show whether switches behave the same as our software
-implementation: if our tool was unable to reproduce the error, that means that
-the problem was above or below the control software.
+implementation.
 
-\noindent{\bf Globally vs Locally Minimal Input Sequences.}
+\noindent{\bf Globally vs. Locally Minimal Input Sequences.}
 Our approach is not guaranteed to find the globally minimal
 causal sequence from an input trace, since this requires $O(2^N)$ computation in the worst case.
 The delta debugging algorithm we employ however is guaranteed to find a
@@ -624,15 +626,16 @@ locally minimal causal sequence~\cite{Zeller:1999:YMP:318773.318946},
 meaning that if any input from the sequence is pruned, no correctness violation
 occurs. \colin{Need to mention monotonicity, consistency, unambiguity here}
 
-\noindent{\bf Correctness vs Performance.}
+\noindent{\bf Correctness vs. Performance.}
 We are primarily focused on correctness bugs, not performance bugs. That said,
 our approach is largely agnostic to what invariants are
 checked.
 
-\noindent{\bf Proactive vs Reactive Configuration.} We focus primarily on
+\noindent{\bf Proactive vs. Reactive Configuration.} We focus primarily on
 \emph{proactive} configuration, where controllers react to policy and topology changes, but
 not necessarily individual packets or flows events in the
-dataplane.\footnote{Production controllers typically adopt this model for performance reasons}
+dataplane.\footnote{Production controllers typically adopt this model for
+performance reasons.}
 The main challenge in extending our approach to reactive controllers is
 achieving efficient simulation of dataplane traffic.
 

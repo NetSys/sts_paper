@@ -39,7 +39,7 @@ while minimizing modifications to control software.
 \projectname~optionally ensures a deterministic order of messages despite
 non-determinism in operating system I/O scheduling
 by multiplexing all sockets in the controller process
-onto a single true socket. \footnote{An alternative approach would be to employ a
+onto a single true socket.\footnote{An alternative approach would be to employ a
 distributed mutex to ensure reliable message ordering~\cite{lin2009towards}.}
 \projectname~currently
 overrides socket functionality within the control software itself, but
@@ -68,8 +68,11 @@ if the altered execution invokes {\tt gettimeofday()} more times than were recor
 in the initial run, we interpolate the time values of neighboring events}
 As an added benefit, overriding {\tt gettimeofday()} allows us to `compress'
 runtime in some cases (similar to time-warped emulation~\cite{Gupta06toinfinity}).
-Our current implementation does not account other sources of non-determinism,
-such as asynchronous signals, random number generators,
+
+If the control software under test utilizes random number generators, we
+currently manually replace any such functionality with deterministic
+algorithms. Our current implementation does not account other sources of non-determinism,
+such as asynchronous signals,
 or interruptable instructions (\eg~x86's {\tt ecx})~\cite{Dunlap:2002:REI:844128.844148}.
 
 \projectname~can be used in a number of ways. We outline three use-cases here.
@@ -118,7 +121,7 @@ behavior of future versions of the software. And because \projectname~makes
 limited assumptions about the control software under test, the overall SDN community
 could collect a repository of test cases to validate different SDN control platforms.
 
-Automatically generating integration tests frees developers to be more agile in
+Generating integration tests in this fashion frees developers to be more agile in
 development, decreasing the time they spend writing test cases.
 Automatically identifying minimal causal sequences gives developers
 intuition about what code path might be triggered by the fault-inducing
