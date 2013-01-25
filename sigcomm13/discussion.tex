@@ -34,13 +34,11 @@ the control application and the network hypervisor~\cite{quantum}), are
 well-defined--a property that is crucial for fingerprinting.
 Moreover, controllers are relatively small in number compared to the size of
 overall network, which makes it much easier to superimpose
-on messages (described in detail in~\S\ref{subsec:replay}).
+on messages.
 
-We conjecture that our technique is applicable to other control plane systems
-which share the same properties,  such example NAS controllers or MapReduce job trackers.
-The components of our
-tool that are specific to SDN are the simulator and the masks for control
-messages.
+In future work we plan to experiment with the effectiveness of our
+our technique on other control plane systems
+which share the same properties, such example NAS controllers or MapReduce job trackers.
 
 \noindent{\bf Will control platforms ever become stable enough that
           \simulator{} is unnecessary?}

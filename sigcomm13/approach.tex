@@ -448,9 +448,20 @@ detect when we have waited too long (\viz~when a successor of the next input
 has occurred), but we cannot detect when we have timed out
 early on an internal event that is in fact going to occur.
 
-%At the
-%moment, our tool does not support policy changes or dataplane packet drops for
-%this reason.
+\eat{
+In practice we also make optimization to the overall delta debugging
+algorithm: since some of the input subsequences
+chosen by unmodified delta debugging may not be valid, we apply domain knowledge
+about input validity to avoid exploring certain subsequences. For example, it does
+not make sense to replay a link recovery event if we pruned
+the link failure event that preceded it. Likewise, pruning a host migration
+implies that we need to update the subsequent host migration event's source location.
+Beyond component failures and host migration, other dependencies between
+inputs are significantly more complicated to model.
+At the
+moment, our tool does not support policy changes or dataplane packet drops for
+this reason.
+}
 
 \colin{Mention that causal
 annotations and selective pruning help.} \colin{Make sure we emphasize that there is no `right answer', since we're
