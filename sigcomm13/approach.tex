@@ -448,7 +448,7 @@ we set \textepsilon~\num{somewhat arbitrarily} to $100$ milliseconds, and this h
 failure cases. In general, larger values of \textepsilon~are preferable to
 smaller values (disregarding runtime considerations), since we can always
 detect when we have waited too long (\viz~when a successor of the next input
-has occurred), but we cannot detect when we have timed out
+has occurred) \sam{Maybe move this statement in parens earlier, like 3.6. When we say ``we can detect when we have waited too long'', we should state how we know this.}, but we cannot detect when we have timed out
 early on an internal event that is in fact going to occur.
 
 \eat{
