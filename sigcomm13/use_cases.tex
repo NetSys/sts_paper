@@ -12,7 +12,7 @@ The input types supported by \projectname~are shown in Table~\ref{tab:inputs}.
 Controllers are notified of link, switch, and host migration events
 via OpenFlow messages~\cite{openflow} sent by software switches.
 Although the software switches do support packet forwarding, we
-have not focused on simulating high-throughout dataplane behavior.
+have not focused on simulating high-throughput dataplane behavior.
 % We hope to support policy changes in the future (Quantum)
 
 \begin{table}
@@ -76,7 +76,8 @@ such as asynchronous signals,
 or interruptable instructions (\eg~x86's {\tt ecx})~\cite{Dunlap:2002:REI:844128.844148}.
 
 \projectname~can be used in a number of ways. We outline three use-cases here.
-\colin{Present these as a workflow instead?}
+\colin{Present these as a workflow instead. Emphasize MCS more. Separate
+concerns: bug exploration, then replay, then MCS}
 
 % TODO:
 % Need to do a better job of discussing how we stop controllers from getting
@@ -135,6 +136,7 @@ likely that the same underlying bug is being triggered.
 
 \subsection{Replayable Traces}
 
+\andi{Underwhelming. Also, cite OFR}
 When developers are unable to debug an issue, they often elicit help from
 mailing lists or coworkers. The status quo today is to describe the conditions needed to
 reproduce the bug as carefully as possible and hope that someone else is able
@@ -150,7 +152,7 @@ debugger, developers can also iteratively run the trace as many times as
 needed to identify the line(s) of code responsible for the problem.
 
 \subsection{Forensic Analysis}
-
+\andi{See if we can shorten this}
 The above two use cases are implemented and exercised in \projectname~today.
 Forensic analysis of production logs, while not currently implemented,
 may be more valuable yet: correctness

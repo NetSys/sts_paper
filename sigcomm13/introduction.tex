@@ -36,7 +36,8 @@ globally optimizing network utilization~\cite{urs}.
 Most of this complexity comes from
 fundamentally difficult distributed systems challenges that the networking community has
 relatively little experience
-solving in tightly coupled environments. % (not fully distributed)
+solving in tightly coupled environments. \colin{Scott: Should we tone this
+down?}
 For example, Google's Urs H$\ddot{\mathrm{o}}$elzle recently
 noted at the Open Networking Summit~\cite{urs}: ``[Coordination between replicated controllers] is going to
 cause some angst, and justifiably, in the industry''. As SDN control software
@@ -64,14 +65,19 @@ ideal tool, most network admins said ``automated troubleshooting''~\cite{Zeng:Su
 If the network enters a permanently invalid configuration (\eg~isolation between tenants
 is violated), then the control plane has a bug. Our goal is
 to automatically identify the exact external inputs (\eg~link failures) that
-triggered the bug. Our technique, \simulator, achieves this by iteratively
-pruning inputs from the original run, replaying the altered history, and
-checking whether the network remains in an invalid configuration.
+triggered the bug.
 
-Pruning only concurrent inputs (those that do not have a
-happens-before chain~\cite{Lamport:1978:TCO:359545.359563} leading to the
-invalid configuration) does not significantly reduce the number of inputs.
-Our approach is to extend delta debugging~\cite{Zeller:2002:SIF:506201.506206}--an algorithm for
+One straightforward approach to pruning extraneous inputs is to account for
+potential causality: if an input does not induce any messages that arrive
+before the occurence of the invalid configuration, it
+cannot possibly have affected the outcome~\cite{Lamport:1978:TCO:359545.359563}.
+Unfortunately, pruning concurrent inputs alone does not significantly
+significantly reduce the number of inputs.
+
+Our approach is to iteratively
+prune inputs from the original run, replay altered histories, and
+check whether the network re-enters the invalid configuration.
+In particular, we extend delta debugging~\cite{Zeller:2002:SIF:506201.506206}--an algorithm for
 minimizing test cases for individual programs--to a distributed environment, where inputs
 are spread across time and involve multiple machines.
 
