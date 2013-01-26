@@ -1,7 +1,16 @@
 \subsection{Case Studies}
 \label{subsec:case_studies}
+
+We applied \projectname~to three open source SDN control platforms:
+POX~\cite{pox}, NOX~\cite{nox}, and Floodlight~\cite{bigswitch}, and
+found \num{several} bugs in total. We describe them in detail here.
+
+\noindent{\bf POX empty list removal.} We start with bugs found in POX~\cite{pox}. POX,
+the sucessor of NOX, is a single-machine control platform designed in the spirit of
+Onix~\cite{onix} to provide programming
+abstractions to hide the low-level details of communicating with switches.
+
 \begin{itemize}
-\item POX trivial type error bugs to start
 \item Floodlight failover re-cap
 \item NOX routing
 \item POX distribution?
@@ -23,6 +32,13 @@
 
 \subsection{Runtime}
 \label{subsec:runtime}
+
+\begin{figure}[t]
+    %\hspace{-10pt}
+    \includegraphics[width=3.25in]{../graphs/runtime/list_remove_error.pdf}
+    \caption[]{\label{fig:hsa_runtime} Minimizing the POX list remove exception.}
+\end{figure}
+
 \begin{itemize}
 \item Graphs of \# of replays vs. remaining inputs
 \item `time compression' benefits
