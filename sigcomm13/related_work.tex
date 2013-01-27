@@ -11,12 +11,10 @@ program execution (both code paths and data values) that lead up to the failure.
 Along a similar vein, execution
 synthesis~\cite{Zamfir:2010:EST:1755913.1755946} takes a program and a bug
 report as input, and employs symbolic execution to find a thread schedule that will
-reproduce the failure. Delta
-debugging~\cite{Zeller:2002:SIF:506201.506206} seeks to find a minimal
-subset of an input (always a single file) that leads to a failure. Delta debugging
+reproduce the failure. Delta debugging
 has been applied to multi-threaded (single-core) programs
 to identify the minimum set of thread
-switches from a thread schedule (a single file) that reproduces
+switches from a thread schedule (a single input file) that reproduces
 a race condition~\cite{choi2002isolating}. Chronus presents a simpler search
 algorithm than delta debugging that is specific to configuration
 debugging~\cite{whitaker2004configuration}.
@@ -50,8 +48,8 @@ configuration in the first place.
 Trace analysis frameworks such as Pip~\cite{pip} allow developers
 to programmatically check whether their expectations about the structure of
 recorded causal
-traces hold. Other tracing techniques~\cite{barham2004using} automatically identify anomalous
-traces and `root cause' transitions within anomalous traces by constructing
+traces hold. MagPie~\cite{barham2004using} automatically identify anomalous
+traces, as well as unlikely transitions within anomalous traces by constructing
 a probabilistic state machine from a large collection of traces and
 identifying low probability paths.
 Our approach identifies the exact minimal causal set of inputs without
@@ -96,7 +94,7 @@ execution.
 Model checkers such as Mace~\cite{Killian:2007:MLS:1250734.1250755} and
 NICE~\cite{nice} enumerate all possible code paths taken by control software (NOX)
 and identify concrete inputs that cause
-the network to enter invalid configurations. Model checking works well for small
+the system to enter invalid configurations. Model checking works well for small
 control programs and a small number of machines, but suffers from exponential
 state explosion when run on large systems. For example, NICE took 30 hours to
 model check a network with two switches, two hosts, the MAC-learning
