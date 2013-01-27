@@ -67,7 +67,7 @@ triggered the bug, and conversely filter out those that are extraneous.
 
 One straightforward approach is to account for
 potential causality: if an input does not induce any messages that arrive
-before the occurence of the invalid configuration, it
+before the occurrence of the invalid configuration, it
 cannot possibly have affected the outcome~\cite{Lamport:1978:TCO:359545.359563}.
 Unfortunately, pruning concurrent inputs alone does not significantly
 significantly reduce the number of inputs.
@@ -89,7 +89,7 @@ events that occurred in the original
 run may not occur. Our approach is to record and replay at the application layer,
 where we have access to the syntax and semantics of messages passed
 throughout the distributed system. In this way we can recognize functionally
-equivalent messages and reason about causal dependenices despite altered histories.
+equivalent messages and maintain causal dependencies despite altered histories.
 
 Related tools such as {\tt ndb}~\cite{handigol2012debugger} provide
 a historical view into dataplane (mis)behavior. In contrast, \simulator~provides
@@ -97,7 +97,7 @@ information about precisely what caused the network to
 enter an invalid
 configuration in the first place. Record and replay techniques such as
 OFRewind~\cite{ofrewind} and liblog~\cite{Geels:2006:RDD:1267359.1267386}
-can achieve the same end, but they depend on manual inspection and pruning
+are used to achieve the same end, but they depend on manual inspection and pruning
 to do so. As far as we know, our work
 is the first to programmatically isolate fault-inducing inputs to a distributed
 system.

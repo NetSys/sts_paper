@@ -1,17 +1,32 @@
-\subsection{Case Studies}
 \label{subsec:case_studies}
 
 We have applied \projectname~to three open source SDN control platforms:
 POX~\cite{pox}, NOX~\cite{nox}, and Floodlight~\cite{bigswitch}. We
 found \num{several} bugs in total, and were able to localize a minimal
-causal set in all cases. We describe these case studies in detail here.
+causal sequence in all cases. \colin{Tone this down.} We describe these case studies in detail here.
 
-\noindent{\bf POX empty list removal.} We start with bugs found in POX~\cite{pox}. POX,
-the sucessor of NOX, is a single-machine control platform designed in the spirit of
+\noindent{\bf POX empty list removal.} The first controller we examine is
+POX~\cite{pox}, the successor of NOX. POX
+is a single-machine control platform designed in the spirit of
 Onix~\cite{onix} to provide programming
-abstractions on top of the low-level details of communicating with switches.
+abstractions on top of the low-level details of switch-controller
+communication.
 
+We start with a relatively trivial bug to illustrate the range of bugs our
+technique can useful for. We employed \projectname~to generate random sequences of
+inputs, and found after some time that an exception was thrown in POX. The
+exception was caused by attempting to remove an element from a list that was
+not actually present.
 
+There were $76$ randomly generated inputs in the trace leading up to the
+exception. We invoked \simulator~to identify a two element minimal causal set:
+a switch failure followed by a switch recovery. Apparently this particular
+input sequence had not been tested before, and \simulator~made it easy to
+identify what inputs caused the erroneous code path to be triggered. At the least,
+this minimization serves to simplify integration tests for this exception.
+
+\noindent{\bf POX routing loop.} The next bug we encountered was found in
+the POX routing application.
 
 \begin{itemize}
 \item Floodlight failover re-cap
@@ -30,16 +45,21 @@ abstractions on top of the low-level details of communicating with switches.
 
 % The logging statements must also contain enough context[d] to allow for
 % unambiguous fingerprinting. -> what exactly this means
-\item How often does ambiguous fingerprinting occur in practice?
+\item How often do unexpected internal events occur in practice?
 \end{itemize}
 
 \subsection{Runtime}
 \label{subsec:runtime}
 
+The POX list remove exception did not depend on delicate timings,
+and \simulator~was able to isolate the minimal causal set in logarithmic
+time. The runtime characteristics of \simulator~for this case are shown in
+Figure~\cite{fig:list_runtime}.
+
 \begin{figure}[t]
     %\hspace{-10pt}
     \includegraphics[width=3.25in]{../graphs/runtime/list_remove_error.pdf}
-    \caption[]{\label{fig:hsa_runtime} Minimizing the POX list remove exception.}
+    \caption[]{\label{fig:list_runtime} Minimizing the POX list remove exception.}
 \end{figure}
 
 \begin{itemize}
