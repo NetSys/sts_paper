@@ -34,15 +34,13 @@ providing isolation and resource arbitration between multiple
 tenants~\cite{Casado:2010:VNF:1921151.1921162}, and
 globally optimizing network utilization~\cite{urs}.
 Most of this complexity comes from
-fundamentally difficult distributed systems challenges that the networking community has
-relatively little experience
-solving in tightly coupled environments. \colin{Scott: Should we tone this
-down?}
-For example, Google's Urs H$\ddot{\mathrm{o}}$elzle recently
-noted at the Open Networking Summit~\cite{urs}: ``[Coordination between replicated controllers] is going to
-cause some angst, and justifiably, in the industry''. As SDN control software
-is used to manage larger and more sophisticated networks,
-we expect its complexity to increase.
+fundamentally difficult distributed systems challenges such as asynchrony and
+partial failure. For example, Google's Urs H$\ddot{\mathrm{o}}$elzle noted
+at the Open Networking Summit~\cite{urs}: ``[Coordination between replicated controllers] is going to
+cause some angst, and justifiably, in the industry''.
+%As SDN control software
+%is used to manage larger and more sophisticated networks,
+%we expect its complexity to increase.
 % Scott: needs more SDN war stories from VMW, BSN
 
 The troubleshooting process is hindered by the large number of hardware failures,
@@ -65,9 +63,9 @@ ideal tool, most network admins said ``automated troubleshooting''~\cite{Zeng:Su
 If the network enters a permanently invalid configuration (\eg~isolation between tenants
 is violated), then the control plane has a bug. Our goal is
 to automatically identify the exact external inputs (\eg~link failures) that
-triggered the bug.
+triggered the bug, and conversely filter out those that are extraneous.
 
-One straightforward approach to pruning extraneous inputs is to account for
+One straightforward approach is to account for
 potential causality: if an input does not induce any messages that arrive
 before the occurence of the invalid configuration, it
 cannot possibly have affected the outcome~\cite{Lamport:1978:TCO:359545.359563}.
@@ -75,7 +73,7 @@ Unfortunately, pruning concurrent inputs alone does not significantly
 significantly reduce the number of inputs.
 
 Our approach is to iteratively
-prune inputs from the original run, replay altered histories, and
+prune inputs from the original run, replay, and
 check whether the network re-enters the invalid configuration.
 In particular, we extend delta debugging~\cite{Zeller:2002:SIF:506201.506206}--an algorithm for
 minimizing test cases for individual programs--to a distributed environment, where inputs
@@ -84,14 +82,14 @@ are spread across time and involve multiple machines.
 The main difficulty in applying delta debugging to a distributed
 setting is coping with diverged histories. Traditional replay
 techniques~\cite{Dunlap:2002:REI:844128.844148,Geels:2006:RDD:1267359.1267386}
-reliably reproduce errors by precisely recording the low-level I/O operations of
+reproduce errors reliably by precisely recording the low-level I/O operations of
 software under test. Pruning inputs, however, may cause the remaining events to
 subtly change (\eg~the sequence numbers of packets may all differ), and some
 events that occurred in the original
 run may not occur. Our approach is to record and replay at the application layer,
 where we have access to the syntax and semantics of messages passed
 throughout the distributed system. In this way we can recognize functionally
-equivalent messages, allowing us to proceed despite slightly altered histories.
+equivalent messages and reason about causal dependenices despite altered histories.
 
 Related tools such as {\tt ndb}~\cite{handigol2012debugger} provide
 a historical view into dataplane (mis)behavior. In contrast, \simulator~provides
@@ -114,9 +112,9 @@ to the best of our knowledge, painstaking manual analysis of logs is the
 
 % Cut?
 The rest of this paper is organized as follows. In \S\ref{sec:overview},
-we present a brief overview of the SDN stack and its failure modes.
-In \S\ref{sec:approach} we present \simulator~in detail.
-We discuss use cases for \simulator~in \S\ref{sec:architecture},
+we present a brief overview of the SDN control plane and its failure modes.
+In \S\ref{sec:approach} we present our approach in detail.
+We discuss use cases for in \S\ref{sec:architecture},
 and describe case studies and a performance evaluation in
 \S\ref{sec:evaluation}. We end by discussing the limitations of our
 approach (\S\ref{sec:discussion}) and related work (\S\ref{sec:related_work}).
