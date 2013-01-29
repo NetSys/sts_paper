@@ -4,9 +4,9 @@
 
 \noindent{\bf Are all simulated failures really indistinguishable
 from actual failures?}
-Maybe not, but since the simulator
-is built in software, the fidelity of our simulated failures
-can be made arbitrarily sophisticated.\footnote{Subject to scalability
+Maybe not, but since we built the simulator
+in software, the fidelity of our simulated failures
+can be arbitrarily sophisticated.\footnote{Subject to scalability
 limitations of fine-grained simulations.}
 
 \noindent{\bf Will this approach work on all control platforms?}
@@ -14,7 +14,7 @@ So long as the controller under test supports OpenFlow 1.0, \simulator{}
 works out of the box.
 
 \noindent{\bf Why SDN?}
-SDN has several properties that make it particularly amenable to an
+SDN has two properties that make it particularly amenable to an
 automated troubleshooting approach such as ours. Most importantly, SDN control software
 quickly converges to quiescence--that is, SDN controllers become idle when no policy or
 topology changes occur for a period of time. This means that
@@ -29,7 +29,7 @@ between controllers and switches~\cite{openflow}, or
 OpenStack Quantum's API between
 the control application and the network hypervisor~\cite{quantum}), are
 well-defined--a property that is crucial for fingerprinting.
-Moreover, controllers are relatively small in number compared to the size of
+Moreover, controllers are small in number compared to the size of
 overall network, which makes it much easier to superimpose
 on messages.
 

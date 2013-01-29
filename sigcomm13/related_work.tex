@@ -11,8 +11,8 @@ program execution (both code paths and data values) that lead up to the failure.
 Along a similar vein, execution
 synthesis~\cite{Zamfir:2010:EST:1755913.1755946} takes a program and a bug
 report as input, and employs symbolic execution to find a thread schedule that will
-reproduce the failure. Delta debugging
-has been applied to multi-threaded (single-core) programs
+reproduce the failure. The authors of delta debugging
+applied their technique to multi-threaded (single-core) programs
 to identify the minimum set of thread
 switches from a thread schedule (a single input file) that reproduces
 a race condition~\cite{choi2002isolating}. Chronus presents a simpler search

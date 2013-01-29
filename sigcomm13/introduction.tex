@@ -5,7 +5,7 @@
 %\end{aquote}
 
 Would World War \rom{1} still have occurred if Archduke Ferdinand had not been
-shot? Would slavery be abolished in the United States if Abraham Lincoln had
+shot? Would the United States have abolished slavery if Abraham Lincoln had
 not been elected? That is,
 were those prior events intrinsic to the
 precipitation of the historical outcome, or
@@ -69,7 +69,7 @@ One straightforward approach is to account for
 potential causality: if an input does not induce any messages that arrive
 before the occurrence of the invalid configuration, it
 cannot possibly have affected the outcome~\cite{Lamport:1978:TCO:359545.359563}.
-Unfortunately, pruning concurrent inputs alone does not significantly
+Unfortunately, pruning concurrent inputs alone does not
 significantly reduce the number of inputs.
 
 Our approach is to iteratively
@@ -97,7 +97,7 @@ information about precisely what caused the network to
 enter an invalid
 configuration in the first place. Record and replay techniques such as
 OFRewind~\cite{ofrewind} and liblog~\cite{Geels:2006:RDD:1267359.1267386}
-are used to achieve the same end, but they depend on manual inspection and pruning
+achieve the same end, but they depend on manual inspection and pruning
 to do so. As far as we know, our work
 is the first to programmatically isolate fault-inducing inputs to a distributed
 system.

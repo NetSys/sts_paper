@@ -5,12 +5,12 @@ for \projectname~is publicly available,\footnote{URL omitted due to anonymity re
 and three industrial SDN companies to date have expressed interest in adopting it.
 
 In the rest of this section, we highlight salient points of \projectname's
-design. Furthermore, we describe three ways \projectname~can be put to use
-by SDN developers and operators.
+design. Furthermore, we describe three ways developers and operators can put
+\projectname~to use.
 
-The input types supported by \projectname~are shown in Table~\ref{tab:inputs}.
-Controllers are notified of link, switch, and host migration events
-via OpenFlow messages~\cite{openflow} sent by software switches.
+We show the input types supported by \projectname~in Table~\ref{tab:inputs}.
+We notify controllers about link, switch, and host migration events
+by sending OpenFlow messages~\cite{openflow} from software switches.
 Although the software switches do support packet forwarding, we
 have not focused on simulating high-throughput dataplane behavior.
 % We hope to support policy changes in the future (Quantum)
@@ -43,7 +43,7 @@ onto a single true socket.\footnote{An alternative approach would be to employ a
 distributed mutex to ensure reliable message ordering~\cite{lin2009towards}.}
 \projectname~currently
 overrides socket functionality within the control software itself, but
-deterministic I/O could also be achieved without code modifications by
+we could also achieve deterministic I/O without code modifications by
 loading a shim layer on top of
 libc (similar to liblog~\cite{Geels:2006:RDD:1267359.1267386}).
 
@@ -52,19 +52,18 @@ changes to reliably reproduce the system execution. We achieve this by
 making a
 small change to the control software's logging library\footnote{Currently
 supported for POX
-and Floodlight}: whenever a log
-statement is executed, we
-block the control software and notify \projectname~that a new state transition
-is about to occur. \projectname~then logs this event for later replay and
+and Floodlight}: whenever a control process executes a log
+statement, notify \projectname~that a new state transition
+is about to occur, and optionally block the process. \projectname~then logs this event for later replay and
 sends an acknowledgment to unblock the controller. During replay,
-the control software is forced to block at internal state transition points
+we optionally force the control software to block at internal state transition points
 until \projectname~gives explicit acknowledgment.
 
 Routing the {\tt gettimeofday()} syscall
 through \projectname~makes replay more resilient to alterations in execution
 speeds.\footnote{When the pruned trace differs from the original, we make a
 best-effort guess at what the return values of these calls should be. For example,
-if the altered execution invokes {\tt gettimeofday()} more times than were recorded
+if the altered execution invokes {\tt gettimeofday()} more times than we recorded
 in the initial run, we interpolate the time values of neighboring events}
 As an added benefit, overriding {\tt gettimeofday()} allows us to `compress'
 runtime in some cases (similar to time-warped emulation~\cite{Gupta06toinfinity}).
@@ -75,7 +74,7 @@ algorithms. Our current implementation does not account other sources of non-det
 such as asynchronous signals,
 or interruptable instructions (\eg~x86's {\tt ecx})~\cite{Dunlap:2002:REI:844128.844148}.
 
-\projectname~can be used in a number of ways. We outline three use-cases here.
+Developers and operators can use \projectname~in a number of ways. We outline three use-cases here.
 \colin{Present these as a workflow instead. Emphasize MCS more. Separate
 concerns: bug exploration, then replay, then MCS}
 
@@ -103,21 +102,21 @@ switching devices. And then we can inject a number of failure scenarios under
 controlled circumstances to really accelerate our test work.''
 \end{quote}
 
-\projectname~can be used to generate randomly chosen input
+Developers can use \projectname~to generate randomly chosen input
 sequences~\cite{Miller:1990:ESR:96267.96279}, feed them to controller(s), and monitor invariants at chosen
 intervals. Driving the
 execution of the system in this way allows \projectname~to record a
 totally-ordered log of the events to be replayed later.
 
-\projectname~can also be used interactively to generate replayable integration
+Developers can also run \projectname~interactively to generate replayable integration
 tests, similar to Nebut et al.~\cite{automated_tests}. In interactive
 mode developers can
 examine the state of any part of the simulated network,
 observe and manipulate messages, and follow their
 intuition to induce orderings that they believe may trigger bugs.
 
-As additional failure cases are encountered they can be added
-to a suite of integration tests and later used to validate the correct
+As developers and operators encounter additional failure cases they can add
+them to a suite of integration tests and later used to validate the correct
 behavior of future versions of the software. And because \projectname~makes
 limited assumptions about the control software under test, the overall SDN community
 could collect a repository of test cases to validate different SDN control platforms.
@@ -132,7 +131,7 @@ and thereby reduce time wasted
 investigating bug reports the same root
 cause~\cite{Zeller:2002:SIF:506201.506206}:
 if two test failures have the same minimal causal sequence, it is
-likely that the same underlying bug is being triggered.
+likely that the same underlying bug is responsible.
 
 \subsection{Replayable Traces}
 
@@ -145,7 +144,7 @@ to replicate the issue.
 With \projectname, developers can record errant executions in the simulated
 environment, and exchange replayable traces to be re-simulated again at other
 developer's machines. Replayable traces shorten the debugging cycle, and increase chances that others
-will be able to help. For example, bug reports can be filed with a replayable trace
+will be able to help. For example, developers can file bug reports with a replayable trace
 attached, so that no
 effort is wasted replicating the issue. With the help of print statements or a
 debugger, developers can also iteratively run the trace as many times as
@@ -153,7 +152,7 @@ needed to identify the line(s) of code responsible for the problem.
 
 \subsection{Forensic Analysis}
 \andi{See if we can shorten this}
-The above two use cases are implemented and exercised in \projectname~today.
+We have implemented and exercised the above two use cases.
 Forensic analysis of production logs, while not currently implemented,
 may be more valuable yet: correctness
 violations encountered in production are
@@ -163,8 +162,7 @@ how forensic analysis could be performed with \simulator.
 
 While \simulator~takes as input a single, totally-ordered log of the events in the
 distributed system, production systems maintain a log at each node.
-Instrumentation and preprocessing steps are therefore needed before \simulator~can be
-invoked.
+Instrumentation and preprocessing steps are therefore needed.
 
 Production systems would need to include Lamport
 clocks on each message~\cite{Lamport:1978:TCO:359545.359563} or have
@@ -180,7 +178,8 @@ The distributed logs would also need to make a clear distinction between interna
 (log messages, message sends/receipts), and input events (\eg~node failures). Further,
 the input events would need to be logged in sufficient detail for \simulator~to
 reproduce a synthetic version of the input that is indistinguishable to the control software
-from the original input event. There will of course be some input events that cannot be reproduced
+from the original input event. There will of course be some input events that
+are not reproducible
 synthetically without significant complexity in what the simulator needs to model.
 For example, suppose that the controller's faulty behavior is to flood a switch with messages,
 causing the switch to drop some traffic, yet only switches that are running low on memory
@@ -192,22 +191,20 @@ Without care, a single input event may appear multiple times in the
 distributed logs. A failure of the master node, for example, could be independently
 detected and logged by all other replicas. The most robust way to
 avoid redundant input events is to employ perfect failure
-detectors~\cite{chandra1996unreliable}, which have the property that a
-failure is logged iff
-the failure actually occurred.\footnote{Perfect failure detectors are
-typically implemented by explicitly killing slow
-nodes.} Ensuring that a single failure detector is in charge of logging node failure
-events guarantees that redundant inputs are eliminated. Alternatively, root cause analysis
-algorithms~\cite{yemini1996} or manual inspection could be employed to consolidate redundant
+detectors~\cite{chandra1996unreliable}, which log a failure iff
+the failure actually occurred. Ensuring that a single failure detector is in charge of logging node failure
+events guarantees that redundant events do not appear. Alternatively, one
+could employ root cause analysis
+algorithms~\cite{yemini1996} or manual inspection to consolidate redundant
 alarms.
 
-Finally, some care may need to be taken to prevent the logs from growing so large that
+Finally, some care is needed to prevent the logs from growing so large that
 \simulator's runtime becomes intractable. Here, causally consistent
 snapshots~\cite{Chandy:1985:DSD:214451.214456} can minimize the number of inputs \simulator~needs
 to examine. Specifically, with causally consistent snapshots of the distributed
 system taken at regular intervals, \simulator~can bootstrap its simulation from the last snapshot before the failure.
 If the MCS starting from this snapshot is empty, it can iteratively move backwards, starting from earlier
-snapshots.\footnote{Technically the MCS may contain inputs from the very
+snapshots.\footnote{Technically the MCS may contain inputs from the
 beginning of the execution. Nonetheless the state that was induced by these inputs is
 reflected in each snapshot, and
 programmers would arguably be able to detect that they need to start with an

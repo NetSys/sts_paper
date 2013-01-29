@@ -14,14 +14,13 @@ communication.
 
 We start with a relatively trivial bug to illustrate the range of bugs our
 technique can useful for. We employed \projectname~to generate random sequences of
-inputs, and found after some time that an exception was thrown in POX. The
-exception was caused by attempting to remove an element from a list that was
-not actually present.
+inputs, and found after some time that POX threw an exception due to
+attempting to remove an element from a list, yet the element was not present.
 
 There were $76$ randomly generated inputs in the trace leading up to the
 exception. We invoked \simulator~to identify a two element minimal causal set:
-a switch failure followed by a switch recovery. Apparently this particular
-input sequence had not been tested before, and \simulator~made it easy to
+a switch failure followed by a switch recovery. Apparently the developers of
+POX had not tested this input sequence before, and \simulator~made it easy to
 identify what inputs caused the erroneous code path to be triggered. At the least,
 this minimization serves to simplify integration tests for this exception.
 
@@ -98,7 +97,7 @@ programmatically prioritize persistent correctness violations and infer their mi
 causal sets.
 
 For all three cases, only a small code modification to the controller was necessary
-to retrieve the the platform's state for correspondence
+to retrieve the platform's state for correspondence
 checking.
 
 \subsection{Case studies}

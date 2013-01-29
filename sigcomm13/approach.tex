@@ -1,5 +1,3 @@
-\andi{Look out for words like `significantly'}
-
 We have developed a technique, \simulator, for automatically identifying
 a minimal sequence of inputs responsibly for triggering a given
 bug. Here we detail the specifics of \simulator.
@@ -35,7 +33,7 @@ the switch, but without ever clearing the routing entries for
 the failed link (resulting in a persistent blackhole).
 
 There were only two external inputs (E1,E3) shown in our example.
-Even relatively simple cases may contain extraneous inputs, making it difficult
+Even simple cases may contain extraneous inputs, making it difficult
 for a troubleshooter to reason about the underlying root cause.
 In the worst case, operators may need to examine logs from a production
 network, which contain a substantial number of hardware failures, topology changes,
@@ -149,7 +147,7 @@ In the rest of this section, we describe how we
 replay inputs to control software,
 cope with alterations to the causal history of an execution, and check
 for correctness violations. In \S\ref{sec:architecture}, we describe concrete
-ways \simulator~can be put to use.
+ways developers and operators can put \simulator~to use.
 
 \subsection{Simulation}
 \label{subsec:simulation}
@@ -182,8 +180,8 @@ or policy changes) and an invariant checking probe (provided by frameworks
 such as HSA~\cite{hsa,hsa_realtime} or Anteater~\cite{anteater,khurshid2012veriflow}),
 delta debugging finds a minimal causal set. The
 simulator is responsible for replaying intermediate input subsequences
-chosen by delta debugging. For example, link failures are
-reproduced by disconnecting the edge in the simulated network, and sending a
+chosen by delta debugging. For example, the simulator replays link failures
+by disconnecting the edge in the simulated network, and sending a
 port status message from the adjacent switches to their parent controller(s).
 
 The input subsequences chosen by delta debugging are not always valid. For
@@ -228,10 +226,10 @@ itself to master; if the ordering of inputs and internal events is
 perturbed, the final output may differ.
 Consider for example that if a controller's garbage collector happens to run
 while we replay inputs, it may delay an internal state transition until
-after an input that depended on it the original run has been injected.
+after the simulator injects an input that depended on in the original run.
 
-The challenge is to ensure that causal relationships
-are maintained. Formally, to be guaranteed to reproduce the original correctness violation
+The challenge is to maintain causal relationships.
+Formally, to reliably reproduce the original correctness violation
 we need to
 inject an external input $e$ at exactly the point when all other
 events (both external and internal) that precede it in the happens-before
@@ -243,13 +241,13 @@ we become aware of internal events throughout replay by
 (i) monitoring
 control message receipts between controllers and switches,
 and (ii) interposing on the controllers' logging library and notifying the
-simulation process whenever log statements (which serve to mark relevant state
-transitions) are executed. Note that to achieve truly deterministic
+simulation process whenever the control software executes a log statement (which serve to mark relevant state
+transitions). Note that to achieve truly deterministic
 replay, these log statements would need to
 be highly granular, capturing information such as thread scheduling decisions;
 we show in \S\ref{subsec:case_studies}
 however that pre-existing, course granular log statements are sufficient to
-successfully reproduce many bugs.\footnote{We discuss this problem further in
+successfully reproduce \num{many} bugs.\footnote{We discuss this problem further in
 \S\ref{subsec:domain_knowledge}.}
 %Note that the developer must provide enough logging statements
 %so that relevant internal state changes are captured and visible to our
@@ -277,7 +275,7 @@ We leverage this observation by defining
 domain-specific masks over semantically extraneous fields of
 internal events.\footnote{One consequence
 of applying masks is that bugs involving masked fields are outside the purview of
-\simulator.} A few examples of masked fields are shown
+\simulator.} We show four examples of masked values
 in Table~\ref{tab:fingerprints}.
 
 These masks define equivalence classes
@@ -321,10 +319,11 @@ But syntactic differences are not the
 only possible change induced by pruning: internal events from the original
 may also cease to appear.
 
-Disappearance of internal events is determined by the structure of the control
-software's state machine (which is not assumed to be known). Consider the simplified state machines for the switch and
+The structure of the control
+software's state machine (which we do not to know) determines whether
+internal events disappear. Consider the simplified state machines for the switch and
 controllers from the Floodlight case shown in
-Figure~\ref{fig:state_machines}. If the link failure input is pruned, the
+Figure~\ref{fig:state_machines}. If we prune the link failure input, the
 switch will not make the transition to `Notify Parents', and the master will
 consequently not make the transition to and from `Send Flush'.
 
@@ -337,7 +336,7 @@ In most cases this approach successfully reproduces the original correctness
 violation, assuming \textepsilon~is larger than variations in execution speeds
 between internal events. If the value of \textepsilon~is too large, however, we may end up
 waiting too long for the happens-before predecessors of an input $e_i$ such that a
-successor of $e_i$ occurs before $e_i$ has been injected
+successor of $e_i$ occurs before we have injected $e_i$
 (thereby violating the remaining happens-before constraints).
 % \sam{Is it worth noting that this isn't necessarily a problem? If a successor occurs, it means it wasn't causally related to $e_i$, but the ordering still might matter for further successors.}
 
@@ -346,8 +345,8 @@ replays the trace from the beginning up until the immediately prior input,\footn
 would be to take a snapshot of the controllers' state at every injected input
 and start from the latest snapshot.} this time
 knowing exactly which internal events in the current input interval are
-and are not going to occur before injecting the next input. The overall event scheduling algorithm
-is shown in Figure~\ref{fig:peek}.
+and are not going to occur before injecting the next input. We show the overall event scheduling algorithm
+in Figure~\ref{fig:peek}.
 
 \begin{figure}
 \begin{boxedminipage}{\linewidth}
@@ -385,15 +384,16 @@ potentially recurses infinitely if not deterministic}}
 The last possible change induced by input pruning is the occurrence of new
 internal events that were not observed in the original trace.
 Ultimately, new events leave open multiple possibilities for where
-the next input should be injected.
+we should inject the next input.
 For example, if $i_2$ and $i_3$ are internal events observed
 during replay that are both in the same equivalence class as a single event $i_1$ from the
-original run, one might inject the next input after $i_2$ or after $i_3$.
+original run, we could inject the next input after $i_2$ or after $i_3$.
 
 In the general case it is always possible to construct two state machines that lead
-to differing outcomes: one that only leads to the correctness violation when the next input
-is injected before a new internal event, and one that only leads to the
-correctness violation when the next input is injected after a new internal
+to differing outcomes: one that only leads to the correctness violation when
+we inject the next input
+before a new internal event, and one that only leads to the
+correctness violation when we inject the next input after a new internal
 event. In other words, to be guaranteed to traverse any existing suffix that leads
 to the correctness violation, it is necessary to recursively branch, trying both
 possibilities for every new internal event. This implies an exponential number of
@@ -435,8 +435,8 @@ $e_i$, it replays inputs $e_1,\dots,e_i$, for a total of
 $n \times \frac{n+1}{2} \in O(n^2)$ replayed inputs. In other words, the
 overall worst case is $O(n^3)$ in the number of replayed inputs.
 
-Note that the extra factor of
-$n$ in computational complexity due to backing up can be converted to a factor of $n$ in storage
+Note that we could convert the extra factor of
+$n$ in computational complexity due to backing up to a factor of $n$ in storage
 complexity if we instead stored snapshots of
 the controllers' state rather than replaying each prefix from the beginning.
 
@@ -608,7 +608,7 @@ an unpruned log.
 provide finer granularity log messages (\cf~\cite{Geels:2006:RDD:1267359.1267386}),
 our approach readily supports deterministic replay.}
 
-\noindent{\bf Troubleshooting vs. Debugging.} Our technique is a troubleshooting tool, not a debugger;
+\noindent{\bf Troubleshooting vs.\ Debugging.} Our technique is a troubleshooting tool, not a debugger;
 by this we mean that \simulator{} helps identify and localize inputs that
 trigger erroneous behavior, but it does not directly identify which
 line(s) of code cause the error.
@@ -621,18 +621,18 @@ as component failures.
 If there is a bug in your switch, you will need to contact your hardware vendor;
 if you have a bug in your policy specification, you will need to take a closer look at what you specified.
 
-\noindent{\bf Globally vs. Locally Minimal Input Sequences.}
+\noindent{\bf Globally vs.\ Locally Minimal Input Sequences.}
 Our approach is not guaranteed to find the globally minimal
 causal sequence from an input trace, since this requires $O(2^N)$ computation in the worst case.
-The delta debugging algorithm we employ however is guaranteed to find a
+The delta debugging algorithm we employ however provably finds a
 locally minimal causal sequence~\cite{Zeller:1999:YMP:318773.318946},
 meaning that if any input from the sequence is pruned, no correctness violation
 occurs. \colin{Need to mention monotonicity, consistency, unambiguity here}
 
-\noindent{\bf Correctness vs. Performance.}
+\noindent{\bf Correctness vs.\ Performance.}
 We are primarily focused on correctness bugs, not performance bugs.
 
-\noindent{\bf Proactive vs. Reactive Configuration.} We focus primarily on
+\noindent{\bf Proactive vs.\ Reactive Configuration.} We focus primarily on
 \emph{proactive} configuration, where controllers react to policy and topology changes, but
 not necessarily individual packets or flows events in the
 dataplane.\footnote{Production controllers typically adopt this model for
@@ -774,8 +774,8 @@ network. The simulator interposes on all communication channels,
 allowing it to proceed with the system execution in
 lock step~\cite{Dunlap:2002:REI:844128.844148}:
 pausing the controller VMs between each logical timestep and delaying messages
-arbitrarily. The simulator then reproduces the external inputs from the log.
-For example, link failures are reproduced by disconnecting the edge in
+arbitrarily. The simulator then replays the external inputs from the trace.
+For example, the simulator induces link failures by disconnecting the edge in
 the simulated network.
 
 Note that the simulator does not need
