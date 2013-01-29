@@ -33,12 +33,12 @@ Several production SDN controllers support network
 virtualization~\cite{bigswitch,nicirahomepage,contextream}, a technology that
 abstracts the details of the underlying physical network and presents a
 simplified view of the network to be configured by applications.
-A common pattern is to treat an entire network (up to
-100,000 v-switches in a large datacenter) as a single logical switch.
 In this model, multi-tenancy is implemented by providing each tenant with their
 own abstract view, which are multiplexed onto the same physical network.
-When an entire datacenter network is
-abstracted into a single logical switch in this way, the mapping between
+A common pattern is to treat an entire network (up to
+100,000 v-switches in a large datacenter) as a single logical switch for each
+tenant. When an entire datacenter network is
+abstracted in this way, the mapping between
 the logical switch and the physical topology is highly complex.
 
 In conjunction, the challenges of maintaining virtualized and distributed

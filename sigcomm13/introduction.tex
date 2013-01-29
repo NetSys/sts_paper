@@ -15,8 +15,8 @@ historical counterfactuals for sure.
 In computing we often need to answer similar questions,
 \eg~``Was the link failure necessary for triggering the routing loop?''
 or ``Were the top search results dependent on the straggler requests?''.
-And unlike human history, it often possible to find answers to such
-dependency questions. In this paper we address the problem of programmatically answering
+And unlike human history, it is often possible to find answers to such
+causality questions. In this paper we address the problem of programmatically answering
 them in the context of software-defined networking.
 
 Software bug diagnosis, a highly expensive and time consuming process, would benefit
@@ -60,14 +60,14 @@ ideal tool, most network admins said ``automated troubleshooting''~\cite{Zeng:Su
 %priority for networking professionals~\cite{market_report}.
 % Software bugs cost $59 billion in 2002: bit.ly/V2Z7Al
 
-If the network enters a permanently invalid configuration (\eg~isolation between tenants
+If the network enters an invalid configuration (\eg~isolation between tenants
 is violated), then the control plane has a bug. Our goal is
 to automatically identify the exact external inputs (\eg~link failures) that
 triggered the bug, and conversely filter out those that are extraneous.
 
 One straightforward approach is to account for
-potential causality: if an input does not induce any messages that arrive
-before the occurrence of the invalid configuration, it
+potential causality: if an input does not induce any messages before
+the occurrence of the invalid configuration, it
 cannot possibly have affected the outcome~\cite{Lamport:1978:TCO:359545.359563}.
 Unfortunately, pruning concurrent inputs alone does not
 significantly reduce the number of inputs.
@@ -80,7 +80,7 @@ minimizing test cases for individual programs--to a distributed environment, whe
 are spread across time and involve multiple machines.
 
 The main difficulty in applying delta debugging to a distributed
-setting is coping with diverged histories. Traditional replay
+setting is coping with divergent histories. Traditional replay
 techniques~\cite{Dunlap:2002:REI:844128.844148,Geels:2006:RDD:1267359.1267386}
 reproduce errors reliably by precisely recording the low-level I/O operations of
 software under test. Pruning inputs, however, may cause the remaining events to
@@ -102,8 +102,9 @@ to do so. As far as we know, our work
 is the first to programmatically isolate fault-inducing inputs to a distributed
 system.
 
-Even the modest improvement of automatic input minimization
-represents a substantial improvement over the status quo;
+%Even the modest improvement of
+Automatic input minimization
+represents a significant improvement over the status quo;
 to the best of our knowledge, painstaking manual analysis of logs is the
 {\em de facto} method of troubleshooting production SDN control software.
 

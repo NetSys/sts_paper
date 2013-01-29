@@ -72,7 +72,8 @@ If the control software under test utilizes random number generators, we
 attempt to manually replace any such functionality with deterministic
 algorithms if possible. Our current implementation does not account other sources of non-determinism,
 such as asynchronous signals,
-or interruptable instructions (\eg~x86's {\tt ecx})~\cite{Dunlap:2002:REI:844128.844148}.
+or interruptable instructions (\eg~x86's block memory
+instructions~\cite{Dunlap:2002:REI:844128.844148}).
 
 \colin{
 Need to do a better job of discussing how we stop controllers from getting
