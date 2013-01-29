@@ -139,11 +139,14 @@ holds.
 }
 
 Our problem differs from the original formulation of delta debugging in two dimensions.
-First, input to SDN controllers is not inserted at a single point in time:
-it includes many messages, and depends on subtle causal
-relationships within individual controller processes.
-Second, the input is spread across space: it depends on causal relationships across
-concurrently running nodes. In the rest of this section, we describe how we
+First, delta debugging assumes that input is inserted at a single point in
+time. In contrast, input to SDN controllers includes many messages spread
+throughout time.
+Second, delta debugging assumes a single program under test. Our input depends on
+causal relationships across
+concurrently running nodes.
+
+In the rest of this section, we describe how we
 replay inputs to control software,
 cope with alterations to the causal history of an execution, and check
 for correctness violations. In \S\ref{sec:architecture}, we describe concrete
