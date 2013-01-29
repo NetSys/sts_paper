@@ -1,16 +1,16 @@
 \projectname~(\projectmeaning) is our realization of the techniques described in
 \S\ref{sec:approach}. \projectname~is implemented in roughly 10,000 lines of Python in
-addition to the Hassel network invariant checking library~\cite{hsa}. The code
-for \projectname~is publicly available,\footnote{URL omitted due to anonymity requirements}
-and three industrial SDN companies to date have expressed interest in adopting it.
+addition to the Hassel network invariant checking library~\cite{hsa}. We have
+made the code
+for \projectname~publicly available.\footnote{URL omitted due to anonymity requirements}
+To date, three industrial SDN companies have expressed interest in adopting it.
 
 In the rest of this section, we highlight salient points of \projectname's
-design. Furthermore, we describe three ways developers and operators can put
-\projectname~to use.
+design, and illustrate a workflow for users of \projectname.
 
 We show the input types supported by \projectname~in Table~\ref{tab:inputs}.
-We notify controllers about link, switch, and host migration events
-by sending OpenFlow messages~\cite{openflow} from software switches.
+Our software switches notify controllers about link, switch, and host migration events
+by sending OpenFlow messages~\cite{openflow}.
 Although the software switches do support packet forwarding, we
 have not focused on simulating high-throughput dataplane behavior.
 % We hope to support policy changes in the future (Quantum)
@@ -53,7 +53,7 @@ making a
 small change to the control software's logging library\footnote{Currently
 supported for POX
 and Floodlight}: whenever a control process executes a log
-statement, notify \projectname~that a new state transition
+statement, we notify \projectname~that a new state transition
 is about to occur, and optionally block the process. \projectname~then logs this event for later replay and
 sends an acknowledgment to unblock the controller. During replay,
 we optionally force the control software to block at internal state transition points
@@ -69,29 +69,29 @@ As an added benefit, overriding {\tt gettimeofday()} allows us to `compress'
 runtime in some cases (similar to time-warped emulation~\cite{Gupta06toinfinity}).
 
 If the control software under test utilizes random number generators, we
-currently manually replace any such functionality with deterministic
-algorithms. Our current implementation does not account other sources of non-determinism,
+attempt to manually replace any such functionality with deterministic
+algorithms if possible. Our current implementation does not account other sources of non-determinism,
 such as asynchronous signals,
 or interruptable instructions (\eg~x86's {\tt ecx})~\cite{Dunlap:2002:REI:844128.844148}.
 
-Developers and operators can use \projectname~in a number of ways. We outline three use-cases here.
-\colin{Present these as a workflow instead. Emphasize MCS more. Separate
-concerns: bug exploration, then replay, then MCS}
+\colin{
+Need to do a better job of discussing how we stop controllers from getting
+ahead of eachother. How do we interpose on intra-controller communication?
+(as shown in one of our diagrams)
+How do we ensure the same scheduling order of controller processes? (see
+Section 4.5 of ReVirt). We observe that the controllers do not use any shared
+memory communication.}
 
-% TODO:
-% Need to do a better job of discussing how we stop controllers from getting
-% ahead of eachother. How do we interpose on intra-controller communication?
-% (as shown in one of our diagrams)
-% How do we ensure the same scheduling order of controller processes? (see
-% Section 4.5 of ReVirt). We observe that the controllers do not use any shared
-% memory communication.
-% Processes being interrupted while they are executing a syscall?
+Developers and operators can use \projectname~in a number of ways. Here we
+illustrate a general workflow.
 
-\subsection{Testing}
+\subsection{Bug Exploration}
 
-\projectname~is primarily used as a simulation and testing framework.
-With complete control over event orderings, message drops, node
-failures, \etc, \projectname~is especially useful for exploring corner cases.
+Use of \projectname~begins with bug exploration.
+\projectname~itself is well-suited for finding input traces that trigger bugs:
+it readily simulates nine common network input events, and ships with a suite of invariant checking
+algorithms~\cite{hsa}. With complete control over event orderings, \projectname~is
+especially useful for exploring corner cases.
 Along these lines, Amin Vahdat
 has testified to the value of Google's SDN network simulator~\cite{vadhat}:
 \begin{quote}
@@ -115,49 +115,60 @@ examine the state of any part of the simulated network,
 observe and manipulate messages, and follow their
 intuition to induce orderings that they believe may trigger bugs.
 
-As developers and operators encounter additional failure cases they can add
-them to a suite of integration tests and later used to validate the correct
-behavior of future versions of the software. And because \projectname~makes
-limited assumptions about the control software under test, the overall SDN community
-could collect a repository of test cases to validate different SDN control platforms.
-
 Generating integration tests in this fashion frees developers to be more agile in
 development, decreasing the time they spend writing test cases.
-Automatically identifying minimal causal sequences gives developers
-intuition about what code path might be triggered by the fault-inducing
-inputs, and helps decrease time spent performing triage.
-Minimal causal sets also serve to consolidate redundant test cases
-and thereby reduce time wasted
-investigating bug reports the same root
-cause~\cite{Zeller:2002:SIF:506201.506206}:
+As developers and operators encounter additional failure cases they can add
+them to a suite of integration tests and later used to validate the correct
+behavior of future versions of the software. Since \projectname~makes
+limited assumptions about the control software under test, the overall SDN community
+could potentially collect a common repository of test cases.
+
+\subsection{Replay}
+
+Having discovered a bug, developers can use \projectname~to replay the
+inputs that triggered the bug. Repeated replay in conjunction with
+print statements or source-level debuggers is how troubleshooters can ultimately find the buggy
+line(s) of code (as envisioned by~\cite{ofrewind}).
+
+Replay with \projectname~has the potential to change how developers elicit help from
+mailing lists or coworkers. The status quo is to describe the conditions needed to
+reproduce the bug as carefully as possible and hope that others are able
+to replicate the issue. With \projectname, developers can record errant executions in the simulated
+environment, and exchange traces to be replayed again at other
+developer's machines.
+\eat{Replayable traces shorten the debugging cycle, and increase chances that others
+will be able to help.}
+
+\subsection{Minimizing Test Cases}
+
+\projectname's truly novel potential lies in minimizing test cases.
+Before developers even begin to invest effort into diagnosing a network
+correctness violation, they can let \simulator~automatically perform some of
+the heavy lifting for them.
+
+Minimally, \simulator~reduces the runtime of test cases and eliminates
+distracting events during replay. More importantly, minimal causal sequences
+give developers intuition about what code path is throwing
+the network into an invalid configuration. In our own experience
+investigating the bugs described in \S\ref{sec:evaluation}, we had little
+idea what the problem was at first. After identifying the MCS, it
+nearly always became apparent what corner case was being triggered, and how the
+bug might be resolved.
+
+Minimal causal sequences also serve to consolidate redundant test cases:
 if two test failures have the same minimal causal sequence, it is
-likely that the same underlying bug is responsible.
-
-\subsection{Replayable Traces}
-
-\andi{Underwhelming. Also, cite OFR}
-When developers are unable to debug an issue, they often elicit help from
-mailing lists or coworkers. The status quo today is to describe the conditions needed to
-reproduce the bug as carefully as possible and hope that someone else is able
-to replicate the issue.
-
-With \projectname, developers can record errant executions in the simulated
-environment, and exchange replayable traces to be re-simulated again at other
-developer's machines. Replayable traces shorten the debugging cycle, and increase chances that others
-will be able to help. For example, developers can file bug reports with a replayable trace
-attached, so that no
-effort is wasted replicating the issue. With the help of print statements or a
-debugger, developers can also iteratively run the trace as many times as
-needed to identify the line(s) of code responsible for the problem.
+likely that the same underlying bug is
+responsible~\cite{Zeller:2002:SIF:506201.506206}.
+This eliminates time wasted
+investigating bug reports the same root cause.
 
 \subsection{Forensic Analysis}
 \andi{See if we can shorten this}
-We have implemented and exercised the above two use cases.
+
+Input generation, interactive execution, replay, and test case
+minimization are implemented and used in \projectname~today.
 Forensic analysis of production logs, while not currently implemented,
-may be more valuable yet: correctness
-violations encountered in production are
-high priority and often time consuming to diagnose.
-Here we present a sketch of
+may be a another valuable use case of \projectname. Here we present a sketch of
 how forensic analysis could be performed with \simulator.
 
 While \simulator~takes as input a single, totally-ordered log of the events in the
@@ -168,32 +179,31 @@ Production systems would need to include Lamport
 clocks on each message~\cite{Lamport:1978:TCO:359545.359563} or have
 sufficiently accurate clock
 synchronization~\cite{corbett2012spanner} to obtain a partial global ordering
-consistent with the happens-before relation.
+consistent with the happens-before relation.\footnote{
 Note that a total ordering is not needed, since it is permissible
 for \simulator~to reorder concurrent events from
 the production run so long as the happens-before relation is
-maintained~\cite{Fischer:1985:IDC:3149.214121}.
+maintained~\cite{Fischer:1985:IDC:3149.214121}.}
 
-The distributed logs would also need to make a clear distinction between internal events
-(log messages, message sends/receipts), and input events (\eg~node failures). Further,
-the input events would need to be logged in sufficient detail for \simulator~to
+The distributed logs would also need to make a clear distinction between
+internal events and external input events. Further,
+the input events would need to be logged in sufficient detail for \projectname~to
 reproduce a synthetic version of the input that is indistinguishable to the control software
-from the original input event. There will of course be some input events that
+from the original input event.\footnote{There will of course be some input events that
 are not reproducible
 synthetically without significant complexity in what the simulator needs to model.
 For example, suppose that the controller's faulty behavior is to flood a switch with messages,
 causing the switch to drop some traffic, yet only switches that are running low on memory
-are affected by the controller's faulty behavior. To reproduce this failure mode correctly
-the simulator would need to model the memory levels of its software switches to match the
-hardware behavior exactly.
+are affected by the controller's faulty behavior.}
 
 Without care, a single input event may appear multiple times in the
 distributed logs. A failure of the master node, for example, could be independently
 detected and logged by all other replicas. The most robust way to
 avoid redundant input events is to employ perfect failure
 detectors~\cite{chandra1996unreliable}, which log a failure iff
-the failure actually occurred. Ensuring that a single failure detector is in charge of logging node failure
-events guarantees that redundant events do not appear. Alternatively, one
+the failure actually occurred. % Ensuring that a single failure detector is in charge of logging node failure
+% events guarantees that redundant events do not appear.
+Alternatively, one
 could employ root cause analysis
 algorithms~\cite{yemini1996} or manual inspection to consolidate redundant
 alarms.
@@ -202,13 +212,9 @@ Finally, some care is needed to prevent the logs from growing so large that
 \simulator's runtime becomes intractable. Here, causally consistent
 snapshots~\cite{Chandy:1985:DSD:214451.214456} can minimize the number of inputs \simulator~needs
 to examine. Specifically, with causally consistent snapshots of the distributed
-system taken at regular intervals, \simulator~can bootstrap its simulation from the last snapshot before the failure.
+system taken at regular intervals, \projectname~can bootstrap its simulation from the last snapshot before the failure.
 If the MCS starting from this snapshot is empty, it can iteratively move backwards, starting from earlier
-snapshots.\footnote{Technically the MCS may contain inputs from the
-beginning of the execution. Nonetheless the state that was induced by these inputs is
-reflected in each snapshot, and
-programmers would arguably be able to detect that they need to start with an
-earlier snapshot by examining the controllers' internal state with a debugger.}
+snapshots.
 
 % --------------------------------------------------
 %    OLD TEXT

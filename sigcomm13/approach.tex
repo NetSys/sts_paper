@@ -399,19 +399,28 @@ to the correctness violation, it is necessary to recursively branch, trying both
 possibilities for every new internal event. This implies an exponential number of
 possibilities to be explored in the worst case.
 
-Luckily, crucially ambiguous new internal events are \num{extremely rare} in the
-control software we evaluated. Our heuristic when waiting for expected internal
+Exponential search is not a practical option. Our heuristic when waiting for expected internal
 events is to proceed normally if there are intermediate new internal events,
 always injecting the next input when its last expected predecessor
-either occurs or times out. As we show in \S\ref{subsec:case_studies},
-the minimal causal sets produced using this heuristic are \num{substantially} smaller
-than the original event traces. \colin{Should strengthen this claim. The
-controllers we examined must have state machines that are amenable..}
+either occurs or times out. This ensures that we always find suffixes that
+contain only a subset of the (equivalent) original internal events, but leaves open the
+possibility of finding divergent suffixes that still lead to the correctness
+violation. This is reasonable because not even branching on new
+internal events is guaranteed to find the shortest fault-inducing input
+sequence;
+there may be other unknown
+paths through the state machine leading to the correctness violation that are
+completely disjoint from the original execution.
 
-We conjecture that ambiguous new internal events are rare because SDN is a control plane system,
+Luckily, crucially ambiguous new internal events are not problematic for the
+control software we evaluated, as we show in \S\ref{subsec:case_studies}.
+We conjecture that ambiguous new internal events are
+rare because SDN is a control plane system,
 and is designed to quiesce quickly (\ie~take a small number of internal
 transitions after any input event, and stop at highly connected vertices).
-As an illustration, consider the state machines
+Concretely, SDN programs are often structured as (mostly independent) event
+handlers, meaning that pruning input events simply triggers a subset of the original
+event handlers. As an illustration, consider the state machines
 in Figure~\ref{fig:state_machines}:
 the controllers quickly converge to a single state (either ``Master'' or
 ``Failure''), as do the switches (``Safe'').
@@ -422,8 +431,8 @@ the controllers quickly converge to a single state (either ``Master'' or
 The delta debugging algorithm terminates after
 $O(log\,n)$
 invocations of $replay$ in the best case, where $n$ is the number of inputs in the original
-trace~\cite{Zeller:1999:YMP:318773.318946}. In the worst case, the complexity
-of delta debugging algorithm is $O(n)$.
+trace~\cite{Zeller:1999:YMP:318773.318946}. In the worst case, delta debugging
+has $O(n)$ complexity.
 
 If the replay algorithm
 never needs to back up, it replays $n$ inputs,
@@ -432,15 +441,27 @@ Conversely, if the event scheduling
 needs to back up in every iteration, another factor of $n$ is added to the
 runtime: for each input event
 $e_i$, it replays inputs $e_1,\dots,e_i$, for a total of
-$n \times \frac{n+1}{2} \in O(n^2)$ replayed inputs. In other words, the
-overall worst case is $O(n^3)$ in the number of replayed inputs.
+$n \times \frac{n+1}{2} \in O(n^2)$ replayed inputs. In terms of replayed
+inputs, the
+overall worst case is therefore $O(n^3)$.
 
-Note that we could convert the extra factor of
-$n$ in computational complexity due to backing up to a factor of $n$ in storage
-complexity if we instead stored snapshots of
-the controllers' state rather than replaying each prefix from the beginning.
+The runtime can be decreased by observing that delta debugging is readily
+parallizable. Specifically, the worst case runtime could be
+decreased to $O(n^2)$ by enumerating all subsequences that delta debugging
+can possibly examine (of which there are $O(n)$), replaying them in parallel, and joining the
+results.
 
-\colin{Mention parallelization. Each DD subset is independent!}
+The runtime can be further decreased by taking snapshots of the controller
+state at regular intervals. When the replay algorithm detects that it has waited too
+long, it could then restart from a recent snapshot rather than replaying the
+entire prefix.
+
+SDN platform developers can reduce the probability that the replay algorithm
+will need to back up by placing causal annotations on internal
+events~\cite{fonseca2007x}: with explicit causal information, the replay can know
+\apriori~whether certain internal are dependent on pruned inputs.
+
+\colin{Mention Andrew's input type pruning optimization}
 
 \subsection{Parameters}
 \label{subsec:params}
@@ -451,7 +472,7 @@ we set \textepsilon~\num{somewhat arbitrarily} to $100$ milliseconds, and this h
 failure cases. In general, larger values of \textepsilon~are preferable to
 smaller values (disregarding runtime considerations), since we can always
 detect when we have waited too long (\viz~when a successor of the next input
-has occurred) \sam{Maybe move this statement in parens earlier, like 3.6. When we say ``we can detect when we have waited too long'', we should state how we know this.}, but we cannot detect when we have timed out
+has occurred), but we cannot detect when we have timed out
 early on an internal event that is in fact going to occur.
 
 \eat{
@@ -469,9 +490,6 @@ moment, our tool does not support policy changes or dataplane packet drops for
 this reason.
 }
 
-\colin{Mention that causal
-annotations and selective pruning help.} \colin{Make sure we emphasize that there is no `right answer', since we're
-dealing with modified histories.}
 
 \subsection{Correspondence Checking}
 \label{subsec:cc}
@@ -624,7 +642,7 @@ if you have a bug in your policy specification, you will need to take a closer l
 \noindent{\bf Globally vs.\ Locally Minimal Input Sequences.}
 Our approach is not guaranteed to find the globally minimal
 causal sequence from an input trace, since this requires $O(2^N)$ computation in the worst case.
-The delta debugging algorithm we employ however provably finds a
+The delta debugging algorithm we employ does provably find a
 locally minimal causal sequence~\cite{Zeller:1999:YMP:318773.318946},
 meaning that if any input from the sequence is pruned, no correctness violation
 occurs. \colin{Need to mention monotonicity, consistency, unambiguity here}
@@ -632,6 +650,7 @@ occurs. \colin{Need to mention monotonicity, consistency, unambiguity here}
 \noindent{\bf Correctness vs.\ Performance.}
 We are primarily focused on correctness bugs, not performance bugs.
 
+\eat{
 \noindent{\bf Proactive vs.\ Reactive Configuration.} We focus primarily on
 \emph{proactive} configuration, where controllers react to policy and topology changes, but
 not necessarily individual packets or flows events in the
@@ -640,6 +659,7 @@ performance reasons.}
 The main challenge in extending our approach to reactive controllers is
 achieving efficient simulation of dataplane traffic.
 \andi{Could cut this. We actually find reactive bugs}
+}
 
 % ---------------------------------------------- %
 %             OLD TEXT
