@@ -1,13 +1,16 @@
-Software bugs are inevitable in distributed systems, and troubleshooting
+Software bugs are inevitable in software-defined networking (SDN) control planes,
+and troubleshooting
 is a tedious, time-consuming task.
-In this paper we present a technique for automatically identifying
-a minimal sequence of inputs responsible for triggering a given bug.
+In this paper we discuss how one might improve SDN
+network troubleshooting by presenting a technique for automatically identifying
+a minimal sequence of inputs responsible for triggering a given bug in the
+control software.
 Our technique works by
 iteratively pruning inputs from the history of the execution, and
 coping with divergent histories by reasoning about the functional equivalence
 of events.
 
-We apply our technique to three software-defined networking control
+We apply our technique to three open source SDN control
 platforms---Floodlight, POX, and NOX---and
 illustrate how our technique found minimal causal sequences for
 the bugs we encountered.

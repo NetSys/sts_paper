@@ -1,10 +1,5 @@
-We have developed a technique, \simulator, for automatically identifying
-a minimal sequence of inputs responsibly for triggering a given
-bug. Here we detail the specifics of \simulator.
-
-We start by describing an example bug in the Floodlight
-open source control platform~\cite{floodlight_bug} to illustrate the mechanics
-of our technique. Floodlight is distributed across
+To illustrate the mechanics of \simulator, we start by describing an example bug in the Floodlight
+open source control platform~\cite{floodlight_bug}. Floodlight is distributed across
 multiple controllers for high availability, and provides support for
 virtualization. Switches maintain one hot connection to a master controller and
 several cold connections to replica controllers. The \emph{master} holds the
@@ -33,17 +28,19 @@ the switch, but without ever clearing the routing entries for
 the failed link (resulting in a persistent blackhole).
 
 There were only two external inputs (E1,E3) shown in our example.
-Even simple cases may contain extraneous inputs, making it difficult
-for a troubleshooter to reason about the underlying root cause.
-In the worst case, operators may need to examine logs from a production
+However, a developer or operator encountering this bug in practice would not be
+given this concise version of events. Instead the, trace would contain wealth
+of extraneous inputs, making it difficult
+to reason about the underlying root cause.
+In the worst scenario, operators may need to examine logs from a production
 network, which contain a substantial number of hardware failures, topology changes,
 and other potential triggering events,
 all of which may appear characteristic of normal operating
 conditions at first glance; assuming 8.5 network error events per
 minute~\cite{Greenberg:2009:VSF:1592568.1592576}, 500 VM migrations per
-hour~\cite{Soundararajan:2010:CBS:1899928.1899941}, and a relevant execution
-history of one hour, there would be at least $8.5 \cdot 60 + 500 \approx 1000$ inputs to the system
-reflected in the trace.
+hour~\cite{Soundararajan:2010:CBS:1899928.1899941},
+there would be at least $8.5 \cdot 60 + 500 \approx 1000$ inputs reflected in
+an hour-long trace.
 
 Given a trace of the system execution similar to the Floodlight case,
 our goal is to prune events that are not
@@ -55,7 +52,6 @@ reachability policy specified in the logical switch (``A can talk to B'')
 and the blackhole in the physical network (``A's packets to B enter the
 blackhole and do not arrive at B'').
 
-We have developed a technique to automatically perform this pruning.
 Specifically, our technique identifies a minimal sequence of inputs
 to the controllers that is sufficient for triggering a known correctness violation. We
 refer to such inputs as a {\em minimal causal sequence} (MCS). Going back to our example,

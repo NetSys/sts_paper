@@ -13,7 +13,7 @@ were they extraneous? Unfortunately we can never know such
 historical counterfactuals for sure.
 
 In computing we often need to answer similar questions,
-\eg~``Was the link failure necessary for triggering the routing loop?''
+\eg~``Was this routing loop triggered by this link failure?''
 or ``Were the top search results dependent on the straggler requests?''.
 And unlike human history, it is often possible to find answers to such
 causality questions. In this paper we address the problem of programmatically answering
@@ -26,8 +26,8 @@ time troubleshooting bugs~\cite{msoft_concurrency}. The same study found that 70
 take days to months to fix, and 74\% of
 respondents considered reproducibility to be hard or very hard.
 
-Developers of software-defined networks are not at all exempt from the need to
-troubleshoot bugs. Modern SDN control platforms are highly complex,
+From anecdotal evidence from acquaintances and colleagues in the industry, it seems clear that developers of software-defined networks also spend much of their time
+troubleshooting bugs. This should be no surprise, because modern SDN control platforms are highly complex,
 distributing state between replicated
 servers~\cite{floodlight},
 providing isolation and resource arbitration between multiple
@@ -48,10 +48,10 @@ policy changes, host migrations, and other inputs to SDN control software.
 As one data point, Microsoft Research
 reports 8.5 network error events per minute per
 datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}.
-Troubleshooters find little immediate use from traces containing many events
+Troubleshooters find little immediate use from traces containing many inputs
 prior to a fault,
-since they are often forced to manually filter extraneous events
-before they can even gain an intuition as to what might be the root cause.
+since they are often forced to manually filter many extraneous inputs
+before they can start fruitfully exploring what might be the root cause.
 It is no surprise that when asked to describe their
 ideal tool, most network admins said ``automated troubleshooting''~\cite{Zeng:Survey}.
 
@@ -60,13 +60,27 @@ ideal tool, most network admins said ``automated troubleshooting''~\cite{Zeng:Su
 %priority for networking professionals~\cite{market_report}.
 % Software bugs cost $59 billion in 2002: bit.ly/V2Z7Al
 
-If the network enters an invalid configuration (\eg~isolation between tenants
-is violated), then the control plane has a bug. Our goal is
-to automatically identify the exact external inputs (\eg~link failures) that
-triggered the bug, and conversely filter out those that are extraneous.
+Before continuing, we should clarify what we mean by `troubleshooting' and `bugs' in the SDN context.
+SDN networks are designed to support high-level policies, such as inter-tenant
+isolation. A bug, in this context, creates situations
+where the network violates one or more of these high-level policies; that is, even though the control plane
+has been told to implement a particular policy, the resulting configuration (\ie~flow entries in the switches)
+does not do so properly. We call this an {\em invalid} configuration.
+We presume that the control plane functions properly in most circumstances, so
+that these policy violations are rare.
+% and are typically triggered when the control plane takes an unusual codepath.
+Bugs may be triggered by uncommon sequences of inputs, such as a simultaneous link failure or controller reboot.
+The act of troubleshooting is identifying which set of inputs triggered the bug.
+Debugging then involves tracking down the error in the code itself, given a
+set of triggering inputs.
+The smaller the set of triggering inputs, the easier debugging will be.
+
+Our focus here is on troubleshooting. Our goal is
+to automatically identify a small set of  inputs to the SDN software (\eg~link failures) that
+triggered the bug, and filter out the extraneous ones.  This would go a long way towards achieving ``automated troubleshooting''.
 
 One straightforward approach is to account for
-potential causality: if an input does not induce any messages before
+potential causality: if an external input does not induce any messages before
 the occurrence of the invalid configuration, it
 cannot possibly have affected the outcome~\cite{Lamport:1978:TCO:359545.359563}.
 Unfortunately, pruning concurrent inputs alone does not
@@ -75,35 +89,35 @@ significantly reduce the number of inputs.
 Our approach is to iteratively
 prune inputs from the original run, replay, and
 check whether the network re-enters the invalid configuration.
-In particular, we extend delta debugging~\cite{Zeller:2002:SIF:506201.506206}--an algorithm for
+In particular, we generalize delta debugging~\cite{Zeller:2002:SIF:506201.506206}--an algorithm for
 minimizing test cases for individual programs--to a distributed environment, where inputs
-are spread across time and involve multiple machines.
+are spread across time and involve multiple machines. \scott{I think you give
+too much credit to delta debugging}
 
 The main difficulty in applying delta debugging to a distributed
 setting is coping with divergent histories. Traditional replay
 techniques~\cite{Dunlap:2002:REI:844128.844148,Geels:2006:RDD:1267359.1267386}
 reproduce errors reliably by precisely recording the low-level I/O operations of
-software under test. Pruning inputs, however, may cause the remaining events to
+software under test. Pruning inputs, however, may cause the execution to
 subtly change (\eg~the sequence numbers of packets may all differ), and some
-events that occurred in the original
+state changes that occurred in the original
 run may not occur. Our approach is to record and replay at the application layer,
 where we have access to the syntax and semantics of messages passed
 throughout the distributed system. In this way we can recognize functionally
 equivalent messages and maintain causal dependencies despite altered histories.
 
 Related tools such as {\tt ndb}~\cite{handigol2012debugger} provide
-a historical view into dataplane (mis)behavior. In contrast, \simulator~provides
+a historical view into dataplane (mis)behavior. In contrast, our technique provides
 information about precisely what caused the network to
 enter an invalid
 configuration in the first place. Record and replay techniques such as
 OFRewind~\cite{ofrewind} and liblog~\cite{Geels:2006:RDD:1267359.1267386}
-achieve the same end, but they depend on manual inspection and pruning
-to do so. As far as we know, our work
+enable you to verify that a set of inputs triggered a bug, but do not automatically reduce the set of potentially triggering inputs to a manageable number. As far as we know, our work
 is the first to programmatically isolate fault-inducing inputs to a distributed
 system.
 
 %Even the modest improvement of
-Automatic input minimization
+Automatic minimization of fault-inducing traces
 represents a significant improvement over the status quo;
 to the best of our knowledge, painstaking manual analysis of logs is the
 {\em de facto} method of troubleshooting production SDN control software.

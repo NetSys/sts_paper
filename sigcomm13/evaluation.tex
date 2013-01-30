@@ -5,7 +5,7 @@ POX~\cite{pox}, NOX~\cite{nox}, and Floodlight~\cite{bigswitch}. We
 found \num{several} bugs in total, and were able to localize a minimal
 causal sequence in all cases. \colin{Tone this down.} We describe these case studies in detail here.
 
-\noindent{\bf POX empty list removal.} The first controller we examine is
+\noindent{\bf POX empty list removal.} The first control platform we examine is
 POX~\cite{pox}, the successor of NOX. POX
 is a single-machine control platform designed in the spirit of
 Onix~\cite{onix} to provide programming
@@ -15,17 +15,18 @@ communication.
 We start with a relatively trivial bug to illustrate the range of bugs our
 technique can useful for. We employed \projectname~to generate random sequences of
 inputs, and found after some time that POX threw an exception due to
-attempting to remove an element from a list, yet the element was not present.
+attempting to remove an element from a list where the element was not present.
 
 There were $76$ randomly generated inputs in the trace leading up to the
 exception. We invoked \simulator~to identify a two element minimal causal set:
 a switch failure followed by a switch recovery. Apparently the developers of
 POX had not tested this input sequence before, and \simulator~made it easy to
-identify what inputs caused the erroneous code path to be triggered. At the least,
-this minimization serves to simplify integration tests for this exception.
+identify what inputs caused the erroneous code path to be triggered. \eat{ At the least,
+this minimization serves to simplify integration tests for this exception.}
 
 \noindent{\bf POX routing loop.} The next bug we encountered was found in
-the POX routing application.
+the POX routing application (`l2\_multi'). We set up a simple two switch
+topology with a host attached to either end, and had each switch.
 
 \begin{itemize}
 \item Floodlight failover re-cap
