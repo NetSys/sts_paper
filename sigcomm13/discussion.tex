@@ -2,28 +2,43 @@
 % running our system on our own code -- we can't tell them that it's our code!
 \Simulator~leaves open several questions, which we discuss here.
 
-\noindent{\bf Are all simulated failures really indistinguishable
+\noindent{\bf Are simulated failures really indistinguishable
 from actual failures?}
-Maybe not, but since we built the simulator
-in software, the fidelity of our simulated failures
-can be arbitrarily sophisticated.\footnote{Subject to scalability
-limitations of fine-grained simulations.}
+There will always be some failure modes observed in practice that
+are not reproducible without adding significant complexity to the simulator.
+For example, suppose that the controller's faulty behavior is to flood
+switches with messages, occasionally causing them to drop some traffic, but only when they
+are running low on memory.
+
+Luckily the simulator is built in software, and can be modified to model a
+wide range of failure modes (subject to scalability
+limitations of fine-grained simulations).
+As new failure modes are observed in practice, they can be added to the model
+if it is worthwhile to do so.
 
 \noindent{\bf Will this approach work on all control platforms?}
-So long as the controller under test supports OpenFlow 1.0, \simulator{}
+So long as the controller under test supports OpenFlow 1.0, \simulator~
 works out of the box.
 
-\noindent{\bf Why SDN?}
-SDN has two properties that make it particularly amenable to an
-automated troubleshooting approach such as ours. Most importantly, SDN control software
-quickly converges to quiescence--that is, SDN controllers become idle when no policy or
-topology changes occur for a period of time. This means that
-most inputs are not relevant to triggering a given bug, since the system
-repeatedly returns to the same quiescent state.
-If this were not the case, our
-technique would not be able to significantly decrease the size of execution traces.
+\noindent{\bf Why do you focus on SDN networks?}
+SDN represents both an opportunity and a challenge. In terms of a challenge,
+SDN control platforms are in their infancy, which means that they have bugs
+that need to be found and corrected.  Based on our conversations with
+commercial SDN developers, the need for automated troubleshooting for SDN
+networks is extreme. In terms of an opportunity, SDN control platforms have
+two properties that make them particularly amenable to an automated
+troubleshooting approach such as ours. First, and most importantly, SDN
+control software quickly
+converges to quiescence–that is, SDN controllers become idle when no policy or
+topology changes occur for a period of time. This means that most inputs are
+not relevant to triggering a given bug, since the system repeatedly returns to
+a valid quiescent state; one need only study the critical transition from the last
+quiescent valid configuration to the first invalid configuration to find the
+triggering inputs. If this were not the case, it is not clear that the minimal
+causal sesequences found by our technique would be small, in which case
+our approach would not yield significant advantages.
 
-SDN's architecture also facilitates the implementation of~\projectname.
+Second, SDN's architecture facilitates the implementation of~\projectname.
 The syntax and semantics of interfaces between components of the system (\eg~OpenFlow
 between controllers and switches~\cite{openflow}, or
 OpenStack Quantum's API between
@@ -36,10 +51,6 @@ on messages.
 In future work we hope to measure the effectiveness of our
 technique on other control plane systems such as NAS controllers
 that share the same properties.
-
-\noindent{\bf Will SDN control software ever become stable enough that
-          \simulator{} is unnecessary?}
-We certainly hope so! The field is decades from that point though.
 
 %\begin{itemize}
 %\item Aren't these types of bugs (e.g. failover logic) rare? Why should we

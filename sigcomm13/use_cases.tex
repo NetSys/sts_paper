@@ -189,13 +189,8 @@ maintained~\cite{Fischer:1985:IDC:3149.214121}.}
 The distributed logs would also need to make a clear distinction between
 internal events and external input events. Further,
 the input events would need to be logged in sufficient detail for \projectname~to
-reproduce a synthetic version of the input that is indistinguishable to the control software
-from the original input event.\footnote{There will of course be some input events that
-are not reproducible
-synthetically without significant complexity in what the simulator needs to model.
-For example, suppose that the controller's faulty behavior is to flood a switch with messages,
-causing the switch to drop some traffic, yet only switches that are running low on memory
-are affected by the controller's faulty behavior.}
+reproduce a synthetic version of the input that is indistinguishable (in terms
+of control plane messages) from the original input event.
 
 Without care, a single input event may appear multiple times in the
 distributed logs. A failure of the master node, for example, could be independently

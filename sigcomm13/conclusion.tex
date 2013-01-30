@@ -1,3 +1,21 @@
+SDN is widely heralded as the ``future of networking'', because it makes it
+much easier for operators to manage their networks. SDN does this, however, by
+pushing the complexity into SDN control software itself. Just as sophisticated
+compilers are hard to write, but make programming easy, SDN platforms make
+network management easier for operators, but only by forcing the developers of
+SDN platforms to confront the challenges of asynchrony, partial failure, and
+other notoriously hard problems that are inherent to all distributed systems.
+Thus, people will be troubleshooting and debugging SDN control software for many
+years to come, until they become as stable as compilers are now.
+
+Current techniques for troubleshooting SDN networks are quite primitive; they
+essentially involve manual inspection of logs in the hope of identifying the
+relevant inputs. In this paper we developed a technique for automatically
+identifying a minimal sequence of inputs responsible for triggering a given
+bug. We have applied this system to three open source SDN platforms, and were
+able to minimize the input for \num{all but one} of the bugs we encountered.
+
+\eat{
 SDN is widely heralded as the ``future of networking'', and its purpose is to make
 it easy to manage networks. Achieving this end forces platform developers to directly
 confront asynchrony, partial failure, and other problems that are inherent to all distributed
@@ -9,6 +27,7 @@ We have applied this system to three open source SDN platforms, and
 were able to find or reproduce bugs in all the platforms we investigated.
 %Now we just need to provide a mechanism for the next question: would that date
 %have panned out if I hadn't spilt the wine?
+}
 
 % Two ideas that have been put on the backburner:
 % - distinguishing persistent violations from transient
