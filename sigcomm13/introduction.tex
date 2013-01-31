@@ -76,14 +76,16 @@ set of triggering inputs.
 The smaller the set of triggering inputs, the easier debugging will be.
 
 Our focus here is on troubleshooting. Our goal is
-to automatically identify a small set of  inputs to the SDN software (\eg~link failures) that
-triggered the bug, and filter out the extraneous ones.  This would go a long way towards achieving ``automated troubleshooting''.
+to automatically identify a small set of inputs to the SDN software (\eg~link failures) that
+triggered the bug, and filter out the extraneous ones. This would go a long way towards achieving ``automated troubleshooting''.
 
-One straightforward approach is to account for
-potential causality: if an external input does not induce any messages before
+If you consider the processes in the software-defined network as a distributed
+state machine, one straightforward approach is
+to account for potential causality: if an external input does not induce any messages before
 the occurrence of the invalid configuration, it
 cannot possibly have affected the outcome~\cite{Lamport:1978:TCO:359545.359563}.
-Unfortunately, pruning concurrent inputs alone does not
+Unfortunately, pruning those inputs without a causal relation to
+the invalid configuration does not
 significantly reduce the number of inputs.
 
 Our approach is to iteratively
@@ -106,21 +108,24 @@ where we have access to the syntax and semantics of messages passed
 throughout the distributed system. In this way we can recognize functionally
 equivalent messages and maintain causal dependencies despite altered histories.
 
-Related tools such as {\tt ndb}~\cite{handigol2012debugger} provide
+Automatic minimization of fault-inducing traces
+represents a significant improvement over the status quo;
+to the best of our knowledge, painstaking manual analysis of logs is the
+{\em de facto} method of troubleshooting production SDN control software.
+
+The research community has made recent progress in this space.
+Tracing tools such as {\tt ndb}~\cite{handigol2012debugger} provide
 a historical view into dataplane (mis)behavior. In contrast, our technique provides
 information about precisely what caused the network to
 enter an invalid
 configuration in the first place. Record and replay techniques such as
 OFRewind~\cite{ofrewind} and liblog~\cite{Geels:2006:RDD:1267359.1267386}
-enable you to verify that a set of inputs triggered a bug, but do not automatically reduce the set of potentially triggering inputs to a manageable number. As far as we know, our work
+enable you to verify that a set of inputs triggered a bug, but do not automatically reduce
+the set of potentially triggering inputs to a manageable number. As far as we know, our work
 is the first to programmatically isolate fault-inducing inputs to a distributed
 system.
 
 %Even the modest improvement of
-Automatic minimization of fault-inducing traces
-represents a significant improvement over the status quo;
-to the best of our knowledge, painstaking manual analysis of logs is the
-{\em de facto} method of troubleshooting production SDN control software.
 
 % Main result from our work: the amount of effort it takes to codify domain knowledge is significantly less than the effort
 % it would take to step through a normal replay debugger by hand for each bug.

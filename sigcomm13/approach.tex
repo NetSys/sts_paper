@@ -148,8 +148,12 @@ cope with alterations to the causal history of an execution, and check
 for correctness violations. In \S\ref{sec:architecture}, we describe concrete
 ways developers and operators can put \simulator~to use.
 
-\subsection{Simulation}
+\subsection{Simulated Execution}
 \label{subsec:simulation}
+
+\colin{Shivaram comment: need a paragraph that lays out model. Processes,
+inputs, messages, single trace labeled with which event belongs to which
+process. We discuss in section }
 
 Unlike the example applications described
 by the original delta debugging paper~\cite{Zeller:1999:YMP:318773.318946}, the system we are troubleshooting is not a
@@ -162,16 +166,17 @@ a single machine. We then run the control software on
 top of this simulator and connect the software switches to the controllers as if they were true
 network devices, such that the controllers believe they are configuring a true
 network. This setup allows the simulator to interpose on all communication
-channels, enabling fine-grained control over message orderings. The overall
+channels. The simulator uses these interposition points to delay, drop, or reorder
+messages as needed for replay. The overall
 simulation architecture is depicted in
 Figure~\ref{fig:architecture}.
 
 \begin{figure}[t]
     %\hspace{-10pt}
     \includegraphics[width=3.25in]{../diagrams/architecture/Debugger_Architecture.pdf}
-    \caption[]{\label{fig:architecture} Simulation infrastructure. Dataplane
-    devices run in software, and all communication channels are
-    interposed upon.}
+    \caption[]{\label{fig:architecture} Simulation infrastructure. We simulate
+    dataplane behavior in software, and interpose on all communication
+    channels.}
 \end{figure}
 
 Given a sequence of inputs (\eg~link failures, controller crashes, host migrations,
