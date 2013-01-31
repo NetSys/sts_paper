@@ -22,16 +22,18 @@ POX list removal & 2 switch mesh & 20/20 & 76 (69) & 2 (2) \\
 % Original: config/eugene_epsilon_replay.py
 % MCS: config/eugene_epsilon_mcs.py
 POX migration blackhole & 4 pod (20 switch) FatTree & \num{?} & \num{?} & \num{?} \\
-POX discovery blackhole & 2 switch mesh & [20/20*] & 68 & 25 \\
+POX discovery blackhole & 2 switch mesh & 15/20 [20/20*] & 68 (26) & 25 (11) \\
 % Original: 7ba95ed82ca4e32f12ab511d9c4301dbac2c59d5
 % MCS: 399cf861db87a65e600283d9ae7760400c4676e2
-NOX discovery loop & 4 switch mesh & 18/20 & \num{?} & \num{?} \\
+NOX discovery loop & 4 switch mesh & 18/20 & 358 (150) & 58 (18) \\
 % Original: ce547fc1df3bde279b6f3dd589c909663e295f1e
 % MCS: 5f49e791b0c1a611454cf0930f54aa609dd635d3
 Floodlight loop & 3 switch mesh & \num{?} & \num{?} & \num{?} \\
 \end{tabular}
-\caption{Overview of Case Studies. The totals shown in parentheses are with
-dataplane permit events excluded.}
+\caption{Overview of Case Studies. Totals shown in parentheses are with
+dataplane permit events excluded. \newline
+\textmd{*with multiplexed sockets and
+logging interposition enabled.}}
 \label{tab:case_studies}
 \end{table*}
 
