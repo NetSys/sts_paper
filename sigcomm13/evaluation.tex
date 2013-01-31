@@ -3,14 +3,55 @@
 We have applied \projectname~to three open source SDN control platforms:
 POX~\cite{pox}, NOX~\cite{nox}, and Floodlight~\cite{bigswitch}. We
 found \num{several} bugs in total, and were able to localize a minimal
-causal sequence in all cases. \colin{Tone this down.} We describe these case studies in detail here.
+causal sequence \num{in all cases}. We describe these case studies in detail here.
 
-\noindent{\bf POX empty list removal.} The first control platform we examine is
+\colin{Move to discussion section?}
+The case studies we present here are relatively simplistic. This is because
+the available open source controllers are simplistic.
+Some production controllers behind closed doors.
+
+Anecdotes: huge amount of complexity behind closed doors. But for a number of
+reasons, it's difficult to discuss bugs publicly.
+
+\begin{table*}
+\centering
+\begin{tabular}{l|l|l|l|l}
+Bug Name & Topology & Replay Success Rate & Total Inputs & MCS Size \\
+\hline
+POX list removal & 2 switch mesh & 20/20 & 76 (69) & 2 (2) \\
+% Original: config/eugene_epsilon_replay.py
+% MCS: config/eugene_epsilon_mcs.py
+POX migration blackhole & 4 pod (20 switch) FatTree & \num{?} & \num{?} & \num{?} \\
+POX discovery blackhole & 2 switch mesh & [20/20*] & 68 & 25 \\
+% Original: 7ba95ed82ca4e32f12ab511d9c4301dbac2c59d5
+% MCS: 399cf861db87a65e600283d9ae7760400c4676e2
+NOX discovery loop & 4 switch mesh & 18/20 & \num{?} & \num{?} \\
+% Original: ce547fc1df3bde279b6f3dd589c909663e295f1e
+% MCS: 5f49e791b0c1a611454cf0930f54aa609dd635d3
+Floodlight loop & 3 switch mesh & \num{?} & \num{?} & \num{?} \\
+\end{tabular}
+\caption{Overview of Case Studies. The totals shown in parentheses are with
+dataplane permit events excluded.}
+\label{tab:case_studies}
+\end{table*}
+
+\noindent{\bf POX list removal.} The first control platform we examine is
 POX~\cite{pox}, the successor of NOX. POX
 is a single-machine control platform designed in the spirit of
 Onix~\cite{onix} to provide programming
 abstractions on top of the low-level details of switch-controller
 communication.
+
+\colin{Emphasize that POX is designed for research prototyping and educational
+use (\ie~is not focused on production networking). Still, POX has a diverse
+and growing set of users.
+
+We illustrate type errors to show how STS is a useful framework for exploring
+code paths that you forget to unit tests. Right now, Mininet is the state of
+the art for prototying. Mininet is excellent for testing common scenarios on
+fully operational switches (OVS). But it's not explicitly designed to
+exercise corner-case scenarios such as link failure or host
+migrations.(Support was just added recently)}
 
 We start with a relatively trivial bug to illustrate the range of bugs our
 technique can useful for. We employed \projectname~to generate random sequences of
@@ -24,19 +65,38 @@ POX had not tested this input sequence before, and \simulator~made it easy to
 identify what inputs caused the erroneous code path to be triggered. \eat{ At the least,
 this minimization serves to simplify integration tests for this exception.}
 
-\noindent{\bf POX routing loop.} The next bug we encountered was found in
+
+\noindent{\bf POX migration blackhole.}
+Does learning on new host locations. And installs routes for new flows. But
+blackholes pre-existing routes.
+% A similar bug was found in NOX learning switch application by NICE. We only
+% realized this after discovering the bug.
+
+\noindent{\bf POX discovery blackhole.} The next bug we encountered was found in
 the POX routing application (`l2\_multi'). We set up a simple two switch
 topology with a host attached to either end, and had each switch.
+% Discussion of how our gizmos helped.
 
-\begin{itemize}
-\item Floodlight failover re-cap
-\item NOX routing
-\item POX distribution?
-\item Frenetic?
-\item A bug where our technique didn't work
-\end{itemize}
+\noindent{\bf NOX discovery loop.}
+
+Loops in SDN have more dire implications than loops in traditional networking.
+This is because transient loops in fully-distributed normally resolve
+themselves quickly. Loops caused by reactive SDN controllers, however,
+persist for as long as the flow mods timers. This is because the SDN
+controllers depend on PacketIn's to update their view of the network, yet
+packets in a loop cause no flow mods to be sent.
+
+\noindent{\bf Floodlight discovery loop.}
+Open-source version of Floodlight provides minimal support for distribution.
+This is why we didn't try to reproduce, \eg~the distribution bug. We expect
+that our technique would truly shine in those cases.
+
+\colin{Should have a discussion of what caused the non-determinism we
+observed, and how it can be mitigated. i.e., how effective gizmos were.}
 
 \subsection{Domain Knowledge}
+
+
 \label{subsec:domain_knowledge}
 \begin{itemize}
 \item How much effort did it take to codify domain knowledge? (table with lines of code)
@@ -62,9 +122,22 @@ Figure~\ref{fig:list_runtime}.
     \caption[]{\label{fig:list_runtime} Minimizing the POX list remove trace.}
 \end{figure}
 
+\begin{figure}[t]
+    %\hspace{-10pt}
+    \includegraphics[width=3.25in]{../graphs/runtime/pox_blackhole.pdf}
+    \caption[]{\label{fig:list_runtime} Minimizing the POX discovery blackhole.}
+\end{figure}
+
+\begin{figure}[t]
+    %\hspace{-10pt}
+    \includegraphics[width=3.25in]{../graphs/runtime/nox_loop.pdf}
+    \caption[]{\label{fig:list_runtime} Minimizing the NOX discovery loop.}
+\end{figure}
+
+
 \begin{itemize}
 \item Graphs of \# of replays vs. remaining inputs
-\item `time compression' benefits
+%\item `time compression' benefits
 \item Note that runtime doesn't really matter! As long as developer time isn't being used. 
 % Scalability:
 %We also tested the extreme limits of the simulator's scalability, pushing up
@@ -81,6 +154,20 @@ Figure~\ref{fig:list_runtime}.
 %The length of the execution can also be `compressed' by manipulating timers in the
 %controllers while still maintaining happens-before dependencies.
 \end{itemize}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 % ------------------------------------- %
 %    OLD TEXT

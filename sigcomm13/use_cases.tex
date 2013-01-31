@@ -27,6 +27,8 @@ Control server failure & Control server recovery \\
 \hline
 Dataplane packet injection & Dataplane packet drop \\
 \hline
+Dataplane packet delay & Dataplane packet permit \\
+\hline
 Control message delay & Host migration \\
 \hline
 \end{tabular}
@@ -34,29 +36,29 @@ Control message delay & Host migration \\
 \label{tab:inputs}
 \end{table}
 
-We designed \projectname~to be as resilient to non-determinism as possible
-while minimizing modifications to control software.
+We designed \projectname~to be as resilient to non-determinism as is
+practically feasible, while avoiding modifications to control software whenever possible.
 \projectname~optionally ensures a deterministic order of messages despite
 non-determinism in operating system I/O scheduling
 by multiplexing all sockets in the controller process
-onto a single true socket.\footnote{An alternative approach would be to employ a
-distributed mutex to ensure reliable message ordering~\cite{lin2009towards}.}
-\projectname~currently
-overrides socket functionality within the control software itself, but
-we could also achieve deterministic I/O without code modifications by
+onto a single true socket.\footnote{Alternatively, we could employ a
+distributed mutex~\cite{lin2009towards}.}
+\projectname~currently overrides socket functionality within the control
+software itself.\footnote{Only supported for POX at the moment}
+In the future we plan to implement deterministic message ordering without code modifications by
 loading a shim layer on top of
 libc (similar to liblog~\cite{Geels:2006:RDD:1267359.1267386}).
 
 \projectname~needs visibility into the control software's internal state
 changes to reliably reproduce the system execution. We achieve this by
 making a
-small change to the control software's logging library\footnote{Currently
-supported for POX
-and Floodlight}: whenever a control process executes a log
+small change to the control software's logging library\footnote{Only supported
+for POX at the moment}: whenever a control process executes a log
 statement, we notify \projectname~that a new state transition
-is about to occur, and optionally block the process. \projectname~then logs this event for later replay and
-sends an acknowledgment to unblock the controller. During replay,
-we optionally force the control software to block at internal state transition points
+is about to occur, and optionally block the process. \projectname~then sends
+an acknowledgment to unblock the controller after logging the state change. If blocking was enabled
+during recording, we force the control software to block at internal state
+transition points again during replay
 until \projectname~gives explicit acknowledgment.
 
 Routing the {\tt gettimeofday()} syscall
