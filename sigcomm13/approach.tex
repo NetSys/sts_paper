@@ -61,6 +61,7 @@ the controller crash is pruned, the blackhole will be resolved properly, and
 when the link failure is pruned, no blackhole will occur. The MCS returned
 is therefore the controller crash and the link failure in conjunction.
 
+
 \subsection{Delta Debugging}
 \label{subsec:algorithm}
 
@@ -142,18 +143,24 @@ Second, delta debugging assumes a single program under test. Our input depends o
 causal relationships across
 concurrently running nodes.
 
-In the rest of this section, we describe how we
+For the purposes of this section, we model our problem as follows.
+We are given a single, globally ordered trace of events that ends in
+in a policy violation, and we return a minimal causal subsequence
+of the trace. The trace includes input events
+(\eg~link failures), control message sends and receipts between
+switches and controllers,
+and internal state changes (\eg the
+backup deciding to elevate itself to master in the Floodlight case) labeled
+with the control process that made the state change.
+In \S\ref{subsec:exploration}, we describe how we obtain the globally
+ordered trace in practice.
+
+In the rest of this section we describe how we
 replay inputs to control software and
 cope with alterations to the causal history of an execution.
-In \S\ref{sec:architecture}, we describe concrete
-ways developers and operators can put \simulator~to use.
 
 \subsection{Simulated Execution}
 \label{subsec:simulation}
-
-\colin{Shivaram comment: need a paragraph that lays out model. Processes,
-inputs, messages, single trace labeled with which event belongs to which
-process. We discuss in section }
 
 Unlike the example applications described
 by the original delta debugging paper~\cite{Zeller:1999:YMP:318773.318946}, the system we are troubleshooting is not a
@@ -175,7 +182,7 @@ Figure~\ref{fig:architecture}.
     %\hspace{-10pt}
     \includegraphics[width=3.25in]{../diagrams/architecture/Debugger_Architecture.pdf}
     \caption[]{\label{fig:architecture} Simulation infrastructure. We simulate
-    dataplane behavior in software, and interpose on all communication
+    network devices in software, and interpose on all communication
     channels.}
 \end{figure}
 
