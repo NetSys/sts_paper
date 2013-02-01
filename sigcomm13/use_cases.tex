@@ -38,11 +38,12 @@ Control message delay & Host migration \\
 
 We designed \projectname~to be as resilient to non-determinism as is
 practically feasible, while avoiding modifications to control software whenever possible.
-\projectname~optionally ensures a deterministic order of messages despite
-non-determinism in operating system I/O scheduling
+When sending data over multiple sockets, the operating system exhibits some
+non-determinism in the order it schedules the socket I/O operations.
+\projectname~optionally ensures a deterministic order of messages
 by multiplexing all sockets in the controller process
 onto a single true socket.\footnote{Alternatively, we could employ a
-distributed mutex~\cite{lin2009towards}.}
+mutex~\cite{lin2009towards}.}
 \projectname~currently overrides socket functionality within the control
 software itself.\footnote{Only supported for POX at the moment}
 In the future we plan to implement deterministic message ordering without code modifications by

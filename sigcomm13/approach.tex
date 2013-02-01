@@ -143,9 +143,9 @@ causal relationships across
 concurrently running nodes.
 
 In the rest of this section, we describe how we
-replay inputs to control software,
-cope with alterations to the causal history of an execution, and check
-for correctness violations. In \S\ref{sec:architecture}, we describe concrete
+replay inputs to control software and
+cope with alterations to the causal history of an execution.
+In \S\ref{sec:architecture}, we describe concrete
 ways developers and operators can put \simulator~to use.
 
 \subsection{Simulated Execution}
@@ -182,7 +182,8 @@ Figure~\ref{fig:architecture}.
 Given a sequence of inputs (\eg~link failures, controller crashes, host migrations,
 or policy changes) and an invariant checking probe (provided by frameworks
 such as HSA~\cite{hsa,hsa_realtime} or Anteater~\cite{anteater,khurshid2012veriflow}),
-delta debugging finds a minimal causal set. The
+delta debugging finds a minimal causal set responsible for triggering the
+policy violation. The
 simulator is responsible for replaying intermediate input subsequences
 chosen by delta debugging. For example, the simulator replays link failures
 by disconnecting the edge in the simulated network, and sending a
@@ -393,10 +394,10 @@ if $i_2$ and $i_3$ are internal events observed
 during replay that are both in the same equivalence class as a single event $i_1$ from the
 original run, we could inject the next input after $i_2$ or after $i_3$.
 
-\colin{Figure this figure out}
-%\begin{wrapfigure}{c}{\linewidth}
+% TODO: figure this figure out
+%\begin{wrapfigure}{c}{1.3\linewidth}
 %  \centering
-%  \includegraphics[height=0.8in]{../diagrams/state_machines/event_sequence.pdf}
+%  \includegraphics[width=\linewidth,height=0.8in]{../diagrams/state_machines/event_sequence.pdf}
 %\end{wrapfigure}
 
 In the general case it is always possible to construct two state machines that lead
@@ -500,7 +501,7 @@ moment, our tool does not support policy changes or dataplane packet drops for
 this reason.
 }
 
-
+\eat{
 \subsection{Correspondence Checking}
 \label{subsec:cc}
 
@@ -610,6 +611,7 @@ configuration of the logical view are correct. Finally, correspondence
 checking can not verify
 time-dependent policies such as ``No link should be congested more than 1\% of
 the time''.
+}
 
 \subsection{Limitations}
 \label{subsec:non_goals}

@@ -84,16 +84,17 @@ set of triggering inputs.
 The smaller the set of triggering inputs, the easier debugging will be.
 
 Our focus here is on troubleshooting. Given a bug, our goal is
-to automatically identify a small set of inputs to the SDN software (\eg~link failures) that
-triggered the bug (and conversly filter out the extraneous ones).
+to automatically filter out inputs to the SDN software (\eg~link failures)
+that are not relevent to triggering the bug, leaving a small seqeuence of inputs
+that is directly responsible.
 This would go a long way towards achieving ``automated troubleshooting.''
 
-If you consider the software-defined network as a distributed state machine,
+If you consider a software-defined network as a distributed state machine,
 with individual processes sending messages between themselves, one straightforward approach is
 to account for potential causality: if an external input does not induce any messages before
 the occurrence of the invalid configuration, it
 cannot possibly have affected the outcome~\cite{Lamport:1978:TCO:359545.359563}.
-Unfortunately, pruning those inputs without a causal relation to
+Unfortunately, pruning only those inputs without a causal relation to
 the invalid configuration does not
 significantly reduce the number of inputs.
 
@@ -106,14 +107,17 @@ point in time to a single program--to a distributed environment, where inputs
 are spread across time and involve multiple machines. \scott{I think you give
 too much credit to delta debugging}
 
-The main difficulty in applying delta debugging to a distributed
-setting is coping with divergent histories. Traditional replay
+The main difficulty in pruning historical inputs is
+coping with divergent histories. Traditional replay
 techniques~\cite{Dunlap:2002:REI:844128.844148,Geels:2006:RDD:1267359.1267386}
 reproduce errors reliably by precisely recording the low-level I/O operations of
 software under test. Pruning inputs, however, may cause the execution to
 subtly change (\eg~the sequence numbers of packets may all differ), and some
 state changes that occurred in the original
-run may not occur. Our approach is to record and replay at the application layer,
+run may not occur. Without the exact same low-level I/O operations,
+determinstic replay techniques cannot proceed in a sensible manner.
+
+Our approach is to record and replay at the application layer,
 where we have access to the syntax and semantics of messages passed
 throughout the distributed system. In this way we can recognize functionally
 equivalent messages and maintain causal dependencies throughout replay despite
@@ -139,7 +143,7 @@ enter an invalid configuration in the first place.
 
 We have applied our technique, \simulator, to three open source SDN control
 platforms: Floodlight~\cite{bigswitch}, POX~\cite{pox}, and NOX~\cite{nox}.
-Of the five bugs we found in a 5 day investigation,
+Of the five bugs we encountered in a five day investigation,
 \simulator~reduced the size of the input trace to 36\% of its original size in
 the worst case and 2\% of its original size in the best case.
 
