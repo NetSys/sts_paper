@@ -83,7 +83,9 @@ Debugging then involves tracking down the error in the code itself, given a
 set of triggering inputs.
 The smaller the set of triggering inputs, the easier debugging will be.
 
-Our focus here is on troubleshooting. Given a bug, our goal is
+Our focus here is on troubleshooting. When we observe an invalid
+configuration,
+which is prima facie evidence for a bug, our goal is
 to automatically filter out inputs to the SDN software (\eg~link failures)
 that are not relevant to triggering the bug, leaving a small sequence of inputs
 that is directly responsible.
@@ -101,9 +103,10 @@ significantly reduce the number of inputs.
 Our approach is to prune inputs from the original run, replay the remaining
 inputs to the control software using simulated network devices, and
 check whether the network re-enters the invalid configuration.
-In particular, we generalize delta debugging~\cite{Zeller:2002:SIF:506201.506206}--an algorithm for
+In particular, we generalize delta
+debugging~\cite{Zeller:2002:SIF:506201.506206}---an algorithm for
 minimizing test cases that are inserted at a single
-point in time to a single program--to a distributed environment, where inputs
+point in time to a single program---to a distributed environment, where inputs
 are spread across time and involve multiple machines. \scott{I think you give
 too much credit to delta debugging}
 
@@ -123,10 +126,10 @@ throughout the distributed system. In this way we can recognize functionally
 equivalent messages and maintain causal dependencies throughout replay despite
 altered histories.
 
-Automatic minimization of fault-inducing traces
-represents a significant improvement over the status quo;
-to the best of our knowledge, painstaking manual analysis of logs is the
-{\em de facto} method of troubleshooting production SDN control software.
+The output of our approach, minimized input traces, represents a noteworthy improvement over the status quo;
+painstaking manual analysis of logs is the
+{\em de facto} method of troubleshooting production SDN control software
+today.
 
 As far as we know, our work
 is the first to programmatically isolate fault-inducing inputs to a distributed
@@ -141,7 +144,7 @@ a historical view into dataplane (mis)behavior. In contrast, our technique provi
 information about precisely what caused the network to
 enter an invalid configuration in the first place.
 
-We have applied our technique, \simulator, to three open source SDN control
+We have applied \simulator, to three open source SDN control
 platforms: Floodlight~\cite{bigswitch}, POX~\cite{pox}, and NOX~\cite{nox}.
 Of the five bugs we encountered in a five day investigation,
 \simulator~reduced the size of the input trace to 36\% of its original size in

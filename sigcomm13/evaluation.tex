@@ -86,74 +86,84 @@ trace it produced made for a simple integration test.
 
 \noindent{\bf POX discovery blackhole.}
 We discovered the next bug after roughly 20 runs of randomly generated inputs.
-We noticed that \projectname~reported a blackhole while POX was bootstrapping its
+We noticed that \projectname~reported a persistent blackhole while POX was bootstrapping its
 discovery of link and host locations. We encountered this bug
 on a simple topology, depicted in Figure~\ref{fig:simple_topo}, consisting of
-two hosts $A$ and $B$
-and two switches $S1$ and $S2$ connected by a single link.
+two hosts A and B
+and two switches S1 and S2 connected by a single link.
 
 \begin{figure}[t]
     %\hspace{-10pt}
     \includegraphics[width=3.25in]{../diagrams/state_machines/mesh_topo.pdf}
     \caption[]{\label{fig:simple_topo} Topology for POX
-    discovery blackhole.}
+    discovery blackhole. Numbers denote port labels.}
 \end{figure}
 
 There were 68 inputs in the initial trace, and \simulator~returned a 25 input
 MCS. With the MCS in hand we took out paper and pencil to decipher what had
-transpired. 
+transpired.
 
-In the end, we found that the crucial triggering event was an {\em in-
-flight} packet. The root cause in the code was a missing return statement in a
-nested conditional.
+Before the discovery module had learned of the link,
+there were six traffic injection events between hosts (A$\rightarrow$ B and
+B$\rightarrow$A). At the point when the link was discovered, POX had learned
+of B's location at port $2.2$. %Upon  POX would oscillate between learning the correct location
+%of hosts at their ingress switch, and then learning an incorrect location
+%when the flooded packet traversed the link and the next switch
+%notified the controller of a new flow.\footnote{This seems to be necessary behavior before the
+%links are discovered, since the hosts could have
+%have legitimately migrated}
+%This did not appear to be problematic though at first glance though,
+%since we observed that POX correctly flushed the routing entries of the
+%switches and forgot its incorrectly learned location of $A$ when it discovered
+%that $1.1$ and $2.1$ were switch-switch ports, not host ports. At this point POX's only knowledge was the
+%correct location of $B$ at $2.2$.
 
+We next observed an {\em in-flight} packet arriving from A$\rightarrow$B at
+port $2.1$
+(without a prior flow notification from S1). This was POX's first error.
+Upon examining the code, we found that it
+did not account for in-flight packets concurrent with
+switch-switch link discovery. As a result,
+POX incorrectly learned A's location at 2.1. If the first packet had
+instead originated at 1.1, POX would not have made this mistake.
 
-While the discovery module sent out LLDP packets to learn links,
-there were six traffic injection events between hosts ($A\rightarrow B$ and
-$B\rightarrow A$). POX was learning the locations of the hosts in the following pattern: host $A$
-(for example) would send a packet, $S1$ would notify the controller of a new
-flow that it did not have a routing entry for, POX would learn the location of
-$A$ at port $1.2$, would flood the packet to the unknown destination $B$, the
-packet would arrive at $2.1$, $S2$ would notify POX of the unknown flow,
-and POX would incorrectly learn a new location
-for $A$ at port $2.1$.\footnote{This seems to be necessary behavior, since
-host $A$ could have legitimately migrated to $S2$.}
-This did not appear to be problematic though,
-since we observed that POX flushed the routing entries of the
-switches and flushed its incorrect learned location of $A$ when it discovered
-the link between $S1$ and $S2$. At this point POX's only knowledge was the
-correct location of $B$ at $2.2$.
+The next event we observed was another
+{\em in-flight} packet from B$\rightarrow$A arriving at port
+1.1. S1 notified POX of the unmatched flow, and POX appropriately printed a
+log statement indicating that a packet had arrived at an internal switch port without a
+previously installed flow entry. What happened next puzzled us though. POX
+proceeded to install a path for this new B$\rightarrow$A flow, but the
+path itself contained a loop: POX installed a B$\rightarrow$A entry going out both
+1.1$\rightarrow$2.1 and 2.2$\rightarrow$2.1, whereas it should have installed
+only the latter (given A's current known location). The default behavior of
+OpenFlow switches is to ignore matching route entries (with wildcarded in
+ports) that forward out the
+same port the packets arrived on. This is where we started observing the blackhole:
+now whenever B sent traffic to A, it would be dropped at S1 until
+the faulty routing entry would eventually expire 30 seconds later.
 
-After POX discovered both ends of the link, an {\em
-in-flight} packet from $A\rightarrow B$ arrived at port $2.1$, and POX incorrectly
-learned $A$'s location at $S2$ (this time without a prior notification from
-$S1$ about the $A\rightarrow B$ flow).
-POX now believed that $A$ and $B$ were attached to the
-same switch, and proceeded to install a (correct) flow entry
-in $S2$ from $2.1$ to $2.2$ for $A$'s flow to $B$.
+We investigated the code that handled in-flight packets
+arriving on switch-switch ports. The log statement that we had observed
+earlier was inside of a nested conditional, and the code for
+installing the path was below and outside of the nested conditional conditional.
+What struck us was that there was a commented out return statement directly
+after the log statement. The comment above it read: ``Should flood instead of
+dropping''. We tried reinserting the return statement and replaying, and
+the blackhole ceased to appear.
 
-Next, another {\em in-flight} packet from $B\rightarrow A$ arrived at port
-$1.1$, $S1$ notified POX of the unknown flow, and POX incorrectly learned a
-new location for $B$ at $1.1$. At this point it attempted to set up a route
-from $B$ to $A$. However, it incorrectly believed at the time that $B$ was located
-at $1.1$ and that $A$ was located at $2.1$, so it installed route entries for
-$B\rightarrow A$ out port $1.1$ and out port $2.2$.
+In summary, we found that the crucial triggering events were two
+in-flight packets (set in motion by prior traffic injection events):
+POX incorrectly learned a host location as a result of the first in-flight
+packet, and
+failed to return out of a nested conditional as result the second in-flight
+packet. We have sent the replayable trace generated by \simulator~to the lead
+developer of POX.
 
-% Something weird: A->B doesn't have an entry in S1. So, when a sends a packet
-% next, shouldn't this solve the routing loop? There needs to be 4 entries for
-% there to be a permanent loop.
-At this point no further packets were in flight. Since the switches now had
-flow entries for all pairs, no further flow notification messages were sent to
-POX, so POX never learned the correct locations of $A$ and $B$.
-The behavior of OpenFlow is to drop packets match flow entries that put them
-out the port they came in on (unless explicitly told to forward in such cases), hence the
-blackhole we observed: any traffic from $B$ would arrive at $S1$ and be
-dropped, and vice versa.
-
-We suspect this race condition was not observed in Mininet because the rate at which we were sending packets was
-significantly slower than in Mininet (which also sends $ARP$ and
-$IPV6$ pings), so that there were no in-flight flow notifications to POX to
-correct the situation.
+%
+%We suspect this race condition was not observed in Mininet because the rate at which we were sending packets was
+%significantly slower than in Mininet (which also sends $ARP$ and
+%$IPV6$ pings), so that there were no in-flight flow notifications to POX to
+%correct the situation.
 
 % Discussion of how our gizmos helped.
 
