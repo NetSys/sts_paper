@@ -1,21 +1,5 @@
 \label{subsec:case_studies}
 
-We have applied \projectname~to three open source SDN control platforms:
-POX~\cite{pox}, NOX~\cite{nox}, and Floodlight~\cite{bigswitch}. We
-found \num{several} bugs in total, and were able to localize a minimal
-causal sequence \num{in all cases}. We describe these case studies in detail here.
-
-Our investigation involved roughly 5 days of study.
-
-\colin{Move to discussion section?}
-The case studies we present here are relatively simplistic. This is because
-the available open source controllers are simplistic.
-Some production controllers behind closed doors.
-
-Anecdotes: huge amount of complexity behind closed doors. But for a number of
-reasons, it's difficult to discuss bugs publicly. Now in process of adopting
-the tool rather than extracting bugs from industry.
-
 \begin{table*}
 \centering
 \begin{tabular}{l|l|l|l|l}
@@ -24,7 +8,7 @@ Bug Name & Topology & Replay Success Rate & Total Inputs & MCS Size \\
 POX list removal & 2 switch mesh & 20/20 & 76 (69) & 2 (2) \\
 % Original: config/eugene_epsilon_replay.py
 % MCS: config/eugene_epsilon_mcs.py
-POX migration blackhole & 4 pod (20 switch) FatTree & \num{?} & \num{?} & \num{?} \\
+POX migration blackhole & 4 pod (20 switch) FatTree & [20/20*] & \num{?} & \num{?} \\
 POX discovery blackhole & 2 switch mesh & 15/20 [20/20*] & 68 (26) & 25 (11) \\
 % Original: 7ba95ed82ca4e32f12ab511d9c4301dbac2c59d5
 % MCS: 399cf861db87a65e600283d9ae7760400c4676e2
@@ -41,47 +25,82 @@ logging interposition enabled.}}
 \label{tab:case_studies}
 \end{table*}
 
-\noindent{\bf POX list removal.} The first control platform we examine is
-POX~\cite{pox}, the successor of NOX. POX
+We have applied \projectname~to three open source SDN control platforms:
+POX~\cite{pox}, NOX~\cite{nox}, and Floodlight~\cite{bigswitch}. Over a span of roughly five days of
+investigation we found a total of five bugs. We show a high-level overview
+of our results in Table~\ref{tab:case_studies}, and
+illustrate in detail how \simulator~found their minimal causal sequences
+in the rest of this section.
+
+\noindent{\bf POX.} The first SDN control platform we examined
+was POX, the successor of NOX. POX
 is a single-machine control platform designed in the spirit of
 Onix~\cite{onix} to provide programming
 abstractions on top of the low-level details of switch-controller
-communication.
+communication. It is intended primarily for research prototyping and
+educational use (\ie~not large scale production use).
+Nevertheless, POX has been deployed on real networks, and has a growing set of users.
 
-\colin{Emphasize that POX is designed for research prototyping and educational
-use (\ie~is not focused on production networking). Still, POX has a diverse
-and growing set of users.
+The POX application we ran was a layer two routing module (`l2\_multi') that
+learns host locations and installs per-flow paths between known hosts using a variant of the
+Floyd-Warshall algorithm. It depends on a discovery module, which sends
+LLDP packets to discovery links in the network, and a spanning tree module,
+which configures switches to only flood packets for unknown hosts along a
+spanning tree.
 
-We illustrate type errors to show how STS is a useful framework for exploring
-code paths that you forget to unit tests. Right now, Mininet is the state of
-the art for prototying. Mininet is excellent for testing common scenarios on
-fully operational switches (OVS). But it's not explicitly designed to
-exercise corner-case scenarios such as link failure or host
-migrations.(Support was just added recently)}
-
-We start with a relatively trivial bug to illustrate the range of bugs our
-technique can useful for. We employed \projectname~to generate random sequences of
+\noindent{\bf POX list removal.} We start with a relatively trivial bug to illustrate that
+\projectname~is useful for early stage development and testing.
+We employed \projectname~to generate random sequences of
 inputs, and found after some time that POX threw an exception due to
 attempting to remove an element from a list where the element was not present.
 
 There were $76$ randomly generated inputs in the trace leading up to the
-exception. We invoked \simulator~to identify a two element minimal causal set:
-a switch failure followed by a switch recovery. Apparently the developers of
-POX had not tested this input sequence before, and \simulator~made it easy to
-identify what inputs caused the erroneous code path to be triggered. \eat{ At the least,
-this minimization serves to simplify integration tests for this exception.}
+exception. We invoked \simulator~to identify a two element MCS:
+a failure of a connected switch followed by a reboot/initialization of the same switch.
+The nearly logarithmic runtime
+behavior of \simulator~for this case is shown in Figure~\ref{fig:list_runtime}.
 
+\begin{figure}[t]
+    %\hspace{-10pt}
+    \includegraphics[width=3.25in]{../graphs/runtime/list_remove_error.pdf}
+    \caption[]{\label{fig:list_runtime} Minimizing the POX list remove trace.}
+\end{figure}
+
+Apparently the developers of POX had not anticipated this particular event
+sequence. Given the rarity of switch recovery events, and the tediousness of
+writing unit tests for scenarios such as this
+(involving multiple OpenFlow intitialization handshakes), this is not entirely
+unsurprising. Consider that the state-of-the-art open source technology for prototyping SDN
+applications, Mininet~\cite{handigol2012reproducible}, excels at
+testing common scenarios (on production OpenFlow software switches),
+but is not explicitly designed for scripting corner-case scenarios such as
+switch failure/recovery. \projectname~made it very simple to inject inputs
+at a high semantic-level, and the minimized event
+trace it produced made for a simple and replayable integration test.
+
+%We illustrate type errors to show how STS is a useful framework for exploring
+%code paths that you forget to unit tests.
 
 \noindent{\bf POX migration blackhole.}
 Does learning on new host locations. And installs routes for new flows. But
 blackholes pre-existing routes.
-% A similar bug was found in NOX learning switch application by NICE. We only
-% realized this after discovering the bug.
+We contacted the lead developer of POX, and discovered that this was a
+known problem.\footnote{We also noticed after encountering the bug that
+NICE~\cite{nice} had found a similar bug in the NOX learning switch
+application}
 
-\noindent{\bf POX discovery blackhole.} The next bug we encountered was found in
-the POX routing application (`l2\_multi'). We set up a simple two switch
+\noindent{\bf POX discovery blackhole.} The next bug we encountered involved a
+race condition between the discovery module learning about links, and the
+routing module installing paths for new flows.
+
+The POX routing application (`l2\_multi'). We set up a simple two switch
 topology with a host attached to either end, and had each switch.
 % Discussion of how our gizmos helped.
+
+The behavior of OpenFlow is to drop packets that are destined out their out
+port even if.
+
+Not found in Mininet because...
 
 \noindent{\bf NOX discovery loop.}
 
@@ -122,22 +141,17 @@ and \simulator~was able to isolate the minimal causal set in logarithmic
 time. The runtime characteristics of \simulator~for this case are shown in
 Figure~\ref{fig:list_runtime}.
 
-\begin{figure}[t]
-    %\hspace{-10pt}
-    \includegraphics[width=3.25in]{../graphs/runtime/list_remove_error.pdf}
-    \caption[]{\label{fig:list_runtime} Minimizing the POX list remove trace.}
-\end{figure}
 
 \begin{figure}[t]
     %\hspace{-10pt}
     \includegraphics[width=3.25in]{../graphs/runtime/pox_blackhole.pdf}
-    \caption[]{\label{fig:list_runtime} Minimizing the POX discovery blackhole.}
+    \caption[]{\label{fig:pox_discovery} Minimizing the POX discovery blackhole.}
 \end{figure}
 
 \begin{figure}[t]
     %\hspace{-10pt}
     \includegraphics[width=3.25in]{../graphs/runtime/nox_loop.pdf}
-    \caption[]{\label{fig:list_runtime} Minimizing the NOX discovery loop.}
+    \caption[]{\label{fig:nox_discovery} Minimizing the NOX discovery loop.}
 \end{figure}
 
 \begin{itemize}

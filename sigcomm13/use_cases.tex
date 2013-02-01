@@ -38,7 +38,7 @@ Control message delay & Host migration \\
 
 We designed \projectname~to be as resilient to non-determinism as is
 practically feasible, while avoiding modifications to control software whenever possible.
-When sending data over multiple sockets, the operating system exhibits some
+When sending data over multiple sockets, the operating system exhibits
 non-determinism in the order it schedules the socket I/O operations.
 \projectname~optionally ensures a deterministic order of messages
 by multiplexing all sockets in the controller process

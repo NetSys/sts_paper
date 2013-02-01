@@ -4,6 +4,27 @@
 \colin{Should add a discussion of non-determinism within individual
 controllers}
 
+\noindent{\bf Aren't the bugs described here fairly simple?}
+This is a bit of a chicken and the egg problem:
+there are only handful of deployed SDN control platforms, and these are behind
+closed doors.
+
+In part, this because the available open source controllers themselves
+are simplistic. The open source version of Floodlight, for example, 
+Some production controllers behind closed doors.
+
+Moreover, the bugs we encountered were found in roughly five days of
+investigation. We 
+we expect that we would find 
+
+The case studies we present here are relatively simplistic. This is because
+the available open source controllers are simplistic.
+Some production controllers behind closed doors.
+
+Anecdotes: huge amount of complexity behind closed doors. But for a number of
+reasons, it's difficult to discuss bugs publicly. Now in process of adopting
+the tool rather than extracting bugs from industry.
+
 \noindent{\bf Are simulated failures really indistinguishable
 from actual failures?}
 There will always be some failure modes observed in practice that
@@ -16,7 +37,7 @@ Luckily the simulator is built in software, and can be modified to model a
 wide range of failure modes (subject to scalability
 limitations of fine-grained simulations).
 As new failure modes are observed in practice, they can be added to the model
-if it is worthwhile to do so.
+if it is deemed worthwhile to do so.
 
 \noindent{\bf Will this approach work on all control platforms?}
 So long as the controller under test supports OpenFlow 1.0, \simulator~
@@ -37,7 +58,7 @@ not relevant to triggering a given bug, since the system repeatedly returns to
 a valid quiescent state; one need only study the critical transition from the last
 quiescent valid configuration to the first invalid configuration to find the
 triggering inputs. If this were not the case, it is not clear that the minimal
-causal sesequences found by our technique would be small, in which case
+causal subsequences found by our technique would be small, in which case
 our approach would not yield significant advantages.
 
 Second, SDN's architecture facilitates the implementation of~\projectname.
