@@ -86,10 +86,11 @@ trace it produced made for a simple integration test.
 
 \noindent{\bf POX discovery blackhole.}
 We discovered the next bug after roughly 20 runs of randomly generated inputs.
-We noticed that \projectname~reported a persistent blackhole while POX was bootstrapping its
+We noticed that \projectname~reported a blackhole while POX was bootstrapping its
 discovery of link and host locations. We encountered this bug
-on a simple topology, depicted in Figure~\ref{fig:simple_topo}, consisting of two hosts A and B
-and two switches S1 and S2 connected by a single link.
+on a simple topology, depicted in Figure~\ref{fig:simple_topo}, consisting of
+two hosts $A$ and $B$
+and two switches $S1$ and $S2$ connected by a single link.
 
 \begin{figure}[t]
     %\hspace{-10pt}
@@ -100,9 +101,12 @@ and two switches S1 and S2 connected by a single link.
 
 There were 68 inputs in the initial trace, and \simulator~returned a 25 input
 MCS. With the MCS in hand we took out paper and pencil to decipher what had
-transpired. In the end, we found that crucial triggering event was an {\em in
+transpired. 
+
+In the end, we found that the crucial triggering event was an {\em in-
 flight} packet. The root cause in the code was a missing return statement in a
 nested conditional.
+
 
 While the discovery module sent out LLDP packets to learn links,
 there were six traffic injection events between hosts ($A\rightarrow B$ and
@@ -237,9 +241,23 @@ hand has a huge overhead.
 \end{itemize}
 
 
+\subsection{Parameters}
+\label{subsec:params}
 
+Our algorithm leaves an open question as to what value
+\textepsilon~should be set to. We experimentally varied \textepsilon~on the
+POX discovery blackhole and the POX list removal bugs.
+We found for both cases that the numbers of events we timed out on while isolating the MCS became stable for values above $25$ milliseconds.
+For smaller values, the number of timed out events increased rapidly. We
+currently set \textepsilon~to $100$ milliseconds.
 
-
+In general, larger values of \textepsilon~are preferable to
+smaller values (disregarding runtime considerations), since we can always
+detect when we have waited too long (\viz~when a successor of the next input
+has occurred), but we cannot detect when we have timed out
+early on an internal event that is in fact going to occur.
+Analyzing event frequencies for particular bugs could provide more ideal
+\textepsilon values.
 
 
 
