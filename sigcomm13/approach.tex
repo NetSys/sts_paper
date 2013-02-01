@@ -485,6 +485,13 @@ make another optimization.."}
 \subsection{Parameters}
 \label{subsec:params}
 
+Our algorithm leaves an open question as to what value
+\textepsilon~should be set to. We experimentally varied \textepsilon on two of the bugs in \S\ref{sec:evaluation},
+and found that the numbers of events \simulator~timed out on when became stable for values above $25$ milliseconds.
+When \textepsilon is set to $0$ milliseconds, the number of events timed out drops rapidly for small values. 
+After the latency threshold around $25$ milliseconds is crossed, no significant gains in percentage of events
+matched are achieved by increasing \textepsilon.
+
 Both waiting and peeking replay leave an open question as to what value
 \textepsilon~should be set to. In our current implementation,
 we set \textepsilon~\num{somewhat arbitrarily} to $100$ milliseconds, and this has worked for \num{most} of our
@@ -493,6 +500,9 @@ smaller values (disregarding runtime considerations), since we can always
 detect when we have waited too long (\viz~when a successor of the next input
 has occurred), but we cannot detect when we have timed out
 early on an internal event that is in fact going to occur.
+Analysis of event frequencies from traces could
+more precisely provide ideal \textepsilon values for particular bugs or controller configurations
+
 
 \eat{
 In practice we also make optimization to the overall delta debugging

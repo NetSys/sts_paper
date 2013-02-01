@@ -33,7 +33,7 @@ illustrate in detail how \simulator~found their minimal causal sequences
 in the rest of this section.
 
 \noindent{\bf POX.} The first SDN control platform we examined
-was POX, the successor of NOX. POX
+was POX, the successor of NOX. \colin{Cut this sentence:} POX
 is a single-machine control platform designed in the spirit of
 Onix~\cite{onix} to provide programming
 abstractions on top of the low-level details of switch-controller
@@ -42,7 +42,7 @@ educational use (\ie~not large scale production use).
 Nevertheless, POX has been deployed on real networks, and has a growing set of users.
 
 The POX application we ran was a layer two routing module (`l2\_multi') that
-learns host locations and installs per-flow paths between known hosts using a variant of the
+learns host locations and installs exact match per-flow paths between known hosts using a variant of the
 Floyd-Warshall algorithm. It depends on a discovery module, which sends
 LLDP packets to discovery links in the network, and a spanning tree module,
 which configures switches to only flood packets for unknown hosts along a
@@ -66,7 +66,6 @@ behavior of \simulator~for this case is shown in Figure~\ref{fig:list_runtime}.
     \caption[]{\label{fig:list_runtime} Minimizing the POX list remove trace.}
 \end{figure}
 
-\colin{Trim}
 Apparently the developers of POX had not anticipated this particular event
 sequence. Given the rarity of switch recovery events, and the tediousness of
 writing unit tests for scenarios such as this
@@ -77,9 +76,9 @@ unsurprising.
 %testing common scenarios (on production OpenFlow software switches),
 %but is not explicitly designed for scripting corner-case scenarios such as
 %switch failure/recovery.
-\projectname~made it very straightforward to inject inputs
-at a high semantic level (in this case, randomly generated without human
-intervention), and the minimized event
+\projectname~made it straightforward to inject inputs (in this case, randomly generated)
+at a high semantic level
+and the minimized event
 trace it produced made for a simple integration test.
 
 %We illustrate type errors to show how STS is a useful framework for exploring
@@ -101,32 +100,33 @@ and two switches S1 and S2 connected by a single link.
 
 There were 68 inputs in the initial trace, and \simulator~returned a 25 input
 MCS. With the MCS in hand we took out paper and pencil to decipher what had
-transpired.
+transpired. In the end, we found that crucial triggering event was an {\em in
+flight} packet. The root cause in the code was a missing return statement in a
+nested conditional.
 
-Concurrent with the discovery module sending LLDP packets to learn links
-there were six traffic injection input events between hosts ($A\rightarrow B$ and $B\rightarrow A$)
-with intermediate dataplane permit packet input events at each switch.
-POX was learning the locations of the hosts in the following pattern: host $A$
+While the discovery module sent out LLDP packets to learn links,
+there were six traffic injection events between hosts ($A\rightarrow B$ and
+$B\rightarrow A$). POX was learning the locations of the hosts in the following pattern: host $A$
 (for example) would send a packet, $S1$ would notify the controller of a new
 flow that it did not have a routing entry for, POX would learn the location of
-$A$ at port $1.2$, would flood the packet for the unknown destination $B$, the
+$A$ at port $1.2$, would flood the packet to the unknown destination $B$, the
 packet would arrive at $2.1$, $S2$ would notify POX of the unknown flow,
 and POX would incorrectly learn a new location
 for $A$ at port $2.1$.\footnote{This seems to be necessary behavior, since
 host $A$ could have legitimately migrated to $S2$.}
 This did not appear to be problematic though,
 since we observed that POX flushed the routing entries of the
-switches and flushed its incorrect learned location of $A$ at $2.1$ when it discovered
+switches and flushed its incorrect learned location of $A$ when it discovered
 the link between $S1$ and $S2$. At this point POX's only knowledge was the
 correct location of $B$ at $2.2$.
 
 After POX discovered both ends of the link, an {\em
-in-flight} packet from $A\rightarrow B$ arrives at port $2.1$, and POX incorrectly
-learns $A$'s location at $S2$ (this time without a prior notification from
+in-flight} packet from $A\rightarrow B$ arrived at port $2.1$, and POX incorrectly
+learned $A$'s location at $S2$ (this time without a prior notification from
 $S1$ about the $A\rightarrow B$ flow).
 POX now believed that $A$ and $B$ were attached to the
-same switch, and proceeded to install a single flow entry (which is
-incidentally correct) in $S2$ from $2.1$ to $2.2$ for $A$'s flow to $B$.
+same switch, and proceeded to install a (correct) flow entry
+in $S2$ from $2.1$ to $2.2$ for $A$'s flow to $B$.
 
 Next, another {\em in-flight} packet from $B\rightarrow A$ arrived at port
 $1.1$, $S1$ notified POX of the unknown flow, and POX incorrectly learned a
