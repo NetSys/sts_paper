@@ -1,4 +1,4 @@
-To illustrate the mechanics of our technique, \simulator, we start by describing an example bug in the Floodlight
+To illustrate the mechanics of \simulator, we start by describing an example bug in the Floodlight
 open source control platform~\cite{floodlight_bug}. Floodlight is distributed across
 multiple controllers for high availability, and provides support for
 virtualization. Switches maintain one hot connection to a master controller and
@@ -388,10 +388,16 @@ potentially recurses infinitely if not deterministic}}
 The last possible change induced by input pruning is the occurrence of new
 internal events that were not observed in the original trace.
 Ultimately, new events leave open multiple possibilities for where
-we should inject the next input.
-For example, if $i_2$ and $i_3$ are internal events observed
+we should inject the next input. Consider the following case:
+if $i_2$ and $i_3$ are internal events observed
 during replay that are both in the same equivalence class as a single event $i_1$ from the
 original run, we could inject the next input after $i_2$ or after $i_3$.
+
+\colin{Figure this figure out}
+%\begin{wrapfigure}{c}{\linewidth}
+%  \centering
+%  \includegraphics[height=0.8in]{../diagrams/state_machines/event_sequence.pdf}
+%\end{wrapfigure}
 
 In the general case it is always possible to construct two state machines that lead
 to differing outcomes: one that only leads to the correctness violation when

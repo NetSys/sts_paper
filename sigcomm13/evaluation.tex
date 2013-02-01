@@ -5,13 +5,16 @@ POX~\cite{pox}, NOX~\cite{nox}, and Floodlight~\cite{bigswitch}. We
 found \num{several} bugs in total, and were able to localize a minimal
 causal sequence \num{in all cases}. We describe these case studies in detail here.
 
+Our investigation involved roughly 5 days of study.
+
 \colin{Move to discussion section?}
 The case studies we present here are relatively simplistic. This is because
 the available open source controllers are simplistic.
 Some production controllers behind closed doors.
 
 Anecdotes: huge amount of complexity behind closed doors. But for a number of
-reasons, it's difficult to discuss bugs publicly.
+reasons, it's difficult to discuss bugs publicly. Now in process of adopting
+the tool rather than extracting bugs from industry.
 
 \begin{table*}
 \centering
@@ -136,11 +139,12 @@ Figure~\ref{fig:list_runtime}.
     \caption[]{\label{fig:list_runtime} Minimizing the NOX discovery loop.}
 \end{figure}
 
-
 \begin{itemize}
 \item Graphs of \# of replays vs. remaining inputs
 %\item `time compression' benefits
 \item Note that runtime doesn't really matter! As long as developer time isn't being used. 
+\item Overhead: none! Logs already there. Deterministic replay on the other
+hand has a huge overhead.
 % Scalability:
 %We also tested the extreme limits of the simulator's scalability, pushing up
 %the number of switches until something broke. We encountered what appears to be

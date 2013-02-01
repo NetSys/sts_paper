@@ -4,6 +4,7 @@
 %big ball of wibbly wobbly... time-y wimey... stuff.''
 %\end{aquote}
 
+\colin{Replace Abe with a more preventative example?}
 Would World War \rom{1} still have occurred if Archduke Ferdinand had not been
 shot? Would the United States have abolished slavery if Abraham Lincoln had
 not been elected? That is,
@@ -12,22 +13,28 @@ precipitation of the historical outcome, or
 were they extraneous? Unfortunately we can never know such
 historical counterfactuals for sure.
 
-In computing we often need to answer similar questions,
-\eg~``Was this routing loop triggered by this link failure?''
-or ``Were the top search results dependent on the straggler requests?''.
+When troubleshooting computer systems, we often need to answer similar questions,
+\eg~``Was this routing loop triggered when the controller learned of the link failure?''
 And unlike human history, it is often possible to find answers to such
 causality questions. In this paper we address the problem of programmatically answering
 them in the context of software-defined networking.
 
-Software bug diagnosis, a highly expensive and time consuming process, would benefit
-greatly from technology for answering such questions. A 2006 survey found
-that developers at Microsoft spend 49\% of their
-time troubleshooting bugs~\cite{msoft_concurrency}. The same study found that 70\% of the reported concurrency bugs
-take days to months to fix, and 74\% of
-respondents considered reproducibility to be hard or very hard.
+%Software bug diagnosis, a highly expensive and time consuming process, would benefit
+%greatly from technology for answering such questions. A 2006 survey found
+%that developers at Microsoft spend 49\% of their
+%time troubleshooting bugs~\cite{msoft_concurrency}. The same study found that 70\% of the reported concurrency bugs
+%take days to months to fix, and 74\% of
+%respondents considered reproducibility to be hard or very hard.
 
-Based on anecdotal evidence from colleagues and acquaintences in the industry, it seems clear that developers of software-defined networks also spend much of their time
-troubleshooting bugs. This should be no surprise, because modern SDN control platforms are highly complex,
+Based on anecdotal evidence from colleagues and acquaintences in the industry, it seems clear that
+developers of software-defined networks spend much of their time
+troubleshooting bugs. This should be no surprise, since software developers in
+general spend roughly half (49\% according to one
+study~\cite{msoft_concurrency}) of their time troubleshooting, and spend
+considerable time on bugs that are difficult to trigger
+(the same study found that 70\% of the reported concurrency bugs
+take days to months to fix).
+More fundamentally though, modern SDN control platforms are highly complex,
 distributing state between replicated
 servers~\cite{floodlight},
 providing isolation and resource arbitration between multiple
@@ -35,9 +42,10 @@ tenants~\cite{Casado:2010:VNF:1921151.1921162}, and
 globally optimizing network utilization~\cite{urs}.
 Most of this complexity comes from
 fundamentally difficult distributed systems challenges such as asynchrony and
-partial failure. For example, Google's Urs H$\ddot{\mathrm{o}}$elzle noted
-at the Open Networking Summit~\cite{urs}: ``[Coordination between replicated controllers] is going to
-cause some angst, and justifiably, in the industry''.
+partial failure. Even Google's Urs H$\ddot{\mathrm{o}}$elzle, a leading
+networking and distributed systems technologist,
+attests that~\cite{urs} ``[coordination between replicated controllers] is going to
+cause some angst, and justifiably, in the industry.''
 %As SDN control software
 %is used to manage larger and more sophisticated networks,
 %we expect its complexity to increase.
@@ -50,7 +58,7 @@ reports 8.5 network error events per minute per
 datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}.
 Troubleshooters find little immediate use from traces containing many inputs
 prior to a fault,
-since they are often forced to manually filter many extraneous inputs
+since they are often forced to manually filter extraneous inputs
 before they can start fruitfully exploring what might be the root cause.
 It is no surprise that when asked to describe their
 ideal tool, most network admins said ``automated troubleshooting''~\cite{Zeng:Survey}.
@@ -75,12 +83,13 @@ Debugging then involves tracking down the error in the code itself, given a
 set of triggering inputs.
 The smaller the set of triggering inputs, the easier debugging will be.
 
-Our focus here is on troubleshooting. Our goal is
+Our focus here is on troubleshooting. Given a bug, our goal is
 to automatically identify a small set of inputs to the SDN software (\eg~link failures) that
-triggered the bug, and filter out the extraneous ones. This would go a long way towards achieving ``automated troubleshooting''.
+triggered the bug (and conversly filter out the extraneous ones).
+This would go a long way towards achieving ``automated troubleshooting.''
 
-If you consider the processes in the software-defined network as a distributed
-state machine, one straightforward approach is
+If you consider the software-defined network as a distributed state machine,
+with individual processes sending messages between themselves, one straightforward approach is
 to account for potential causality: if an external input does not induce any messages before
 the occurrence of the invalid configuration, it
 cannot possibly have affected the outcome~\cite{Lamport:1978:TCO:359545.359563}.
@@ -88,11 +97,12 @@ Unfortunately, pruning those inputs without a causal relation to
 the invalid configuration does not
 significantly reduce the number of inputs.
 
-Our approach is to iteratively
-prune inputs from the original run, replay, and
+Our approach is to prune inputs from the original run, replay the remaining
+inputs to the control software using simulated network devices, and
 check whether the network re-enters the invalid configuration.
 In particular, we generalize delta debugging~\cite{Zeller:2002:SIF:506201.506206}--an algorithm for
-minimizing test cases for individual programs--to a distributed environment, where inputs
+minimizing test cases that are inserted at a single
+point in time to a single program--to a distributed environment, where inputs
 are spread across time and involve multiple machines. \scott{I think you give
 too much credit to delta debugging}
 
@@ -106,38 +116,44 @@ state changes that occurred in the original
 run may not occur. Our approach is to record and replay at the application layer,
 where we have access to the syntax and semantics of messages passed
 throughout the distributed system. In this way we can recognize functionally
-equivalent messages and maintain causal dependencies despite altered histories.
+equivalent messages and maintain causal dependencies throughout replay despite
+altered histories.
 
 Automatic minimization of fault-inducing traces
 represents a significant improvement over the status quo;
 to the best of our knowledge, painstaking manual analysis of logs is the
 {\em de facto} method of troubleshooting production SDN control software.
 
-The research community has made recent progress in this space.
+As far as we know, our work
+is the first to programmatically isolate fault-inducing inputs to a distributed
+system. Record and replay techniques such as
+OFRewind~\cite{ofrewind} and liblog~\cite{Geels:2006:RDD:1267359.1267386}
+enable you to step through the original execution and verify whether a
+set of inputs triggered a bug,
+but the original run is often so large that the
+the set of potentially triggering inputs verges on unmanageable.
 Tracing tools such as {\tt ndb}~\cite{handigol2012debugger} provide
 a historical view into dataplane (mis)behavior. In contrast, our technique provides
 information about precisely what caused the network to
-enter an invalid
-configuration in the first place. Record and replay techniques such as
-OFRewind~\cite{ofrewind} and liblog~\cite{Geels:2006:RDD:1267359.1267386}
-enable you to verify that a set of inputs triggered a bug, but do not automatically reduce
-the set of potentially triggering inputs to a manageable number. As far as we know, our work
-is the first to programmatically isolate fault-inducing inputs to a distributed
-system.
+enter an invalid configuration in the first place.
 
-%Even the modest improvement of
+We have applied our technique, \simulator, to three open source SDN control
+platforms: Floodlight~\cite{bigswitch}, POX~\cite{pox}, and NOX~\cite{nox}.
+Of the five bugs we found in a 5 day investigation,
+\simulator~reduced the size of the input trace to 36\% of its original size in
+the worst case and 2\% of its original size in the best case.
 
 % Main result from our work: the amount of effort it takes to codify domain knowledge is significantly less than the effort
 % it would take to step through a normal replay debugger by hand for each bug.
 
-% Cut?
-The rest of this paper is organized as follows. In \S\ref{sec:overview},
-we present a brief overview of the SDN control plane and its failure modes.
-In \S\ref{sec:approach} we present our approach in detail.
-We discuss use cases for in \S\ref{sec:architecture},
-and describe case studies and a performance evaluation in
-\S\ref{sec:evaluation}. We end by discussing the limitations of our
-approach (\S\ref{sec:discussion}) and related work (\S\ref{sec:related_work}).
+%% Cut?
+%The rest of this paper is organized as follows. In \S\ref{sec:overview},
+%we present a brief overview of the SDN control plane and its failure modes.
+%In \S\ref{sec:approach} we present our approach in detail.
+%We discuss use cases for in \S\ref{sec:architecture},
+%and describe case studies and a performance evaluation in
+%\S\ref{sec:evaluation}. We end by discussing the limitations of our
+%approach (\S\ref{sec:discussion}) and related work (\S\ref{sec:related_work}).
 
 % ------------------------------------------------------------------- %
 %    OLD OSDI TEXT:

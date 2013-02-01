@@ -104,6 +104,7 @@ running on servers might be controlling a combination of real and emulated
 switching devices. And then we can inject a number of failure scenarios under
 controlled circumstances to really accelerate our test work.''
 \end{quote}
+\colin{Shivaram doesn't like this quote}
 
 Developers can use \projectname~to generate randomly chosen input
 sequences~\cite{Miller:1990:ESR:96267.96279}, feed them to controller(s), and monitor invariants at chosen
@@ -165,7 +166,7 @@ responsible~\cite{Zeller:2002:SIF:506201.506206}.
 This eliminates time wasted
 investigating bug reports the same root cause.
 
-\subsection{Forensic Analysis}
+\subsection{Analysis of Production Logs}
 \andi{See if we can shorten this}
 
 Input generation, interactive execution, replay, and test case
@@ -182,7 +183,8 @@ Production systems would need to include Lamport
 clocks on each message~\cite{Lamport:1978:TCO:359545.359563} or have
 sufficiently accurate clock
 synchronization~\cite{corbett2012spanner} to obtain a partial global ordering
-consistent with the happens-before relation.\footnote{
+consistent with the happens-before relation (in testing mode
+\projectname~obtains this global ordering by logging at a single location).\footnote{
 Note that a total ordering is not needed, since it is permissible
 for \simulator~to reorder concurrent events from
 the production run so long as the happens-before relation is

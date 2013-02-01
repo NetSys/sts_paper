@@ -38,12 +38,20 @@ to interactively step through and examine the inputs that lead up to errant beha
 We focus on automating this diagnosis process.
 % More on why deterministic replay isn't feasible with pruning
 
+\colin{Do a better job of framing ourselves against NDB}
 Tracing tools provide a view
 of requests' paths through the
 system~\cite{handigol2012debugger,fonseca2007x}. In contrast, \simulator~provides
 information about precisely what caused the network to
 enter an invalid
 configuration in the first place.
+
+\colin{
+Runtime invariant checking.
+WiDS checker introduced the notion of recording
+production executions to be later replayed and verified in a controlled simulation~\cite{Liu07widschecker:}.
+D3S made this invariant checking process realtime.
+}
 
 Trace analysis frameworks such as Pip~\cite{pip} allow developers
 to programmatically check whether their expectations about the structure of
@@ -216,9 +224,7 @@ not provide sufficient support for the corner-cases situations which are the
 focus of our work, such as failures and VM migration.
 
 Many of our ideas originate from the literature on troubleshooting general
-distributed systems. WiDS checker introduced the notion of recording
-production executions to be later replayed and verified in a controlled simulation~\cite{Liu07widschecker:}.
-Pip~\cite{pip} defines a DSL and collection of annotation tools to
+distributed systems. Pip~\cite{pip} defines a DSL and collection of annotation tools to
 reason about causal paths throughout the execution of the
 distributed system. Finally, end-to-end tracing
 frameworks such as X-Trace~\cite{Fonseca:2007:XPN:1973430.1973450} and
