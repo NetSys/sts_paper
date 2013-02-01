@@ -4,43 +4,42 @@ Or evaluation of \Simulator~leaves open several questions, which we discuss
 here. \colin{Should add a discussion of non-determinism within individual
 controllers}
 
-\noindent{\bf Aren't the bugs described here fairly simple?} It is true that the
-applications we investigate and the bugs we describe are relatively simplistic.
-Even these simple applications are obviously difficult to get right: We were
-surprised how quickly our tool was able to identify policy violations in the
-standard routing modules of \emph{all} investigated platforms, mainly because of
-unexpected interactions of different elements in the control plane (e.g.,
-shortest path routing and topology discovery). We expect more complex bugs to
-surface once we aim our tool at more complex platforms.
-
 \noindent{\bf Aren't SDN controllers relatively simple and bug free?}
-
-In a short period of time, we were able to demonstrate bugs in all investigated
-freely available SDN applications. In comparision with these simple open source
-platforms and applications, production SDN platforms face significant additional
-challenges: Larger deployments cannot be managed with reactive micro flows, and
+It is true that the freely available SDN applications we investigated are relatively simple. However, they
+are most definitely not bug-free since, in a short period of time, we were able to demonstrate bugs in all of them. 
+Production SDN platforms are far more complex than the freely available ones, for a variety of reasons. Larger deployments cannot be managed with reactive microflows, and thus
 require more complex proactive or hybrid strategies. For fault tolerance,
 controllers are replicated on multiple physical servers, and sharded for
 scalability~\cite{onix}. Multi-tenant virtualization critically requires tenant
 isolation to be preserved at all times. SDN controller platforms interact with
 cloud orchestration platforms and must correctly react to concurrent changes on
-their north- and southbound interfaces. From our conversations with several SDN
-controller vendors, we are aware that they all invest significant resources to
-deal with these complexity issues. Several commercial players have voiced
-interest in our tool. We intend to run our tool (and expect it to be primarily
-useful) in such environments.
+their north- and southbound interfaces. Thus, we expect that these production SDN platforms will continue
+to be under active development, and have ongoing issues with bugs, for years to come. From our conversations with several SDN
+controller vendors, we are aware that they all invest significant resources to troubleshooting. Several commercial players have voiced
+interest in our tool as a way to improve their troubleshooting. 
+
+\noindent{\bf Aren't the bugs described here trivial in nature?} Yes, the bugs we found were trivial, but that
+is evidence that without better troubleshooting tools tracking down even trivial bugs is difficult.
+We were particularly
+surprised how quickly our tool was able to identify policy violations in the
+standard routing modules of \emph{all} investigated platforms, because we assumed that the routing modules would have been well-tested
+through years of use. However, these bugs remained undiagnosed because they arise from
+unexpected interactions between different elements in the control plane (e.g.,
+shortest path routing and topology discovery). We expect more complex bugs to
+surface once we aim our tool at more complex platforms, such as those used in production settings.
 
 \noindent{\bf Are simulated failures really indistinguishable from actual
 failures?} There will always be some failure modes observed in practice that are
 not reproducible without adding significant complexity to the simulator. Our
-approac is not particularily well-suited to model fine-grained low-level
+approach is not particularly well-suited to model fine-grained low-level
 behavior, especially on the data plane, e.g., when switches are dropping
-packets due to memory or slow path contraints. Conversely, it excels at
+packets due to memory or slow path constraints. Conversely, our approach excels at
 investigating corner cases in distributed control plane interactions, which
-are the source many complex bugs. That said, as the system is entirely
+are the source of many complex bugs. That said, as the system is entirely
 built in software, it is in principle possible to add more fine grained
 low-level behavior simulation at the cost of performance (with logical clock
-speeds adjusted accordingly).
+speeds adjusted accordingly).  Additional experience with production systems will help
+us determine how to best trade off improved simulation fidelity against degraded performance.
 
 \noindent{\bf Will this approach work on all control platforms?} We make limited
 assumptions about the controller platform in use. Two of the three investigated
