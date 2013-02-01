@@ -145,12 +145,21 @@ developer's machines.
 \eat{Replayable traces shorten the debugging cycle, and increase chances that others
 will be able to help.}
 
-\subsection{Minimizing Test Cases}
+\subsection{Minimizing Input Traces}
 
-\projectname's truly novel potential lies in minimizing test cases.
-Before developers even begin to invest effort into diagnosing a network
-correctness violation, they can let \simulator~automatically perform some of
-the heavy lifting for them.
+Moving beyond mere network replay, \projectname's main novelty is in
+automatically minimizing input traces. Automated replay provides the basis to
+diagnose and fix a bug with certainty. However, it is often still a
+time-consuming and challenging task to identify the root cause, because many
+established debugging techniques scale poorly to large input sizes. For
+instance, stepping through a 1000 line event trace in a source level debugger
+easily takes several ten thousand individual steps. When inspecting log files,
+as developers increase the log level during debugging, they are often confronted
+with dozens of lines of debug output per event, thus 'drowning in detail'.
+Consequently, a minimized input trace has the potential to significantly improve
+developer productivity. Before developers begin diagnosing the root cause of a
+network correctness violation, they can let \simulator~automatically perform
+some of the heavy lifting for them.
 
 Minimally, \simulator~reduces the runtime of test cases and eliminates
 distracting events during replay. More importantly, minimal causal sequences
@@ -158,7 +167,7 @@ give developers intuition about what code path is throwing
 the network into an invalid configuration. In our own experience
 investigating the bugs described in \S\ref{sec:evaluation}, we had little
 understanding of what the problem was at first. After identifying the MCS, it
-nearly always became apparent what corner case was triggered, and how the
+became easier to understand what corner case was triggered, and how the
 bug might be resolved.
 
 Minimal causal sequences also serve to consolidate redundant test cases:

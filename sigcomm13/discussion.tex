@@ -1,75 +1,82 @@
 % Just realized: b/c of anonymity, the PC can't chastise us for
 % running our system on our own code -- we can't tell them that it's our code!
-\Simulator~leaves open several questions, which we discuss here.
-\colin{Should add a discussion of non-determinism within individual
+Or evaluation of \Simulator~leaves open several questions, which we discuss
+here. \colin{Should add a discussion of non-determinism within individual
 controllers}
 
-\noindent{\bf Aren't the bugs described here fairly simple?}
-This is a bit of a chicken and the egg problem:
-there are only handful of deployed SDN control platforms, and these are behind
-closed doors.
+\noindent{\bf Aren't the bugs described here fairly simple?} It is true that the
+applications we investigate and the bugs we describe are relatively simplistic.
+Even these simple applications are obviously difficult to get right: We were
+surprised how quickly our tool was able to identify policy violations in the
+standard routing modules of \emph{all} investigated platforms, mainly because of
+unexpected interactions of different elements in the control plane (e.g.,
+shortest path routing and topology discovery). We expect more complex bugs to
+surface once we aim our tool at more complex platforms.
 
-In part, this because the available open source controllers themselves
-are simplistic. The open source version of Floodlight, for example, 
-Some production controllers behind closed doors.
+\noindent{\bf Aren't SDN controllers relatively simple and bug free?}
 
-Moreover, the bugs we encountered were found in roughly five days of
-investigation. We 
-we expect that we would find 
+In a short period of time, we were able to demonstrate bugs in all investigated
+freely available SDN applications. In comparision with these simple open source
+platforms and applications, production SDN platforms face significant additional
+challenges: Larger deployments cannot be managed with reactive micro flows, and
+require more complex proactive or hybrid strategies. For fault tolerance,
+controllers are replicated on multiple physical servers, and sharded for
+scalability~\cite{onix}. Multi-tenant virtualization critically requires tenant
+isolation to be preserved at all times. SDN controller platforms interact with
+cloud orchestration platforms and must correctly react to concurrent changes on
+their north- and southbound interfaces. From our conversations with several SDN
+controller vendors, we are aware that they all invest significant resources to
+deal with these complexity issues. Several commercial players have voiced
+interest in our tool. We intend to run our tool (and expect it to be primarily
+useful) in such environments.
 
-The case studies we present here are relatively simplistic. This is because
-the available open source controllers are simplistic.
-Some production controllers behind closed doors.
+\noindent{\bf Are simulated failures really indistinguishable from actual
+failures?} There will always be some failure modes observed in practice that are
+not reproducible without adding significant complexity to the simulator. Our
+approac is not particularily well-suited to model fine-grained low-level
+behavior, especially on the data plane, e.g., when switches are dropping
+packets due to memory or slow path contraints. Conversely, it excels at
+investigating corner cases in distributed control plane interactions, which
+are the source many complex bugs. That said, as the system is entirely
+built in software, it is in principle possible to add more fine grained
+low-level behavior simulation at the cost of performance (with logical clock
+speeds adjusted accordingly).
 
-Anecdotes: huge amount of complexity behind closed doors. But for a number of
-reasons, it's difficult to discuss bugs publicly. Now in process of adopting
-the tool rather than extracting bugs from industry.
+\noindent{\bf Will this approach work on all control platforms?} We make limited
+assumptions about the controller platform in use. Two of the three investigated
+controller platforms were exercises with\ \Simulator~without any modifications.
+Limited changes to the controller platforms (e.g., the possibility to fix random
+seed values, overwriting gettimeofday()) can increase replay accuracy further.
+In general, we expect \simulator~ to support controllers conforming to the
+OpenFlow~1.0 out of the box.
 
-\noindent{\bf Are simulated failures really indistinguishable
-from actual failures?}
-There will always be some failure modes observed in practice that
-are not reproducible without adding significant complexity to the simulator.
-For example, suppose that the controller's faulty behavior is to flood
-switches with messages, occasionally causing them to drop some traffic, but only when they
-are running low on memory.
+\noindent{\bf Why do you focus on SDN networks?} SDN represents both an
+opportunity and a challenge. In terms of a challenge, SDN control platforms are
+in their infancy, which means that they have bugs that need to be found and
+corrected. Based on our conversations with commercial SDN developers, we are
+confident there is a real need for improved troubleshooting in this sector.
 
-Luckily the simulator is built in software, and can be modified to model a
-wide range of failure modes (subject to scalability
-limitations of fine-grained simulations).
-As new failure modes are observed in practice, they can be added to the model
-if it is deemed worthwhile to do so.
+In terms of an opportunity, SDN control platforms have two properties that make
+them particularly amenable to an automated troubleshooting approach such as
+ours. First, and most importantly, SDN control software is designed to quickly
+converge to quiescence–that is, SDN controllers become idle when no policy or
+topology changes occur for a period of time\footnote{Complex bugs occur when
+several such processes overlay.}. This means that most inputs are not relevant
+to triggering a given bug, since the system repeatedly returns to a valid
+quiescent state; often there is only one critical transition from the last
+quiescent valid configuration to the first invalid configuration. If this were
+not the case, it is not clear that the minimal causal subsequences found by our
+technique would be small, in which case our approach would not yield significant
+advantages.
 
-\noindent{\bf Will this approach work on all control platforms?}
-So long as the controller under test supports OpenFlow 1.0, \simulator~
-works out of the box.
-
-\noindent{\bf Why do you focus on SDN networks?}
-SDN represents both an opportunity and a challenge. In terms of a challenge,
-SDN control platforms are in their infancy, which means that they have bugs
-that need to be found and corrected.  Based on our conversations with
-commercial SDN developers, the need for automated troubleshooting for SDN
-networks is extreme. In terms of an opportunity, SDN control platforms have
-two properties that make them particularly amenable to an automated
-troubleshooting approach such as ours. First, and most importantly, SDN
-control software quickly
-converges to quiescence–that is, SDN controllers become idle when no policy or
-topology changes occur for a period of time. This means that most inputs are
-not relevant to triggering a given bug, since the system repeatedly returns to
-a valid quiescent state; one need only study the critical transition from the last
-quiescent valid configuration to the first invalid configuration to find the
-triggering inputs. If this were not the case, it is not clear that the minimal
-causal subsequences found by our technique would be small, in which case
-our approach would not yield significant advantages.
-
-Second, SDN's architecture facilitates the implementation of~\projectname.
-The syntax and semantics of interfaces between components of the system (\eg~OpenFlow
-between controllers and switches~\cite{openflow}, or
-OpenStack Quantum's API between
-the control application and the network hypervisor~\cite{quantum}), are
-well-defined--a property that is crucial for fingerprinting.
-Moreover, controllers are small in number compared to the size of
-overall network, which makes it much easier to superimpose
-on messages.
+Second, SDN's architecture facilitates the implementation of~\projectname. The
+syntax and semantics of interfaces between components of the system
+(\eg~OpenFlow between controllers and switches~\cite{openflow}, or OpenStack
+Quantum's API between the control application and the network
+hypervisor~\cite{quantum}), are open and well-defined--a property that is
+crucial for fingerprinting. Moreover, controllers are small in number compared
+to the size of overall network, which makes it much easier to superimpose on
+messages.
 
 In future work we hope to measure the effectiveness of our
 technique on other control plane systems such as NAS controllers
