@@ -66,17 +66,21 @@ behavior of \simulator~for this case is shown in Figure~\ref{fig:list_runtime}.
     \caption[]{\label{fig:list_runtime} Minimizing the POX list remove trace.}
 \end{figure}
 
+\colin{Trim}
 Apparently the developers of POX had not anticipated this particular event
 sequence. Given the rarity of switch recovery events, and the tediousness of
 writing unit tests for scenarios such as this
-(involving multiple OpenFlow intitialization handshakes), this is not entirely
-unsurprising. Consider that the state-of-the-art open source technology for prototyping SDN
-applications, Mininet~\cite{handigol2012reproducible}, excels at
-testing common scenarios (on production OpenFlow software switches),
-but is not explicitly designed for scripting corner-case scenarios such as
-switch failure/recovery. \projectname~made it very simple to inject inputs
-at a high semantic-level, and the minimized event
-trace it produced made for a simple and replayable integration test.
+(which involved multiple OpenFlow intitialization handshakes), this is not entirely
+unsurprising.
+%Consider that the state-of-the-art open source technology for prototyping SDN
+%applications, Mininet~\cite{handigol2012reproducible}, excels at
+%testing common scenarios (on production OpenFlow software switches),
+%but is not explicitly designed for scripting corner-case scenarios such as
+%switch failure/recovery.
+\projectname~made it very straightforward to inject inputs
+at a high semantic level (in this case, randomly generated without human
+intervention), and the minimized event
+trace it produced made for a simple integration test.
 
 %We illustrate type errors to show how STS is a useful framework for exploring
 %code paths that you forget to unit tests.
@@ -84,8 +88,8 @@ trace it produced made for a simple and replayable integration test.
 \noindent{\bf POX discovery blackhole.}
 We discovered the next bug after roughly 20 runs of randomly generated inputs.
 We noticed that \projectname~reported a persistent blackhole while POX was bootstrapping its
-discovery of link and host locations. We discovered this bug
-on a simple topology, depicted in~\ref{fig:simple_topo}, consisting of two hosts A and B
+discovery of link and host locations. We encountered this bug
+on a simple topology, depicted in Figure~\ref{fig:simple_topo}, consisting of two hosts A and B
 and two switches S1 and S2 connected by a single link.
 
 \begin{figure}[t]
@@ -99,26 +103,55 @@ There were 68 inputs in the initial trace, and \simulator~returned a 25 input
 MCS. With the MCS in hand we took out paper and pencil to decipher what had
 transpired.
 
-There were seven traffic injection input events ($A\rightarrow B$ and $B\rightarrow A$)
-At the moment the link is discovered, POX correctly deletes all flow entries,
-and unlearns all host locations. Discovers B correctly at switch 2.2.
-An in-flight packet from A shows up at switch 2.1, POX incorrectly learns that A
-is at switch 2. Believes hosts are on same switch, installs flow from A->B
-2.l->2.r. Packet from B was in flight, arrives at switch 1.1. POX incorrectly
-learns B at switch 1, installs path 2.1 ->
+Concurrent with the discovery module sending LLDP packets to learn links
+there were six traffic injection input events between hosts ($A\rightarrow B$ and $B\rightarrow A$)
+with intermediate dataplane permit packet input events at each switch.
+POX was learning the locations of the hosts in the following pattern: host $A$
+(for example) would send a packet, $S1$ would notify the controller of a new
+flow that it did not have a routing entry for, POX would learn the location of
+$A$ at port $1.2$, would flood the packet for the unknown destination $B$, the
+packet would arrive at $2.1$, $S2$ would notify POX of the unknown flow,
+and POX would incorrectly learn a new location
+for $A$ at port $2.1$.\footnote{This seems to be necessary behavior, since
+host $A$ could have legitimately migrated to $S2$.}
+This did not appear to be problematic though,
+since we observed that POX flushed the routing entries of the
+switches and flushed its incorrect learned location of $A$ at $2.1$ when it discovered
+the link between $S1$ and $S2$. At this point POX's only knowledge was the
+correct location of $B$ at $2.2$.
 
-The POX routing application (`l2\_multi'). We set up a simple two switch
-topology with a host attached to either end, and had each switch.
+After POX discovered both ends of the link, an {\em
+in-flight} packet from $A\rightarrow B$ arrives at port $2.1$, and POX incorrectly
+learns $A$'s location at $S2$ (this time without a prior notification from
+$S1$ about the $A\rightarrow B$ flow).
+POX now believed that $A$ and $B$ were attached to the
+same switch, and proceeded to install a single flow entry (which is
+incidentally correct) in $S2$ from $2.1$ to $2.2$ for $A$'s flow to $B$.
+
+Next, another {\em in-flight} packet from $B\rightarrow A$ arrived at port
+$1.1$, $S1$ notified POX of the unknown flow, and POX incorrectly learned a
+new location for $B$ at $1.1$. At this point it attempted to set up a route
+from $B$ to $A$. However, it incorrectly believed at the time that $B$ was located
+at $1.1$ and that $A$ was located at $2.1$, so it installed route entries for
+$B\rightarrow A$ out port $1.1$ and out port $2.2$.
+
+% Something weird: A->B doesn't have an entry in S1. So, when a sends a packet
+% next, shouldn't this solve the routing loop? There needs to be 4 entries for
+% there to be a permanent loop.
+At this point no further packets were in flight. Since the switches now had
+flow entries for all pairs, no further flow notification messages were sent to
+POX, so POX never learned the correct locations of $A$ and $B$.
+The behavior of OpenFlow is to drop packets match flow entries that put them
+out the port they came in on (unless explicitly told to forward in such cases), hence the
+blackhole we observed: any traffic from $B$ would arrive at $S1$ and be
+dropped, and vice versa.
+
+We suspect this race condition was not observed in Mininet because the rate at which we were sending packets was
+significantly slower than in Mininet (which also sends $ARP$ and
+$IPV6$ pings), so that there were no in-flight flow notifications to POX to
+correct the situation.
+
 % Discussion of how our gizmos helped.
-
-The behavior of OpenFlow is to drop packets that are destined out their out
-port even if.
-
-Not found in Mininet because...
-
-% ---
-
-Oscillating for a bit. But this isn't the important part.
 
 \noindent{\bf POX migration blackhole.}
 Does learning on new host locations. And installs routes for new flows. But
