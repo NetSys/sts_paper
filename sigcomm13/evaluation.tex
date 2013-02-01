@@ -11,12 +11,12 @@ POX list removal & 2 switch mesh & 20/20 & 76 (69) & 2 (2) \\
 POX in-flight blackhole & 2 switch mesh & 15/20 [20/20*] & 68 (26) & 25 (11) \\
 % Original: 7ba95ed82ca4e32f12ab511d9c4301dbac2c59d5
 % MCS: 399cf861db87a65e600283d9ae7760400c4676e2
-POX migration blackhole & 4 pod (20 switch) FatTree & 20/20 & 117 (29) & 3 (2) \\
+POX migration blackhole & 4 switch mesh & 20/20* & 117 (29) & 3 (2) \\
 % fuzz_pox_4mesh_blackhole on pox_blackhole branch
 NOX discovery loop & 4 switch mesh & 18/20 & 358 (150) & 58 (18) \\
 % Original: ce547fc1df3bde279b6f3dd589c909663e295f1e
 % MCS: 5f49e791b0c1a611454cf0930f54aa609dd635d3
-Floodlight loop & 3 switch mesh & \num{?} & \num{?} & \num{?} \\
+Floodlight loop & 3 switch mesh & 15/50 & \num{?} & \num{?} \\
 % Andi
 \end{tabular}
 \caption{Overview of Case Studies. Totals shown in parentheses are with
@@ -27,7 +27,8 @@ logging interposition enabled.}}
 \end{table*}
 
 We have applied \projectname~to three open source SDN control platforms:
-POX~\cite{pox}, NOX~\cite{nox}, and Floodlight~\cite{bigswitch}. Over a span of roughly five days of
+POX~\cite{pox}, NOX~\cite{nox}, and Floodlight~\cite{bigswitch}. Over a span
+of roughly five days of
 investigation we found a total of five bugs. We show a high-level overview
 of our results in Table~\ref{tab:case_studies}, and
 illustrate in detail how \simulator~found their minimal causal sequences
@@ -82,6 +83,8 @@ trace it produced made for a simple integration test.
 %We illustrate type errors to show how STS is a useful framework for exploring
 %code paths that you forget to unit tests.
 
+
+
 \noindent{\bf POX in-flight blackhole.}
 We discovered the next bug after roughly 20 runs of randomly generated inputs.
 We noticed that \projectname~reported a persistent blackhole while POX was bootstrapping its
@@ -96,6 +99,7 @@ and two switches S1 and S2 connected by a single link.
     \caption[]{\label{fig:simple_topo} Topology for POX
     in-flight blackhole. Numbers denote port labels.}
 \end{figure}
+
 
 There were 68 inputs in the initial trace, and \simulator~returned a 25 input
 MCS (runtime shown in Figure~\ref{fig:pox_discovery}). With the MCS in hand we took out paper and pencil to decipher what had
@@ -167,17 +171,18 @@ been triggered before because message timing in
 Mininet~\cite{handigol2012reproducible} or real hardware is not
 delayed arbitrarily as it was in \projectname.
 
-%
 %We suspect this race condition was not observed in Mininet because the rate at which we were sending packets was
 %significantly slower than in Mininet (which also sends $ARP$ and
 %$IPV6$ pings), so that there were no in-flight flow notifications to POX to
 %correct the situation.
-
 % Discussion of how our gizmos helped.
 
 \noindent{\bf POX migration blackhole.}
-In another run of randomly generated inputs we discovered a second blackhole
-in POX. Our initial input size was 117 inputs. Before investigating the bug we
+Having examined the POX code in some depth, we noticed that there might be
+some interesting corner cases related to host migrations.
+We set up randomly generated inputs, included host
+migrations this time, and checked for blackholes. Our initial input size was 117 inputs.
+Before investigating the bug we
 ran \simulator, and ended up with a 3 input MCS (shown
 in Figure~\ref{fig:pox_migration}): a packet injection from a
 host A, followed
@@ -186,7 +191,7 @@ clear what the problem was. After learning the location of A and installing a
 flow from B to A, the routing entries in the path were never removed after A
 migrated, causing all traffic from B to A to blackhole until the routing
 entries expired. We did not know it at the time, but this was a known problem,
-and this particular routing did not support host migrations. Nonetheless, this
+and this particular routing module did not support host migrations. Nonetheless, this
 case demonstrates how the MCS alone can point to the root cause.
 
 \begin{figure}[t]
@@ -198,6 +203,7 @@ case demonstrates how the MCS alone can point to the root cause.
 
 \noindent{\bf NOX discovery loop.}
 
+\colin{FIXME}
 Loops in SDN have more dire implications than loops in traditional networking.
 This is because transient loops in fully-distributed normally resolve
 themselves quickly. Loops caused by reactive SDN controllers, however,
@@ -205,64 +211,56 @@ persist for as long as the flow mods timers. This is because the SDN
 controllers depend on PacketIn's to update their view of the network, yet
 packets in a loop cause no flow mods to be sent.
 
-\noindent{\bf Floodlight discovery loop.}
-Open-source version of Floodlight provides minimal support for distribution.
-This is why we didn't try to reproduce, \eg~the distribution bug. We expect
-that our technique would truly shine in those cases.
-
-\colin{Should have a discussion of what caused the non-determinism we
-observed, and how it can be mitigated. i.e., how effective gizmos were.}
-
-\subsection{Domain Knowledge}
-
-
-\label{subsec:domain_knowledge}
-\begin{itemize}
-\item How much effort did it take to codify domain knowledge? (table with lines of code)
-% Include how many lines it took to interpose on the logging library, and how
-% many lines it took to answer snapshot requests.
-
-% The logging statements must also contain enough context[d] to allow for
-% unambiguous fingerprinting. -> what exactly this means
-\item How often do unexpected internal events occur in practice?
-\end{itemize}
-
-\subsection{Runtime}
-\label{subsec:runtime}
-
-The POX list remove exception did not depend on delicate timings,
-and \simulator~was able to isolate the minimal causal set in logarithmic
-time. The runtime characteristics of \simulator~for this case are shown in
-Figure~\ref{fig:list_runtime}.
-
 \begin{figure}[t]
     %\hspace{-10pt}
     \includegraphics[width=3.25in]{../graphs/runtime/nox_loop.pdf}
     \caption[]{\label{fig:nox_discovery} Minimizing the NOX discovery loop.}
 \end{figure}
 
-\begin{itemize}
-\item Graphs of \# of replays vs. remaining inputs
-%\item `time compression' benefits
-\item Note that runtime doesn't really matter! As long as developer time isn't being used. 
-\item Overhead: none! Logs already there. Deterministic replay on the other
-hand has a huge overhead.
-% Scalability:
-%We also tested the extreme limits of the simulator's scalability, pushing up
-%the number of switches until something broke. We encountered what appears to be
-%a limitation of the Linux TCP/IP stack: TCP connection attempts began failing
-%beyond 26,680 sockets. Note that 26,680 switches is an order-of-magnitude larger than
-%the today's biggest networks.
+\noindent{\bf Floodlight discovery loop.}
+\colin{FIXME}
+Open-source version of Floodlight provides minimal support for distribution.
+This is why we didn't try to reproduce, \eg~the distribution bug. We expect
+that our technique would truly shine in those cases.
 
-% Optimizations:
-%If the log is too long to rerun from the beginning for
-%every iteration, the operator can take causally-consistent
-%snapshots~\cite{Chandy:1985:DSD:214451.214456} of the
-%live system and bootstrap the simulator from the nearest quiescent snapshot.
-%The length of the execution can also be `compressed' by manipulating timers in the
-%controllers while still maintaining happens-before dependencies.
-\end{itemize}
+\noindent{\bf Overall Results.} The overall results of our case studies are
+shown in Table~\ref{tab:case_studies}. For the Replay Success Rate column we
+repeatedly replayed the original unpruned event trace, and measured how often we
+were able to reproduce the policy violation. There was indeed non-determinism
+in some cases, especially Floodlight. For the specific case of
+POX in-flight blackhole, we were able to eliminate the relevent
+non-determinism by employing multiplexed sockets and waiting on
+POX's logging messages.
 
+We show the initial input size and MCS input size in the last two columns. We also
+show the input sizes excluding dataplane forwarding permit events, since these
+inputs are an artefact of how we currently store and replay event traces. We
+plan on making dataplane permits a default.
+
+We measured the runtime of \simulator~for these case studies in Figures 6 \& 8--11.
+While some instances ran in logarithmic time, the worst case was minimizing NOX discovery loop,
+which took more than 5 and a half hours. Nonetheless we observe that even long iteration
+sizes are often preferable to spending software developer's time on manual
+diagnosis.
+
+%\subsection{Overhead}
+%
+%Unlike traditional record and replay techniques, \projectname (at least in
+%testing mode) does not incur
+%Overhead: none! Logs already there. Deterministic replay on the other
+%hand has a huge overhead.
+
+\subsection{Mitigating Non-Determinism}
+
+Our implementation of multiplexed sockets and 
+Include how many lines it took to interpose on the logging library, and how
+many lines it took to answer snapshot requests.
+
+\subsection{New Internal Events}
+
+How often do unexpected internal events occur in practice?
+% The logging statements must also contain enough context[d] to allow for
+% unambiguous fingerprinting. -> what exactly this means
 
 \subsection{Parameters}
 \label{subsec:params}
@@ -274,6 +272,22 @@ We found for both cases that the numbers of events we timed out on while isolati
 For smaller values, the number of timed out events increased rapidly. We
 currently set \textepsilon~to $100$ milliseconds.
 
+\colin{Make me work}
+%\begin{table*}
+%\centering
+%\begin{tabular}{l|l|l|l|l|l}
+%Bug Name & \textepsilon & \textepsilon & \textepsilon & \textpsilon &
+%\textepsilon \\
+%\hline
+%POX list removal (Replay) & 59.3\% & 98.0\% & 98.3\% & 98.3\% & 98.5\% \\
+%POX list removal (MCS) & 58.3\% & 69.9\% & 69.9\% & 70.6\% & 70.9\% \\
+%POX in-flight blackhole (Replay) & 24.4\% & 100.0\% & 100.0\% & 100.0\% & 100.0\% \\
+%POX in-flight blackhole (MCS) & 24.0\% & 75.9\% & 75.9\% & 75.9\% & 75.2\% \\
+%\end{tabular}
+%\caption{Percentage of Events Matched for Values of \textepsilon in ms.}
+%\label{tab:epsilon}
+%\end{table*}
+
 In general, larger values of \textepsilon~are preferable to
 smaller values (disregarding runtime considerations), since we can always
 detect when we have waited too long (\viz~when a successor of the next input
@@ -281,11 +295,6 @@ has occurred), but we cannot detect when we have timed out
 early on an internal event that is in fact going to occur.
 Analyzing event frequencies for particular bugs could provide more ideal
 \textepsilon values.
-
-
-
-
-
 
 
 
