@@ -81,17 +81,31 @@ trace it produced made for a simple and replayable integration test.
 %We illustrate type errors to show how STS is a useful framework for exploring
 %code paths that you forget to unit tests.
 
-\noindent{\bf POX migration blackhole.}
-Does learning on new host locations. And installs routes for new flows. But
-blackholes pre-existing routes.
-We contacted the lead developer of POX, and discovered that this was a
-known problem.\footnote{We also noticed after encountering the bug that
-NICE~\cite{nice} had found a similar bug in the NOX learning switch
-application}
+\noindent{\bf POX discovery blackhole.}
+We discovered the next bug after roughly 20 runs of randomly generated inputs.
+We noticed that \projectname~reported a persistent blackhole while POX was bootstrapping its
+discovery of link and host locations. We discovered this bug
+on a simple topology, depicted in~\ref{fig:simple_topo}, consisting of two hosts A and B
+and two switches S1 and S2 connected by a single link.
 
-\noindent{\bf POX discovery blackhole.} The next bug we encountered involved a
-race condition between the discovery module learning about links, and the
-routing module installing paths for new flows.
+\begin{figure}[t]
+    %\hspace{-10pt}
+    \includegraphics[width=3.25in]{../diagrams/state_machines/mesh_topo.pdf}
+    \caption[]{\label{fig:simple_topo} Topology for POX
+    discovery blackhole.}
+\end{figure}
+
+There were 68 inputs in the initial trace, and \simulator~returned a 25 input
+MCS. With the MCS in hand we took out paper and pencil to decipher what had
+transpired.
+
+There were seven traffic injection input events ($A\rightarrow B$ and $B\rightarrow A$)
+At the moment the link is discovered, POX correctly deletes all flow entries,
+and unlearns all host locations. Discovers B correctly at switch 2.2.
+An in-flight packet from A shows up at switch 2.1, POX incorrectly learns that A
+is at switch 2. Believes hosts are on same switch, installs flow from A->B
+2.l->2.r. Packet from B was in flight, arrives at switch 1.1. POX incorrectly
+learns B at switch 1, installs path 2.1 ->
 
 The POX routing application (`l2\_multi'). We set up a simple two switch
 topology with a host attached to either end, and had each switch.
@@ -101,6 +115,19 @@ The behavior of OpenFlow is to drop packets that are destined out their out
 port even if.
 
 Not found in Mininet because...
+
+% ---
+
+Oscillating for a bit. But this isn't the important part.
+
+\noindent{\bf POX migration blackhole.}
+Does learning on new host locations. And installs routes for new flows. But
+blackholes pre-existing routes.
+We contacted the lead developer of POX, and discovered that this was a
+known problem.\footnote{We also noticed after encountering the bug that
+NICE~\cite{nice} had found a similar bug in the NOX learning switch
+application}
+
 
 \noindent{\bf NOX discovery loop.}
 
