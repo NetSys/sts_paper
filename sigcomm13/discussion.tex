@@ -43,7 +43,7 @@ us determine how to best trade off improved simulation fidelity against degraded
 
 \noindent{\bf Will this approach work on all control platforms?} We make limited
 assumptions about the controller platform in use. Two of the three investigated
-controller platforms were exercises with\ \Simulator~without any modifications.
+controller platforms were exercised with \Simulator~without any modifications.
 Limited changes to the controller platforms (e.g., the possibility to fix random
 seed values, overwriting gettimeofday()) can increase replay accuracy further.
 In general, we expect \simulator~ to support controllers conforming to the
@@ -58,7 +58,7 @@ confident there is a real need for improved troubleshooting in this sector.
 In terms of an opportunity, SDN control platforms have two properties that make
 them particularly amenable to an automated troubleshooting approach such as
 ours. First, and most importantly, SDN control software is designed to quickly
-converge to quiescence–that is, SDN controllers become idle when no policy or
+converge to quiescence--–that is, SDN controllers become idle when no policy or
 topology changes occur for a period of time\footnote{Complex bugs occur when
 several such processes overlay.}. This means that most inputs are not relevant
 to triggering a given bug, since the system repeatedly returns to a valid

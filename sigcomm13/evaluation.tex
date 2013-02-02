@@ -203,13 +203,26 @@ case demonstrates how the MCS alone can point to the root cause.
 
 \subsection{NOX Discovery Loop}
 
-\colin{FIXME}
-Loops in SDN have more dire implications than loops in traditional networking.
-This is because transient loops in fully-distributed normally resolve
-themselves quickly. Loops caused by reactive SDN controllers, however,
-persist for as long as the flow mods timers. This is because the SDN
-controllers depend on PacketIn's to update their view of the network, yet
-packets in a loop cause no flow mods to be sent.
+The next SDN control platform we examined
+was NOX, the original OpenFlow controller.
+NOX is also a single machine control platform, but unlike POX it has been used
+fairly extensively in real networks.
+
+Similar to POX we exercised NOX's routing module (\emph{routing}), since
+it depends on a large number of other components.
+Routing learns link and host locations, installs all-to-all paths between
+hosts on a per-flow basis, and is designed to be resilient to looped topologies.
+
+We initially tested NOX on a two node topology, but did not find any immediate
+problems. We then extended the topology to a four-node mesh, and discovered a
+routing loop between two switches (involving routes for two hosts) within
+roughly 20 runs of randomly generated inputs.
+
+Our initial input size was 358 inputs, a minute's worth of execution.
+\Simulator~returned a 58 input MCS. The most salient inputs in the
+MCS were 3 dataplane packet drops mid-way through the execution, interspersed
+with 14 traffic injections. We are in the process of pinpointing the
+exact root cause with NOX developers, based on the 58 input MCS.
 
 \begin{figure}[t]
     %\hspace{-10pt}
