@@ -34,11 +34,11 @@ of our results in Table~\ref{tab:case_studies}, and
 illustrate in detail how \simulator~found their minimal causal sequences
 in the rest of this section.
 
-\noindent{\bf POX.} The first SDN control platform we examined
-was POX, the successor of NOX. POX
-is a single-machine control platform intended primarily for research prototyping and
-educational use (\ie~not large scale production use).
-Nevertheless, POX has been deployed on real networks, and has a growing set of users.
+\subsection{POX List Removal} 
+The first SDN control platform we examined was POX, the successor of NOX. POX is
+a single-machine control platform intended primarily for research prototyping
+and educational use (\ie~not large scale production use). Nevertheless, POX has
+been deployed on real networks, and has a growing set of users.
 
 The POX application we ran was a layer two routing module (`l2\_multi') that
 learns host locations and installs exact match per-flow paths between known hosts using a variant of the
@@ -47,7 +47,7 @@ LLDP packets to discovery links in the network, and a spanning tree module,
 which configures switches to only flood packets for unknown hosts along a
 spanning tree.
 
-\noindent{\bf POX list removal.} We start with a relatively trivial bug to illustrate that
+We start with a relatively trivial bug to illustrate that
 \projectname~is useful for early stage development and testing.
 We employed \projectname~to generate random sequences of
 inputs, and found after some time that POX threw an exception due to
@@ -85,7 +85,7 @@ trace it produced made for a simple integration test.
 
 
 
-\noindent{\bf POX in-flight blackhole.}
+\subsection{POX In-flight Blackhole}
 We discovered the next bug after roughly 20 runs of randomly generated inputs.
 We noticed that \projectname~reported a persistent blackhole while POX was bootstrapping its
 discovery of link and host locations. We encountered this bug
@@ -177,7 +177,7 @@ delayed arbitrarily as it was in \projectname.
 %correct the situation.
 % Discussion of how our gizmos helped.
 
-\noindent{\bf POX migration blackhole.}
+\subsection{POX Migration Blackhole}
 Having examined the POX code in some depth, we noticed that there might be
 some interesting corner cases related to host migrations.
 We set up randomly generated inputs, included host
@@ -201,7 +201,7 @@ case demonstrates how the MCS alone can point to the root cause.
     blackhole.}
 \end{figure}
 
-\noindent{\bf NOX discovery loop.}
+\subsection{NOX Discovery Loop}
 
 \colin{FIXME}
 Loops in SDN have more dire implications than loops in traditional networking.
@@ -217,7 +217,7 @@ packets in a loop cause no flow mods to be sent.
     \caption[]{\label{fig:nox_discovery} Minimizing the NOX discovery loop.}
 \end{figure}
 
-\noindent{\bf Floodlight discovery loop.} We subject the current unmodified open
+\subsection{\bf Floodlight discovery loop.} We subject the current unmodified open
   source version of floodlight (git commit f37046a) to fuzz testing with a three
   node fully meshed topology and high failure event rates. In hour experiment,
   After 49 full iterations, the fuzzer found an event sequence with 777 total events
@@ -273,15 +273,15 @@ diagnosis.
 %Overhead: none! Logs already there. Deterministic replay on the other
 %hand has a huge overhead.
 
-\subsection{Mitigating Non-Determinism}
+%\subsection{Mitigating Non-Determinism}
+%
+%Our implementation of multiplexed sockets and 
+%Include how many lines it took to interpose on the logging library, and how
+%many lines it took to answer snapshot requests.
 
-Our implementation of multiplexed sockets and 
-Include how many lines it took to interpose on the logging library, and how
-many lines it took to answer snapshot requests.
-
-\subsection{New Internal Events}
-
-How often do unexpected internal events occur in practice?
+%\subsection{New Internal Events}
+%
+%How often do unexpected internal events occur in practice?
 % The logging statements must also contain enough context[d] to allow for
 % unambiguous fingerprinting. -> what exactly this means
 
