@@ -217,11 +217,34 @@ packets in a loop cause no flow mods to be sent.
     \caption[]{\label{fig:nox_discovery} Minimizing the NOX discovery loop.}
 \end{figure}
 
-\noindent{\bf Floodlight discovery loop.}
-\colin{FIXME}
-Open-source version of Floodlight provides minimal support for distribution.
-This is why we didn't try to reproduce, \eg~the distribution bug. We expect
-that our technique would truly shine in those cases.
+\noindent{\bf Floodlight discovery loop.} We subject the current unmodified open
+  source version of floodlight (git commit f37046a) to fuzz testing with a three
+  node fully meshed topology and high failure event rates. In hour experiment,
+  After 49 full iterations, the fuzzer found an event sequence with 777 total events
+  (548 input, 229 internal) that results in a 3-node forwarding loop being set up.
+
+  Based on the Java JVM, floodlight makes use multiple kernel level
+  multithreading, and thus can exhibit non-deterministic behavior in the process.
+  Thus, it is not surprising that we do not achieve full reproducability of this
+  bug during replay without further instrumention. On average, 15/50 (30\%) of
+  replays reproduce the bug. To proceed with MCS isolation, we set the number of
+  verification runs for unsuccessful replays to 13. Statistically, this enables
+  STS to correctly diagnose violations in >99\% of cases\footnote{$ln( 1 -
+  0.99) / ln( 1 - 0.30) = 12.9$}.
+
+  In this, the MCS algorithm was able to reduce the number of input event s from
+  548 to 404 ($26\%$) in 168 iterations. Comparing output traces of successful and
+  unsuccessful runs, we notice that the bug seems to correlate with specific
+  thread level race conditions between state updates in the \emph{LinkDiscovery} module and
+  the \emph{Forwarding} module. We are in the process of investigating the actual root cause.
+
+  This experiment is provides a baseline for a worst case scenario of our system.
+  \projectname~exercises an unmodified, multithreaded controller it has no full
+  control over. The bug appears to depend on fine-grained thread-level races
+  conditions that are difficult to guarantee. Still, \projectname was instrumental
+  in pointing out a previously unknown bug, and reducing the input size (though
+  not dramatically), comparisions of failed and successful replays provide intution
+  to the source of the problem.\noindent{\bf Floodlight discovery loop.}
 
 \noindent{\bf Overall Results.} The overall results of our case studies are
 shown in Table~\ref{tab:case_studies}. For the Replay Success Rate column we
