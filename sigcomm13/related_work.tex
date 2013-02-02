@@ -34,21 +34,21 @@ literature on tools for testing and troubleshooting.
 
 We share the common goal of practically improving the troubleshooting
 possibilities for Software Defined networks with OFRewind~\cite{ofrewind} and
-recent project NDB~\cite{handigol2012debugger}. OFRewind focusses on enabling
-record and replay capabilities on a production OpenFlow domain, and
+recent project NDB~\cite{handigol2012debugger}. OFRewind focuses on enabling
+record and replay capabilities of OpenFlow control channels, and
 proposes several troubleshooting workflows to be manually carried out by a human
 troubleshooter. We focus on automatically exploring corner cases and automating
-the search of minimal input traces.
+the isolation of minimal input traces.
 
-NDB uses a similar set of technologies as OFRewind and provides event tracing
-and 'breakpoint' like functionality for individual packets. Thus, NDB can
-provide a microscopic trace view to the OpenFlow forwarding configuration
-encountered by a particular packet in the network. We find that in our
-experience, problems with OpenFlow forwarding tables are relatively simple to
-debug. Challenging bugs often result from interference on the control plane
-decisions.
+NDB uses a similar set of technologies as OFRewind,  providing event tracing
+and `breakpoint'-like functionality for (historical) dataplane packets. Thus, NDB can
+provide a trace view into the OpenFlow forwarding tables
+encountered by particular packets in the network. We have found in our
+experience that examining low-level forwarding behavior is not
+particularly helpful for identifying what is often the root cause of the problem: the
+control plane decisions that installed the erroneous routing entries in the first place.
 
-Neither of the two projects focusses on the problem of information overflow
+Neither of the two projects focuses on the problem of information overflow
 during debugging - with millions going over the packets on the wire, it can be
 very challenging to pick just the right one to debug interactively with ndb, and
 a plain replay does not necessarily facilitate root cause analysis. To the best
