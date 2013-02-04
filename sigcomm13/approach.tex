@@ -37,7 +37,7 @@ network, which contain a substantial number of hardware failures, topology chang
 and other potential triggering events,
 all of which may appear characteristic of normal operating
 conditions at first glance; assuming 8.5 network error events per
-minute~\cite{Greenberg:2009:VSF:1592568.1592576}, 500 VM migrations per
+minute~\cite{Greenberg:2009:VSF:1592568.1592576}, and 500 VM migrations per
 hour~\cite{Soundararajan:2010:CBS:1899928.1899941},
 there would be at least $8.5 \cdot 60 + 500 \approx 1000$ inputs reflected in
 an hour-long trace.
@@ -60,7 +60,6 @@ extraneous event is pruned, the blackhole will still persist: when
 the controller crash is pruned, the blackhole will be resolved properly, and
 when the link failure is pruned, no blackhole will occur. The MCS returned
 is therefore the controller crash and the link failure in conjunction.
-
 
 \subsection{Delta Debugging}
 \label{subsec:algorithm}
@@ -145,11 +144,11 @@ concurrently running nodes.
 
 For the purposes of this section, we model our problem as follows.
 We are given a single, globally ordered trace of events that ends in
-in a policy violation, and we return a minimal causal subsequence
+in a correctness violation, and we return a minimal causal subsequence
 of the trace. The trace includes input events
 (\eg~link failures), control message sends and receipts between
 switches and controllers,
-and internal state changes (\eg the
+and internal state changes (\eg~the
 backup deciding to elevate itself to master in the Floodlight case) labeled
 with the control process that made the state change.
 In \S\ref{subsec:exploration}, we describe how we obtain the globally
@@ -166,7 +165,7 @@ Unlike the example applications described
 by the original delta debugging paper~\cite{Zeller:1999:YMP:318773.318946}, the system we are troubleshooting is not a
 single program--it is all the nodes and links of a distributed system,
 including controllers, switches, and end-hosts. The asynchrony of distributed
-systems makes it difficult to reliably replay event orderings of
+systems makes it difficult to reliably replay orderings of
 events without great care. We therefore simulate the control-plane
 behavior of network devices (with support for minimal data-plane behavior) on
 a single machine. We then run the control software on
@@ -187,9 +186,9 @@ Figure~\ref{fig:architecture}.
 \end{figure}
 
 Given a sequence of inputs (\eg~link failures, controller crashes, host migrations,
-or policy changes) and an invariant checking probe (provided by frameworks
+or policy changes) and an invariant checking probe (provided by tools
 such as HSA~\cite{hsa,hsa_realtime} or Anteater~\cite{anteater,khurshid2012veriflow}),
-delta debugging finds a minimal causal set responsible for triggering the
+delta debugging finds a minimal causal sequence responsible for triggering the
 policy violation. The
 simulator is responsible for replaying intermediate input subsequences
 chosen by delta debugging. For example, the simulator replays link failures
@@ -197,14 +196,14 @@ by disconnecting the edge in the simulated network, and sending a
 port status message from the adjacent switches to their parent controller(s).
 
 The input subsequences chosen by delta debugging are not always valid. For
-example, it is not sensible to recovery event without a
+example, it is not sensible to replay a recovery event without a
 preceding failure event; nor is it sensible to replay a host migration
-event without modifying the starting position when a preceding host
+event without modifying its starting position when a preceding host
 migration event has been pruned. The simulator checks
 validity before replaying a given subsequence to account for this
 possibility.\footnote{Handling invalid inputs is crucial for
 ensuring that the delta debugging algorithm we employ~\cite{Zeller:1999:YMP:318773.318946}
-is guaranteed to find a minimal causal set, since it assumes that no unresolved
+is guaranteed to find a minimal causal sequence, since it assumes that no unresolved
 test outcomes occur. Zeller wrote a follow-on
 paper~\cite{Zeller:2002:SIF:506201.506206} that removes the need for this assumption,
 but incurs an additional factor of $N$ in complexity in doing so.}
@@ -238,7 +237,7 @@ itself to master; if the ordering of inputs and internal events is
 perturbed, the final output may differ.
 Consider for example that if a controller's garbage collector happens to run
 while we replay inputs, it may delay an internal state transition until
-after the simulator injects an input that depended on in the original run.
+after the simulator injects an input that depended on it in the original run.
 
 The challenge is to maintain causal relationships.
 Formally, to reliably reproduce the original correctness violation
@@ -253,13 +252,13 @@ we become aware of internal events throughout replay by
 (i) monitoring
 control message receipts between controllers and switches,
 and (ii) interposing on the controllers' logging library and notifying the
-simulation process whenever the control software executes a log statement (which serve to mark relevant state
+simulator whenever the control software executes a log statement (which serve to mark relevant state
 transitions). Note that to achieve truly deterministic
 replay, these log statements would need to
 be highly granular, capturing information such as thread scheduling decisions;
 we show in \S\ref{subsec:case_studies}
-however that pre-existing, course granular log statements are sufficient to
-successfully reproduce many bugs.
+however that pre-existing, course granular log statements are often sufficient to
+successfully reproduce bugs.
 %\footnote{We discuss this problem further in
 %\S\ref{subsec:domain_knowledge}.}
 %Note that the developer must provide enough logging statements
@@ -333,12 +332,12 @@ only possible change induced by pruning: internal events from the original
 may also cease to appear.
 
 The structure of the control
-software's state machine (which we do not to know) determines whether
+software's state machine (which we do not assume to know) determines whether
 internal events disappear. Consider the simplified state machines for the switch and
 controllers from the Floodlight case shown in
 Figure~\ref{fig:state_machines}. If we prune the link failure input, the
-switch will not make the transition to `Notify Parents', and the master will
-consequently not make the transition to and from `Send Flush'.
+master will never receive a link failure notification and
+transition to and from `Send Flush'.
 
 In the hope that absent internal events are not actually relevant
 for triggering the correctness violation, we proceed with replay.
@@ -349,8 +348,8 @@ In most cases this approach successfully reproduces the original correctness
 violation, assuming \textepsilon~is larger than variations in execution speeds
 between internal events. If the value of \textepsilon~is too large, however, we may end up
 waiting too long for the happens-before predecessors of an input $e_i$ such that a
-successor of $e_i$ occurs before we have injected $e_i$
-(thereby violating the remaining happens-before constraints).
+successor of $e_i$ occurs before we have injected $e_i$,
+thereby violating the remaining happens-before constraints.
 % \sam{Is it worth noting that this isn't necessarily a problem? If a successor occurs, it means it wasn't causally related to $e_i$, but the ordering still might matter for further successors.}
 
 If the event scheduling algorithm detects that it has waited too long, it
@@ -426,7 +425,7 @@ contain only a subset of the (equivalent) original internal events, but leaves o
 possibility of finding divergent suffixes that still lead to the correctness
 violation. This is reasonable because not even branching on new
 internal events is guaranteed to find the shortest fault-inducing input
-sequence;
+sequence:
 there may be other unknown
 paths through the state machine leading to the correctness violation that are
 completely disjoint from the original execution.
@@ -442,7 +441,7 @@ handlers, meaning that pruning input events simply triggers a subset of the orig
 event handlers. As an illustration, consider the state machines
 in Figure~\ref{fig:state_machines}:
 the controllers quickly converge to a single state (either ``Master'' or
-``Failure''), as do the switches (``Safe'').
+``Backup''), as do the switches (``Safe'').
 
 \subsection{Complexity}
 \label{subsec:complexity}
@@ -477,7 +476,8 @@ entire prefix.
 
 SDN platform developers can reduce the probability that the replay algorithm
 will need to back up by placing causal annotations on internal
-events~\cite{fonseca2007x}: with explicit causal information, the replay can know
+events~\cite{fonseca2007x}: with explicit causal information, the replay
+algorithm can know
 \apriori~whether certain internal are dependent on pruned inputs.
 
 \colin{Describe Andrew's input type pruning optimization and measurements. "We
@@ -643,8 +643,7 @@ line(s) of code cause the error.
 \noindent{\bf Bugs Outside the Control Software.} Our goal is not to find the root
 cause of individual component failures in the system (\eg~misbehaving routers,
 link failures). Instead, we focus on
-how the distributed system as a whole reacts to the occurrence of inputs such
-as component failures.
+how the distributed system as a whole reacts to the occurrence such inputs.
 If there is a bug in your switch, you will need to contact your hardware vendor;
 if you have a bug in your policy specification, you will need to take a closer look at what you specified.
 

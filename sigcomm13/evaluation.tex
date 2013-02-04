@@ -1,5 +1,7 @@
 \label{subsec:case_studies}
 
+\colin{How often did we have to back up?}
+
 \begin{table*}
 \centering
 \begin{tabular}{l|l|l|l|l}
@@ -75,8 +77,8 @@ unsurprising.
 %testing common scenarios (on production OpenFlow software switches),
 %but is not explicitly designed for scripting corner-case scenarios such as
 %switch failure/recovery.
-\projectname~made it straightforward to inject inputs (in this case, randomly generated)
-at a high semantic level
+\projectname~made it straightforward to inject inputs
+at a high semantic level,
 and the minimized event
 trace it produced made for a simple integration test.
 
@@ -115,7 +117,7 @@ transpired.
 Before the discovery module had learned of the link,
 there were six traffic injection events between hosts (A$\rightarrow$ B and
 B$\rightarrow$A). At the point when the link was discovered, POX had learned
-of B's location at port $2.2$. %Upon  POX would oscillate between learning the correct location
+of B's location at port $2.2$. %Upon POX would oscillate between learning the correct location
 %of hosts at their ingress switch, and then learning an incorrect location
 %when the flooded packet traversed the link and the next switch
 %notified the controller of a new flow.\footnote{This seems to be necessary behavior before the
@@ -127,7 +129,7 @@ of B's location at port $2.2$. %Upon  POX would oscillate between learning the c
 %that $1.1$ and $2.1$ were switch-switch ports, not host ports. At this point POX's only knowledge was the
 %correct location of $B$ at $2.2$.
 
-We next observed an {\em in-flight} packet arriving from A$\rightarrow$B at
+Directly after the link discovery we observed an {\em in-flight} packet arriving from A$\rightarrow$B at
 port $2.1$
 (without a prior flow notification from S1). This was POX's first error.
 Upon examining the code, we found that it
@@ -230,7 +232,9 @@ exact root cause with NOX developers, based on the 58 input MCS.
     \caption[]{\label{fig:nox_discovery} Minimizing the NOX discovery loop.}
 \end{figure}
 
-\subsection{\bf Floodlight discovery loop.} We subject the current unmodified open
+\subsection{Floodlight discovery loop.}
+
+We subject the current unmodified open
   source version of floodlight (git commit f37046a) to fuzz testing with a three
   node fully meshed topology and high failure event rates. In hour experiment,
   After 49 full iterations, the fuzzer found an event sequence with 777 total events

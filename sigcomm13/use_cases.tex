@@ -45,7 +45,7 @@ by multiplexing all sockets in the controller process
 onto a single true socket.\footnote{Alternatively, we could employ a
 mutex~\cite{lin2009towards}.}
 \projectname~currently overrides socket functionality within the control
-software itself.\footnote{Only supported for POX at the moment}
+software itself.\footnote{Only supported for POX at the moment.}
 In the future we plan to implement deterministic message ordering without code modifications by
 loading a shim layer on top of
 libc (similar to liblog~\cite{Geels:2006:RDD:1267359.1267386}).
@@ -54,7 +54,7 @@ libc (similar to liblog~\cite{Geels:2006:RDD:1267359.1267386}).
 changes to reliably reproduce the system execution. We achieve this by
 making a
 small change to the control software's logging library\footnote{Only supported
-for POX at the moment}: whenever a control process executes a log
+for POX and Floodlight at the moment.}: whenever a control process executes a log
 statement, we notify \projectname~that a new state transition
 is about to occur, and optionally block the process. \projectname~then sends
 an acknowledgment to unblock the controller after logging the state change. If blocking was enabled
@@ -94,7 +94,7 @@ illustrate a general workflow.
 
 Use of \projectname~begins with bug exploration.
 \projectname~itself is well-suited for finding input traces that trigger bugs:
-it readily simulates nine common network input events, and ships with a suite of invariant checking
+it readily simulates common network input events, and ships with a suite of invariant checking
 algorithms~\cite{hsa}. With complete control over event orderings, \projectname~is
 especially useful for exploring corner cases.
 Along these lines, Amin Vahdat
@@ -121,10 +121,10 @@ examine the state of any part of the simulated network,
 observe and manipulate messages, and follow their
 intuition to induce orderings that they believe may trigger bugs.
 
-Generating integration tests in this fashion frees developers to be more agile in
-development, decreasing the time they spend writing test cases.
+Generating integration tests in this fashion frees developers to be more agile
+and spend spend less time writing test cases.
 As developers and operators encounter additional failure cases they can add
-them to a suite of integration tests and later used to validate the correct
+them to a suite of integration tests later used to validate the correct
 behavior of future versions of the software. Since \projectname~makes
 limited assumptions about the control software under test, the overall SDN community
 could potentially collect a common repository of test cases.
@@ -147,21 +147,20 @@ will be able to help.}
 
 \subsection{Minimizing Input Traces}
 
-Moving beyond mere network replay, \projectname's main novelty is in
-automatically minimizing input traces. Automated replay provides the basis to
-diagnose and fix a bug with certainty. However, it is often still a
-time-consuming and challenging task to identify the root cause, because many
-established debugging techniques scale poorly to large input sizes. For
-instance, stepping through a 1000 line event trace in a source level debugger
-easily takes several ten thousand individual steps. When inspecting log files,
-as developers increase the log level during debugging, they are often confronted
-with dozens of lines of debug output per event, thus 'drowning in detail'.
-Consequently, a minimized input trace has the potential to significantly improve
-developer productivity. Before developers begin diagnosing the root cause of a
-network correctness violation, they can let \simulator~automatically perform
-some of the heavy lifting for them.
+Moving beyond network replay, \projectname's main value is in
+automatically minimizing input traces.
+Troubleshooting can be highly time-consuming and challenging
+when the developer has no intuition as to where the problem might arise and
+only a large input log to work with.
+For instance, stepping through a 1000 event trace in a source level debugger
+can involve taking thousands of individual steps. When inspecting log files,
+developers are often confronted
+with dozens of lines of debug output per event and hundreds of thousands of
+log lines overall.
+With \simulator, much of the heavy lifting can be performed automatically
+before the developers begin to diagnose the root cause.
 
-Minimally, \simulator~reduces the runtime of test cases and eliminates
+At the least, \simulator~reduces the runtime of test cases and eliminates
 distracting events during replay. More importantly, minimal causal sequences
 give developers intuition about what code path is throwing
 the network into an invalid configuration. In our own experience
@@ -175,15 +174,14 @@ if two test failures have the same minimal causal sequence, it is
 likely that the same underlying bug is
 responsible~\cite{Zeller:2002:SIF:506201.506206}.
 This eliminates time wasted
-investigating bug reports the same root cause.
+investigating bug reports with the same root cause.
 
 \subsection{Analysis of Production Logs}
-\andi{See if we can shorten this}
 
 Input generation, interactive execution, replay, and test case
 minimization are implemented and used in \projectname~today.
 Forensic analysis of production logs, while not currently implemented,
-may be a another valuable use case of \projectname. Here we present a sketch of
+may be another valuable use case of \projectname. Here we present a sketch of
 how forensic analysis could be performed with \simulator.
 
 While \simulator~takes as input a single, totally-ordered log of the events in the
@@ -194,12 +192,13 @@ Production systems would need to include Lamport
 clocks on each message~\cite{Lamport:1978:TCO:359545.359563} or have
 sufficiently accurate clock
 synchronization~\cite{corbett2012spanner} to obtain a partial global ordering
-consistent with the happens-before relation (in testing mode
-\projectname~obtains this global ordering by logging at a single location).\footnote{
+consistent with the happens-before relation.\footnote{
 Note that a total ordering is not needed, since it is permissible
 for \simulator~to reorder concurrent events from
 the production run so long as the happens-before relation is
 maintained~\cite{Fischer:1985:IDC:3149.214121}.}
+ Contrast this with \projectname's
+testing mode, where a global event ordering is obtained by logging all events at a single location.
 
 The distributed logs would also need to make a clear distinction between
 internal events and external input events. Further,
