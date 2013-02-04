@@ -242,8 +242,8 @@ We subject the current unmodified open
 
   Based on the Java JVM, floodlight makes use multiple kernel level
   multithreading, and thus can exhibit non-deterministic behavior in the process.
-  Thus, it is not surprising that we do not achieve full reproducability of this
-  bug during replay without further instrumention. On average, 15/50 (30\%) of
+  Thus, it is not surprising that we do not achieve full reproducibility of this
+  bug during replay without further instrumentation. On average, 15/50 (30\%) of
   replays reproduce the bug. To proceed with MCS isolation, we set the number of
   verification runs for unsuccessful replays to 13. Statistically, this enables
   STS to correctly diagnose violations in >99\% of cases\footnote{$ln( 1 -
@@ -260,7 +260,7 @@ We subject the current unmodified open
   control over. The bug appears to depend on fine-grained thread-level races
   conditions that are difficult to guarantee. Still, \projectname was instrumental
   in pointing out a previously unknown bug, and reducing the input size (though
-  not dramatically), comparisions of failed and successful replays provide intution
+  not dramatically), comparisons of failed and successful replays provide intuition
   to the source of the problem.
 
 \noindent{\bf Overall Results.} The overall results of our case studies are
@@ -268,7 +268,7 @@ shown in Table~\ref{tab:case_studies}. For the Replay Success Rate column we
 repeatedly replayed the original unpruned event trace, and measured how often we
 were able to reproduce the policy violation. There was indeed non-determinism
 in some cases, especially Floodlight. For the specific case of
-POX in-flight blackhole, we were able to eliminate the relevent
+POX in-flight blackhole, we were able to eliminate the relevant
 non-determinism by employing multiplexed sockets and waiting on
 POX's logging messages.
 
