@@ -141,8 +141,40 @@
 
 \title{How Did We Get Into This Mess?}
 \subtitle{Isolating Fault-Inducing Inputs to SDN Control Software}
-    \author{Paper \#2, 14 pages}
-    \maketitle
+
+\author{Colin Scott\thanks{UC Berkeley}     %$^\dagger$
+\and Andreas Wundsam\thanks{Big Switch Networks} %$^\diamond$
+\and Sam Whitlock\thanks{ICSI}  % $^*$
+\and Andrew Or\footnotemark[1] % $^\dagger$
+\and Eugene Huang\footnotemark[1] %$^\dagger$
+\and Kyriakos Zarifis\thanks{USC} %$^\ddagger$
+\and Scott Shenker\footnotemark[3]~\footnotemark[1] % $^\dagger$
+%\and {\begin{tabular}{cccc}$^\dagger${\large\it UC Berkeley} &
+%$^\diamond${\large\it Big Switch Networks} & $^*${\large\it ISCI} & $^\square${\large\it USC}}
+}
+
+%\numberofauthors{7}
+%\author{
+%\alignauthor Colin Scott \\
+%\affaddr{UC Berkeley}
+%\alignauthor Andreas Wundsam\\
+%\affaddr{Big Switch Networks}
+%\and
+%\alignauthor Sam Whitlock \\
+%\affaddr{ICSI}
+%\alignauthor Andrew Or \\
+%\affaddr{UC Berkeley}
+%\alignauthor Eugene Huang \\
+%\affaddr{UC Berkeley}
+%\and
+%\alignauthor Kyriakos Zarifis \\
+%\affaddr{USC}
+%\alignauthor Scott Shenker\\
+%\affaddr{ICSI \& UC Berkeley}
+%}
+
+\date{}
+   \maketitle
    \thispagestyle{empty}
 
 % Advice from http://www.sigcomm.org/for-authors/hints-tips-and-guides/author-guide
@@ -189,11 +221,13 @@
 
 % TODO: Include acknowledgements section
 
-{\footnotesize
-\vspace{0.5cm}
-\bibliographystyle{abbrv} \bibliography{bib}
-\vspace{0.5cm}
+\bibliographystyle{abbrv}
+{
+\footnotesize
+\bibliography{bib}
+\vspace{3cm}
 }
+
 %\input{appendix}
 
 %\theendnotes
