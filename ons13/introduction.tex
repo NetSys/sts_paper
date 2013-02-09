@@ -1,0 +1,271 @@
+Based on anecdotal evidence from colleagues and acquaintances in the industry, it seems clear that
+developers of SDN control software spend much of their time
+troubleshooting bugs. This should be no surprise, since software developers in
+general spend roughly half (49\% according to one
+study~\cite{msoft_concurrency}) of their time troubleshooting, and spend
+considerable time on bugs that are difficult to trigger
+(the same study found that 70\% of the reported concurrency bugs
+take days to months to fix).
+More fundamentally though, modern SDN control platforms are highly complex,
+distributing state between replicated
+servers~\cite{floodlight},
+providing isolation and resource arbitration between multiple
+tenants~\cite{Casado:2010:VNF:1921151.1921162}, and
+globally optimizing network utilization~\cite{urs}.
+Most of this complexity comes from
+fundamentally difficult distributed systems challenges such as asynchrony and
+partial failure. Even Google's Urs H$\ddot{\mathrm{o}}$elzle, a leading
+networking and distributed systems technologist,
+attests that~\cite{urs} ``[coordination between replicated controllers] is going to
+cause some angst, and justifiably, in the industry.''
+%As SDN control software
+%is used to manage larger and more sophisticated networks,
+%we expect its complexity to increase.
+% Scott: needs more SDN war stories from VMW, BSN
+
+The troubleshooting process is hindered by the large number of hardware failures,
+policy changes, host migrations, and other inputs to SDN control software.
+As one data point, Microsoft Research
+reports 8.5 network error events per minute per
+datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}.
+Troubleshooters find little immediate use from traces containing many inputs
+prior to a fault,
+since they are forced to manually filter extraneous inputs
+before they can start fruitfully exploring what might be the root cause.
+It is no surprise that when asked to describe their
+ideal tool, most network admins said ``automated troubleshooting''~\cite{Zeng:Survey}.
+
+%And despite the prevalence of failures, maintaining uptime is of critical importance; according to one
+%survey, ``meeting customer expectations about reliability'' is the second highest
+%priority for networking professionals~\cite{market_report}.
+% Software bugs cost $59 billion in 2002: bit.ly/V2Z7Al
+
+Before continuing, we should clarify what we mean by `troubleshooting' and `bugs' in the SDN context.
+SDN networks are designed to support high-level policies, such as inter-tenant
+isolation. A bug, in this context, creates situations
+where the network violates one or more of these high-level policies; that is, even though the control plane
+has been told to implement a particular policy, the resulting configuration (\ie~flow entries in the switches)
+does not do so properly. We call this an {\em invalid} configuration.
+We presume that the control plane functions properly in most circumstances, so
+that these policy violations are rare.
+% and are typically triggered when the control plane takes an unusual codepath.
+Bugs may be triggered by uncommon sequences of inputs, such as a simultaneous link failure or controller reboot.
+The act of troubleshooting is identifying which set of inputs triggered the bug.
+Debugging then involves tracking down the error in the code itself, given a
+set of triggering inputs.
+The smaller the set of triggering inputs, the easier debugging will be.
+
+Our focus here is on troubleshooting. When we observe an invalid
+configuration,
+which is prima facie evidence for a bug, our goal is
+to automatically filter out inputs to the SDN software (\eg~link failures)
+that are not relevant to triggering the bug, leaving a small sequence of inputs
+that is directly responsible.
+This would go a long way towards achieving ``automated troubleshooting.''
+
+Our approach is to prune inputs from the original run, replay the remaining
+inputs to the control software using simulated network devices, and
+check whether the network re-enters the invalid configuration.
+In particular, we generalize delta
+debugging~\cite{Zeller:2002:SIF:506201.506206}---an algorithm for
+minimizing test cases that are inserted at a single
+point in time to a single program---to a distributed environment, where inputs
+are spread across time and involve multiple machines. \scott{I think you give
+too much credit to delta debugging}
+
+The output of our approach, minimized input traces, represents a noteworthy improvement over the status quo;
+painstaking manual analysis of logs is the
+{\em de facto} method of troubleshooting production SDN control software
+today. As far as we know, our work
+is the first to programmatically isolate fault-inducing inputs to a distributed
+system.
+
+We have applied \simulator, to three open source SDN control
+platforms: Floodlight~\cite{bigswitch}, POX~\cite{pox}, and NOX~\cite{nox}.
+Of the five bugs we encountered in a five day investigation,
+\simulator~reduced the size of the input trace to 36\% of its original size in
+the worst case and 2\% of its original size in the best case.
+
+% Main result from our work: the amount of effort it takes to codify domain knowledge is significantly less than the effort
+% it would take to step through a normal replay debugger by hand for each bug.
+
+%% Cut?
+%The rest of this paper is organized as follows. In \S\ref{sec:overview},
+%we present a brief overview of the SDN control plane and its failure modes.
+%In \S\ref{sec:approach} we present our approach in detail.
+%We discuss use cases for in \S\ref{sec:architecture},
+%and describe case studies and a performance evaluation in
+%\S\ref{sec:evaluation}. We end by discussing the limitations of our
+%approach (\S\ref{sec:discussion}) and related work (\S\ref{sec:related_work}).
+
+% ------------------------------------------------------------------- %
+%    OLD OSDI TEXT:
+\eat{
+
+% Feedback from Ali Ghodsi:
+%  - Why is S/W easier to test than H/W? It's not really this point that's
+%    important either: it's the centralized control plane that makes it easier
+%    to test. [rebuttal: cite Urs Hoelzle]
+%  - SDN is not more challenging! (read: SDN doesn't not offer a challenge)
+%    Not problematic that the difficulty hasn't chanfed -- just make it clear
+%    that we aren't getting farther away from the distributed nature of
+%    networks.
+%  - Need to NAIL the motivation:
+%      - Distributed systems are fundamentally hard to troubleshoot, and
+%      they're going to remain that way forever.
+%      - SDN provides an opportunity to do better than traceroute! In
+%      traditional networks, configuration state is spread all over the place.
+%      - Not trivial in SDN (aren't running away from distributed nature)
+%        It presents a new challenge: how to verify high-level policies have
+%        actually been implemented correctly? => enter correspondence checking.
+%      - What's the key insight here?
+%  - Say what W^3 stands for?
+%  - Too much boiler plate
+%  - How much do the readers learn from reading the introduction
+%  - "It is important to place this work in context and scope the problem we are
+%   attacking" is really lecturing the reader  ...  of course context and scope of
+%   any research problem is important.
+
+\colin{``Meeting Customer Expectations about Reliability'' is the second highest
+priority for networking professionals, according to a market
+report~\cite{market_report}}
+
+Given their critical role in enterprises, one might expect that networks
+would come with a well-developed suite of troubleshooting tools. However,
+the unfortunate truth is that {\tt traceroute}, developed in 1987~\cite{traceroute},
+remains the network administrator's most sophisticated diagnostic mechanism. This reflects
+the lack of structure in network control planes, which are an ad hoc mixture of
+distributed protocols and manual configuration that directly manipulate forwarding tables. It is hard to tell what is broken
+when desired behavior is only implicitly expressed in the routing entries themselves, and that is the case with today's networks.
+
+In this respect, the emergence of Software-Defined
+Networks (SDN) provides both an opportunity and a challenge. Moving control logic out of hardware and into software
+enables enables concise policy specifications and significantly more sophisticated testing and troubleshooting tools. Moreover, since SDN
+is still in its infancy (compared to traditional networking approaches), we as a community have an opportunity to make diagnostic tools
+a more integral part of the overall design process. Although SDN's goal is to simplify the
+{\em management} of networks, the challenge is that the SDN software stack itself is a complex distributed system,
+operating in asynchronous, heterogeneous, and failure-prone environments.
+In this paper we present our approach to troubleshooting bugs in SDN control
+software, a tool called \projectname{}.
+
+\projectname{} simplifies the troubleshooting process by programmatically localizing the root cause
+of network problems along three dimensions: {\it what} network problems exist at a
+given point in time, {\it where} in the control software a problem first developed, and
+{\it when} the triggering event occurred. To accomplish this
+\projectname{} employs two techniques:
+
+\noindent{\bf Correspondence Checking}. We observe that the structure of the
+SDN software stack (as we discuss in the next section) enables a straightforward algorithm for
+checking that control applications' policies are implemented correctly in
+the physical network. Our algorithm enumerates all correctness violations
+(\ie{}, any instance where the high-level policies are not properly
+implemented by the SDN control software) present in the network at a given point in
+time, providing a crisp determination of the range of inputs
+and the system component(s) responsible for the fault.
+
+\noindent{\bf \Simulator{}.} \projectname{} can replay the execution of the
+system against
+a stream of network events (e.g., link failures). This allows us to (i)
+distinguish between correctness violations that are harmless and quickly heal and
+those that are persistent, and (ii) identify the minimal sequence of events that triggered
+the correctness violation.
+
+% OSDI "Tips":
+%  - Make very clear that we implemented it!
+%  - Make very clear how this is an improvement over related work!
+%  - What has the system's use showed about the practical implications of the
+%    ideas?
+%  - What have you learned from the work?
+%  - How generally applicable are these ideas?
+%  - What were the alternatives considered at various points?
+%  - Keep forward references (to later sections) to a minimum
+
+In combination, correspondence checking and \simulator{} programmatically
+localize software-faults in the SDN software stack.
+With \projectname{}, operators and developers are free to focus their efforts
+on debugging the code itself, without needing to
+diagnose the symptoms in the first place.
+% This represents an improvement over the state-of-the-art SDN troubleshooting
+% practices
+
+It is important to place this work in context and scope the problem we are
+attacking. First, \projectname{} is a troubleshooting tool, not a debugger; by
+this we mean that \projectname{} helps identify and localize network
+problems (what, where, and when?), but it does not help identify exactly which
+line of code causes the error (why?). Second, \projectname{} is focused on the
+system software of the SDN stack (described in the next section). While progress has been made in troubleshooting control
+applications that run on top of the SDN platform~\cite{nice} and in troubleshooting the forwarding tables in the physical switches~\cite{anteater,hsa}, we
+are not aware of previous troubleshooting work that focuses on the SDN
+platform itself; to the best of our knowledge, painstaking analysis of detailed logs is the current state-of-the-art in SDN platform troubleshooting.
+
+In evaluating \projectname{} on
+three popular SDN platforms---Frenetic, Floodlight and POX---we found or reproduced several bugs:
+isolation breaches and faulty failover logic between distributed controllers.
+We also demonstrated the feasibility of deploying
+\projectname{} on production networks,
+finding that our tools can enumerate all correctness violations in
+simulated networks exceeding 25,000 hosts in under 5 seconds.
+
+The rest of this paper is organized as follows. In \S\ref{sec:overview},
+we present an overview of the SDN stack and its failure modes.
+In \S\ref{sec:approach} we present correspondence checking and
+\simulator{} in detail. We discuss the design of \projectname{} in
+\S\ref{sec:architecture}. In \S\ref{sec:evaluation} we present
+three bugs found by \projectname{}, as well as a performance evaluation.
+Finally, in \S\ref{sec:related_work} we discuss related work,
+and in \S\ref{sec:conclusion} we conclude.
+
+\colin{Reviewer OE seemed to think it was negative that we focus on
+corner-case scenarios. We need to provide a stronger argument for why focus on
+these}
+
+\eat{
+ % Feedback on version 2.0:
+ % not clear what you mean by "SDN platform", "correctness violation"
+\subsection{\colin{Feedback from Kay et al.}}
+\begin{itemize}
+\item Not sure that OSDI PC members will understand the subtleties of this statement: ``it is hard to tell what is broken when the goals are only implicitly expressed in the flow entries themselves.''
+\item I think we should push a little harder on emphasizing that the bugs are really nasty, and fundamental to the distributed nature of the system. "may have bugs" seems a little weak.
+\item We should make it very clear how our tools are an improvement over the status quo (log analysis). In particular, we automatically localize the (i) layer, and (ii) minimal causal set of events responsible for an error.
+\item \simulator{} does two things: find the minimal causal set, {\bf and}
+differentiates benign from pernicious. Only one of these points was clear, not
+both.
+\item The Google quote seems to indicate that the problem has already been solved!
+\item Along a similar vein, the point about ``the SDN platform will eventually
+become stable'' makes it seems like these problems aren't fundamental. But
+these problems are fundamental! How will the community view this paper in 10
+years?
+\item The reader doesn't walk away from this problem thinking ``This problem
+seems really heard!''. What are the specific bugs this framework addresses?
+Also, make it clear why this problem is important! If Pepsi knows that
+Coca-cola might be able to snoop on their traffic, we've lost huge \$\$\$.
+\item Don't frame ourselves just against log analysis. Make
+the shortcomings of the status quo very clear, and be very precise about how
+we address those shortcoming. (Why aren't traditional distributed systems
+techniques apropro? Why is static checking of a single layer insufficient? How
+is \simulator{} different than traditional replay debugging?)
+\item Would be cool to have numbers on how many log events developers have to
+step through today.
+\item Would also be cool to have numbers on how many benign correctness violations
+there are at a given point (say, in POX).
+\item ``Policy-violation'' wasn't well-defined.
+\item The introduction (prose) was too dense. Frame the problem in terms that
+the reader understands. Get them thinking about the problem right off the bat.
+Then lead them through our reasoning of how we came to the solution. Present
+a straw-man solution, and show why that doesn't work. This way
+the reader is much more engaged -- the reader should ``nod along''.
+\item What exactly are we simulating? Hardware faults? Misconfigurations?
+(answer: all of the above)
+\item How exactly does correspondence checking provide a crisp determination of the scope of a correctness violation in the
+network as well as the range of inputs that produce it? (answer: you start off
+with a customer complaint, ``A can't ping B''. Correspondence checking tells
+you all possible inputs that would experience the blackhole, and what parts of
+the network are effected)
+\item ``Stack'' connotes TCP/IP. Maybe use ``Platform'' instead?
+\item ``Fault'' connotes hardware failure. Maybe use ``Software Fault''
+\item Cite Frenetic, POX, Floodlight?
+\item What does \projectname{} stand for?
+\end{itemize}
+}
+
+}
