@@ -32,20 +32,19 @@ prior to a failure.
 The systems and networking community has also developed a substantial
 literature on tools for testing and troubleshooting.
 
-We share the common goal of practically improving troubleshooting
+We share the common goal of improving troubleshooting
 of software-defined networks with OFRewind~\cite{ofrewind} and
-recent project ndb~\cite{handigol2012debugger}. OFRewind focuses on enabling
+ndb~\cite{handigol2012debugger}. OFRewind focuses on enabling
 record and replay of OpenFlow control channels, and
 proposes several troubleshooting workflows to be manually carried out by a human
 troubleshooter. We focus on automatically exploring corner cases and automating
 the isolation of minimal input traces.
 
-Using a similar set of technologies as OFRewind, ndb provides a
+ndb provides a
 trace view into the OpenFlow forwarding tables
-encountered by historical and current packets in the network. In our
-experience we have found that examining low-level forwarding behavior is not
-particularly helpful for identifying what is often the root cause of the problem: the
-control plane decisions that installed the erroneous routing entries in the first place.
+encountered by historical and current packets in the network.
+We identify the control plane decisions that installed the
+erroneous routing entries in the first place.
 
 Neither of the two projects focuses on the problem of diagnostic information
 overload: with millions of packets on the wire, it can
