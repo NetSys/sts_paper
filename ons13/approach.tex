@@ -1,18 +1,18 @@
-Use of \simulator~begins with bug exploration.
-Software developers employ our simulated network devices to generate
-random or hand-chosen input
-sequences~\cite{Miller:1990:ESR:96267.96279} to the controller(s) under test. Throughout simulation,
+To use \simulator, software developers first employ our network simulator to generate
+random or hand-chosen inputs
+to the (unmodified) control software under test. Throughout the simulation,
 developers can interactively examine the state of the network
 and employ verification tools such as header space analysis~\cite{hsa} to check
-for bugs. Driving the
+for invalid configurations. Driving the
 execution of the system in this way allows us to record a
 totally-ordered log of the events to be replayed later.
 
-After recording a trace that triggers a bug, our goal is to identify a minimal
+After recording a trace that triggers a bug (\ie~results in an invalid configuration), our goal is to identify a minimal
 subsequence of the trace that is sufficient for re-triggering the bug. We
 call this output a {\em minimal causal sequence} (MCS).
-At the least, minimal causal sequences reduce the runtime of test cases
-and eliminate distracting events during replay. More importantly,
+At the least, minimal causal sequences eliminate distracting events during
+replay and reduce the runtime of test cases.
+More importantly,
 minimal causal sequences give developers intuition about what code path is throwing
 the network into an invalid configuration.
 
@@ -24,27 +24,13 @@ search, repeatedly running the program on subsets of the input
 until it finds a minimal subset (\eg~a single tag) that is sufficient
 for triggering a known bug.
 
-The crucial difference between non-distributed programs and distributed
-systems is that inputs are not inserted at a single point in time; rather,
-inputs involve many nodes, and depend on subtle causal relationships.
-In a distributed environment, pruning input traces can cause the execution to
+However, delta debugging assumes a one-time input to a single program;
+executions of software-defined networks involve ongoing series of inputs to a distributed system.
+In such an environment, pruning parts of the input trace can cause the execution to
 subtly change (\eg~the sequence numbers of packets may differ), and some
 state changes that occurred in the original run may not occur. Our main
 challenge is to maintain causal relationships while replaying inputs,
 despite such divergences in the execution.
-
-In particular, inputs often causally depend on events that are internal to the control software, such as
-message receipts, timers going off, or internal state
-changes. Without taking internal events into account, our replay may not correctly reproduce the bug.
-Consider for example that if a controller's garbage collector happens to run
-while we replay inputs, it may delay an internal state transition until
-after the simulator injects a dependent input.
-%Formally, to reliably reproduce the original correctness violation
-%we need to
-%inject an external input $e$ at exactly the point when all other
-%events (both external and internal) that precede it in the happens-before
-%relation ($\{i \mid i \rightarrow e\}$) from the original execution have
-%occurred~\cite{tel2000introduction}.
 
 Our first observation is that many internal events are {\em functionally
 equivalent}, in the sense that they
@@ -57,10 +43,16 @@ internal events, which allow us to reason about slight differences across
 runs.
 
 Syntactic differences are not the
-only possible change induced by pruning though: internal events from the original
-may also cease to appear. Our second observation is that absent
-internal events may not actually be relevant
-for triggering the correctness violation. Our approach is to wait for expected
-equivalent internal events, but time out and proceed
-if they do not occur within a certain time \textepsilon.
+only possible change induced by pruning though: internal state changes
+(\eg~message receipts, timers going off, or internal state
+changes) from the original
+run also cease to appear.
+Without tracking internal state changes, causal relationships may be violated during replay,
+meaning that the bug may not be successfully reproduced;
+consider for example that if a controller's garbage collector happens to run
+while we replay inputs, it may delay an internal state transition until
+after the simulator injects a dependent input.
+Yet without knowing \apriori~which internal events are going to occur after
+pruning, it is unclear which internal events to wait for. Our approach is to time out and proceed
+if expected internal do not occur within a certain time \textepsilon.
 

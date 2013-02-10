@@ -7,20 +7,21 @@ study~\cite{msoft_concurrency}) of their time troubleshooting, and spend
 considerable time on bugs that are difficult to trigger
 (the same study found that 70\% of the reported concurrency bugs
 take days to months to fix).
-More fundamentally though, modern SDN control platforms are highly complex,
+And while the purpose of SDN control software is to simplify network
+management for operators, the software itself is a highly complex system that may involve
 distributing state between replicated
-servers~\cite{floodlight},
+servers,
 providing isolation and resource arbitration between multiple
-tenants~\cite{Casado:2010:VNF:1921151.1921162}, and
-globally optimizing network utilization~\cite{urs}.
-Most of this complexity comes from
+tenants, and
+globally optimizing network utilization.
+\eat{Most of this complexity comes from
 fundamentally difficult distributed systems challenges such as asynchrony and
 partial failure. Even Google's Urs H$\ddot{\mathrm{o}}$elzle, a leading
 networking and distributed systems technologist,
 attests that~\cite{urs} ``[coordination between replicated controllers] is going to
-cause some angst, and justifiably, in the industry.''
+cause some angst, and justifiably, in the industry.''}
 
-The troubleshooting process is hindered by the large number of hardware failures,
+The process of troubleshooting these SDN platforms is hindered by the large number of hardware failures,
 policy changes, host migrations, and other inputs to SDN control software.
 As one data point, Microsoft Research
 reports 8.5 network error events per minute per
@@ -32,7 +33,7 @@ before they can start fruitfully exploring what might be the root cause.
 It is no surprise that when asked to describe their
 ideal tool, most network admins said ``automated troubleshooting''~\cite{Zeng:Survey}.
 
-Our focus here is on troubleshooting. We aim to make it easier for developers
+Our goal is to take a first step towards this goal by making it easier for developers
 and operators
 to reason about what causes the network to enter invalid configurations
 (\ie~situations where the routing entries in switches do not
@@ -42,24 +43,22 @@ which are \primafacie~evidence for bugs in the control software, our goal is
 to automatically filter out inputs to the SDN software (\eg~link failures)
 that are not relevant to triggering the bug, leaving a small sequence of inputs
 that is directly responsible.
-This would go a long way towards achieving ``automated troubleshooting.''
-
-Our technique, \simulator, achieves this goal by pruning inputs from the
+Our technique, \simulator, achieves this goal by automatically pruning inputs from the
 original run, replaying the remaining
 inputs to the control software with simulated network devices, and
 checking whether the network re-enters the invalid configuration.
-The output of \simulator, minimized input traces, represents a
+\eat{The output of \simulator, minimized input traces, represents a
 noteworthy improvement over the status quo;
 painstaking manual analysis of logs is the
 {\em de facto} method of troubleshooting production SDN control software
-today. As far as we know, our work
-is the first to programmatically isolate fault-inducing inputs to a distributed
-system.
+today.} As far as we know, our work
+is the first to programmatically isolate fault-inducing inputs to SDN control platforms.
 
+\eat{
 In the remainder of this paper we provide an overview of \simulator,
 and illustrate how it minimized input traces in a case study of three open source control
 platforms: Floodlight~\cite{bigswitch}, POX~\cite{pox}, and NOX~\cite{nox}.
-
+}
 %% Cut?
 %The rest of this paper is organized as follows. In \S\ref{sec:overview},
 %we present a brief overview of the SDN control plane and its failure modes.
