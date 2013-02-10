@@ -34,23 +34,26 @@ literature on tools for testing and troubleshooting.
 
 We share the common goal of improving troubleshooting
 of software-defined networks with OFRewind~\cite{ofrewind} and
-ndb~\cite{handigol2012debugger}. OFRewind focuses on enabling
+recent project ndb~\cite{handigol2012debugger}. OFRewind provides
 record and replay of OpenFlow control channels, and
-proposes several troubleshooting workflows to be manually carried out by a human
-troubleshooter. We focus on automatically exploring corner cases and automating
-the isolation of minimal input traces.
+allows humans to manually step through and filter input traces.
+We focus on testing corner cases and automatically
+isolating minimal input traces.
 
 ndb provides a
 trace view into the OpenFlow forwarding tables
 encountered by historical and current packets in the network.
-We identify the control plane decisions that installed the
+This approach is well suited for troubleshooting hardware problems, where the
+network configuration is correct but the forwarding behavior is not.
+In contrast, we focus on bugs in control software; our technique
+automatically identifies the control plane decisions that installed
 erroneous routing entries in the first place.
 
-Neither of the two projects focuses on the problem of diagnostic information
+Neither of the two projects addresses the problem of diagnostic information
 overload: with millions of packets on the wire, it can
-be challenging to pick just the right subset to interactively debug with ndb,
-and a raw replay does not readily reveal root causes. To the
-best of our knowledge, \simulator~is the first system that automatically provides
+be challenging to pick just the right subset to interactively debug.
+To the
+best of our knowledge, \simulator~is the first system that programmatically provides
 information about precisely what caused the network to enter an invalid
 configuration in the first place.
 
