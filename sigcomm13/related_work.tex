@@ -47,9 +47,9 @@ This approach is well suited for troubleshooting hardware problems, where the
 network configuration is correct but the forwarding behavior is not.
 In contrast, we focus on bugs in control software; our technique
 automatically identifies the control plane decisions that installed
-erroneous routing entries in the first place.
+erroneous routing entries.
 
-Neither of the two projects addresses the problem of diagnostic information
+Neither ndb nor OFRewind address the problem of diagnostic information
 overload: with millions of packets on the wire, it can
 be challenging to pick just the right subset to interactively debug.
 To the
