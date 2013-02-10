@@ -26,8 +26,8 @@ NOX discovery loop & 4 switch mesh & 20237.6s & 358 (150) & 58 (18) \\
 Floodlight loop & 3 switch mesh & analysis pending & analysis pending & analysis pending\\
 % Andi
 \end{tabular}
-\caption{Overview of results for bugs found. Totals shown in parentheses are with
-dataplane permit events excluded.}
+\caption{Overview of bugs found and MCS results. Totals shown in parentheses
+exlude dataplane permit events.}
 \label{tab:case_studies}
 \end{table*}
 
@@ -50,10 +50,10 @@ concurrent with the discovery of the link. As a result, it incorrectly learned A
 the switch-switch link.
 
 The next event we observed was another in-flight packet arriving from B to
-A. POX then
+A. POX
 proceeded to install a path for this new B$\rightarrow$A flow, but the
 path itself contained a loop! The default behavior of
-OpenFlow switches is to ignore matching route entries (with wildcarded
+OpenFlow switches is to ignore route entries (with wildcarded
 IN\_PORTs) that forward out the
 same port the packets arrived on. This is where we started observing the blackhole:
 now whenever B sent traffic to A, it would be dropped until
