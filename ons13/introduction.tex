@@ -1,4 +1,5 @@
-Based on anecdotal evidence from colleagues and acquaintances in the industry, it seems clear that
+Based on anecdotal evidence from colleagues and acquaintances in the industry,
+it seems clear that
 developers of SDN control software spend much of their time
 troubleshooting bugs. This should be no surprise, since software developers in
 general spend roughly half (49\% according to one
@@ -18,10 +19,6 @@ partial failure. Even Google's Urs H$\ddot{\mathrm{o}}$elzle, a leading
 networking and distributed systems technologist,
 attests that~\cite{urs} ``[coordination between replicated controllers] is going to
 cause some angst, and justifiably, in the industry.''
-%As SDN control software
-%is used to manage larger and more sophisticated networks,
-%we expect its complexity to increase.
-% Scott: needs more SDN war stories from VMW, BSN
 
 The troubleshooting process is hindered by the large number of hardware failures,
 policy changes, host migrations, and other inputs to SDN control software.
@@ -35,59 +32,33 @@ before they can start fruitfully exploring what might be the root cause.
 It is no surprise that when asked to describe their
 ideal tool, most network admins said ``automated troubleshooting''~\cite{Zeng:Survey}.
 
-%And despite the prevalence of failures, maintaining uptime is of critical importance; according to one
-%survey, ``meeting customer expectations about reliability'' is the second highest
-%priority for networking professionals~\cite{market_report}.
-% Software bugs cost $59 billion in 2002: bit.ly/V2Z7Al
-
-Before continuing, we should clarify what we mean by `troubleshooting' and `bugs' in the SDN context.
-SDN networks are designed to support high-level policies, such as inter-tenant
-isolation. A bug, in this context, creates situations
-where the network violates one or more of these high-level policies; that is, even though the control plane
-has been told to implement a particular policy, the resulting configuration (\ie~flow entries in the switches)
-does not do so properly. We call this an {\em invalid} configuration.
-We presume that the control plane functions properly in most circumstances, so
-that these policy violations are rare.
-% and are typically triggered when the control plane takes an unusual codepath.
-Bugs may be triggered by uncommon sequences of inputs, such as a simultaneous link failure or controller reboot.
-The act of troubleshooting is identifying which set of inputs triggered the bug.
-Debugging then involves tracking down the error in the code itself, given a
-set of triggering inputs.
-The smaller the set of triggering inputs, the easier debugging will be.
-
-Our focus here is on troubleshooting. When we observe an invalid
-configuration,
-which is prima facie evidence for a bug, our goal is
+Our focus here is on troubleshooting. We aim to make it easier for developers
+and operators
+to reason about what causes the network to enter invalid configurations
+(\ie~situations where the routing entries in switches do not
+comply with a desired policy, \eg~inter-tenant isolation).
+When we observe such invalid configurations,
+which are \primafacie~evidence for bugs in the control software, our goal is
 to automatically filter out inputs to the SDN software (\eg~link failures)
 that are not relevant to triggering the bug, leaving a small sequence of inputs
 that is directly responsible.
 This would go a long way towards achieving ``automated troubleshooting.''
 
-Our approach is to prune inputs from the original run, replay the remaining
-inputs to the control software using simulated network devices, and
-check whether the network re-enters the invalid configuration.
-In particular, we generalize delta
-debugging~\cite{Zeller:2002:SIF:506201.506206}---an algorithm for
-minimizing test cases that are inserted at a single
-point in time to a single program---to a distributed environment, where inputs
-are spread across time and involve multiple machines. \scott{I think you give
-too much credit to delta debugging}
-
-The output of our approach, minimized input traces, represents a noteworthy improvement over the status quo;
+Our technique, \simulator, achieves this goal by pruning inputs from the
+original run, replaying the remaining
+inputs to the control software with simulated network devices, and
+checking whether the network re-enters the invalid configuration.
+The output of \simulator, minimized input traces, represents a
+noteworthy improvement over the status quo;
 painstaking manual analysis of logs is the
 {\em de facto} method of troubleshooting production SDN control software
 today. As far as we know, our work
 is the first to programmatically isolate fault-inducing inputs to a distributed
 system.
 
-We have applied \simulator, to three open source SDN control
+In the remainder of this paper we provide an overview of \simulator,
+and illustrate how it minimized input traces in a case study of three open source control
 platforms: Floodlight~\cite{bigswitch}, POX~\cite{pox}, and NOX~\cite{nox}.
-Of the five bugs we encountered in a five day investigation,
-\simulator~reduced the size of the input trace to 36\% of its original size in
-the worst case and 2\% of its original size in the best case.
-
-% Main result from our work: the amount of effort it takes to codify domain knowledge is significantly less than the effort
-% it would take to step through a normal replay debugger by hand for each bug.
 
 %% Cut?
 %The rest of this paper is organized as follows. In \S\ref{sec:overview},

@@ -32,16 +32,16 @@
 %amsfonts,algpseudocode,xspace,amsmath,amssymb,fancyvrb,fixltx2e
 
 % Ethan hacks:----------
-%\setlength{\pdfpagewidth}{8.5truein}
-%\setlength{\pdfpageheight}{11truein}
+\setlength{\pdfpagewidth}{8.5truein}
+\setlength{\pdfpageheight}{11truein}
 
 %%% format things for making pretty tables using booktabs package
-%\usepackage{multirow}
-%\usepackage{booktabs}
-%\setlength{\heavyrulewidth}{0.10em}
-%\setlength{\lightrulewidth}{0.05em}
-%\setlength{\cmidrulewidth}{\lightrulewidth}
-%\setlength{\cmidrulekern}{0em}%
+\usepackage{multirow}
+\usepackage{booktabs}
+\setlength{\heavyrulewidth}{0.10em}
+\setlength{\lightrulewidth}{0.05em}
+\setlength{\cmidrulewidth}{\lightrulewidth}
+\setlength{\cmidrulekern}{0em}%
 %
 %\let\oldthebibliography=\thebibliography
 %\let\endoldthebibliography=\endthebibliography
@@ -53,37 +53,44 @@
 %\end{oldthebibliography}%
 %}
 
-%\textfloatsep 10pt plus 3pt minus 2pt   % Space between main text and floats
+\textfloatsep 10pt plus 3pt minus 2pt   % Space between main text and floats
 
-%\newcommand{\squishlist}{
-%   \begin{list}{$\bullet$}
-%    { \setlength{\itemsep}{0pt}      \setlength{\parsep}{3pt}
-%      \setlength{\topsep}{3pt}       \setlength{\partopsep}{0pt}
-%      \setlength{\leftmargin}{1.5em} \setlength{\labelwidth}{1em}
-%      \setlength{\labelsep}{0.5em} } }
+\newcommand{\squishlist}{
+   \begin{list}{$\bullet$}
+    { \setlength{\itemsep}{0pt}      \setlength{\parsep}{3pt}
+      \setlength{\topsep}{3pt}       \setlength{\partopsep}{0pt}
+      \setlength{\leftmargin}{1.5em} \setlength{\labelwidth}{1em}
+      \setlength{\labelsep}{0.5em} } }
+
+\newcommand{\squishlisttwo}{
+   \begin{list}{$\bullet$}
+    { \setlength{\itemsep}{0pt}    \setlength{\parsep}{0pt}
+      \setlength{\topsep}{0pt}     \setlength{\partopsep}{0pt}
+      \setlength{\leftmargin}{2em} \setlength{\labelwidth}{1.5em}
+      \setlength{\labelsep}{0.5em} } }
+
+\newcommand{\squishend}{
+    \end{list}  }
+
 %
-%\newcommand{\squishlisttwo}{
-%   \begin{list}{$\bullet$}
-%    { \setlength{\itemsep}{0pt}    \setlength{\parsep}{0pt}
-%      \setlength{\topsep}{0pt}     \setlength{\partopsep}{0pt}
-%      \setlength{\leftmargin}{2em} \setlength{\labelwidth}{1.5em}
-%      \setlength{\labelsep}{0.5em} } }
-%
-%\newcommand{\squishend}{
-%    \end{list}  }
-%
-%
-%\def\compactify{\itemsep=2pt \topsep=3pt \partopsep=1pt \parsep=1pt \leftmargin=1.5em}
-%\let\latexusecounter=\usecounter
-%\newenvironment{CompactEnumerate}
-%  {\def\usecounter{\compactify\latexusecounter}
-%   \begin{enumerate}}
-%   {\end{enumerate}\let\usecounter=\latexusecounter}
-%\newenvironment{CompactItemize}
-%   {\def\usecounter{\compactify\latexusecounter}
-%   \begin{itemize}}
-%   {\end{itemize}\let\usecounter=\latexusecounter}
-%
+\def\compactify{\itemsep=2pt \topsep=3pt \partopsep=1pt \parsep=1pt \leftmargin=1.5em}
+\let\latexusecounter=\usecounter
+\newenvironment{CompactEnumerate}
+  {\def\usecounter{\compactify\latexusecounter}
+   \begin{enumerate}}
+   {\end{enumerate}\let\usecounter=\latexusecounter}
+\newenvironment{CompactItemize}
+   {\def\usecounter{\compactify\latexusecounter}
+   \begin{itemize}}
+   {\end{itemize}\let\usecounter=\latexusecounter}
+
+\makeatletter
+\renewcommand\section{\@startsection{section}{1}{\z@}%
+                                  {-3.5ex \@plus -1ex \@minus -.2ex}%
+                                  {2.3ex \@plus.2ex}%
+                                  {\normalfont\normalsize\bfseries}}
+\makeatother
+
 
 % Macros:
 \newcommand{\projectname}{{STS}}
@@ -102,6 +109,7 @@
 \newcommand{\viz}{{\it viz.}}
 \newcommand{\apriori}{{\it a priori}}
 \newcommand{\eat}[1]{}
+\newcommand{\primafacie}{{\em prima facie}}
 
 % Notes:
 \newcommand{\num}[1]{{\color{red}\bf {#1}}}
@@ -137,32 +145,36 @@
 \title{Selective Recall \\
 {\Large Isolating Fault-Inducing Inputs to SDN Control Software}}
 
-\author{Colin Scott\thanks{UC Berkeley}     %$^\dagger$
-\and Andreas Wundsam\thanks{Big Switch Networks} %$^\diamond$
-\and Sam Whitlock\thanks{ICSI}  % $^*$
-\and Andrew Or\footnotemark[1] % $^\dagger$
-\and Eugene Huang\footnotemark[1] %$^\dagger$
-\and Kyriakos Zarifis\thanks{USC} %$^\ddagger$
-\and Scott Shenker\footnotemark[3]~\footnotemark[1] % $^\dagger$
-%\and {\begin{tabular}{cccc}$^\dagger${\large\it UC Berkeley} &
-%$^\diamond${\large\it Big Switch Networks} & $^*${\large\it ISCI} & $^\square${\large\it USC}}
+\author{Colin Scott$^\dagger$ % \thanks{UC Berkeley}     
+\and Andreas Wundsam$^*$ %\thanks{Big Switch Networks} %
+\and Sam Whitlock$^*$ % \thanks{ICSI}  % 
+\and Andrew Or$^\dagger$ % \footnotemark[1] % 
+\and Eugene Huang$^\dagger$ %\footnotemark[1] %
+\and Kyriakos Zarifis$^\ddagger$ % \thanks{USC} %
+\and Scott Shenker$^\dagger$$^*$ % \footnotemark[3]~\footnotemark[1] % 
+\and {\begin{tabular}{ccc}$^\dagger${\large\it UC Berkeley} & $^*${\large\it ISCI} & $^\ddagger${\large\it University of Southern California}\end{tabular}}
 }
 
 \date{}
    \maketitle
+   \vspace{-0.3in}
    \thispagestyle{empty}
-\section{Background}
 \label{sec:intro}
 \input{introduction}
 
+\vspace{-0.15in}
 \section{\SIMULATOR}
+\vspace{-0.1in}
 \label{sec:approach}
 \input{approach}
 
-\section{Initial Results}
+\vspace{-0.15in}
+\section{INITIAL RESULTS}
+\vspace{-0.1in}
 \label{sec:init_results}
-%\input{architecture}
+\input{initial_results}
 
+\vspace{-0.1in}
 \renewcommand{\baselinestretch}{0.1}
 \footnotesize{\input{tail}}
 
