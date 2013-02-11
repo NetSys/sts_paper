@@ -36,7 +36,7 @@ of our results in Table~\ref{tab:case_studies}, and
 illustrate in detail how \simulator~found their minimal causal sequences
 in the rest of this section.
 
-\subsection{POX List Removal} 
+\subsection{POX List Removal}
 The first SDN control platform we examined was POX, the successor of NOX. POX is
 a single-machine control platform intended primarily for research prototyping
 and educational use (\ie~not large scale production use). Nevertheless, POX has
@@ -70,7 +70,7 @@ behavior of \simulator~for this case is shown in Figure~\ref{fig:list_runtime}.
 Apparently the developers of POX had not anticipated this particular event
 sequence. Given the rarity of switch recovery events, and the tediousness of
 writing unit tests for scenarios such as this
-(which involved multiple OpenFlow intitialization handshakes), this is not entirely
+(which involved multiple OpenFlow initialization handshakes), this is not entirely
 unsurprising.
 %Consider that the state-of-the-art open source technology for prototyping SDN
 %applications, Mininet~\cite{handigol2012reproducible}, excels at
@@ -84,8 +84,6 @@ trace it produced made for a simple integration test.
 
 %We illustrate type errors to show how STS is a useful framework for exploring
 %code paths that you forget to unit tests.
-
-
 
 \subsection{POX In-flight Blackhole}
 We discovered the next bug after roughly 20 runs of randomly generated inputs.
@@ -113,10 +111,13 @@ transpired.
 \end{figure}
 
 
-Before the discovery module had learned of the link,
+Before the discovery module had learned of the link connecting the two
+switches,
 there were six traffic injection events between hosts (A$\rightarrow$ B and
-B$\rightarrow$A). At the point when the link was discovered, POX had learned
-of B's location at port $2.2$. %Upon POX would oscillate between learning the correct location
+B$\rightarrow$A). At the point when the link was discovered, POX had
+previously learned
+of B's location at port $2.2$, and correctly unlearned a previous location for
+A at port $2.1$ (which it now knew to be a switch-switch link). %Upon POX would oscillate between learning the correct location
 %of hosts at their ingress switch, and then learning an incorrect location
 %when the flooded packet traversed the link and the next switch
 %notified the controller of a new flow.\footnote{This seems to be necessary behavior before the
@@ -133,8 +134,9 @@ port $2.1$
 (without a prior flow notification from S1). This was POX's first error.
 Upon examining the code, we found that it
 did not account for in-flight packets concurrent with
-switch-switch link discovery. As a result,
-POX incorrectly learned A's location at 2.1. If the first packet had
+link discovery. As a result,
+POX incorrectly learned A's location at 2.1, even though it knew that the link
+could not have hosts attached. If the first packet had
 instead originated at 1.1, POX would not have made this mistake.
 
 The next event we observed was another
@@ -209,8 +211,8 @@ was NOX, the original OpenFlow controller.
 NOX is also a single machine control platform, but unlike POX it has been used
 fairly extensively in real networks.
 
-Similar to POX we exercised NOX's routing module (\emph{routing}), since
-it depends on a large number of other components.
+Similar to POX we exercised NOX's routing module (`sprouting'), since
+it draws in a large number of other components.
 Routing learns link and host locations, installs all-to-all paths between
 hosts on a per-flow basis, and is designed to be resilient to looped topologies.
 
@@ -233,34 +235,35 @@ exact root cause with NOX developers, based on the 58 input MCS.
 
 \subsection{Floodlight discovery loop.}
 
-We subject the current unmodified open
-  source version of floodlight (git commit f37046a) to fuzz testing with a three
-  node fully meshed topology and high failure event rates. In hour experiment,
-  After 49 full iterations, the fuzzer found an event sequence with 777 total events
-  (548 input, 229 internal) that results in a 3-node forwarding loop being set up.
+We subjected the current (unmodified) open
+source version of Floodlight (git commit f37046a) to fuzz testing with a three
+node fully meshed topology and high failure event rates. In an hour-long experiment,
+the fuzzer found an event sequence with 777 total events
+(548 input, 229 internal) that results in a 3-node forwarding loop being set up.
 
-  Based on the Java JVM, floodlight makes use multiple kernel level
-  multithreading, and thus can exhibit non-deterministic behavior in the process.
-  Thus, it is not surprising that we do not achieve full reproducibility of this
-  bug during replay without further instrumentation. On average, 15/50 (30\%) of
-  replays reproduce the bug. To proceed with MCS isolation, we set the number of
-  verification runs for unsuccessful replays to 13. Statistically, this enables
-  STS to correctly diagnose violations in >99\% of cases\footnote{$ln( 1 -
-  0.99) / ln( 1 - 0.30) = 12.9$}.
+Floodlight makes use multiple kernel level
+threads, and thus can exhibit non-deterministic behavior.
+Thus, it is not surprising that we do not achieve full reproducibility of this
+bug during replay without further instrumentation. On average, 15/50 (30\%) of
+replays reproduce the bug. To proceed with MCS isolation, we replayed the
+execution up to 13 replays for each subsequence chosen by delta debugging. Statistically, this enables
+STS to correctly diagnose violations in >99\% of cases.\footnote{$ln( 1 -
+0.99) / ln( 1 - 0.30) \approx 13$}
 
-  In this, the MCS algorithm was able to reduce the number of input event s from
-  548 to 404 ($26\%$) in 168 iterations. Comparing output traces of successful and
-  unsuccessful runs, we notice that the bug seems to correlate with specific
-  thread level race conditions between state updates in the \emph{LinkDiscovery} module and
-  the \emph{Forwarding} module. We are in the process of investigating the actual root cause.
+\Simulator~was able to reduce the number of input events from
+548 to 404 in 168 iterations (note that this is not the final result; the
+algorithm crashed due to a trivial error a few hours before the deadline).
+Comparing output traces of successful and
+unsuccessful runs, we noticed that the bug seems to correlate with specific
+thread level race conditions between state updates in the \emph{LinkDiscovery} module and
+the \emph{Forwarding} module. We are in the process of investigating the actual root cause.
 
-  This experiment is provides a baseline for a worst case scenario of our system.
-  \projectname~exercises an unmodified, multithreaded controller it has no full
-  control over. The bug appears to depend on fine-grained thread-level races
-  conditions that are difficult to guarantee. Still, \projectname was instrumental
-  in pointing out a previously unknown bug, and reducing the input size (though
-  not dramatically), comparisons of failed and successful replays provide intuition
-  to the source of the problem.
+This experiment provides a baseline for a worst case scenario of our system.
+\projectname~exercised an unmodified, multithreaded controller that it does
+not have deterministic control over.
+The bug appears to depend on fine-grained thread-level races
+conditions that are difficult to guarantee. Still, \projectname was instrumental
+in pointing out a previously unknown bug, and reducing the input size.
 
 \noindent{\bf Overall Results.} The overall results of our case studies are
 shown in Table~\ref{tab:case_studies}. For the Replay Success Rate column we
@@ -269,7 +272,8 @@ were able to reproduce the policy violation. There was indeed non-determinism
 in some cases, especially Floodlight. For the specific case of
 POX in-flight blackhole, we were able to eliminate the relevant
 non-determinism by employing multiplexed sockets and waiting on
-POX's logging messages.
+POX's logging messages. We expect that we would see similar improvements if we
+applied these techniques to Floodlight.
 
 We show the initial input size and MCS input size in the last two columns. We also
 show the input sizes excluding dataplane forwarding permit events, since these
@@ -278,7 +282,7 @@ plan on making dataplane permits a default.
 
 We measured the runtime of \simulator~for these case studies in Figures 6 \& 8--11.
 While some instances ran in logarithmic time, the worst case was minimizing NOX discovery loop,
-which took more than 5 and a half hours. Nonetheless we observe that even long iteration
+which took more than 5 and a half hours. Nonetheless, even long iteration
 sizes are often preferable to spending software developer's time on manual
 diagnosis.
 

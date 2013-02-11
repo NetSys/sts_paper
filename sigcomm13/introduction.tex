@@ -139,12 +139,12 @@ enable you to step through the original execution and verify whether a
 set of inputs triggered a bug,
 but the original run is often so large that the
 the set of potentially triggering inputs verges on unmanageable.
-Tracing tools such as {\tt ndb}~\cite{handigol2012debugger} provide
+Tracing tools such as ndb~\cite{handigol2012debugger} provide
 a historical view into dataplane (mis)behavior. In contrast, our technique provides
 information about precisely what caused the network to
 enter an invalid configuration in the first place.
 
-We have applied \simulator, to three open source SDN control
+We have applied \simulator to three open source SDN control
 platforms: Floodlight~\cite{bigswitch}, POX~\cite{pox}, and NOX~\cite{nox}.
 Of the five bugs we encountered in a five day investigation,
 \simulator~reduced the size of the input trace to 36\% of its original size in
