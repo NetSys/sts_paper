@@ -1,4 +1,4 @@
-To illustrate the mechanics of \simulator, we start by describing an example bug in the Floodlight
+We illustrate the mechanics of \simulator~by describing an example bug in the Floodlight
 open source control platform~\cite{floodlight_bug}. Floodlight is distributed across
 multiple controllers for high availability, and provides support for
 virtualization. Switches maintain one hot connection to a master controller and
@@ -56,7 +56,7 @@ Specifically, our technique identifies a minimal sequence of inputs
 to the controllers that is sufficient for triggering a known correctness violation. We
 refer to such inputs as a {\em minimal causal sequence} (MCS). Going back to our example,
 suppose the log includes many more (extraneous) inputs. Whenever an
-extraneous event is pruned, the blackhole will still persist: when
+extraneous event is pruned, the blackhole will still persist. When
 the controller crash is pruned, the blackhole will be resolved properly, and
 when the link failure is pruned, no blackhole will occur. The MCS returned
 is therefore the controller crash and the link failure in conjunction.
@@ -239,7 +239,7 @@ Consider for example that if a controller's garbage collector happens to run
 while we replay inputs, it may delay an internal state transition until
 after the simulator injects an input that depended on it in the original run.
 
-The challenge is to maintain causal relationships.
+Our challenge is to maintain causal relationships.
 Formally, to reliably reproduce the original correctness violation
 we need to
 inject an external input $e$ at exactly the point when all other
@@ -247,6 +247,7 @@ events (both external and internal) that precede it in the happens-before
 relation ($\{i \mid i \rightarrow e\}$) from the original execution have
 occurred~\cite{tel2000introduction}.
 
+\colin{Somewhat redundant. Maybe wait until use cases.}
 While the input and internal events from the original run are given to us,
 we become aware of internal events throughout replay by
 (i) monitoring
@@ -339,8 +340,8 @@ Figure~\ref{fig:state_machines}. If we prune the link failure input, the
 master will never receive a link failure notification and
 transition to and from `Send Flush'.
 
-In the hope that absent internal events are not actually relevant
-for triggering the correctness violation, we proceed with replay.
+To ensure that delta-debugging finds minimal causal sequences that do not contain those
+absent internal events, we proceed with replay.
 Specifically, our approach is to wait for expected equivalent internal events, but time out and proceed
 if they do not occur within a certain time \textepsilon.
 
@@ -395,7 +396,7 @@ potentially recurses infinitely if not deterministic}}
 
 The last possible change induced by input pruning is the occurrence of new
 internal events that were not observed in the original trace.
-Ultimately, new events leave open multiple possibilities for where
+New events ultimately leave open multiple possibilities for where
 we should inject the next input. Consider the following case:
 if $i_2$ and $i_3$ are internal events observed
 during replay that are both in the same equivalence class as a single event $i_1$ from the
@@ -433,7 +434,7 @@ completely disjoint from the original execution.
 Luckily, crucially ambiguous new internal events are not problematic for the
 control software we evaluated, as we show in \S\ref{subsec:case_studies}.
 We conjecture that ambiguous new internal events are
-rare because SDN is a control plane system,
+rare because SDN software is a control plane system,
 and is designed to quiesce quickly (\ie~take a small number of internal
 transitions after any input event, and stop at highly connected vertices).
 Concretely, SDN programs are often structured as (mostly independent) event

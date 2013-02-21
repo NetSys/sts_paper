@@ -42,9 +42,7 @@ When sending data over multiple sockets, the operating system exhibits
 non-determinism in the order it schedules the socket I/O operations.
 \projectname~optionally ensures a deterministic order of messages
 by multiplexing all sockets in the controller process
-onto a single true socket.\footnote{Alternatively, we could employ a
-mutex~\cite{lin2009towards}.}
-\projectname~currently overrides socket functionality within the control
+onto a single true socket. \projectname~currently overrides socket functionality within the control
 software itself.\footnote{Only supported for POX at the moment.}
 In the future we plan to implement deterministic message ordering without code modifications by
 loading a shim layer on top of
@@ -94,7 +92,7 @@ illustrate a general workflow.
 
 Use of \projectname~begins with bug exploration.
 \projectname~itself is well-suited for finding input traces that trigger bugs:
-it readily simulates common network input events, and ships with a suite of invariant checking
+it readily simulates common network input events, and includes a suite of invariant checking
 algorithms~\cite{hsa}. With complete control over event orderings, \projectname~is
 especially useful for exploring corner cases.
 Along these lines, Amin Vahdat
@@ -110,9 +108,8 @@ controlled circumstances to really accelerate our test work.''
 
 Developers can use \projectname~to generate randomly chosen input
 sequences~\cite{Miller:1990:ESR:96267.96279}, feed them to controller(s), and monitor invariants at chosen
-intervals. Driving the
-execution of the system in this way allows \projectname~to record a
-totally-ordered log of the events to be replayed later.
+intervals. Injecting the inputs in this way allows \projectname~to trivially
+record a global event ordering by logging all events at a single location.
 
 Developers can also run \projectname~interactively to generate replayable integration
 tests, similar to Nebut et al.~\cite{automated_tests}. In interactive

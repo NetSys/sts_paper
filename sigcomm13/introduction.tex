@@ -9,7 +9,7 @@ Would World War \rom{1} still have occurred if Archduke Ferdinand had not been
 shot? Would the United States have abolished slavery if Abraham Lincoln had
 not been elected? That is,
 were those prior events intrinsic to the
-precipitation of the historical outcome, or
+historical outcome, or
 were they extraneous? Unfortunately we can never know such
 historical counterfactuals for sure.
 
@@ -58,7 +58,7 @@ reports 8.5 network error events per minute per
 datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}.
 Troubleshooters find little immediate use from traces containing many inputs
 prior to a fault,
-since they are often forced to manually filter extraneous inputs
+since they are forced to manually filter extraneous inputs
 before they can start fruitfully exploring what might be the root cause.
 It is no surprise that when asked to describe their
 ideal tool, most network admins said ``automated troubleshooting''~\cite{Zeng:Survey}.
@@ -126,12 +126,9 @@ throughout the distributed system. In this way we can recognize functionally
 equivalent messages and maintain causal dependencies throughout replay despite
 altered histories.
 
-The output of our approach, minimized input traces, represents a noteworthy improvement over the status quo;
-painstaking manual analysis of logs is the
+Painstaking manual analysis of logs is the
 {\em de facto} method of troubleshooting production SDN control software
-today.
-
-As far as we know, our work
+today. As far as we know, our work
 is the first to programmatically isolate fault-inducing inputs to a distributed
 system. Record and replay techniques such as
 OFRewind~\cite{ofrewind} and liblog~\cite{Geels:2006:RDD:1267359.1267386}
