@@ -78,8 +78,8 @@ We presume that the control plane functions properly in most circumstances, so
 that these policy violations are rare.
 % and are typically triggered when the control plane takes an unusual codepath.
 Bugs may be triggered by uncommon sequences of inputs, such as a simultaneous link failure or controller reboot.
-The act of troubleshooting is identifying which set of inputs triggered the bug.
-Debugging then involves tracking down the error in the code itself, given a
+The act of troubleshooting involves identifying which set of inputs triggered the bug.
+Debugging is then the act of tracking down the error in the code itself, given a
 set of triggering inputs.
 The smaller the set of triggering inputs, the easier debugging will be.
 
@@ -132,7 +132,7 @@ today. As far as we know, our work
 is the first to programmatically isolate fault-inducing inputs to a distributed
 system. Record and replay techniques such as
 OFRewind~\cite{ofrewind} and liblog~\cite{Geels:2006:RDD:1267359.1267386}
-enable you to step through the original execution and verify whether a
+allow you to step through the original execution and verify whether a
 set of inputs triggered a bug,
 but the original run is often so large that the
 the set of potentially triggering inputs verges on unmanageable.
@@ -141,7 +141,7 @@ a historical view into dataplane (mis)behavior. In contrast, our technique provi
 information about precisely what caused the network to
 enter an invalid configuration in the first place.
 
-We have applied \simulator to three open source SDN control
+We have applied \simulator~to three open source SDN control
 platforms: Floodlight~\cite{bigswitch}, POX~\cite{pox}, and NOX~\cite{nox}.
 Of the five bugs we encountered in a five day investigation,
 \simulator~reduced the size of the input trace to 36\% of its original size in
