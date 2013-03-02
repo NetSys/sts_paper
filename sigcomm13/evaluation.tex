@@ -23,7 +23,7 @@ Floodlight loop & 3 switch mesh & 15/50 & 548 (284) & 404 (?) \\
 \end{tabular}
 \caption{Overview of Case Studies. Totals shown in parentheses are with
 dataplane permit events excluded. \newline
-\textmd{*with multiplexed sockets and
+\textmd{*with multiplexed sockets, overridden {\tt gettimeofday()}, and
 logging interposition enabled.}}
 \label{tab:case_studies}
 \end{table*}
@@ -271,7 +271,8 @@ repeatedly replayed the original unpruned event trace, and measured how often we
 were able to reproduce the policy violation. There was indeed non-determinism
 in some cases, especially Floodlight. For the specific case of
 POX in-flight blackhole, we were able to eliminate the relevant
-non-determinism by employing multiplexed sockets and waiting on
+non-determinism by employing multiplexed sockets, overriding {\tt
+gettimeofday()}, and waiting on
 POX's logging messages. We expect that we would see similar improvements if we
 applied these techniques to Floodlight.
 
