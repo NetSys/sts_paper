@@ -120,7 +120,7 @@ state changes that occurred in the original
 run may not occur. Without the exact same low-level I/O operations,
 deterministic replay techniques cannot proceed in a sensible manner.
 
-Our approach is to record and replay at the application layer,
+We cope with divergent histories by recording and replaying at the application layer,
 where we have access to the syntax and semantics of messages passed
 throughout the distributed system. In this way we can recognize functionally
 equivalent messages and maintain causal dependencies throughout replay despite
@@ -132,7 +132,7 @@ today. As far as we know, our work
 is the first to programmatically isolate fault-inducing inputs to a distributed
 system. Record and replay techniques such as
 OFRewind~\cite{ofrewind} and liblog~\cite{Geels:2006:RDD:1267359.1267386}
-allow you to step through the original execution and verify whether a
+allow you to manually step through the original execution and verify whether a
 set of inputs triggered a bug,
 but the original run is often so large that the
 the set of potentially triggering inputs verges on unmanageable.
