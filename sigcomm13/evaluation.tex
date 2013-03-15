@@ -14,10 +14,12 @@ POX in-flight blackhole & 2 switch mesh & 15/20 [20/20*] & 68 (26) & 25 (11) \\
 % Original: 7ba95ed82ca4e32f12ab511d9c4301dbac2c59d5
 % MCS: 399cf861db87a65e600283d9ae7760400c4676e2
 POX migration blackhole & 4 switch mesh & 20/20* & 117 (29) & 3 (2) \\
-% fuzz_pox_4mesh_blackhole on pox_blackhole branch
+% fuzz_pox_4mesh_blackhole
+% Updated (fat tree): pox_fattree_migration
 NOX discovery loop & 4 switch mesh & 18/20 & 358 (150) & 58 (18) \\
 % Original: ce547fc1df3bde279b6f3dd589c909663e295f1e
 % MCS: 5f49e791b0c1a611454cf0930f54aa609dd635d3
+% Updated to new format: nox_mesh_4_loop
 Floodlight loop & 3 switch mesh & 15/50 & 548 (284) & 404 (?) \\
 % Andi
 \end{tabular}
@@ -283,7 +285,7 @@ plan on making dataplane permits a default.
 
 We measured the runtime of \simulator~for these case studies in Figures 6 \& 8--11.
 While some instances ran in logarithmic time, the worst case was minimizing NOX discovery loop,
-which took more than 5 and a half hours. Nonetheless, even long iteration
+which took more than 5 and a half hours. Nonetheless, we conjecture that even long iteration
 sizes are often preferable to spending software developer's time on manual
 diagnosis.
 
@@ -312,7 +314,7 @@ diagnosis.
 Our algorithm leaves an open question as to what value
 \textepsilon~should be set to. We experimentally varied \textepsilon~on the
 POX in-flight blackhole and the POX list removal bugs.
-We found for both cases that the numbers of events we timed out on while isolating the MCS became stable for values above $25$ milliseconds.
+We found for both cases that the number of events we timed out on while isolating the MCS became stable for values above $25$ milliseconds.
 For smaller values, the number of timed out events increased rapidly. We
 currently set \textepsilon~to $100$ milliseconds.
 
@@ -338,7 +340,7 @@ detect when we have waited too long (\viz~when a successor of the next input
 has occurred), but we cannot detect when we have timed out
 early on an internal event that is in fact going to occur.
 Analyzing event frequencies for particular bugs could provide more ideal
-\textepsilon values.
+\textepsilon~values.
 
 % ------------------------------------- %
 %    OLD TEXT

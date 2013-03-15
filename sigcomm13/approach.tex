@@ -144,7 +144,7 @@ concurrently running nodes.
 
 For the purposes of this section, we model our problem as follows.
 We are given a single, globally ordered trace of events that ends in
-in a correctness violation, and we return a minimal causal subsequence
+a correctness violation, and we return a minimal causal subsequence
 of the trace. The trace includes input events
 (\eg~link failures), control message sends and receipts between
 switches and controllers,
@@ -329,7 +329,7 @@ Given an equivalence relation over internal events, replay
 is responsible for maintaining equivalent happens-before constraints from the
 original execution.
 But syntactic differences are not the
-only possible change induced by pruning: internal events from the original
+only possible change induced by pruning: internal events
 may also cease to appear.
 
 The structure of the control
@@ -350,7 +350,7 @@ violation, assuming \textepsilon~is larger than variations in execution speeds
 between internal events. If the value of \textepsilon~is too large, however, we may end up
 waiting too long for the happens-before predecessors of an input $e_i$ such that a
 successor of $e_i$ occurs before we have injected $e_i$,
-thereby violating the remaining happens-before constraints.
+thereby violating causality.
 % \sam{Is it worth noting that this isn't necessarily a problem? If a successor occurs, it means it wasn't causally related to $e_i$, but the ordering still might matter for further successors.}
 
 If the event scheduling algorithm detects that it has waited too long, it
@@ -425,7 +425,7 @@ either occurs or times out. This ensures that we always find suffixes that
 contain only a subset of the (equivalent) original internal events, but leaves open the
 possibility of finding divergent suffixes that still lead to the correctness
 violation. This is reasonable because not even branching on new
-internal events is guaranteed to find the shortest fault-inducing input
+internal events is guaranteed to find the globally shortest fault-inducing input
 sequence:
 there may be other unknown
 paths through the state machine leading to the correctness violation that are
@@ -479,7 +479,7 @@ SDN platform developers can reduce the probability that the replay algorithm
 will need to back up by placing causal annotations on internal
 events~\cite{fonseca2007x}: with explicit causal information, the replay
 algorithm can know
-\apriori~whether certain internal are dependent on pruned inputs.
+\apriori~whether certain internal events are dependent on pruned inputs.
 
 \colin{Describe Andrew's input type pruning optimization and measurements. "We
 make another optimization.."}
@@ -627,8 +627,7 @@ logging statements to ensure reliable replay.
 involving non-determinism within a single controller (\eg~race-conditions between threads);
 we focus on coarser granularity errors (\eg~incorrect failover logic), which we find plenty of
 in \S\ref{subsec:case_studies}. The upshot of
-this is that our technique is not able to minimize all possible failures, such as
-data races between threads.
+this is that our technique is not able to minimize all possible failures.
 Nonetheless, the worst case for us is that the developer ends up with what they started:
 an unpruned log.
 
@@ -644,7 +643,7 @@ line(s) of code cause the error.
 \noindent{\bf Bugs Outside the Control Software.} Our goal is not to find the root
 cause of individual component failures in the system (\eg~misbehaving routers,
 link failures). Instead, we focus on
-how the distributed system as a whole reacts to the occurrence such inputs.
+how the distributed system as a whole reacts to the occurrence of such inputs.
 If there is a bug in your switch, you will need to contact your hardware vendor;
 if you have a bug in your policy specification, you will need to take a closer look at what you specified.
 
