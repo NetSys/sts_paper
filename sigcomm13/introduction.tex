@@ -4,20 +4,20 @@
 %big ball of wibbly wobbly... time-y wimey... stuff.''
 %\end{aquote}
 
-\colin{Replace Abe with a more preventative example?}
 Would World War \rom{1} still have occurred if Archduke Ferdinand had not been
-shot? Would the United States have abolished slavery if Abraham Lincoln had
-not been elected? That is,
-were those prior events intrinsic to the
+shot? Would the Ebola virus have spread to humans if Mabalo Lokela had not
+first contracted it?
+That is, were those prior events intrinsic to the
 historical outcome, or
 were they extraneous? Unfortunately we can never know such
 historical counterfactuals for sure.
 
 When troubleshooting computer systems, we often need to answer similar questions,
 \eg~``Was this routing loop triggered when the controller learned of the link failure?''
-And unlike human history, it is often possible to find answers to such
-causality questions. In this paper we address the problem of programmatically answering
-them in the context of software-defined networking.
+And unlike human history, it is often possible to find an answer to the
+question of ``how we got
+into this mess''. In this paper we address the problem of programmatically
+answering such questions in the context of software-defined networking.
 
 %Software bug diagnosis, a highly expensive and time consuming process, would benefit
 %greatly from technology for answering such questions. A 2006 survey found
@@ -70,7 +70,7 @@ ideal tool, most network admins said ``automated troubleshooting''~\cite{Zeng:Su
 
 Before continuing, we should clarify what we mean by `troubleshooting' and `bugs' in the SDN context.
 SDN networks are designed to support high-level policies, such as inter-tenant
-isolation. A bug, in this context, creates situations
+isolation (\ie~ACL enforcement). A bug, in this context, creates situations
 where the network violates one or more of these high-level policies; that is, even though the control plane
 has been told to implement a particular policy, the resulting configuration (\ie~flow entries in the switches)
 does not do so properly. We call this an {\em invalid} configuration.
