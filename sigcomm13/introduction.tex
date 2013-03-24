@@ -119,7 +119,7 @@ state changes that occurred in the original
 run may not occur. Without the exact same low-level I/O operations,
 deterministic replay techniques cannot proceed in a sensible manner.
 
-We cope with divergent histories by recording and replaying at the application layer,
+We deal with divergent histories by recording and replaying at the application layer,
 where we have access to the syntax and semantics of messages passed
 throughout the distributed system. In this way we can recognize functionally
 equivalent messages and maintain causal dependencies throughout replay despite
@@ -143,8 +143,8 @@ enter an invalid configuration in the first place.
 We have applied \simulator~to three open source SDN control
 platforms: Floodlight~\cite{bigswitch}, POX~\cite{pox}, and NOX~\cite{nox}.
 Of the five bugs we encountered in a five day investigation,
-\simulator~reduced the size of the input trace to 36\% of its original size in
-the worst case and 2\% of its original size in the best case.
+\simulator~reduced the size of the input trace to 2 events in the best case
+and 18 events in the worst case.
 
 % Main result from our work: the amount of effort it takes to codify domain knowledge is significantly less than the effort
 % it would take to step through a normal replay debugger by hand for each bug.
