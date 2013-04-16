@@ -308,6 +308,18 @@ diagnosis.
 % The logging statements must also contain enough context[d] to allow for
 % unambiguous fingerprinting. -> what exactly this means
 
+\subsection{Simulator Scalability}
+
+
+On a machine with 6GB of memory, the runtime of creating a FatTree, performing
+OpenFlow handshakes, cutting 5% of links, and processing the response scales
+linearly up to 2464 switches [a 45-pod FatTree]. After that, the machine
+started thrashing.
+
+(Took me 3 days to get this result: had to track down a really nasty bug that
+only showed up at scale.. On the plus side, I made initialization an order of
+magnitude faster)
+
 \subsection{Parameters}
 \label{subsec:params}
 
@@ -341,6 +353,7 @@ has occurred), but we cannot detect when we have timed out
 early on an internal event that is in fact going to occur.
 Analyzing event frequencies for particular bugs could provide more ideal
 \textepsilon~values.
+
 
 % ------------------------------------- %
 %    OLD TEXT
@@ -530,7 +543,6 @@ is the number of hosts in the network squared, disregarding ECMP load balancing.
 that this is the runtime of generating the propagation on the physical
 network, which is an upper bound on the runtime of checking the virtual
 network.}
-
 
 \begin{figure}[t]
     %\hspace{-10pt}
