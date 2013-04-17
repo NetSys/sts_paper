@@ -310,15 +310,29 @@ diagnosis.
 
 \subsection{Simulator Scalability}
 
+Simulating networks in a single process potentially prevents \projectname~from
+triggering bugs that only appear at large scale. We ran
+\projectname~on large FatTree networks to see where these scaling limits lie.
+On a machine with 6GB of memory, we booted POX as the controller, and measured the
+time to create successively larger FatTree
+topologies, complete the OpenFlow handshakes for each switch,
+cut 5\% of links, and process POX's response to the link failures. As shown in
+Figure~\ref{fig:scaling}, \projectname's processing time scales roughly
+linearly up to 2464 switches (a 45-pod FatTree). At that point, the machine
+started thrashing, but this limitation could easily be removed by running an a
+machine with more memory.
 
-On a machine with 6GB of memory, the runtime of creating a FatTree, performing
-OpenFlow handshakes, cutting 5% of links, and processing the response scales
-linearly up to 2464 switches [a 45-pod FatTree]. After that, the machine
-started thrashing.
+Note that \projectname~is not designed for simulating high-throughput dataplane
+traffic; we only forward what is necessary to exercise the controller
+software. In proactive SDN setups, dataplane events are not
+relevant for the control software.
 
-(Took me 3 days to get this result: had to track down a really nasty bug that
-only showed up at scale.. On the plus side, I made initialization an order of
-magnitude faster)
+\begin{figure}[t]
+    %\hspace{-10pt}
+    \includegraphics[width=3.25in]{../graphs/scalability/scaling.pdf}
+    \caption[]{\label{fig:scaling} Simulation time for bootstrapping FatTree
+    networks, cutting 5\% of links, and processing the controller's response.}
+\end{figure}
 
 \subsection{Parameters}
 \label{subsec:params}
