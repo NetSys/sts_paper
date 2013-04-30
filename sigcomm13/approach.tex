@@ -79,25 +79,25 @@ Figure~\ref{fig:ddmin} (with `$test$' replaced by `$replay$').
 \begin{figure*}[t]
 \caption{Automated Delta Debugging Algorithm From~\cite{Zeller:1999:YMP:318773.318946}}
 \begin{boxedminipage}{\textwidth}
-Input: $\cfail$ s.t. $\cfail$ is a trace and $\test(\cfail) = \FAIL$. Output: $\dfail
+Input: $\cfail$ s.t. $\cfail$ is a trace and $\test(\cfail) = \DFAIL$. Output: $\dfail
 = \ddmin(\cfail)$ s.t. $\dfail \subseteq
-\cfail$, $\test(\dfail) = \FAIL$, and~$\dfail$ is minimal.
+\cfail$, $\test(\dfail) = \DFAIL$, and~$\dfail$ is minimal.
 \begin{align*}
 \ddmin(\cfail) &= \ddmin_2(\cfail, \emptyset) \quad \text{where} \\
 \ddmin_2(\dfail, R) &=
 \begin{cases}
 \dfail & \text{\hphantom{else }if $|\dfail| = 1$ (``base case'')} \\
 \ddmin_2\bigl(\done, R\bigr) &
-\text{else if $\test(\done \cup R) = \FAIL$ (``in $\done$'')} \\
+\text{else if $\test(\done \cup R) = \DFAIL$ (``in $\done$'')} \\
 \ddmin_2\bigl(\dtwo, R\bigr) &
-\text{else if $\test(\dtwo \cup R) = \FAIL$ (``in $\dtwo$'')} \\
+\text{else if $\test(\dtwo \cup R) = \DFAIL$ (``in $\dtwo$'')} \\
 \ddmin_2\bigl(\done, \dtwo \cup R\bigr) \cup \ddmin_2\bigl(\dtwo, \done \cup
 R\bigr) & \text{otherwise (``interference'')}
 \end{cases}
 \end{align*}
 \begin{center}
 where $\test(T)$ denotes the state of the system after executing the trace $T$,
-$\FAIL$ denotes a correctness violation, \\
+$\DFAIL$ denotes a correctness violation, \\
 $\done \subset \dfail$, $\dtwo \subset \dfail$, $\done \cup \dtwo = \dfail$, $\done \cap
 \dtwo = \emptyset$, and $|\done| \approx |\dtwo| \approx |\dfail| / 2$
 hold.
@@ -362,34 +362,69 @@ and are not going to occur before injecting the next input. We show the overall 
 in Figure~\ref{fig:peek}.
 
 \begin{figure}
-\begin{boxedminipage}{\linewidth}
-\begin{Verbatim}[commandchars=\\\{\}]
-subsequence = [e\textsubscript{1}, e\textsubscript{2}, ..., e\textsubscript{j}]
-// e\textsubscript{1} is always an input
-
-function replay(subsequence):
-  bootstrap the simulation
-  for e\textsubscript{i} in subsequence:
-    if e\textsubscript{i} is an internal event and
-          e\textsubscript{i} is not marked absent:
-      \textDelta = |e\textsubscript{i}.time - e\textsubscript{i-1}.time| + \textepsilon
-      wait up to \textDelta seconds for e\textsubscript{i}
-      if e\textsubscript{i} did not occur:
-        mark e\textsubscript{i} absent
-    else if e\textsubscript{i} is an input:
-      if a successor of e\textsubscript{i} occurred:
-        // waited too long
-        return replay(subsequence)
-      else:
-        inject e\textsubscript{i}
-\end{Verbatim}
-\end{boxedminipage}
+    \begin{boxedminipage}{\columnwidth}
+      \begin{pseudocode}{CausalInference}{events}
+        \label{fig:peek}
+        \PROCEDURE{Replay}{subsequence}
+        \CALL{BootStrap}{simulation} \\
+        \FOR e\textsubscript{i}\ in\ subsequence \\
+        \BEGIN
+        \IF e\textsubscript{i}\ is\ an\ internal\ event \\
+        \AND e\textsubscript{i}\ is\ not\ marked\ absent:
+        \THEN
+        \BEGIN
+          %FIXME use variables instead of math symbols, which apparently break
+          %in this environment
+          \Delta \GETS |e\textsubscript{i}.time - e\textsubscript{i-1}.time| + \epsilon \\
+          wait\ up\ to\ \Delta\ seconds\ for\ e\textsubscript{i} \\
+          \IF e\textsubscript{i}\ did\ not\ occur:
+          \THEN mark\ e\textsubscript{i}\ as\ absent
+        \END
+        \ELSEIF e\textsubscript{i}\ is\ an\ input:
+        \THEN
+        \BEGIN
+          \IF a\ successor\ of\ e\textsubscript{i}\ occurred:
+          \THEN
+            %% \COMMENT{waited too long} \\
+            \RETURN{\CALL{Replay}{subsequence}}
+          \ELSE
+            inject\ e\textsubscript{i}
+        \END
+        \END
+        \ENDPROCEDURE
+      \end{pseudocode}
+    \end{boxedminipage}
 \caption{Replay Algorithm Pseudocode. In practice we account for other
 vagaries not shown here. \colin{Not actually correct! Waiting or not
 waiting potentially induces changes. Also,
 potentially recurses infinitely if not deterministic}}
 \label{fig:peek}
 \end{figure}
+
+%\begin{figure}
+%\begin{boxedminipage}{\linewidth}
+%\begin{Verbatim}[commandchars=\\\{\}]
+%subsequence = [e\textsubscript{1}, e\textsubscript{2}, ..., e\textsubscript{j}]
+%// e\textsubscript{1} is always an input
+%
+%function replay(subsequence):
+%  bootstrap the simulation
+%  for e\textsubscript{i} in subsequence:
+%    if e\textsubscript{i} is an internal event and
+%          e\textsubscript{i} is not marked absent:
+%      \textDelta = |e\textsubscript{i}.time - e\textsubscript{i-1}.time| + \textepsilon
+%      wait up to \textDelta seconds for e\textsubscript{i}
+%      if e\textsubscript{i} did not occur:
+%        mark e\textsubscript{i} absent
+%    else if e\textsubscript{i} is an input:
+%      if a successor of e\textsubscript{i} occurred:
+%        // waited too long
+%        return replay(subsequence)
+%      else:
+%        inject e\textsubscript{i}
+%\end{Verbatim}
+%\end{boxedminipage}
+%\end{figure}
 
 \subsection{Handling New Internal Events}
 \label{subsec:new_events}

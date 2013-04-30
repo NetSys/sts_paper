@@ -7,6 +7,7 @@
 \usepackage{pifont}
 \usepackage{fancyvrb}
 \usepackage{wrapfig}
+\usepackage{pseudocode}
 
 \definecolor{MyDarkBlue}{rgb}{0,0.08,0.45}
 \usepackage[pdftex]{hyperref}
@@ -125,11 +126,11 @@
 
 % Delta-debugging symbols:
 \newcommand{\PASS}{\text{\ding{52}}\xspace}
-\newcommand{\FAIL}{\text{\ding{56}}\xspace}
+\newcommand{\DFAIL}{\text{\ding{56}}\xspace}
 \newcommand{\cpass}{{T_{\scriptscriptstyle \PASS}}}
-\newcommand{\cfail}{{T_{\scriptscriptstyle \FAIL}}}
+\newcommand{\cfail}{{T_{\scriptscriptstyle \DFAIL}}}
 \newcommand{\dpass}{{T'_{\scriptscriptstyle \PASS}}}
-\newcommand{\dfail}{{T'_{\scriptscriptstyle \FAIL}}}
+\newcommand{\dfail}{{T'_{\scriptscriptstyle \DFAIL}}}
 \newcommand{\done}{{T_{\scriptscriptstyle 1}}}
 \newcommand{\dtwo}{{T_{\scriptscriptstyle 2}}}
 \newcommand{\test}{\textit{replay}\xspace}
