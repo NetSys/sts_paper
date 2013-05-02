@@ -8,11 +8,11 @@ controllers are in \emph{backup} mode and do not perform any changes to the
 switch configurations unless they detect that the master has crashed.
 
 \begin{figure}[t]
-    %\hspace{-10pt}
-    \includegraphics[width=3.25in]{../diagrams/case_study/example_bug.pdf}
-    \caption[]{\label{fig:example} Floodlight failover bug. External inputs
-               are depicted as red dots, internal events are depicted as black
-               dots, and the dotted message line depicts a timeout.}
+  %\hspace{-10pt}
+  \includegraphics[width=3.25in]{../diagrams/case_study/example_bug.pdf}
+  \caption[]{\label{fig:example} Floodlight failover bug. External inputs
+             are depicted as red dots, internal events are depicted as black
+             dots, and the dotted message line depicts a timeout.}
 \end{figure}
 
 The failover logic in Floodlight is not implemented correctly, leading to the
@@ -362,43 +362,34 @@ and are not going to occur before injecting the next input. We show the overall 
 in Figure~\ref{fig:peek}.
 
 \begin{figure}
-    \begin{boxedminipage}{\columnwidth}
-      \begin{pseudocode}{CausalInference}{events}
-        \label{fig:peek}
-        \PROCEDURE{Replay}{subsequence}
-        \CALL{BootStrap}{simulation} \\
-        \FOR e\textsubscript{i}\ in\ subsequence \\
-        \BEGIN
-        \IF e\textsubscript{i}\ is\ an\ internal\ event \\
-        \AND e\textsubscript{i}\ is\ not\ marked\ absent:
-        \THEN
-        \BEGIN
-          %FIXME use variables instead of math symbols, which apparently break
-          %in this environment
-          \Delta \GETS |e\textsubscript{i}.time - e\textsubscript{i-1}.time| + \epsilon \\
-          wait\ up\ to\ \Delta\ seconds\ for\ e\textsubscript{i} \\
-          \IF e\textsubscript{i}\ did\ not\ occur:
-          \THEN mark\ e\textsubscript{i}\ as\ absent
-        \END
-        \ELSEIF e\textsubscript{i}\ is\ an\ input:
-        \THEN
-        \BEGIN
-          \IF a\ successor\ of\ e\textsubscript{i}\ occurred:
-          \THEN
-            %% \COMMENT{waited too long} \\
-            \RETURN{\CALL{Replay}{subsequence}}
-          \ELSE
-            inject\ e\textsubscript{i}
-        \END
-        \END
-        \ENDPROCEDURE
-      \end{pseudocode}
-    \end{boxedminipage}
-\caption{Replay Algorithm Pseudocode. In practice we account for other
-vagaries not shown here. \colin{Not actually correct! Waiting or not
-waiting potentially induces changes. Also,
-potentially recurses infinitely if not deterministic}}
-\label{fig:peek}
+  \begin{pseudocode}[framebox]{replay}{subsequence}
+    \COMMENT{Invoked by delta debugging} \\
+    \PROCEDURE{replay}{subsequence}
+    \CALL{bootstrap}{simulation} \\
+    \FOR e\textsubscript{i}\ in\ subsequence \\
+    \BEGIN
+    \IF e\textsubscript{i}\ is\ an\ internal\ event \\
+    \AND e\textsubscript{i}\ is\ not\ marked\ absent:
+    \THEN
+    \BEGIN
+      \Delta \GETS |e\textsubscript{i}.time - e\textsubscript{i-1}.time| + \epsilon \\
+      wait\ up\ to\ \Delta\ seconds\ for\ e\textsubscript{i} \\
+      \IF e\textsubscript{i}\ did\ not\ occur:
+      \THEN mark\ e\textsubscript{i}\ as\ absent
+    \END
+    \ELSEIF e\textsubscript{i}\ is\ an\ input:
+    \THEN
+    \BEGIN
+      \IF a\ successor\ of\ e\textsubscript{i}\ occurred:
+      \THEN
+        \RETURN{\CALL{replay}{subsequence}}
+      \ELSE
+        inject\ e\textsubscript{i}
+      \END
+    \END
+    \ENDPROCEDURE
+   \label{fig:peek}
+  \end{pseudocode}
 \end{figure}
 
 %\begin{figure}
