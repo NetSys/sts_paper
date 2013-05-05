@@ -27,8 +27,7 @@ NOX discovery loop & 4 switch mesh & 18/20 & 150 & 18 \\
 Floodlight loop & 3 switch mesh & 15/50 & 284 & 36 \\
 % Andi
 \end{tabular}
-\caption{Overview of Case Studies. Totals shown in parentheses are with
-dataplane permit events excluded. \newline
+\caption{Overview of Case Studies. \newline
 \textmd{*with multiplexed sockets, overridden {\tt gettimeofday()}, and
 logging interposition enabled.}}
 \label{tab:case_studies}
@@ -270,7 +269,9 @@ conditions that are difficult to guarantee. Still, \projectname was instrumental
 in pointing out a previously unknown bug, and reducing the input size.
 
 \noindent{\bf Overall Results.} The overall results of our case studies are
-shown in Table~\ref{tab:case_studies}. For the Replay Success Rate column we
+shown in Table~\ref{tab:case_studies}.
+We show the initial input size and MCS input size in the last two columns.
+For the Replay Success Rate column we
 repeatedly replayed the original unpruned event trace, and measured how often we
 were able to reproduce the policy violation. There was indeed non-determinism
 in some cases, especially Floodlight. For the specific case of
@@ -279,11 +280,6 @@ non-determinism by employing multiplexed sockets, overriding {\tt
 gettimeofday()}, and waiting on
 POX's logging messages. We expect that we would see similar improvements if we
 applied these techniques to Floodlight.
-
-We show the initial input size and MCS input size in the last two columns. We also
-show the input sizes excluding dataplane forwarding permit events, since these
-inputs are an artefact of how we currently store and replay event traces. We
-plan on making dataplane permits a default.
 
 We measured the runtime of \simulator~for these case studies in Figures $6 \& 8--11$.
 While some instances ran in logarithmic time, the worst case was minimizing NOX discovery loop,
