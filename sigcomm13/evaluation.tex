@@ -7,20 +7,24 @@
 \begin{tabular}{l|l|l|l|l}
 Bug Name & Topology & Replay Success Rate & Total Inputs & MCS Size \\
 \hline
-POX list removal & 2 switch mesh & 20/20 & 76 (69) & 2 (2) \\
+POX list removal & 2 switch mesh & 20/20 & 69 & 2 \\
+% With DP events: 72/2
 % Original: config/eugene_epsilon_replay.py
 % MCS: config/eugene_epsilon_mcs.py
-POX in-flight blackhole & 2 switch mesh & 15/20 [20/20*] & 68 (26) & 25 (11) \\
+POX in-flight blackhole & 2 switch mesh & 15/20 [20/20*] & 26 & 11 \\
+% With DP events: 68/25
 % Original: 7ba95ed82ca4e32f12ab511d9c4301dbac2c59d5
 % MCS: 399cf861db87a65e600283d9ae7760400c4676e2
-POX migration blackhole & 4 switch mesh & 20/20* & 117 (29) & 3 (2) \\
+POX migration blackhole & 4 switch mesh & 20/20* & 29 & 3 \\
+% With DP events: 117/3
 % fuzz_pox_4mesh_blackhole
 % Updated (fat tree): pox_fattree_migration
-NOX discovery loop & 4 switch mesh & 18/20 & 358 (150) & 58 (18) \\
+NOX discovery loop & 4 switch mesh & 18/20 & 150 & 18 \\
+% With DP events: 358/58
 % Original: ce547fc1df3bde279b6f3dd589c909663e295f1e
 % MCS: 5f49e791b0c1a611454cf0930f54aa609dd635d3
 % Updated to new format: nox_mesh_4_loop
-Floodlight loop & 3 switch mesh & 15/50 & 548 (284) & 404 (?) \\
+Floodlight loop & 3 switch mesh & 15/50 & 284 & 36 \\
 % Andi
 \end{tabular}
 \caption{Overview of Case Studies. Totals shown in parentheses are with
@@ -57,7 +61,7 @@ We employed \projectname~to generate random sequences of
 inputs, and found after some time that POX threw an exception due to
 attempting to remove an element from a list where the element was not present.
 
-There were $76$ randomly generated inputs in the trace leading up to the
+There were $69$ randomly generated inputs in the trace leading up to the
 exception. We invoked \simulator~to identify a two element MCS:
 a failure of a connected switch followed by a reboot/initialization of the same switch.
 The nearly logarithmic runtime
@@ -102,7 +106,7 @@ and two switches S1 and S2 connected by a single link.
     in-flight blackhole. Numbers denote port labels.}
 \end{figure}
 
-There were 68 inputs in the initial trace, and \simulator~returned a 25 input
+There were $29$ inputs in the initial trace, and \simulator~returned a $11$ input
 MCS (runtime shown in Figure~\ref{fig:pox_discovery}). With the MCS in hand we took out paper and pencil to decipher what had
 transpired.
 
@@ -111,7 +115,6 @@ transpired.
     \includegraphics[width=3.25in]{../graphs/runtime/pox_blackhole.pdf}
     \caption[]{\label{fig:pox_discovery} Minimizing the POX in-flight blackhole.}
 \end{figure}
-
 
 Before the discovery module had learned of the link connecting the two
 switches,
@@ -137,24 +140,24 @@ port $2.1$
 Upon examining the code, we found that it
 did not account for in-flight packets concurrent with
 link discovery. As a result,
-POX incorrectly learned A's location at 2.1, even though it knew that the link
+POX incorrectly learned A's location at $2.1$, even though it knew that the link
 could not have hosts attached. If the first packet had
-instead originated at 1.1, POX would not have made this mistake.
+instead originated at $1.1$, POX would not have made this mistake.
 
 The next event we observed was another
 {\em in-flight} packet from B$\rightarrow$A arriving at port
-1.1. S1 notified POX of the unmatched flow, and POX appropriately printed a
+$1.1$. S1 notified POX of the unmatched flow, and POX appropriately printed a
 log statement indicating that a packet had arrived at an internal switch port without a
 previously installed flow entry. What happened next puzzled us though. POX
 proceeded to install a path for this new B$\rightarrow$A flow, but the
 path itself contained a loop: POX installed a B$\rightarrow$A entry going out both
-1.1$\rightarrow$2.1 and 2.2$\rightarrow$2.1, whereas it should have installed
+$1.1\rightarrow2.1$ and $2.2\rightarrow2.1$, whereas it should have installed
 only the latter (given A's current known location). The default behavior of
 OpenFlow switches is to ignore matching route entries (with wildcarded in
 ports) that forward out the
 same port the packets arrived on. This is where we started observing the blackhole:
 now whenever B sent traffic to A, it would be dropped at S1 until
-the faulty routing entry would eventually expire 30 seconds later.
+the faulty routing entry would eventually expire $30$ seconds later.
 
 We investigated the code that handled in-flight packets
 arriving on switch-switch ports. The log statement that we had observed
@@ -186,9 +189,10 @@ delayed arbitrarily as it was in \projectname.
 Having examined the POX code in some depth, we noticed that there might be
 some interesting corner cases related to host migrations.
 We set up randomly generated inputs, included host
-migrations this time, and checked for blackholes. Our initial input size was 117 inputs.
+migrations this time, and checked for blackholes. Our initial input size was
+$29$ inputs.
 Before investigating the bug we
-ran \simulator, and ended up with a 3 input MCS (shown
+ran \simulator, and ended up with a $3$ input MCS (shown
 in Figure~\ref{fig:pox_migration}): a packet injection from a
 host A, followed
 by a packet injection by a host B towards A, followed by a host migration of host A. This made it immediately
@@ -221,13 +225,13 @@ hosts on a per-flow basis, and is designed to be resilient to looped topologies.
 We initially tested NOX on a two node topology, but did not find any immediate
 problems. We then extended the topology to a four-node mesh, and discovered a
 routing loop between two switches (involving routes for two hosts) within
-roughly 20 runs of randomly generated inputs.
+roughly $20$ runs of randomly generated inputs.
 
-Our initial input size was 358 inputs, a minute's worth of execution.
-\Simulator~returned a 58 input MCS. The most salient inputs in the
-MCS were 3 dataplane packet drops mid-way through the execution, interspersed
-with 14 traffic injections. We are in the process of pinpointing the
-exact root cause with NOX developers, based on the 58 input MCS.
+Our initial input size was $150$ inputs, a minute's worth of execution.
+\Simulator~returned a $18$ input MCS. The most salient inputs in the
+MCS were $3$ dataplane packet drops mid-way through the execution, interspersed
+with $14$ traffic injections. We are in the process of pinpointing the
+exact root cause with NOX developers, based on the $18$ input MCS.
 
 \begin{figure}[t]
     %\hspace{-10pt}
@@ -240,8 +244,8 @@ exact root cause with NOX developers, based on the 58 input MCS.
 We subjected the current (unmodified) open
 source version of Floodlight (git commit f37046a) to fuzz testing with a three
 node fully meshed topology and high failure event rates. In an hour-long experiment,
-the fuzzer found an event sequence with 777 total events
-(548 input, 229 internal) that results in a 3-node forwarding loop being set up.
+the fuzzer found an event sequence with $284$ total events
+that results in a 3-node forwarding loop.
 
 Floodlight makes use of multiple kernel level
 threads, and thus can exhibit non-deterministic behavior.
@@ -252,9 +256,7 @@ execution up to 13 replays for each subsequence chosen by delta debugging. Stati
 STS to correctly diagnose violations in >99\% of cases.\footnote{$ln( 1 -
 0.99) / ln( 1 - 0.30) \approx 13$}
 
-\Simulator~was able to reduce the number of input events from
-548 to 404 in 168 iterations (note that this is not the final result; the
-algorithm crashed due to a trivial error a few hours before the deadline).
+\Simulator~was able to reduce the number of input events to $36$ input events.
 Comparing output traces of successful and
 unsuccessful runs, we noticed that the bug seems to correlate with specific
 thread level race conditions between state updates in the \emph{LinkDiscovery} module and
@@ -283,9 +285,9 @@ show the input sizes excluding dataplane forwarding permit events, since these
 inputs are an artefact of how we currently store and replay event traces. We
 plan on making dataplane permits a default.
 
-We measured the runtime of \simulator~for these case studies in Figures 6 \& 8--11.
+We measured the runtime of \simulator~for these case studies in Figures $6 \& 8--11$.
 While some instances ran in logarithmic time, the worst case was minimizing NOX discovery loop,
-which took more than 5.5 hours. Nonetheless, we conjecture that even long iteration
+which took more than $5.5$ hours. Nonetheless, we conjecture that even long iteration
 sizes are often preferable to spending software developer's time on manual
 diagnosis.
 
@@ -316,9 +318,9 @@ triggering bugs that only appear at large scale. We ran
 On a machine with 6GB of memory, we booted POX as the controller, and measured the
 time to create successively larger FatTree
 topologies, complete the OpenFlow handshakes for each switch,
-cut 5\% of links, and process POX's response to the link failures. As shown in
+cut $5\%$ of links, and process POX's response to the link failures. As shown in
 Figure~\ref{fig:scaling}, \projectname's processing time scales roughly
-linearly up to 2464 switches (a 45-pod FatTree). At that point, the machine
+linearly up to $2464$ switches (a 45-pod FatTree). At that point, the machine
 started thrashing, but this limitation could easily be removed by running an a
 machine with more memory.
 
