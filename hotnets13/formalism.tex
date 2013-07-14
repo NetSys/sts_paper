@@ -1,28 +1,26 @@
 We represent the forwarding state of the network
 at a particular time as a configuration $C$.
+The network control plane is a system that takes a sequence of
+external network events $E_L$
+as input and produces a sequence of network configurations
+$C_1,C_2,\dots,C_n$.
+
 An invariant is a predicate $P$ over forwarding state (a safety
-condition). We say that forwarding
-state $C$ violates an invariant if $P(C)$ does not
+condition). We say that a configuration
+$C$ violates an invariant if $P(C)$ does not
 hold, also denoted as $\overline{P}(C)$.
 
-Log $L$ consists of external events $E_L$ and observed internal events $I_L$,
-along with a timing $T_L$ of the observed events.
-We assume that all changes to forwarding state can be inferred
-from internal events (\eg~OpenFlow message sends), so
-that at all times we have knowledge of the relevant forwarding state.
-Therefore we can determine from $L$ whether $P$ failed to hold at any point.
-% It might make the notation more concise if we just include the sequence of
-% forwarding configurations as part of L. We have access to this information
-% in practice, since we're driving the fuzzing.
-
-A replay of a log means replaying the external events along with a particular timing (or interleaving) $T$.
+Log $L$ consists of external events $E_L$
+along with timing information $T_L$ of the external events.
+A replay of log $L$ involves replaying the external events along with a particular timing
+(or interleaving) $T$.
 We denote this by $replay(E_L,T)$.
 The output of $replay$ is a sequence of forwarding state configurations
-$C_1,C_2,\dots,C_n$.
+$\hat{C}_1,\hat{C}_2,\dots,\hat{C}_n$.
 We say that a replay reproduces an invariant violation if
-$\exists_{C_i \in replay(E,T)}\:s.t.\:\overline{P}(C_i)$.
+$\exists_{\hat{C}_i \in replay(E,T)}\:s.t.\:\overline{P}(\hat{C}_i)$.
 In the ideal case $replay(E_L,T_L)$ reproduces the orignal invariant violation
-asociated with $L$ (as long as there is no nondeterminism). \\
+associated with $L$ (as long as there is no non-determinism). \\
 
 \noindent~Troubleshooting process:
 
@@ -39,7 +37,7 @@ there is no timing $T$ s.t. $replay(E_L,T)$ reproduces the violation.
 \1 Assumption 2: the MCS of most natural logs resulting in violations are much smaller than the original log.  That is, bugs are causally sparse.
 \end{outline}
 
-\noindent~Technical challenge: Find approximations to MCSs.
+\noindent~Technical challenge: Find approximations to MCSes.
 
 \begin{outline}
 \1 Dumb approach: explore all timings $T$ for each subset $E$.
