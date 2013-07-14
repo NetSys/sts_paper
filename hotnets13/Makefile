@@ -2475,6 +2475,12 @@ echo-list	= for x in $1; do $(ECHO) "$$x"; done
 .PHONY: all
 all: $(default_pdf_targets) ;
 
+scott: all
+	mv hotnets13.pdf ../
+	make clean
+	mv ../hotnets13.pdf .
+	zip -r ../hotnets13.zip ../hotnets13 ../diagrams ../graphs
+
 .PHONY: all-pdf
 all-pdf: $(default_pdf_targets) ;
 
@@ -3835,4 +3841,5 @@ define output-dependency-graph
 	fi
 endef
 # vim: noet sts=0 sw=8 ts=8
+
 
