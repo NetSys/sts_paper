@@ -1,5 +1,3 @@
-syntax: glob
-.DS_Store
 buildinfo.tex
 ._*
 *.aux
@@ -18,3 +16,4 @@ buildinfo.tex
 *bak
 *orig
 *out
+*.zip
