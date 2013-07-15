@@ -45,13 +45,25 @@ Troubleshooting is the act of finding small logs that reproduce problems, so tha
 
 \subsection{Technical Challenge: Approximating MCSes}
 
-\scott{clean this up, and use it to outline what we do in the next
-section....}
-
 \begin{outline}
-\1 Dumb approach: explore all timings $T$ for each subset $E$.
+\1 Dumb approach: explore all timings $T$ for each subset of $E_L$.
 
-\1 Slightly smarter approach: use delta debugging, causality, and equivalence to limit set of timings $T$ you need to look at.  And hints for timing, etc....
+\1 Slightly smarter approach:
+  \2 use delta debugging
+  \2 but that changes history, and potentially causality
+  \2 so define equivalence
+  \2 and time out on missing internal
+  \2 and let new events through
+  \2 this leaves exactly one set of timings $T$ to look at, that in our
+  experience very reliably reproduces the bugs while still minimizing.
 
-\1 Practical difficulties: nondeterminism, etc.
+\1 There are some practical challenges involved in implementing this approach in
+practice, including:
+   \2 the need for a mechanism, to replay these traces.
+   \2 the need for visibility into internal events.
+   \2 the need to cope with non-determinism outside the control of the
+   replay mechanism.
+   \2 the need to cope with new / unexpected internal events
+
+\1 In the next section we outline our solution to these difficulties.
 \end{outline}
