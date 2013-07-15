@@ -1,31 +1,38 @@
 \subsection{Definitions}
 
 We represent the forwarding state of the network
-at a particular time as a configuration $C$ (this state contains all the forwarding entries, as well as the liveness of the various network elements).
+at a particular time as a configuration $c$ (this state contains all the forwarding entries, as well as the liveness of the various network elements).
 The network control plane is a system that takes a sequence of
 external network events $E$ (such as link failures) that occur at times $T$
 as input and produces a sequence of network configurations
-$C_1,C_2,\dots,C_n$.
+$C = c_1,c_2,\dots,c_n$.
 
 An invariant is a predicate $P$ over forwarding state (a safety
-condition, such a having no loops or complete reachability). We say that a configuration
-$C$ violates an invariant if $P(C)$ does not
-hold, also denoted as $\overline{P}(C)$.
+condition, such a having no loops or blackholes). We say that a configuration
+$c$ violates an invariant if $P(c)$ does not
+hold, also denoted as $\overline{P}(c)$.
 
-One can obtain logs of the control plane in action by instrumenting operational networks or running QA tests.  In our formalism a Log $L$ consists of external events $E_L$
-along with timing information $T_L$ of the external events. {\bf perhaps make a log the triplet of E, T, C}
-A replay of log $L$ involves replaying the external events along with a particular timing $T$ which need not be identical to the original timings in the captured log.
-We denote this by $replay(E_L,T)$.  
+One can obtain logs of control plane executions by running integration or fuzz
+tests. In our formalism a log $L$ is a triplet of external events $E_L$,
+timing information $T_L$ of the external events, and the forwarding states
+$C_L$. A replay of log $L$ involves replaying the external events along with a particular timing $T$
+which need not be identical to the original timings in the captured log.
+We denote this by $replay(E_L,T)$.
 The output of $replay$ is a sequence of forwarding state configurations
-$\hat{C}_1,\hat{C}_2,\dots,\hat{C}_n$. In the ideal case $replay(E_L,T_L)$ reproduces the same sequence of network configurations as occurred in the original run (i.e., $C_i = \hat{C}_i$), but as we discuss later in the paper there are reasons why this does not always hold.
+$C_R = \hat{c}_1,\hat{c}_2,\dots,\hat{c}_n$. In the ideal case $replay(E_L,T_L)$ reproduces the same
+sequence of network configurations as occurred in the original run
+(\ie~$\forall_i. c_i = \hat{c}_i$), but as we discuss later in the paper there are reasons why
+this does not always hold.
 
-If the original network run produced a violation (i.e., $\overline{P}(C_i)$ for some$i$), then we say replay reproduces that invariant violation if
-$\exists_{\hat{C}_i \in replay(E,T)}\:s.t.\:\overline{P}(\hat{C}_i)$.
+If the original log $(E_L, T_L, C_L)$ exhibited a violation
+(\ie~$\exists_{c_i \in C_L}. \overline{P}(c_i)$,
+then we say its replay reproduces that invariant violation if
+$\exists_{\hat{c}_i \in replay(E,T)}. \overline{P}(\hat{c}_i)$.
 
-Definition: an MCS is a subsequence $E_M$ of $E_L$ and a timing $T_M$ such
+\noindent~{\em Definition}: an MCS is a subsequence $E_M$ of $E_L$ and a timing $T_M$ such
 that $replay(E_M,T_M)$ reproduces the invariant violation, but for all proper
-subsets $E_L$ of $E_M$
-there is no timing $T$ s.t. $replay(E_L,T)$ reproduces the violation.
+subsets $E_N$ of $E_M$
+there is no timing $T$ s.t. $replay(E_N,T)$ reproduces the violation.
 \\
 
 \subsection{Assumptions}
@@ -38,7 +45,8 @@ Troubleshooting is the act of finding small logs that reproduce problems, so tha
 
 \subsection{Technical Challenge: Approximating MCSes}
 
-{\bf clean this up, and use it to outline what we do in the next section....}
+\scott{clean this up, and use it to outline what we do in the next
+section....}
 
 \begin{outline}
 \1 Dumb approach: explore all timings $T$ for each subset $E$.
