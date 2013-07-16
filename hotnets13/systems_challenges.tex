@@ -1,1 +1,13 @@
-Real-world complications: nondeterminism.
+There are some practical challenges involved in implementing this approach in
+practice, including:
+
+Need a way to fuzz traces and replay them: network simulator.
+
+Need visibility into as many internal events as possible: optional
+interposition on logging
+
+Need to cope with non-determinism in the operating system: multiplexed sockets
+and overriding gettimeofday()
+
+Can't squash all the non-determinism: replaying multiple times yields
+Bernoulli probability that bug won’t be triggered

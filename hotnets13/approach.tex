@@ -1,0 +1,16 @@
+Dumb approach: explore all timings T for each subset of $E_L$.
+
+Slightly smarter approach:
+\begin{outline}
+  \1 apply delta debugging to efficiently search subsets of $E_L$
+  \1 But $T$ is still really important to get right. We tried a replay algorithm that just maintained relative spacing between inputs, but it didn't work.
+  \1 Problem is that internal events matter. We need to maintain causal relationships.
+  \1 But we're  changing history, i.e. the original causal relation is changing
+  \1 so we define equivalence to reason about changes to history
+  \1 we also need to time out on missing internal events.
+  \1 and let unexpected events through
+  \1 this leaves exactly one set of timings $T$ to look at, that in our experience reliably reproduces the bugs while still minimizing.
+\end{outline}
+
+In the next section we outline our solution to these difficulties.
+
