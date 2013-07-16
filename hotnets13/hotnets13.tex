@@ -20,9 +20,14 @@
   linkcolor=MyDarkBlue,%
   urlcolor=MyDarkBlue
 }
+\usepackage{fixltx2e}
+\usepackage{textgreek}
 
 \newcommand{\projectname}{{STS}}
 \newcommand{\projectmeaning}{the SDN Troubleshooting Simulator}
+\newcommand{\simulator}{retrospective causal inference}
+\newcommand{\Simulator}{Retrospective causal inference}
+\newcommand{\SIMULATOR}{RETROSPECTIVE CAUSAL INFERENCE}
 
 \newcommand{\tbd}[1]{{\bf [[TBD: {#1}]]}}
 \newcommand{\ie}{{\it i.e.}}
@@ -49,6 +54,18 @@
 
 % Notes:
 \newcommand{\num}[1]{{\color{red}\bf {#1}}}
+
+% Delta-debugging symbols:
+\newcommand{\PASS}{\text{\ding{52}}\xspace}
+\newcommand{\DFAIL}{\text{\ding{56}}\xspace}
+\newcommand{\cpass}{{T_{\scriptscriptstyle \PASS}}}
+\newcommand{\cfail}{{T_{\scriptscriptstyle \DFAIL}}}
+\newcommand{\dpass}{{T'_{\scriptscriptstyle \PASS}}}
+\newcommand{\dfail}{{T'_{\scriptscriptstyle \DFAIL}}}
+\newcommand{\done}{{T_{\scriptscriptstyle 1}}}
+\newcommand{\dtwo}{{T_{\scriptscriptstyle 2}}}
+\newcommand{\test}{\textit{replay}\xspace}
+\newcommand{\ddmin}{\textit{ddmin}\xspace}
 
 \sloppy
 \begin{document}

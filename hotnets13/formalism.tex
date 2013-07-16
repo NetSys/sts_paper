@@ -1,3 +1,4 @@
+\colin{Need to clearly define ``timing''}
 We represent the forwarding state of the network
 at a particular time as a configuration $c$, which contains all the forwarding
 entries in the network
@@ -31,20 +32,8 @@ If the original log $(E_L, T_L, C_L)$ exhibited a violation
 then we say its replay reproduces that invariant violation if
 $\exists_{\hat{c}_i \in replay(E_L,T)}. \overline{P}(\hat{c}_i)$.
 
-\noindent~{\em Definition}: a minimal causal sequence (MCS) is a subsequence $E_M$ of $E_L$ and a timing $T_M$ such
+\noindent~{\em Definition}: a minimal causal sequence (MCS) is a subsequence $E_M$
+of $E_L$ and a timing $T_M$ such
 that $replay(E_M,T_M)$ reproduces the invariant violation, but for all proper
 subsets $E_N$ of $E_M$
 there is no timing $T$ s.t. $replay(E_N,T)$ reproduces the violation.
-
-\subsection{Assumptions}
-
-\colin{These aren't really assumptions, they're really facts that serve as
-motivation. I might cut this once the introduction is written.}
-
-We make several assumptions in motivating our problem.
-
-Assumption 1: naturally occurring logs $E_L$ are large.
-
-Assumption 2: the MCS of most natural logs resulting in violations are much smaller than the original log.  That is, bugs are causally sparse.
-
-Troubleshooting is the act of finding small logs that reproduce problems, so that developers can debug.

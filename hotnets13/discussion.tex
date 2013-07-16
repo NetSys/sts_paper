@@ -1,1 +1,125 @@
+\eat{
+\subsection{Complexity}
+\label{subsec:complexity}
+
+The delta debugging algorithm terminates after
+$O(log\,n)$
+invocations of $replay$ in the best case, where $n$ is the number of inputs in the original
+trace~\cite{Zeller:1999:YMP:318773.318946}. In the worst case, delta debugging
+has $O(n)$ complexity.
+
+If the replay algorithm
+never needs to back up, it replays $n$ inputs,
+for an overall runtime of $O(nlog\,n)$ replayed inputs in the best case, and $O(n^2)$ in the worst case.
+Conversely, if the event scheduling
+needs to back up in every iteration, another factor of $n$ is added to the
+runtime: for each input event
+$e_i$, it replays inputs $e_1,\dots,e_i$, for a total of
+$n \times \frac{n+1}{2} \in O(n^2)$ replayed inputs. In terms of replayed
+inputs, the
+overall worst case is therefore $O(n^3)$.
+
+The runtime can be decreased by observing that delta debugging is readily
+parallizable. Specifically, the worst case runtime could be
+decreased to $O(n^2)$ by enumerating all subsequences that delta debugging
+can possibly examine (of which there are $O(n)$), replaying them in parallel, and joining the
+results.
+
+The runtime can be further decreased by taking snapshots of the controller
+state at regular intervals. When the replay algorithm detects that it has waited too
+long, it could then restart from a recent snapshot rather than replaying the
+entire prefix.
+
+SDN platform developers can reduce the probability that the replay algorithm
+will need to back up by placing causal annotations on internal
+events~\cite{fonseca2007x}: with explicit causal information, the replay
+algorithm can know
+\apriori~whether certain internal events are dependent on pruned inputs.
+}
+
+%\colin{Describe Andrew's input type pruning optimization and measurements. "We
+%make another optimization.."}
+
+\eat{
+In practice we also make optimization to the overall delta debugging
+algorithm: since some of the input subsequences
+chosen by unmodified delta debugging may not be valid, we apply domain knowledge
+about input validity to avoid exploring certain subsequences. For example, it does
+not make sense to replay a link recovery event if we pruned
+the link failure event that preceded it. Likewise, pruning a host migration
+implies that we need to update the subsequent host migration event's source location.
+Beyond component failures and host migration, other dependencies between
+inputs are significantly more complicated to model.
+At the
+moment, our tool does not support policy changes or dataplane packet drops for
+this reason.
+}
+
+\subsection{Limitations}
+\label{subsec:non_goals}
+
+\colin{Move to discussion section? Or not mention it at all?}
+
+Having detailed the specifics of \simulator, we now
+clarify the scope of our technique's use.
+
+\noindent{\bf Partial Visibility.} Our event scheduling algorithm assumes that
+it has visibility into the occurrence of all relevant internal events. In
+practice many relevant internal state changes are already marked by logging
+statements, but developers may need to add additional
+logging statements to ensure reliable replay.
+
+\noindent{\bf Non-determinism Within Individual Controllers.} Our tool is not designed to reproduce bugs
+involving non-determinism within a single controller (\eg~race-conditions between threads);
+we focus on coarser granularity errors (\eg~incorrect failover logic), which we find plenty of
+in \S\ref{subsec:case_studies}. The upshot of
+this is that our technique is not able to minimize all possible failures.
+Nonetheless, the worst case for us is that the developer ends up with what they started:
+an unpruned log.
+
+\eat{That said, if the developer is willing to instrument their system to
+provide finer granularity log messages (\cf~\cite{Geels:2006:RDD:1267359.1267386}),
+our approach readily supports deterministic replay.}
+
+\noindent{\bf Troubleshooting vs.\ Debugging.} Our technique is a troubleshooting tool, not a debugger;
+by this we mean that \simulator{} helps identify and localize inputs that
+trigger erroneous behavior, but it does not directly identify which
+line(s) of code cause the error.
+
+\noindent{\bf Bugs Outside the Control Software.} Our goal is not to find the root
+cause of individual component failures in the system (\eg~misbehaving routers,
+link failures). Instead, we focus on
+how the distributed system as a whole reacts to the occurrence of such inputs.
+If there is a bug in your switch, you will need to contact your hardware vendor;
+if you have a bug in your policy specification, you will need to take a closer look at what you specified.
+
+\noindent{\bf Globally vs.\ Locally Minimal Input Sequences.}
+Our approach is not guaranteed to find the globally minimal
+causal sequence from an input trace, since this requires $O(2^N)$ computation in the worst case.
+The delta debugging algorithm we employ does provably find a
+locally minimal causal sequence~\cite{Zeller:1999:YMP:318773.318946},
+meaning that if any input from the sequence is pruned, no invariant violation
+occurs. \colin{Need to mention monotonicity, consistency, unambiguity here}
+
+\noindent{\bf Correctness vs.\ Performance.}
+We are primarily focused on correctness bugs, not performance bugs.
+
+\noindent{\bf Complexity}
+The overall runtime of delta debugging with replays is
+$O(nlog\,n)$ in the number of replayed inputs in the best case,
+and $O(n^2)$ in the worst case. We are currently exploring techniques such as
+parallelization and snapshotting for improving the overall runtime.
+
+\colin{Add: relevence of bugs found by fuzzing.}
+
+\eat{
+\noindent{\bf Proactive vs.\ Reactive Configuration.} We focus primarily on
+\emph{proactive} configuration, where controllers react to policy and topology changes, but
+not necessarily individual packets or flows events in the
+dataplane.\footnote{Production controllers typically adopt this model for
+performance reasons.}
+The main challenge in extending our approach to reactive controllers is
+achieving efficient simulation of dataplane traffic.
+\andi{Could cut this. We actually find reactive bugs}
+}
 
