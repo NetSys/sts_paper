@@ -1,35 +1,20 @@
-There are some practical challenges involved in implementing this approach in
-practice, including:
-
-\begin{outline}
-\1 Need a way to fuzz traces and replay them: network simulator.
-
-\1 Need visibility into as many internal events as possible: optional
-interposition on logging
-
-\1 Need to cope with non-determinism in the operating system: multiplexed sockets
-and overriding gettimeofday()
-
-\1 Can't squash all the non-determinism: replaying multiple times yields
-Bernoulli probability that bug won't be triggered
-\end{outline}
-
-\subsection{Simulated Execution}
-\label{subsec:simulation}
-
-Unlike the example applications described
+The core piece of technical infrastucture we need to realize our approach is a
+mechanism to replay execution logs. Building such a replay mechansim comes
+with many challenges; unlike the example applications described
 by the original delta debugging paper~\cite{Zeller:1999:YMP:318773.318946}, the system we are troubleshooting is not a
 single program--it is all the nodes and links of a distributed system,
 including controllers, switches, and end-hosts. The asynchrony of distributed
 systems makes it difficult to reliably replay orderings of
-events without great care. We therefore simulate the control-plane
+events without great care.
+
+Our approach is to simulate the control-plane
 behavior of network devices (with support for minimal data-plane behavior) on
 a single machine. We then run the control software on
 top of this simulator and connect the software switches to the controllers as if they were true
 network devices, such that the controllers believe they are configuring a true
 network. This setup allows the simulator to interpose on all communication
 channels. The simulator uses these interposition points to delay, drop, or reorder
-messages as needed for replay. The overall
+messages as needed. The overall
 simulation architecture is depicted in
 Figure~\ref{fig:architecture}.
 
@@ -41,16 +26,26 @@ Figure~\ref{fig:architecture}.
     channels.}
 \end{figure}
 
-Given a sequence of inputs (\eg~link failures, controller crashes, host migrations,
-or policy changes) and an invariant checking probe (provided by tools
-such as HSA~\cite{hsa,hsa_realtime} or Anteater~\cite{anteater,khurshid2012veriflow}),
-delta debugging finds a minimal causal sequence responsible for triggering the
-policy violation. The
-simulator is responsible for replaying intermediate input subsequences
-chosen by delta debugging. For example, the simulator replays link failures
+We begin by using our simulator to perform testing on controllers to find
+bugs. Our most common use case involves generating randomly chosen input
+sequences~\cite{Miller:1990:ESR:96267.96279}, feeding them to controller(s),
+and monitoring
+invariants~\cite{hsa} at chosen intervals.
+We also run the simulator interactively to generate replayable integration
+tests, so that we can examine the state of any part of the simulated network,
+observe and manipulate messages, and follow our
+intuition to induce orderings that they believe may trigger bugs.
+In either case, injecting the inputs from a single process
+allows the simulator to trivially record a global event ordering
+by logging all events at a single location.
+
+After discovering an invariant violation of interest, the simulator replays
+the logged sequence of inputs (\eg~link failures, controller crashes, host migrations,
+or policy changes). As an illustrative example, the simulator replays link failures
 by disconnecting the edge in the simulated network, and sending a
 port status message from the adjacent switches to their parent controller(s).
 
+\eat{ % Maybe add this back in? This is relatively important
 The input subsequences chosen by delta debugging are not always valid. For
 example, it is not sensible to replay a recovery event without a
 preceding failure event; nor is it sensible to replay a host migration
@@ -66,4 +61,66 @@ but incurs an additional factor of $N$ in complexity in doing so.}
 Currently our simulator accounts for validity of all network state change
 events (shown in Table \ref{tab:inputs}), but does not support policy changes,
 which have more complex semantics.
+}
 
+\projectname~(\projectmeaning) is our realization of this simulator.
+\projectname~is implemented in roughly 15,000 lines of Python in
+addition to the Hassel network invariant checking library~\cite{hsa}. We have
+made the code
+for \projectname~publicly available\footnote{Omitted to preserve anonymity.}
+To date, three industrial SDN companies have expressed interest in adopting it.
+
+\subsection{Mitigating Non-Determinism}
+
+We designed \projectname~to be as resilient to non-determinism as is
+practically feasible, while avoiding modifications to control software whenever possible.
+When sending data over multiple sockets, the operating system exhibits
+non-determinism in the order it schedules the socket I/O operations.
+\projectname~optionally ensures a deterministic order of messages
+by multiplexing all sockets in the controller process
+onto a single true socket. \projectname~currently overrides socket functionality within the control
+software itself.\footnote{Only supported for POX at the moment.}
+%In the future we plan to implement deterministic message ordering without code modifications by
+%loading a shim layer on top of
+%libc (similar to liblog~\cite{Geels:2006:RDD:1267359.1267386}).
+
+\projectname~needs visibility into the control software's internal state
+changes to reliably reproduce the system execution. We achieve this by
+making a
+small change to the control software's logging library\footnote{Only supported
+for POX and Floodlight at the moment.}: whenever a control process executes a log
+statement, we notify \projectname~that a new state transition
+is about to occur, and optionally block the process. \projectname~then sends
+an acknowledgment to unblock the controller after logging the state change. If blocking was enabled
+during recording, we force the control software to block at internal state
+transition points again during replay
+until \projectname~gives explicit acknowledgment.
+
+Routing the {\tt gettimeofday()} syscall
+through \projectname~makes replay more resilient to alterations in execution
+speeds.\footnote{When the pruned trace differs from the original, we make a
+best-effort guess at what the return values of these calls should be. For example,
+if the altered execution invokes {\tt gettimeofday()} more times than we recorded
+in the initial run, we interpolate the time values of neighboring events}
+%As an added benefit, overriding {\tt gettimeofday()} allows us to `compress'
+%runtime in some cases (similar to time-warped emulation~\cite{Gupta06toinfinity}).
+
+\subsection{Coping with Non-Determinism}
+
+Our current implementation does not account for other sources of non-determinism,
+such as random number generators, asynchronous signals,
+or interruptable instructions (\eg~x86's block memory
+instructions~\cite{Dunlap:2002:REI:844128.844148}). And even if these sources were
+eliminated, it would not be possible to achieve perfectly deterministic
+replay in all cases without full visibility into internal events--a daunting
+instrumentation task.
+
+Fortunately we can cope with cases of excessive non-determinism by replaying each subsequence chosen
+by delta debugging multiple times. Assuming that non-determinism
+is an independent and identitically distributed random variable, multiple
+replays yields a Bernoulli distribution $P = (1-p)^{n}$ for whether we will fail to
+trigger a latent bug after $n$ replays. The Bernoulli distribution
+works strongly in our favor; for example, even if the original bug is
+triggered in only 20\% of replays, the probability that we will not trigger
+it during an intermediate delta debugging replay is approximately
+10\% if we replay 10 times per subsequence.

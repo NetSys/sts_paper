@@ -15,7 +15,7 @@
 %In the next section we outline our solution to these difficulties.
 % -------
 
-To make the discussion concrete we describe a
+To make the discussion concrete we start by describing a
 documented bug\footnote{Now fixed, as we have been told.} in the Floodlight
 open source control platform~\cite{floodlight_bug}. Floodlight is distributed across
 multiple controllers for high availability, and provides support for
@@ -60,7 +60,7 @@ hour~\cite{Soundararajan:2010:CBS:1899928.1899941},
 there would be at least $8.5 \cdot 60 + 500 \approx 1000$ inputs reflected in
 an hour-long trace. Yet despite the large number of events reflected in the
 log, many bugs encountered in practice are triggered by a
-relatively small number of events (as we show in \S\ref{sec:casestudies}).
+small number of events (as we show in \S\ref{sec:casestudies}).
 
 Going back to our example,
 suppose a log of this execution includes many more (extraneous) inputs. If we
@@ -69,17 +69,17 @@ extraneous event, the blackhole would still persist after replaying.
 When we prune the controller crash though, the blackhole will be resolved properly, and
 when we prune the link failure, no blackhole will occur. The MCS
 of the log is therefore the conjunction of the controller crash and the link
-failure, along with their timing depicted in Figure~\ref{fig:example}.
+failure, along with the timing depicted in Figure~\ref{fig:example}.
 
 \subsection{Searching for Subsequences}
 \label{subsec:algorithm}
 
 Given a log $(E_L, T_L, C_L)$ exhibiting an invariant violation,
 our goal is to identify its MCS. In a brute force fashion,
-the most obvious way to do so involves exploring all timings $T$ for each
+the most obvious way to achieve this goal involves exploring all timings $T$ for each
 subsequence of $E_L$, feeding each one to a replay mechanism (which we
 describe in \S\ref{sec:systems_challenges}) and checking whether the bug
-persists. Yet this approach is clearly intractable, so we seek a more efficient
+persists. This approach is clearly intractable though, so we seek a more efficient
 means.
 
 We find a more efficient algorithm for searching subsequences of $E_L$ from
@@ -91,11 +91,12 @@ until finding a minimal subset (\eg~a single tag) that is sufficient
 for triggering a known bug. Specifically, delta debugging finds a locally minimal
 causal sequence~\cite{Zeller:1999:YMP:318773.318946},
 meaning that if any input from the sequence is pruned, no invariant violation
-occurs. We can similarly explore subsequences of $E_L$ by letting delta
-debugging iteratively select subsequences and replaying each subsequence with
+occurs. We can similarly explore subsequences of the distributed inputs $E_L$ by
+letting delta debugging iteratively select subsequences, replaying each subsequence with
 some timing $T$ to test whether the bug persists.
 The delta debugging algorithm is shown in
-Figure~\ref{fig:ddmin} (with `$test$' replaced by `$replay$').
+Figure~\ref{fig:ddmin} (with `$test$' replaced by `$replay$'). \colin{Remove
+figure if squeezed for space.}
 
 \begin{figure*}[t]
 \caption{Automated Delta Debugging Algorithm From~\cite{Zeller:1999:YMP:318773.318946}}
@@ -185,13 +186,14 @@ cope with alterations to the causal history of an execution.
 \label{subsec:replay}
 
 % Needs a back pointer. "Once a subsequence has been chosen,"...
-Even with an algorithm for systematically exploring subsequences of $E_L$, the
-timing of those subsequences during replay is crucial for reliably
+Simply exploring subsequences of $E_L$ does not suffice to find
+minimal causal sequences: the
+timing of those subsequences throughout delta debugging's replays is crucial for reliably
 reproducing the
-invariant violation throughout the delta debugging execution. Na\"ively injecting inputs often fails to
-trigger the original invariant violation, even without having pruned any
-events. In particular, we tried and failed to reproduce errors when scheduling inputs
-with the following simple algorithm:
+invariant violation. We tried and failed to reproduce errors when scheduling
+replayed input sequences
+with the following na\"ive scheduling algorithm, even before began modifying
+those inputs:
 \begin{align*}
 t'_0 = 0 \\
 t'_i = t'_{i-1} + |t_{i} - t_{i-1}|
@@ -437,8 +439,9 @@ there may be other unknown
 paths through the state machine leading to the invariant violation that are
 completely disjoint from the original execution.
 
+\eat{
 Luckily, crucially ambiguous new internal events are not problematic for the
-control software we evaluated, as we show in \S\ref{subsec:case_studies}.
+control software we evaluated, as we show in \S\ref{sec:casestudies}.
 We conjecture that ambiguous new internal events are
 rare because SDN software is a control plane system,
 and is designed to quiesce quickly (\ie~take a small number of internal
@@ -452,10 +455,10 @@ in Figure~\ref{fig:state_machines}:
 the controllers quickly converge to a single state (either ``Master'' or
 ``Backup''), as do the switches (``Safe'').
 }
+}
 
 In the next section we describe some
 of the practical challenges we have overcome to realize our approach.
 We have ultimately found with our system that applying delta debugging to explore
 subsequences of $E_L$ and striving to ensure that our timing $T$ maintains
 causal dependencies reliably finds small MCSs.
-
