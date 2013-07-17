@@ -23,6 +23,10 @@
 \usepackage{fixltx2e}
 \usepackage{textgreek}
 
+\makeatletter
+\newcommand*{\rom}[1]{\expandafter\@slowromancap\romannumeral #1@}
+\makeatother
+
 \newcommand{\projectname}{{STS}}
 \newcommand{\projectmeaning}{the SDN Troubleshooting Simulator}
 \newcommand{\simulator}{retrospective causal inference}
