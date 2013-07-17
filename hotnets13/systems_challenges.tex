@@ -1,5 +1,5 @@
-The core piece of technical infrastucture we need to realize our approach is a
-mechanism to replay execution logs. Building such a replay mechansim comes
+The core piece of technical infrastructure we need to realize our approach is a
+mechanism to replay execution logs. Building such a replay mechanism comes
 with many challenges; unlike the example applications described
 by the original delta debugging paper~\cite{Zeller:1999:YMP:318773.318946}, the system we are troubleshooting is not a
 single program--it is all the nodes and links of a distributed system,
@@ -117,7 +117,7 @@ instrumentation task.
 
 Fortunately we can cope with cases of excessive non-determinism by replaying each subsequence chosen
 by delta debugging multiple times. Assuming that non-determinism
-is an independent and identitically distributed random variable, multiple
+is an independent and identically distributed random variable, multiple
 replays yields a Bernoulli distribution $P = (1-p)^{n}$ for whether we will fail to
 trigger a latent bug after $n$ replays. The Bernoulli distribution
 works strongly in our favor; for example, even if the original bug is
