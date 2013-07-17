@@ -2,7 +2,7 @@ The core piece of infrastructure we need to realize our approach is a
 mechanism to replay execution logs. Building such a replay mechanism comes
 with many challenges; unlike the example applications described
 by the original delta debugging paper~\cite{Zeller:1999:YMP:318773.318946}, the system we are troubleshooting is not a
-single program--it is all the nodes and links of a distributed system,
+single program--it encompasses all the nodes and links of a distributed system,
 including controllers, switches, and end-hosts. The asynchrony of distributed
 systems makes it difficult to reliably replay orderings of
 events without great care.
