@@ -1,5 +1,5 @@
-\colin{Need to clearly define ``timing''}
-We represent the forwarding state of the network
+\colin{Need to clearly define ``timing'': Scott: not sure we need to...}
+In this section we give a formal definition of our approach, and then spend the rest of the paper trying to live up to this formalism. We represent the forwarding state of the network
 at a particular time as a configuration $c$, which contains all the forwarding
 entries in the network
 as well as the liveness of the various network elements.
@@ -10,12 +10,11 @@ $C = c_1,c_2,\dots,c_n$.
 
 An invariant is a predicate $P$ over forwarding state (a safety
 condition, such a having no loops or blackholes). We say that a configuration
-$c$ violates an invariant if $P(c)$ does not
-hold, also denoted as $\overline{P}(c)$.
+$c$ violates the invariant if $P(c)$ does not
+hold, denoted as $\overline{P}(c)$.
 
-In our formalism a log $L$ of a system execution\footnote{In
-\S\ref{sec:systems_challenges} we how logs can be obtained.} is a triplet of external events $E_L$,
-timing information $T_L$ of the external events, and a sequence of forwarding
+In our formalism a log $L$ of a system execution is a triplet of external events $E_L$,
+timing information $T_L$ of the external events, and the resulting sequence of forwarding
 configurations $C_L$.
 A replay of log $L$ involves replaying the external events along with a
 particular timing $T$,
@@ -27,17 +26,19 @@ sequence of network configurations as occurred in the original run
 (\ie~$\forall_i. c_i = \hat{c}_i$), but as we discuss later in the paper there are reasons why
 this does not always hold.
 
-If the original log $(E_L, T_L, C_L)$ exhibited a violation
-(\ie~$\exists_{c_i \in C_L}. \overline{P}(c_i)$,
-then we say a replay reproduces that invariant violation if
+If the original log $(E_L, T_L, C_L)$ violated predicate $P$
+(\ie~$\exists_{c_i \in C_L}. \overline{P}(c_i)$),
+then we say a $replay(E_L,T)$ reproduces that invariant violation if
 $\exists_{\hat{c}_i \in replay(E_L,T)}. \overline{P}(\hat{c}_i)$.
 
-\noindent~{\em Definition}: a minimal causal sequence (MCS) is a subsequence $E_M$
+The goal of our work is to find a small set of events that reproduces an invariant violation.  More formally, we define a minimal causal sequence (MCS) to a subsequence $E_M$
 of $E_L$ and a timing $T_M$ such
 that $replay(E_M,T_M)$ reproduces the invariant violation, but for all proper
 subsets $E_N$ of $E_M$
-there is no timing $T$ s.t. $replay(E_N,T)$ reproduces the violation.
+there is no timing $T$ s.t. $replay(E_N,T)$ reproduces the violation. That is, an MCS is a sequence and timing of external events that reproduces the violation, but that one cannot find a subset of the MCS that reproduce the violation.  Note that an MCS is not necessarily {\em globally} minimal, in that there could be smaller sequences that reproduce this violation, but are not subsets of this MCS.
 
 Given a log $(E_L, T_L, C_L)$ exhibiting an invariant violation,
-our goal is to identify its MCS. In the next section we outline our approach
-to achieving this goal.
+our goal is to identify its MCS. We could do this through brute force, trying all subset and timings, but this is clearly impractical given the large size of logs and the infinitely large set of possible timings. Thus, we must approximate MCSs by finding good heuristics for which events to eliminate and, more fundamentally, which timings to test.
+
+In the next section we describe some heuristics, and then we follow that in \S\ref{sec:systems_challenges} with a description of the system we built (and the challenges inherent therein) to realize our approach.
+
