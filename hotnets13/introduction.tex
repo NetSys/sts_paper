@@ -90,6 +90,7 @@ that are not relevant to triggering the bug, leaving a small sequence of inputs
 that is directly responsible.
 This would go a long way towards achieving ``automated troubleshooting.''
 
+\eat{ % Not enough space...
 If you consider a software-defined network as a distributed state machine,
 with individual processes sending messages between themselves, one straightforward approach is
 to account for potential causality: if an external input does not induce any messages before
@@ -98,17 +99,17 @@ cannot possibly have affected the outcome~\cite{Lamport:1978:TCO:359545.359563}.
 Unfortunately, pruning only those inputs without a potential causal relation to
 the invalid configuration does not
 significantly reduce the number of inputs.
+}
 
 Our approach is to prune inputs from the original run, replay the remaining
 inputs to the control software using simulated network devices, and
 check whether the network re-enters the invalid configuration.
-In particular, we generalize delta
-debugging~\cite{Zeller:2002:SIF:506201.506206}---an algorithm for
-minimizing test cases that are inserted at a single
-point in time to a single program---to a distributed environment, where inputs
-are spread across time and involve multiple machines. \scott{I think you give
-too much credit to delta debugging}
-
+%In particular, we generalize delta
+%debugging~\cite{Zeller:2002:SIF:506201.506206}---an algorithm for
+%minimizing test cases that are inserted at a single
+%point in time to a single program---to a distributed environment, where inputs
+%are spread across time and involve multiple machines. \scott{I think you give
+%too much credit to delta debugging}
 The main difficulty in pruning historical inputs is
 coping with divergent histories. Traditional replay
 techniques~\cite{Dunlap:2002:REI:844128.844148,Geels:2006:RDD:1267359.1267386}
@@ -142,9 +143,9 @@ enter an invalid configuration in the first place.
 
 We have applied our approach to three open source SDN control
 platforms: Floodlight~\cite{bigswitch}, POX~\cite{pox}, and NOX~\cite{nox}.
-Of the five bugs we encountered in a five day investigation,
-we reduced the size of the input trace to 2 events in the best case
-and 18 events in the worst case.
+We present three case studies of bugs we have found in each of
+these controllers, and illustrate how the minimized sequences our system found
+were valuable for finding the root causes of the bugs.
 
 In the next section we formally define the problem of isolating fault-inducing
 inputs to distributed systems. We then outline our approach in
