@@ -75,8 +75,8 @@ failure, along with the timing depicted in Figure~\ref{fig:example}.
 \label{subsec:algorithm}
 
 Given a log $(E_L, T_L, C_L)$ exhibiting an invariant violation,
-our goal is to identify its MCS. In a brute force fashion,
-the most obvious way to achieve this goal involves exploring all timings $T$ for each
+our goal is to identify its MCS. One apparent way to achieve this goal
+involves exploring all timings $T$ for each
 subsequence of $E_L$, feeding each one to a replay mechanism (which we
 describe in \S\ref{sec:systems_challenges}) and checking whether the bug
 persists. This approach is clearly intractable though, so we seek a more efficient
@@ -86,14 +86,14 @@ We find a more efficient algorithm for searching subsequences of $E_L$ from
 the software engineering community: the original formulation of delta debugging~\cite{Zeller:1999:YMP:318773.318946}
 takes a single input (\eg~an HTML page)
 for a non-distributed program (\eg~Firefox), and performs a divide-and-conquer
-search, repeatedly runs the program on subsets of the input
+search, repeatedly running the program on subsets of the input
 until finding a minimal subset (\eg~a single tag) that is sufficient
 for triggering a known bug. Specifically, delta debugging finds a locally minimal
 causal sequence~\cite{Zeller:1999:YMP:318773.318946},
 meaning that if any input from the sequence is pruned, no invariant violation
 occurs. We can similarly explore subsequences of the distributed inputs $E_L$ by
 letting delta debugging iteratively select subsequences, replaying each subsequence with
-some timing $T$ to test whether the bug persists.
+some timing $T$, and checking whether the bug persists.
 The delta debugging algorithm is shown in
 Figure~\ref{fig:ddmin} (with `$test$' replaced by `$replay$'). \colin{Remove
 figure if squeezed for space.}
@@ -192,7 +192,7 @@ timing of those subsequences throughout delta debugging's replays is crucial for
 reproducing the
 invariant violation. We tried and failed to reproduce errors when scheduling
 replayed input sequences
-with the following na\"ive scheduling algorithm, even before began modifying
+with this simple scheduling algorithm, even before we began modifying
 those inputs:
 \begin{align*}
 t'_0 = 0 \\
@@ -208,9 +208,9 @@ message receipts, timers going off, or internal state
 changes like the backup node in the Floodlight example deciding to elevate
 itself to master; if the ordering of inputs and internal events is
 perturbed, the final output may differ.
-Consider for example that if a controller's garbage collector happens to run
-while we replay inputs, it may delay an internal state transition until
-after the simulator injects an input that depended on it in the original run.
+%Consider for example that if a controller's garbage collector happens to run
+%while we replay inputs, it may delay an internal state transition until
+%after the simulator injects an input that depended on it in the original run.
 
 Our challenge is to maintain causal relationships.
 Formally, to reliably reproduce the original invariant violation
@@ -302,7 +302,7 @@ define equivalence classes.}
 \subsection{Handling Absent Internal Events}
 \label{subsec:divergence}
 
-Given an equivalence relation over internal events, replay
+Given an equivalence relation over internal events, $replay$
 is responsible for maintaining equivalent happens-before constraints from the
 original execution.
 But syntactic differences are not the
@@ -319,9 +319,8 @@ master will never receive a link failure notification and
 transition to and from `Send Flush'.
 }
 
-To ensure that delta-debugging finds minimal causal sequences that do not contain those
-absent internal events, we proceed with replay.
-Specifically, our approach is to wait for expected equivalent internal events, but time out and proceed
+We would like delta-debugging to find minimal causal sequences that do not contain those
+absent internal events. We therefore wait for expected equivalent internal events, but time out and proceed
 if they do not occur within a certain time \textepsilon.
 
 In most cases this approach successfully reproduces the original invariant
@@ -432,12 +431,13 @@ always injecting the next input when its last expected predecessor
 either occurs or times out. This ensures that we always find suffixes that
 contain only a subset of the (equivalent) original internal events, but leaves open the
 possibility of finding divergent suffixes that still lead to the invariant
-violation. This is reasonable because not even branching on new
-internal events is guaranteed to find the globally shortest fault-inducing input
-sequence:
-there may be other unknown
-paths through the state machine leading to the invariant violation that are
-completely disjoint from the original execution.
+violation.
+%This is reasonable because not even branching on new
+%internal events is guaranteed to find the globally shortest fault-inducing input
+%sequence:
+%there may be other unknown
+%paths through the state machine leading to the invariant violation that are
+%completely disjoint from the original execution.
 
 \eat{
 Luckily, crucially ambiguous new internal events are not problematic for the
@@ -459,6 +459,6 @@ the controllers quickly converge to a single state (either ``Master'' or
 
 In the next section we describe some
 of the practical challenges we have overcome to realize our approach.
-We have ultimately found with our system that applying delta debugging to explore
-subsequences of $E_L$ and striving to ensure that our timing $T$ maintains
+In our initial experiments we have found that applying delta debugging to explore
+subsequences of $E_L$ and striving to maintain a single timing $T$ that maintains
 causal dependencies reliably finds small MCSs.

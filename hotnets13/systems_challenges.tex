@@ -1,4 +1,4 @@
-The core piece of technical infrastructure we need to realize our approach is a
+The core piece of infrastructure we need to realize our approach is a
 mechanism to replay execution logs. Building such a replay mechanism comes
 with many challenges; unlike the example applications described
 by the original delta debugging paper~\cite{Zeller:1999:YMP:318773.318946}, the system we are troubleshooting is not a
@@ -13,7 +13,7 @@ a single machine. We then run the control software on
 top of this simulator and connect the software switches to the controllers as if they were true
 network devices, such that the controllers believe they are configuring a true
 network. This setup allows the simulator to interpose on all communication
-channels. The simulator uses these interposition points to delay, drop, or reorder
+channels and delay, drop, or reorder
 messages as needed. The overall
 simulation architecture is depicted in
 Figure~\ref{fig:architecture}.
@@ -31,17 +31,17 @@ bugs. Our most common use case involves generating randomly chosen input
 sequences~\cite{Miller:1990:ESR:96267.96279}, feeding them to controller(s),
 and monitoring
 invariants~\cite{hsa} at chosen intervals.
-We also run the simulator interactively to generate replayable integration
-tests, so that we can examine the state of any part of the simulated network,
+We also run the simulator interactively
+so that we can examine the state of any part of the simulated network,
 observe and manipulate messages, and follow our
 intuition to induce orderings that they believe may trigger bugs.
-In either case, injecting the inputs from a single process
-allows the simulator to trivially record a global event ordering
-by logging all events at a single location.
+In either case, controlling the inputs from a single location
+allows the simulator to trivially record a global, causally-consistent
+event ordering.
 
 After discovering an invariant violation of interest, the simulator replays
-the logged sequence of inputs (\eg~link failures, controller crashes, host migrations,
-or policy changes). As an illustrative example, the simulator replays link failures
+the logged sequence of inputs (such as link failures, controller crashes, host migrations,
+or policy changes). For example, the simulator replays link failures
 by disconnecting the edge in the simulated network, and sending a
 port status message from the adjacent switches to their parent controller(s).
 
@@ -63,11 +63,12 @@ events (shown in Table \ref{tab:inputs}), but does not support policy changes,
 which have more complex semantics.
 }
 
+\colin{Cut? 15,000 LOC systems don't jive so well with HotNet's agenda}
 \projectname~(\projectmeaning) is our realization of this simulator.
 \projectname~is implemented in roughly 15,000 lines of Python in
 addition to the Hassel network invariant checking library~\cite{hsa}. We have
 made the code
-for \projectname~publicly available\footnote{Omitted to preserve anonymity.}
+for \projectname~publicly available\footnote{Omitted to preserve anonymity.}.
 To date, three industrial SDN companies have expressed interest in adopting it.
 
 \subsection{Mitigating Non-Determinism}

@@ -1,6 +1,6 @@
 \label{subsec:non_goals}
 
-Having detailed the specifics of our approach and illustrated some use cases, we now
+Having detailed the specifics of our approach and illustrated several use cases, we now
 clarify the scope of our technique's use.
 
 \noindent{\bf Partial Visibility.} Our event scheduling algorithm assumes that
@@ -44,7 +44,7 @@ occurs. \colin{Need to mention monotonicity, consistency, unambiguity here}
 We are primarily focused on correctness bugs, not performance bugs.
 
 \noindent{\bf Complexity}
-The overall runtime of delta debugging with replays is
+The overall runtime of our technique is
 $O(nlog\,n)$ in the number of replayed inputs in the best case,
 and $O(n^2)$ in the worst case. We are currently exploring techniques such as
 parallelization and snapshotting for improving the overall runtime.

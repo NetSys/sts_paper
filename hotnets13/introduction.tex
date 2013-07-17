@@ -130,7 +130,8 @@ Painstaking manual analysis of logs is the
 {\em de facto} method of troubleshooting production SDN control software
 today. As far as we know, our work
 is the first to programmatically isolate fault-inducing inputs to a distributed
-system. Record and replay techniques such as
+system.
+\eat{Record and replay techniques such as
 OFRewind~\cite{ofrewind} and liblog~\cite{Geels:2006:RDD:1267359.1267386}
 allow you to manually step through the original execution and verify whether a
 set of inputs triggered a bug,
@@ -140,6 +141,7 @@ Tracing tools such as ndb~\cite{handigol2012debugger} provide
 a historical view into dataplane (mis)behavior. In contrast, our technique provides
 information about precisely what caused the network to
 enter an invalid configuration in the first place.
+}
 
 We have applied our approach to three open source SDN control
 platforms: Floodlight~\cite{bigswitch}, POX~\cite{pox}, and NOX~\cite{nox}.

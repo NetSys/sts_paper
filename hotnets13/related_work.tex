@@ -1,37 +1,9 @@
 \colin{Should cite Interactive Debugging for ISPs~\cite{lin2009towards}.}
 
-Our work spans three fields: software engineering, systems and networking, and
+Our work spans three fields: systems and networking, software engineering, and
 programming languages.
 \colin{Misleading to say that we span Programming Languages. Should lump in
 with SE...}
-
-\noindent{\bf Software Engineering}
-The software engineering community has developed a long line of tools for automating
-aspects of the troubleshooting process.
-
-Sherlog~\cite{Yuan:2010:SED:1736020.1736038} takes on-site logs from a
-single program that ended in a failure as input, and applies static analysis to infer the
-program execution (both code paths and data values) that lead up to the failure.
-%Along a similar vein, execution
-%synthesis~\cite{Zamfir:2010:EST:1755913.1755946} takes a program and a bug
-%report as input, and employs symbolic execution to find a thread schedule that will
-%reproduce the failure.
-The authors of delta debugging
-applied their technique to multi-threaded (single-core) programs
-to identify the minimum set of thread
-switches from a thread schedule (a single input file) that reproduces
-a race condition~\cite{choi2002isolating}. Chronus presents a simpler search
-algorithm than delta debugging that is specific to configuration
-debugging~\cite{whitaker2004configuration}.
-All of these techniques focus on troubleshooting single, non-distributed
-systems.
-
-Rx~\cite{qin2005rx} is a technique for improving availability: upon
-encountering a crash, it starts from a previous checkpoint, fuzzes
-the environment (\eg~random number generator seeds) to avoid triggering the same bug,
-and restarts the program. Our
-approach perturbs the inputs rather than the environment
-prior to a failure.
 
 \noindent{\bf Systems and Networking}
 The systems and networking community has also developed a substantial
@@ -93,28 +65,34 @@ components (\eg~link failures) needed to explain a collection of alarms. Rather 
 focusing on individual component failures, we seek to minimize inputs that affect the behavior
 of the overall distributed system.
 
-% Debug Determinism~\cite{zamfir2011debug}: suggests that replay debuggers should not seek to achieve
-% perfect fidelity -- the utility of the replay can still be high, even if all failure modes can't be reproduced.
-% Our approach follows this argument: can't catch everything, but it's still useful!
+\noindent{\bf Software Engineering \& Programming Languages}
+The software engineering community has developed a long line of tools for automating
+aspects of the troubleshooting process.
 
-\noindent{\bf Programming Languages}
-Finally, the programming languages community has developed
-numerous verification and static analysis techniques.
+Sherlog~\cite{Yuan:2010:SED:1736020.1736038} takes on-site logs from a
+single program that ended in a failure as input, and applies static analysis to infer the
+program execution (both code paths and data values) that lead up to the failure.
+%Along a similar vein, execution
+%synthesis~\cite{Zamfir:2010:EST:1755913.1755946} takes a program and a bug
+%report as input, and employs symbolic execution to find a thread schedule that will
+%reproduce the failure.
+The authors of delta debugging
+applied their technique to multi-threaded (single-core) programs
+to identify the minimum set of thread
+switches from a thread schedule (a single input file) that reproduces
+a race condition~\cite{choi2002isolating}. Chronus presents a simpler search
+algorithm than delta debugging that is specific to configuration
+debugging~\cite{whitaker2004configuration}.
+All of these techniques focus on troubleshooting single, non-distributed
+systems.
 
-\eat{
-Program slicing~\cite{weiser1981program} is a technique for finding the
-minimal subset
-of a program that could possibly affect (either through control flow or data
-flow) the result of a particular line of code.
-Our technique can be viewed in this light as a form of program slicing,
-except
-that our `program' is a distributed event schedule,
-and the end result we are interested in is the network misconfiguration at
-he end of the
-execution.
-}
+Rx~\cite{qin2005rx} is a technique for improving availability: upon
+encountering a crash, it starts from a previous checkpoint, fuzzes
+the environment (\eg~random number generator seeds) to avoid triggering the same bug,
+and restarts the program. Our
+approach perturbs the inputs rather than the environment
+prior to a failure.
 
-% NICE isn't *really* from the PL community
 Model checkers such as Mace~\cite{Killian:2007:MLS:1250734.1250755} and
 NICE~\cite{nice} enumerate all possible code paths taken by control software (NOX)
 and identify concrete inputs that cause
@@ -124,7 +102,7 @@ state explosion when run on large systems. For example, NICE took 30 hours to
 model check a network with two switches, two hosts, the MAC-learning
 control program (98 LoC), and five concurrent
 messages between the hosts~\cite{nice}. Rather than exploring all
-possibilities, we take as input a particular event trace that is known to
-trigger a bug, and systematically enumerate subsequences of that event trace
+possibilities, we discover bugs through testing and systematically
+enumerate subsequences of their event traces
 in polynomial time.
 
