@@ -34,9 +34,9 @@ invariants~\cite{hsa} at chosen intervals.
 We also run the simulator interactively
 so that we can examine the state of any part of the simulated network,
 observe and manipulate messages, and follow our
-intuition to induce orderings that they believe may trigger bugs.
-In either case, controlling the inputs from a single location
-allows the simulator to trivially record a global, causally-consistent
+intuition to induce orderings that we believe may trigger bugs.
+Either way, controlling the inputs from a single location
+allows the simulator to easily record a global, causally-consistent
 event ordering.
 
 After discovering an invariant violation of interest, the simulator replays
@@ -68,13 +68,19 @@ which have more complex semantics.
 \projectname~is implemented in roughly 15,000 lines of Python in
 addition to the Hassel network invariant checking library~\cite{hsa}. We have
 made the code
-for \projectname~publicly available\footnote{Omitted to preserve anonymity.}.
+for \projectname~publicly available.\footnote{Omitted to preserve anonymity.}
 To date, three industrial SDN companies have expressed interest in adopting it.
 
 \subsection{Mitigating Non-Determinism}
 
 We designed \projectname~to be as resilient to non-determinism as is
 practically feasible, while avoiding modifications to control software whenever possible.
+Routing the {\tt gettimeofday()} syscall
+through \projectname~makes replay more resilient to alterations in execution
+speeds.\footnote{When the pruned trace differs from the original, we make a
+best-effort guess at what the return values of these calls should be. For example,
+if the altered execution invokes {\tt gettimeofday()} more times than we recorded
+in the initial run, we interpolate the time values of neighboring events}
 When sending data over multiple sockets, the operating system exhibits
 non-determinism in the order it schedules the socket I/O operations.
 \projectname~optionally ensures a deterministic order of messages
@@ -97,15 +103,6 @@ during recording, we force the control software to block at internal state
 transition points again during replay
 until \projectname~gives explicit acknowledgment.
 
-Routing the {\tt gettimeofday()} syscall
-through \projectname~makes replay more resilient to alterations in execution
-speeds.\footnote{When the pruned trace differs from the original, we make a
-best-effort guess at what the return values of these calls should be. For example,
-if the altered execution invokes {\tt gettimeofday()} more times than we recorded
-in the initial run, we interpolate the time values of neighboring events}
-%As an added benefit, overriding {\tt gettimeofday()} allows us to `compress'
-%runtime in some cases (similar to time-warped emulation~\cite{Gupta06toinfinity}).
-
 \subsection{Coping with Non-Determinism}
 
 Our current implementation does not account for other sources of non-determinism,
@@ -125,3 +122,75 @@ works strongly in our favor; for example, even if the original bug is
 triggered in only 20\% of replays, the probability that we will not trigger
 it during an intermediate delta debugging replay is approximately
 10\% if we replay 10 times per subsequence.
+
+\subsection{Limitations}
+\label{subsec:non_goals}
+
+Having detailed the specifics of our approach we now
+clarify the scope of our technique's use.
+
+\noindent{\bf Partial Visibility.} Our event scheduling algorithm assumes that
+it has visibility into the occurrence of all relevant internal events. This
+may involve substantial instrumentation effort beyond
+pre-existing log statements.
+
+\noindent{\bf Non-determinism Within Individual Controllers.} Our techique is not designed to reproduce bugs
+involving non-determinism within a single controller (\eg~race-conditions between threads);
+we focus on coarser granularity errors (\eg~incorrect failover logic).
+%The upshot of
+%this is that our technique is not able to minimize all possible failures.
+%Nonetheless, our worst case is that the developer ends up with what they started:
+%an unpruned log.
+
+\eat{That said, if the developer is willing to instrument their system to
+provide finer granularity log messages (\cf~\cite{Geels:2006:RDD:1267359.1267386}),
+our approach readily supports deterministic replay.}
+
+\eat{
+\noindent{\bf Troubleshooting vs.\ Debugging.} Our technique is a troubleshooting tool, not a debugger;
+by this we mean that our approach helps identify and localize inputs that
+trigger erroneous behavior, but it does not directly identify which
+line(s) of code cause the error.}
+
+\noindent{\bf Bugs Outside the Control Software.} Our goal is not to find the root
+cause of individual component failures in the system (\eg~misbehaving routers,
+link failures). Instead, we focus on
+how the distributed system as a whole reacts to the occurrence of such inputs.
+%If there is a bug in your switch, you will need to contact your hardware vendor;
+%if you have a bug in your policy specification, you will need to take a closer look at what you specified.
+
+%\noindent{\bf Globally vs.\ Locally Minimal Input Sequences.}
+%Our approach is not guaranteed to find the globally minimal
+%causal sequence from an input trace, since this enumerating the powerset of
+%$E_L$ in the worst case (a $O(2^n)$ operation).
+%The delta debugging algorithm we employ does provably find a
+%locally minimal causal sequence~\cite{Zeller:1999:YMP:318773.318946},
+%meaning that if any input from the sequence is pruned, no invariant violation
+%occurs. \colin{Need to mention monotonicity, consistency, unambiguity here}
+
+\noindent{\bf Correctness vs.\ Performance.}
+We are primarily focused on correctness bugs, not performance bugs.
+
+\noindent{\bf Complexity.}
+The overall runtime of our technique is
+$O(nlog\,n)$ in the number of replayed inputs in the best case,
+and $O(n^2)$ in the worst case.
+%We are currently exploring techniques such as
+%parallelization and snapshotting for improving the overall runtime.
+
+\noindent{\bf Bugs Found Through Fuzzing.}
+We generate bug traces primarily through fuzz testing, not from real bugs
+found in operation. In practice some bugs
+found through fuzzing will not be considered worthwhile to investigate.
+
+\eat{
+\noindent{\bf Proactive vs.\ Reactive Configuration.} We focus primarily on
+\emph{proactive} configuration, where controllers react to policy and topology changes, but
+not necessarily individual packets or flows events in the
+dataplane.\footnote{Production controllers typically adopt this model for
+performance reasons.}
+The main challenge in extending our approach to reactive controllers is
+achieving efficient simulation of dataplane traffic.
+\andi{Could cut this. We actually find reactive bugs}
+}
+
