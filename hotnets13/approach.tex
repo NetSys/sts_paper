@@ -50,7 +50,7 @@ events (both external and internal) that precede it in the happens-before
 relation ($\{i \mid i \rightarrow e\}$) from the original execution have
 occurred~\cite{tel2000introduction}.
 
-Unfortunately, it is difficult to reason about causality when going from original log (which reproduces the violation) to a subsequence of external events (which may or may not reproduce that violation).  To make progress we  analyze the nature of causality in the original log (based on Lamport Clocks and other aids), and then draw inferences about causality in the replay of the subsequence.  This involves three issues: making equivalences between internal events in the two replays, dealing with internal events that show up in the original replay but not the subsequence replay, and dealing with internal events that were not present in the original replay but appear in the subsequence replay.
+Unfortunately, it is difficult to reason about causality when going from the original log (which reproduces the violation) to a subsequence of external events (which may or may not reproduce that violation).  To make progress we  analyze the nature of causality in the original log (based on Lamport Clocks and other aids), and then draw inferences about causality in the replay of the subsequence.  This involves three issues: making equivalences between internal events in the two replays, dealing with internal events that show up in the original replay but not the subsequence replay, and dealing with internal events that were not present in the original replay but appear in the subsequence replay.
 
 \eat{
 \colin{Somewhat redundant. Maybe wait until use cases.}
