@@ -1,13 +1,67 @@
-Real-world question: does MCS help developers find bugs?
+We have applied \projectname~to the routing applications\footnote{At the time
+we conducted these experiments, routing was among the most complex
+SDN applications available in the public domain. We are currently investigating
+distributed controllers with more complex applications such as network virtualization,
+which have recently become publicly available. We believe bugs involving
+distribution are particularly amenable to techniques such as ours.} of three open
+source SDN control platforms:
+POX~\cite{pox}, NOX~\cite{nox}, and Floodlight~\cite{bigswitch}. We illustrate
+bugs we found in each of these controllers to illustrate
+how the minimized traces our technique produced were valuable in
+understanding the bugs' root causes.
 
-\begin{outline}
-\1 Case study 1: POX in-flight blackhole [anecdotes from Murphy]
-\1 Case study 2: NOX loop [TBD: anecdotes from Amin]
-\1 Case study 3: Floodlight loops [TBD: anecdotes from Andi]
-\end{outline}
+\subsection{POX In-Flight Blackhole}
+After roughly 20 runs of randomly generated inputs,
+we noticed that \projectname~reported a persistent blackhole while
+POX was bootstrapping its
+discovery of link and host locations in a small 2-switch, 2-host network.
+There were $29$ inputs in the initial trace, and \simulator~returned a $11$ input
+MCS.
 
-\colin{Should mention that distributed controllers have only recently come out in the
-public domain--at the time we performed these case studies, there were very
-few open source SDN applications more complex than routing.}
+We provided the MCS to the lead developer of POX. Primarily using the
+console output, we were able to trace through the code and identify the problem
+within 7 minutes, and were able to find a fix for the race condition within 40
+minutes. By matching the console output with the code, he found that the crucial
+triggering events were two
+in-flight packets (set in motion by prior traffic injection events):
+POX first incorrectly learned a host location as a result of the first in-flight
+packet showing up immediately after POX discovered that that port belonged to
+a switch-switch link--apparently the code had not accounted for the
+possibilty of in-flight packets directly following link discovery--and
+then as a result the
+second in-flight packet
+POX failed to return out of a nested conditional that would have
+otherwise prevented the blackholed routing entries from being installed.
+
+Although the initial trace was fairly small to begin with, knowing that every
+input in the MCS was necessary for triggering the race condition allowed us to
+avoid the
+possibility of being mislead by extraneous diagnostic information while
+tracing through the many potentially faulty code paths.
+
+\subsection{NOX Discovery Loop}
+
+We initially tested NOX on a two node topology, but did not find any immediate
+problems. We then extended the topology to a four-node mesh, and discovered a
+routing loop between two switches (involving routes for two hosts) within
+roughly $20$ runs of randomly generated inputs.
+
+Our initial input size was $150$ inputs, a minute's worth of execution.
+\Simulator~returned a $18$ input MCS.
+
+\colin{Root cause case study TBD!}
+
+\subsection{Floodlight Discovery Loop}
+
+In an hour-long experiment,
+our fuzzer found an event sequence with $284$ total events
+that caused the Floodlight routing module to produce a 3-node forwarding loop.
+
+\Simulator~was able to reduce the number of input events to $36$ input events.
+Comparing output traces of successful and
+unsuccessful runs, we noticed that the bug seems to correlate with specific
+thread level race conditions between state updates in the \emph{LinkDiscovery} module and
+the \emph{Forwarding} module. We are in the process of investigating the actual root cause.
+
 
 \colin{Should mention how many other bugs we found.}
