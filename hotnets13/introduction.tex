@@ -4,7 +4,8 @@ servers~\cite{floodlight},
 providing isolation and resource arbitration between multiple
 tenants~\cite{Casado:2010:VNF:1921151.1921162}, and
 globally optimizing network utilization~\cite{urs}.
-As with any highly complex codebase, software bugs are an unpleasant but everpresent fact-of-life. In fact, based on anecdotal evidence from colleagues in the industry, it seems clear that
+As with any highly complex codebase, software bugs are an unpleasant but everpresent fact-of-life.
+In fact, based on anecdotal evidence from colleagues in the industry, it seems clear that
 developers of software-defined networks spend much of their time
 troubleshooting bugs. This should be no surprise, since software developers in
 general spend roughly half (49\% according to one
@@ -51,11 +52,12 @@ which is prima facie evidence for a bug, our goal is
 to automatically filter out individual inputs to the SDN software (\eg~link failures)
 that are not relevant to triggering the bug, leaving a small sequence of inputs
 that is directly responsible.
-This would go a long way towards achieving ``automated troubleshooting.'' Our approach is very similar in spirit to delta debugging~\cite{Zeller:1999:YMP:318773.318946}, but involves a very different set of technical challenges since networks are distributed asynchronous systems.
+This would go a long way towards achieving ``automated troubleshooting.''
+Our approach is nearly identical in spirit to delta debugging~\cite{Zeller:1999:YMP:318773.318946},
+but involves a substantially different set of technical challenges since networks are
+distributed asynchronous systems rather than programs.
 
-In the next section we formally define the problem of isolating fault-inducing
-inputs to distributed systems. We then outline our approach in
-\S\ref{sec:approach}, and the
-system we built to realize our approach in \S\ref{sec:systems_challenges}.
+In the next section we give a formal definition of our approach, and then spend
+the bulk of the paper describing how realize this formalism.
 We end by describing preliminary case studies that illustrate how minimized
 input logs help software developers fix bugs.
