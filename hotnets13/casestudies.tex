@@ -15,7 +15,7 @@ After roughly 20 runs of randomly generated inputs,
 we noticed that \projectname~reported a persistent blackhole while
 POX was bootstrapping its
 discovery of link and host locations in a small 2-switch, 2-host network.
-There were $29$ inputs in the initial trace, and \simulator~returned a $11$ input
+There were $29$ inputs in the initial trace, and \projectname~returned a $11$ input
 MCS.
 
 We provided the MCS to the lead developer of POX. Primarily using the
@@ -26,8 +26,8 @@ triggering events were two
 in-flight packets (set in motion by prior traffic injection events):
 POX first incorrectly learned a host location as a result of the first in-flight
 packet showing up immediately after POX discovered that that port belonged to
-a switch-switch link--apparently the code had not accounted for the
-possibilty of in-flight packets directly following link discovery--and
+a switch-switch link -- apparently the code had not accounted for the
+possibilty of in-flight packets directly following link discovery -- and
 then as a result the
 second in-flight packet
 POX failed to return out of a nested conditional that would have

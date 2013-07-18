@@ -1,4 +1,4 @@
-\colin{Need to clearly define ``timing'': Scott: not sure we need to...}
+
 We represent the forwarding state of the network
 at a particular time as a configuration $c$, which contains all the forwarding
 entries in the network
@@ -31,7 +31,7 @@ If the original log $(E_L, T_L, C_L)$ violated predicate $P$
 then we say $replay(E_L,T) = C_R$ reproduces that invariant violation if
 $\exists_{\hat{c}_i \in C_R}. \overline{P}(\hat{c}_i)$.
 
-The goal of our work is to find a small sequence of events that reproduces an
+The goal of our work is, when given a log $(E_L, T_L, C_L)$ that violates a predicate $P$, to find a small sequence of events that reproduces that
 invariant violation.  More formally, we define a minimal causal sequence (MCS)
 to be a subsequence $E_M$
 of $E_L$ and a timing $T_M$ such
@@ -49,5 +49,4 @@ all subsequence and timings, but this is clearly impractical given the large siz
 infinitely large set of possible timings. Thus, we must approximate MCSes by finding good heuristics
 for which events to eliminate and, more importantly, which timings to test.
 
-In the next section we describe our heuristics, and we follow that in \S\ref{sec:systems_challenges} with
-a description of the system we built (and the challenges inherent therein) to realize our approach.
+In the next section we describe our heuristics for finding MCSes, and then describe the system we built in \S\ref{sec:systems_challenges} to implement these heuristics. The key component of this system is a troubleshooting simulator that can execute the $replay()$ function. Because we do not have access to operational logs, all of our focus is on producing bugs within this simulator and then finding the relevant MCSes that trigger these bugs.

@@ -68,8 +68,7 @@ which have more complex semantics.
 \projectname~is implemented in roughly 15,000 lines of Python in
 addition to the Hassel network invariant checking library~\cite{hsa}. We have
 made the code
-for \projectname~publicly available.\footnote{Omitted to preserve anonymity.}
-To date, three industrial SDN companies have expressed interest in adopting it.
+for \projectname~publicly available\footnote{Omitted to preserve anonymity.} and have discussed its internal use with several commercial companies.
 
 \subsection{Mitigating Non-Determinism}
 
@@ -114,13 +113,12 @@ replay in all cases without full visibility into internal events--a daunting
 instrumentation task.
 
 Fortunately we can cope with cases of excessive non-determinism by replaying each subsequence chosen
-by delta debugging multiple times. Assuming that non-determinism
-is an independent and identically distributed random variable, multiple
-replays yields a Bernoulli distribution $P = (1-p)^{n}$ for whether we will fail to
-trigger a latent bug after $n$ replays. The Bernoulli distribution
+by delta debugging multiple times. If the non-determinism of observing the bug
+is an independent and identically distributed random variable (which is an optimistic assumption) with some underlying probability $p$, then $n$
+replays will observe the bug with probability $1-(1-p)^{n}$. The exponential
 works strongly in our favor; for example, even if the original bug is
 triggered in only 20\% of replays, the probability that we will not trigger
-it during an intermediate delta debugging replay is approximately
+it during an intermediate replay is approximately
 10\% if we replay 10 times per subsequence.
 
 \subsection{Limitations}
@@ -180,8 +178,12 @@ and $O(n^2)$ in the worst case.
 
 \noindent{\bf Bugs Found Through Fuzzing.}
 We generate bug traces primarily through fuzz testing, not from real bugs
-found in operation. In practice some bugs
-found through fuzzing will not be considered worthwhile to investigate.
+found in operation. There is a substantial practical hurdle in instrumenting operational systems to produce logs that can be injected into our system, and we have not addressed those issues yet.
+%In practice some bugs
+%found through fuzzing will not be considered worthwhile to investigate.
+
+\noindent{\bf Scaling.}
+Our discussions with companies with large SDN deployments suggest that scaling to the size of the large logs they collect will be a substantial challenge.  On the other hand, the fact that these logs are so large makes the need for finding MCSes even more acute.
 
 \eat{
 \noindent{\bf Proactive vs.\ Reactive Configuration.} We focus primarily on

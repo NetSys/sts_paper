@@ -11,7 +11,7 @@ approach to achieving our first task. We can do better by leveraging a
 divide-and-conquer search technique from the software engineering community:
 the delta
 debugging algorithm~\cite{Zeller:1999:YMP:318773.318946} provides a provably
-correct\footnote{The original formulation of delta debugging\cite{Zeller:1999:YMP:318773.318946}
+correct\footnote{We do not have room to delve into the details of delta-debugging, but a few comments might be helpful. The original formulation of delta debugging\cite{Zeller:1999:YMP:318773.318946}
 made three
 assumptions about inputs: monotonicity, unambiguity, and consistency.
 Violating the first two only leads to slightly inflated MCSes. We ensure that
@@ -26,44 +26,31 @@ debugging to iteratively select subsequences of $E_L$, replay each
 subsequence with
 some timing $T$, and check whether the bug persists. If the bug persists,
 delta debugging ignores the
-other inputs, and procee
+other inputs, and proceeds with the search for an MCS within this subsequence.
+In what follows, we use the term {\em delta-debugging} to refer to our algorithm for finding relevant subsequences.
 
 \subsection{Searching for Timings}
 \label{subsec:algorithm}
 
 Simply exploring subsequences of $E_L$ does not suffice to find
 minimal causal sequences: the
-timing of those subsequences throughout delta debugging's replays is crucial for reliably
+timing of those subsequences during replays is crucial for reliably
 reproducing the
-invariant violation. We tried and failed to reproduce errors when scheduling
-replayed input sequences
-with this simple scheduling algorithm, even before we began modifying
-those inputs:
+invariant violation. The most natural timing would be to maintain relative timings, to the extent possible.  For instance, if we
+define $t_i$ as the timestamp of the $i^{th}$ input from the original run and $t'_i$ as the replay clock value when it injects that same input (which may or may not be the $i$'th input in the subsequence), then the following is a plausible way to assign timings:
 \begin{align*}
-t'_0 = 0 \\
+t'_0 = t_0 \\
 t'_i = t'_{i-1} + |t_{i} - t_{i-1}|
 \end{align*}
-where $t'_i$ is the simulation's clock value when it injects the $i^{th}$ input, and $t_i$ is
-the timestamp of the $i^{th}$ input from the original run. In other words, simply
-maintaining the relative timing between inputs is not sufficient.
-
-The problem with the simple scheduling algorithm is that it does not take into
-account events that are internal to the control software, such as
-message receipts, timers going off, or internal state
-changes like the backup node in the Floodlight example deciding to elevate
-itself to master; if the ordering of inputs and internal events is
-perturbed, the final output may differ.
-%Consider for example that if a controller's garbage collector happens to run
-%while we replay inputs, it may delay an internal state transition until
-%after the simulator injects an input that depended on it in the original run.
-
-Our challenge is to maintain causal relationships.
-Formally, to reliably reproduce the original invariant violation
+Unfortunately, this approach does not work in practice because, while it maintains relative timings, it can violate causal relationships.
+To reliably reproduce the original invariant violation
 we need to
-inject an external input $e$ at exactly the point when all other
+inject an external input $e$ only after all other
 events (both external and internal) that precede it in the happens-before
 relation ($\{i \mid i \rightarrow e\}$) from the original execution have
 occurred~\cite{tel2000introduction}.
+
+Unfortunately, it is difficult to reason about causality when injecting a new set of inputs.  Thus, we must deal with the relationship between the replay of one sequence and the replay of a subset of that sequence in order to draw inferences about causality in the latter by using information from the former.  This involves three issues: making equivalences between internal events in the two replays, dealing with internal events that show up in the original replay but not the subsequence replay, and dealing with internal events that were not present in the original replay but appear in the subsequence replay.
 
 \eat{
 \colin{Somewhat redundant. Maybe wait until use cases.}
@@ -211,10 +198,10 @@ in Figure~\ref{fig:peek}.
     \END
     \ENDPROCEDURE
   \end{pseudocode}
-  \label{fig:peek}
   \caption{{\tt Replay} is responsible for replaying subsequences of events
   chosen by delta debugging and determining
   if the bug reappears. \colin{Fix framebox width}}
+    \label{fig:peek}
 \end{figure}
 
 %\begin{figure}
