@@ -4,9 +4,9 @@ at a particular time as a configuration $c$, which contains all the forwarding
 entries in the network
 as well as the liveness of the various network elements.
 The network control plane is a system that takes a sequence of
-external network events $E = e_1,e_2,\dots,e_n$ (such as link failures) as input,
+external network events $E = e_1,e_2,\dots,e_m$ (such as link failures) as input,
 and produces a sequence of network configurations
-$C = c_1,c_2,\dots,c_m$.
+$C = c_1,c_2,\dots,c_n$.
 
 An invariant is a predicate $P$ over forwarding state (a safety
 condition, such a having no loops or blackholes). We say that a configuration
@@ -28,17 +28,26 @@ this does not always hold.
 
 If the original log $(E_L, T_L, C_L)$ violated predicate $P$
 (\ie~$\exists_{c_i \in C_L}. \overline{P}(c_i)$)
-then we say a $C_R = replay(E_L,T)$ reproduces that invariant violation if
+then we say $replay(E_L,T) = C_R$ reproduces that invariant violation if
 $\exists_{\hat{c}_i \in C_R}. \overline{P}(\hat{c}_i)$.
 
-The goal of our work is to find a small set of events that reproduces an invariant violation.  More formally, we define a minimal causal sequence (MCS) to a subsequence $E_M$
+The goal of our work is to find a small sequence of events that reproduces an
+invariant violation.  More formally, we define a minimal causal sequence (MCS)
+to be a subsequence $E_M$
 of $E_L$ and a timing $T_M$ such
 that $replay(E_M,T_M)$ reproduces the invariant violation, but for all proper
-subsets $E_N$ of $E_M$
-there is no timing $T$ s.t. $replay(E_N,T)$ reproduces the violation. That is, an MCS is a sequence and timing of external events that reproduces the violation, but that one cannot find a subset of the MCS that reproduce the violation.  Note that an MCS is not necessarily {\em globally} minimal, in that there could be smaller sequences that reproduce this violation, but are not subsets of this MCS.
+subsequences $E_N$ of $E_M$
+there is no timing $T$ s.t. $replay(E_N,T)$ reproduces the violation.
+That is, an MCS is a sequence and timing of external events that reproduces the violation,
+where one cannot find a subsequence of the MCS that reproduces the violation.
+Note that an MCS is not necessarily {\em globally} minimal, in that there could be smaller
+sequences that reproduce this violation, but are not subsequence of this MCS.
 
 Given a log $(E_L, T_L, C_L)$ exhibiting an invariant violation,
-our goal is to identify its MCS. We could do this through brute force, trying all subset and timings, but this is clearly impractical given the large size of logs and the infinitely large set of possible timings. Thus, we must approximate MCSs by finding good heuristics for which events to eliminate and, more fundamentally, which timings to test.
+our goal is to identify its MCS. We could do this through brute force, trying
+all subsequence and timings, but this is clearly impractical given the large size of logs and the
+infinitely large set of possible timings. Thus, we must approximate MCSs by finding good heuristics
+for which events to eliminate and, more importantly, which timings to test.
 
-In the next section we describe some heuristics, and then we follow that in \S\ref{sec:systems_challenges} with a description of the system we built (and the challenges inherent therein) to realize our approach.
-
+In the next section we describe our heuristics, and we follow that in \S\ref{sec:systems_challenges} with
+a description of the system we built (and the challenges inherent therein) to realize our approach.
