@@ -1,12 +1,13 @@
 \colin{Need to clearly define ``timing'': Scott: not sure we need to...}
-In this section we give a formal definition of our approach, and then spend the rest of the paper trying to live up to this formalism. \sam{not sure ``live up to'' is the best phrase. It almost sounds self-deprecating.} We represent the forwarding state of the network
+In this section we give a formal definition of our approach, and then spend
+the rest of the paper trying to realize this formalism. We represent the forwarding state of the network
 at a particular time as a configuration $c$, which contains all the forwarding
 entries in the network
 as well as the liveness of the various network elements.
 The network control plane is a system that takes a sequence of
-external network events $E = e_1,e_2,\dots,e_n$ \sam{making the events and the states line up makes it clearer} (such as link failures) as input,
+external network events $E = e_1,e_2,\dots,e_n$ (such as link failures) as input,
 and produces a sequence of network configurations
-$C = c_1,c_2,\dots,c_n$.
+$C = c_1,c_2,\dots,c_m$.
 
 An invariant is a predicate $P$ over forwarding state (a safety
 condition, such a having no loops or blackholes). We say that a configuration
@@ -18,18 +19,18 @@ timing information $T_L$ of the external events, and the resulting sequence of f
 configurations $C_L$.
 A replay of log $L$ involves replaying the external events along with a
 particular timing $T$,
-which need not be identical to the original timings $T_L$ \sam{mentioning $T_L$ again make it clear that $T$ is not necessarily $T_L$} captured in the log.
+which need not be identical to the original timings $T_L$ captured in the log.
 We denote a replay attempt by $replay(E_L,T)$.
 The output of $replay$ is a sequence of forwarding state configurations
 $C_R = \hat{c}_1,\hat{c}_2,\dots,\hat{c}_n$. In the ideal case $replay(E_L,T_L)$ reproduces the same
 sequence of network configurations as occurred in the original run
-(\ie~$\forall_i. c_i = \hat{c}_i$) \sam{is the dot after forall on purpose?}, but as we discuss later in the paper there are reasons why
+(\ie~$\forall_i. c_i = \hat{c}_i$), but as we discuss later in the paper there are reasons why
 this does not always hold.
 
 If the original log $(E_L, T_L, C_L)$ violated predicate $P$
-(\ie~$\exists_{c_i \in C_L}. \overline{P}(c_i)$) \sam{same with this dot after exists},
+(\ie~$\exists_{c_i \in C_L}. \overline{P}(c_i)$)
 then we say a $C_R = replay(E_L,T)$ reproduces that invariant violation if
-$\exists_{\hat{c}_i \in C_R}. \overline{P}(\hat{c}_i)$ \sam{and this dot, too}.
+$\exists_{\hat{c}_i \in C_R}. \overline{P}(\hat{c}_i)$.
 
 The goal of our work is to find a small set of events that reproduces an invariant violation.  More formally, we define a minimal causal sequence (MCS) to a subsequence $E_M$
 of $E_L$ and a timing $T_M$ such

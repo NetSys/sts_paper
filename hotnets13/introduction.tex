@@ -48,7 +48,7 @@ The smaller the set of triggering inputs, the easier debugging will be.
 Our focus here is on troubleshooting. When we observe an invalid
 configuration,
 which is prima facie evidence for a bug, our goal is
-to automatically filter out inputs to the SDN software (\eg~link failures) \sam{saying ``link failures'' makes it sound like you want to filter out {\em all} link failures}
+to automatically filter out individual inputs to the SDN software (\eg~link failures)
 that are not relevant to triggering the bug, leaving a small sequence of inputs
 that is directly responsible.
 This would go a long way towards achieving ``automated troubleshooting.'' Our approach is very similar in spirit to delta debugging~\cite{Zeller:1999:YMP:318773.318946}, but involves a very different set of technical challenges since networks are distributed asynchronous systems.
