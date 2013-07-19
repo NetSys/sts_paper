@@ -36,20 +36,25 @@ Simply exploring subsequences of $E_L$ does not suffice to find
 minimal causal sequences: the
 timing of those subsequences during replays is crucial for reliably
 reproducing the
-invariant violation. The most natural approach would be to maintain relative
-timings between inputs to the extent possible. For instance, if we
-define $t_i$ as the timestamp of the $i^{th}$ input from the original run and $t'_i$ as the replay clock value when it injects that same input (which may or may not be the $i$'th input in the subsequence), then the following is a plausible way to assign timings:
+invariant violation. The most natural approach would be to maintain the original
+timings. For instance, if we
+define $t_i$ as the timestamp of the $i^{th}$ input from the original run and $t'_i$ as the replay clock value when it injects that same input (which may or may not be the $i$'th input in the subsequence), then we might just set $t'_i = t_i$ 
+\eat{
 \begin{align*}
 t'_0 = t_0 \\
 t'_i = t'_{i-1} + |t_{i} - t_{i-1}|
 \end{align*}
-Unfortunately, this approach does not work in practice because, while it maintains relative timings, it can violate causal relationships.
-To reliably reproduce the original invariant violation
+}
+Unfortunately, this approach does not work in practice because it can violate causal relationships. The crucial point here is that one replays only a subset of the original set of inputs, the reaction of the underlying system can change. In so doing, its reactions to future events might be quite different under the altered input, and this might involve violating causality.
+
+More formally, to reliably reproduce the original invariant violation
 we need to
 inject an external input $e$ only after all other
 events (both external and internal) that precede it in the happens-before
 relation ($\{i \mid i \rightarrow e\}$) from the original execution have
-occurred~\cite{tel2000introduction}.
+occurred~\cite{tel2000introduction}. {\bf say something more here about happens-before??  what do we use to establish this??}
+
+\subsection{Preserving Causality}
 
 Unfortunately, it is difficult to reason about causal dependencies when transforming the original log
 (which reproduces the violation) to a subsequence of external events
@@ -84,11 +89,8 @@ successfully reproduce bugs.
 %so that relevant internal state changes are captured and visible to our
 %tool.
 
-\subsection{Functional Equivalence}
-\label{subsec:functional_equivalence}
-
-The first issue is that internal events may differ syntactically (\eg~sequence numbers
-of control packets may all differ) after modifying the original trace.
+{\bf Functional Equivalence: }The first issue is that internal events may differ syntactically (\eg~sequence numbers
+of control packets may all differ) when replaying a subsequence of the original log.
 We observe that many internal events are {\em functionally
 equivalent}, in the sense that they
 have the same effect on the state of the system with respect to triggering the
@@ -101,9 +103,8 @@ domain-specific masks over semantically extraneous fields of
 internal events.\footnote{One consequence
 of applying masks is that bugs involving masked fields are outside the purview of
 our approach.} We show four examples of masked values
-in Table~\ref{tab:fingerprints}. These masks define equivalence classes
-of internal events. Formally, we consider an internal event $i'$ observed in an altered trace
-equivalent to an internal event $i$ from the original trace iff all unmasked
+in Table~\ref{tab:fingerprints}. We consider an internal event $i'$ observed in the subsequence log
+equivalent (in the sense of inheriting all of its happens-before relations) to an internal event $i$ from the original log iff all unmasked
 fields have the same value
 and $i$ occurs between $i'$'s preceding and succeeding inputs in the
 happens-before relation.
@@ -134,17 +135,15 @@ define equivalence classes.}
 \label{tab:fingerprints}
 \end{table}
 
-\subsection{Handling Absent Internal Events}
-\label{subsec:divergence}
-
-Given an equivalence relation over internal events, $replay$
+{\bf Handling Absent Internal Events:}
+\eat{Given an equivalence relation over internal events, $replay$
 is responsible for maintaining equivalent happens-before constraints from the
 original execution.
 But syntactic differences are not the
 only possible change induced by pruning: internal events
 may also cease to appear.
 
-\eat{
+
 The structure of the control
 software's state machine (which we do not assume to know) determines whether
 internal events disappear. Consider the simplified state machines for the switch and
@@ -153,20 +152,16 @@ Figure~\ref{fig:state_machines}. If we prune the link failure input, the
 master will never receive a link failure notification and
 transition to and from `Send Flush'.
 }
-
-We would like to keep open the possibility of delta-debugging finding minimal causal sequences that do not contain those
-absent internal events. We therefore wait for expected equivalent internal events, but time out and proceed
+Some internal events that occurred in the original log, and which causally ``happen before'' some external event, may be absent when replaying a subsequence of that log. We therefore wait for expected equivalent internal events, but time out and proceed
 if they do not occur within a certain time \textepsilon.
-
-In most cases this heuristic successfully reproduces the original invariant
+\eat{In most cases this heuristic successfully reproduces the original invariant
 violation, assuming \textepsilon~is larger than variations in execution speeds
 between internal events. If the value of \textepsilon~is too large, however, we may end up
 waiting too long for the happens-before predecessors of an input $e_i$ such that a
 successor of $e_i$ occurs before we have injected $e_i$,
-thereby violating causality. If the event scheduling algorithm detects that it has waited too long, it
-replays the trace from the beginning up until the immediately prior input,\footnote{An alternative
-would be to take a snapshot of the controllers' state at every injected input
-and start from the latest snapshot.} this time
+thereby violating causality.}
+If the event scheduling algorithm detects that it has waited too long, it
+replays the log from the beginning up until the immediately prior input, this time
 knowing exactly which internal events in the current input interval are
 and are not going to occur before injecting the next input. We show the overall event scheduling algorithm
 in Figure~\ref{fig:peek}.
@@ -229,11 +224,9 @@ in Figure~\ref{fig:peek}.
 %\end{boxedminipage}
 %\end{figure}
 
-\subsection{Handling New Internal Events}
-\label{subsec:new_events}
-
+{\bf Handling New Internal Events:}
 The last possible change induced by input pruning is the occurrence of new
-internal events that were not observed in the original trace.
+internal events that were not observed in the original log.
 New events ultimately leave open multiple possibilities for where
 we should inject the next input. Consider the following case:
 if $i_2$ and $i_3$ are internal events observed
@@ -246,7 +239,7 @@ original run, we could inject the next input after $i_2$ or after $i_3$.
 %  \includegraphics[width=\linewidth,height=0.8in]{../diagrams/state_machines/event_sequence.pdf}
 %\end{wrapfigure}
 
-In the general case it is always possible to construct two state machines that lead
+\eat{In the general case it is always possible to construct two state machines that lead
 to differing outcomes: one that only leads to the invariant violation when
 we inject the next input
 before a new internal event, and one that only leads to the
@@ -254,7 +247,7 @@ invariant violation when we inject the next input after a new internal
 event. In other words, to be guaranteed to traverse any existing suffix that leads
 to the invariant violation, it is necessary to recursively branch, trying both
 possibilities for every new internal event. This implies an exponential number of
-possibilities to be explored in the worst case.
+possibilities to be explored in the worst case.}
 
 Exponential search is not a practical option. Our heuristic when waiting for expected internal
 events is to proceed normally if there are intermediate new internal events,
