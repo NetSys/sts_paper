@@ -1,7 +1,7 @@
 The core piece of infrastructure we need to realize our approach is a
 mechanism to replay execution logs. Building such a replay mechanism comes
 with many challenges; unlike the example applications described
-by the original delta debugging paper~\cite{Zeller:1999:YMP:318773.318946}, the system we are troubleshooting is not a
+by the delta debugging paper~\cite{Zeller:1999:YMP:318773.318946}, the system we are troubleshooting is not a
 single program--it encompasses all the nodes and links of a distributed system,
 including controllers, switches, and end-hosts. The asynchrony of distributed
 systems makes it difficult to reliably replay orderings of
@@ -60,15 +60,15 @@ paper~\cite{Zeller:2002:SIF:506201.506206} that removes the need for this assump
 but incurs an additional factor of $N$ in complexity in doing so.}
 Currently our simulator accounts for validity of all network state change
 events (shown in Table \ref{tab:inputs}), but does not support policy changes,
-which have more complex semantics.
-}
+which have more complex semantics.}
 
-\colin{Cut? 15,000 LOC systems don't jive so well with HotNet's agenda}
 \projectname~(\projectmeaning) is our realization of this simulator.
 \projectname~is implemented in roughly 15,000 lines of Python in
 addition to the Hassel network invariant checking library~\cite{hsa}. We have
 made the code
-for \projectname~publicly available\footnote{Omitted to preserve anonymity.} and have discussed its internal use with several commercial companies.
+for \projectname~publicly available\footnote{Omitted to preserve anonymity.},
+and have discussed with several industrial SDN companies the logistics of deploying it
+internally.
 
 \subsection{Mitigating Non-Determinism}
 
@@ -114,7 +114,9 @@ instrumentation task.
 
 Fortunately we can cope with cases of excessive non-determinism by replaying each subsequence chosen
 by delta debugging multiple times. If the non-determinism of observing the bug
-is an independent and identically distributed random variable (which is an optimistic assumption) with some underlying probability $p$, then $n$
+is an independent and identically distributed random variable (an optimistic
+but not completely unreasonable assumption) with some
+underlying probability $p$, then $n$
 replays will observe the bug with probability $1-(1-p)^{n}$. The exponential
 works strongly in our favor; for example, even if the original bug is
 triggered in only 20\% of replays, the probability that we will not trigger
@@ -132,7 +134,7 @@ it has visibility into the occurrence of all relevant internal events. This
 may involve substantial instrumentation effort beyond
 pre-existing log statements.
 
-\noindent{\bf Non-determinism Within Individual Controllers.} Our techique is not designed to reproduce bugs
+\noindent{\bf Non-determinism Within Individual Controllers.} Our technique is not designed to reproduce bugs
 involving non-determinism within a single controller (\eg~race-conditions between threads);
 we focus on coarser granularity errors (\eg~incorrect failover logic).
 %The upshot of
@@ -178,7 +180,8 @@ and $O(n^2)$ in the worst case.
 
 \noindent{\bf Bugs Found Through Fuzzing.}
 We generate bug traces primarily through fuzz testing, not from real bugs
-found in operation. There is a substantial practical hurdle in instrumenting operational systems to produce logs that can be injected into our system, and we have not addressed those issues yet.
+found in operation. There is a substantial practical hurdle in instrumenting
+operational systems to produce logs that can be injected into our system. % , and we have not addressed those issues yet.
 %In practice some bugs
 %found through fuzzing will not be considered worthwhile to investigate.
 

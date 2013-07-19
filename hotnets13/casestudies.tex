@@ -5,7 +5,7 @@ distributed controllers with more complex applications such as network virtualiz
 which have recently become publicly available. We believe bugs involving
 distribution are particularly amenable to techniques such as ours.} of three open
 source SDN control platforms:
-POX~\cite{pox}, NOX~\cite{nox}, and Floodlight~\cite{bigswitch}. We illustrate
+POX~\cite{pox}, NOX~\cite{nox}, and Floodlight~\cite{bigswitch}. We describe
 bugs we found in each of these controllers to illustrate
 how the minimized traces our technique produced were valuable in
 understanding the bugs' root causes.
@@ -15,7 +15,7 @@ After roughly 20 runs of randomly generated inputs,
 we noticed that \projectname~reported a persistent blackhole while
 POX was bootstrapping its
 discovery of link and host locations in a small 2-switch, 2-host network.
-There were $29$ inputs in the initial trace, and \projectname~returned a $11$ input
+There were $29$ inputs in the initial trace, and \projectname~returned an $11$ input
 MCS.
 
 We provided the MCS to the lead developer of POX. Primarily using the
@@ -27,7 +27,7 @@ in-flight packets (set in motion by prior traffic injection events):
 POX first incorrectly learned a host location as a result of the first in-flight
 packet showing up immediately after POX discovered that that port belonged to
 a switch-switch link -- apparently the code had not accounted for the
-possibilty of in-flight packets directly following link discovery -- and
+possibility of in-flight packets directly following link discovery -- and
 then as a result the
 second in-flight packet
 POX failed to return out of a nested conditional that would have
@@ -49,7 +49,7 @@ roughly $20$ runs of randomly generated inputs.
 Our initial input size was $150$ inputs, a minute's worth of execution.
 Our system returned an $18$ input MCS.
 
-\colin{Root cause case study TBD!}
+\tbd{}
 
 \subsection{Floodlight Discovery Loop}
 
@@ -63,5 +63,6 @@ unsuccessful runs, we noticed that the bug seems to correlate with specific
 thread level race conditions between state updates in the \emph{LinkDiscovery} module and
 the \emph{Forwarding} module. We are in the process of investigating the actual root cause.
 
+\tbd{}
 
 \colin{Should mention how many other bugs we found.}

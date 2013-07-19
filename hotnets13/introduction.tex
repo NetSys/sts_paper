@@ -4,7 +4,7 @@ servers~\cite{floodlight},
 providing isolation and resource arbitration between multiple
 tenants~\cite{Casado:2010:VNF:1921151.1921162}, and
 globally optimizing network utilization~\cite{urs}.
-As with any highly complex codebase, software bugs are an unpleasant but everpresent fact-of-life.
+As with any highly complex codebase, software bugs are an unpleasant but ever-present fact-of-life.
 In fact, based on anecdotal evidence from colleagues in the industry, it seems clear that
 developers of SDN systems spend much of their time
 troubleshooting bugs. This should be no surprise, since software developers in
@@ -14,7 +14,8 @@ considerable time on bugs that are difficult to trigger
 (the same study found that 70\% of the reported concurrency bugs
 take days to months to fix).
 
-The troubleshooting process, which starts by analyzing long logs gathered from either operational monitoring or QA testing (though in this paper we focus on the latter), is hindered by the large number of hardware failures,
+The troubleshooting process, which starts by analyzing long logs gathered from either operational monitoring or QA testing
+(we focus on the latter), is hindered by the large number of hardware failures,
 policy changes, host migrations, and other inputs to SDN control software.
 As one data point, Microsoft Research
 reports 8.5 network error events per minute per
@@ -36,9 +37,11 @@ SDN networks are designed to support high-level policies, such as inter-tenant
 isolation (\ie~ACL enforcement). A bug, in this context, creates situations
 where the network violates one or more of these high-level policies; that is, even though the control plane
 has been told to implement a particular policy, the resulting configuration (\ie~flow entries in the switches)
-does not do so properly. We call this an {\em invalid} configuration.
+does not do so properly. %We call this an {\em invalid} configuration.
 We presume that the control plane functions properly in most circumstances, so
-that these policy violations are rare and are symptoms of an underlying software bug (such violations could also result from a hardware failure, or a policy misconfiguration, but here we focus on those cases where the violation is due to a bug in the SDN control plane software).
+that these policy violations are rare and are symptoms of an underlying
+software bug (such violations could also result from a hardware failure or a
+policy misconfiguration, but here we focus violations caused by bugs in the SDN control plane software).
 
 Bugs may be triggered by uncommon sequences of inputs, such as a simultaneous link failure or controller reboot.
 The act of {\em troubleshooting} involves identifying which set of inputs is most directly responsible for triggering the bug.
