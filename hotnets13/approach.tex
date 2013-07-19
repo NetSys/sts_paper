@@ -52,7 +52,7 @@ we need to
 inject an external input $e$ only after all other
 events (both external and internal) that precede it in the happens-before
 relation ($\{i \mid i \rightarrow e\}$) from the original execution have
-occurred~\cite{tel2000introduction}. {\bf say something more here about happens-before??  what do we use to establish this??}
+occurred~\cite{tel2000introduction}. We can establish full happens-before relationships in our logs by having our simulator (to be described in the next section) handle all messages and log a message only after all other logged messages have been delivered. 
 
 \subsection{Preserving Causality}
 
