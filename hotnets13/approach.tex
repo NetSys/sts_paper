@@ -38,31 +38,44 @@ timing of those subsequences during replays is crucial for reliably
 reproducing the
 invariant violation. The most natural approach would be to maintain the original
 timings. For instance, if we
-define $t_i$ as the timestamp of the $i^{th}$ input from the original run and $t'_i$ as the replay clock value when it injects that same input (which may or may not be the $i$'th input in the subsequence), then we might just set $t'_i = t_i$ 
+define $t_i$ as the timestamp of the $i^{th}$ input from the original run and $t'_i$ as the
+replay clock value when it injects that same input
+(which may or may not be the $i$'th input in the subsequence), then we might just set $t'_i = t_i$
 \eat{
 \begin{align*}
 t'_0 = t_0 \\
 t'_i = t'_{i-1} + |t_{i} - t_{i-1}|
 \end{align*}
 }
-Unfortunately, this approach does not work in practice because it can violate causal relationships. The crucial point here is that one replays only a subset of the original set of inputs, the reaction of the underlying system can change. In so doing, its reactions to future events might be quite different under the altered input, and this might involve violating causality.
+Unfortunately, this approach does not work in practice because it can violate
+causal dependencies. The crucial point here is that when we replay only a
+subsequence of the original set of inputs, the reaction of the underlying system
+can change, such that it behaves differently or takes a different amount of
+time to respond to the remaining inputs events.
+Simply maintaining relative timings might therefore
+result in injecting the remaining inputs too early or too late.
 
-More formally, to reliably reproduce the original invariant violation
+Formally, to reliably reproduce the original invariant violation
 we need to
 inject an external input $e$ only after all other
 events (both external and internal) that precede it in the happens-before
 relation ($\{i \mid i \rightarrow e\}$) from the original execution have
-occurred~\cite{tel2000introduction}. We can establish full happens-before relationships in our logs by having our simulator (to be described in the next section) handle all messages and log a message only after all other logged messages have been delivered. 
+occurred~\cite{tel2000introduction}. Internal events might include messages
+sent between the controllers and switches, or state transitions within a single
+controller. We can obtain the
+happens-before relation in our logs by having our simulator
+(to be described in the next section) interpose on all message channels and
+log a message only after all other logged messages have been delivered.
 
 \subsection{Preserving Causality}
 
-Unfortunately, it is difficult to reason about causal dependencies when transforming the original log
+Unfortunately, it is non-trivial to reason about causal dependencies when transforming the original log
 (which reproduces the violation) to a subsequence of external events
 (which may or may not reproduce that violation).
 To make progress we process the happens-before
 relations~\cite{Lamport:1978:TCO:359545.359563} reflected in the original log,
 and then draw inferences about
-the remaining causal dependencies in the replay of the subsequence.
+the remaining causal dependencies in the subsequence.
 This involves three issues: coping with syntactic differences in internal
 events across runs, handling internal events from the original
 execution that may not occur after pruning, and dealing with new internal events that were not
@@ -152,7 +165,9 @@ Figure~\ref{fig:state_machines}. If we prune the link failure input, the
 master will never receive a link failure notification and
 transition to and from `Send Flush'.
 }
-Some internal events that occurred in the original log, and which causally ``happen before'' some external event, may be absent when replaying a subsequence of that log. We therefore wait for expected equivalent internal events, but time out and proceed
+Some internal events that occurred in the original log, and which causally ``happen before'' some external event,
+may be absent when replaying a subsequence of that log.
+We therefore wait for expected equivalent internal events, but time out and proceed
 if they do not occur within a certain time \textepsilon.
 \eat{In most cases this heuristic successfully reproduces the original invariant
 violation, assuming \textepsilon~is larger than variations in execution speeds
@@ -160,7 +175,8 @@ between internal events. If the value of \textepsilon~is too large, however, we 
 waiting too long for the happens-before predecessors of an input $e_i$ such that a
 successor of $e_i$ occurs before we have injected $e_i$,
 thereby violating causality.}
-If the event scheduling algorithm detects that it has waited too long, it
+If the event scheduling algorithm detects that it has waited too long (such
+that a happens-before successor has occurred before a predecessor), it
 replays the log from the beginning up until the immediately prior input, this time
 knowing exactly which internal events in the current input interval are
 and are not going to occur before injecting the next input. We show the overall event scheduling algorithm
@@ -249,7 +265,7 @@ to the invariant violation, it is necessary to recursively branch, trying both
 possibilities for every new internal event. This implies an exponential number of
 possibilities to be explored in the worst case.}
 
-Exponential search is not a practical option. Our heuristic when waiting for expected internal
+Exponential search over these possibilities is not a practical option. Our heuristic when waiting for expected internal
 events is to proceed normally if there are intermediate new internal events,
 always injecting the next input when its last expected predecessor
 either occurs or times out. This ensures that we always find suffixes that
