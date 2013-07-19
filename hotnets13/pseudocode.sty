@@ -73,11 +73,11 @@
 \if@twocolumn
 \newlength{\pcode@width}
 \setlength{\pcode@width}{\columnwidth}
-\addtolength{\pcode@width}{-40pt}
+\addtolength{\pcode@width}{-10pt}
 \else
 \newlength{\pcode@width}
 \setlength{\pcode@width}{\textwidth}
-\addtolength{\pcode@width}{-40pt}
+\addtolength{\pcode@width}{-10pt}
 \fi
 %
 \RequirePackage{fancybox}
@@ -131,9 +131,9 @@
   {
    \end{array}\end{math}\\[1ex]
    \noindent\rule{\pcode@width}{1pt}\hfill
-   \end{minipage}\end{Sbox}\bigskip\noindent%
+   \end{minipage}\end{Sbox}\noindent%
   }
-  {\end{array}\end{math}\end{minipage}\end{Sbox}\bigskip\noindent}%
+  {\end{array}\end{math}\end{minipage}\end{Sbox}\noindent}%
   \ifthenelse{\boolean{pcode@plain}}{\TheSbox}{}%
   \ifthenelse{\boolean{pcode@ruled}}{\TheSbox}{}%
   \ifthenelse{\boolean{pcode@shad}}{\shadowbox{\TheSbox}}{}%
@@ -141,7 +141,7 @@
   \ifthenelse{\boolean{pcode@obox}}{\cornersize*{4ex}\ovalbox{\TheSbox}}{}%
   \ifthenelse{\boolean{pcode@Obox}}{\cornersize*{4ex}\Ovalbox{\TheSbox}}{}%
   \ifthenelse{\boolean{pcode@fbox}}{\fbox{\TheSbox}}{}%
-  \bigskip%
+  %\bigskip%
  }%
 }%
 %
