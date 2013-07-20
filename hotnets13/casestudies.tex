@@ -12,7 +12,7 @@ understanding the bugs' root causes.
 
 \subsection{POX In-Flight Blackhole}
 After roughly 20 runs of randomly generated inputs,
-we noticed that \projectname~reported a persistent blackhole while
+we detected a persistent blackhole while
 POX was bootstrapping its
 discovery of link and host locations in a small 2-switch, 2-host network.
 There were $29$ inputs in the initial trace, and \projectname~returned an $11$ input
@@ -42,8 +42,8 @@ tracing through the many potentially faulty code paths.
 \subsection{NOX Discovery Loop}
 
 We tested NOX on a four-node mesh, and discovered a
-routing loop between three switches (involving routes between one source and
-one destination) within
+routing loop between three switches
+within
 roughly $20$ runs of randomly generated inputs.
 
 Our initial input size was $68$ inputs, and
@@ -77,20 +77,20 @@ setting up the network in precisely the right conditions.
 \subsection{Floodlight Forwarding Loop}
 
 We applied \projectname~to Floodlight's routing application.
-In about 30 minutes, our fuzzer identified a 377-event
-sequence (117 input) that caused a persistent 3-node forwarding loop.
+In about 30 minutes, our fuzzing uncovered a
+117 input sequence that caused a persistent 3-node forwarding loop.
 \projectname~reduced the sequence to 13 input events in 324 replays and 8.5 hours.
 
-For debugging, we repeatedly replayed the 13 event MCS, while successively adding
+We repeatedly replayed the 13 event MCS, while successively adding
 instrumentation and increasing the log level each run. After about 15 replay
-attempts, we diagnosed that the problem was caused by interference of end-host
+attempts, we found that the problem was caused by interference of end-host
 traffic with ongoing link discovery packets. In our experiment, floodlight had
 not discovered an inter-switch link due to dropped LLDP packets, causing an
 end-host to flap between perceived attachment points.
 
-While this behavior cannot strictly be considered a bug in the floodlight
-code-base, the case-study nevertheless highlights the benefit of
+While this behavior cannot strictly be considered a bug in Floodlight,
+the case-study nevertheless highlights the benefit of
 \projectname~over traditional fuzzing techniques: By leveraging repeated replays
-of a significantly reduced MCS, we were able to diagnose the root cause---a
+of a significantly reduced MCS, we were able to diagnose the root cause--a
 complex interaction between the LinkDiscovery, Forwarding, and DeviceManager
-modules---with limited experimentation.
+modules.

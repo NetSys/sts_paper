@@ -37,7 +37,7 @@ minimal causal sequences: the
 timing of those subsequences during replays is crucial for reliably
 reproducing the
 invariant violation. The most natural approach would be to maintain the original
-timings. For instance, if we
+timings, \ie~if we
 define $t_i$ as the timestamp of the $i^{th}$ input from the original run and $t'_i$ as the
 replay clock value when it injects that same input
 (which may or may not be the $i$'th input in the subsequence), then we might just set $t'_i = t_i$
@@ -49,7 +49,7 @@ t'_i = t'_{i-1} + |t_{i} - t_{i-1}|
 }
 Unfortunately, this approach does not work in practice because it can violate
 causal dependencies. The crucial point here is that when we replay only a
-subsequence of the original set of inputs, the reaction of the underlying system
+subsequence of the original inputs, the reaction of the control software
 can change, such that it behaves differently or takes a different amount of
 time to respond to the remaining inputs events.
 Simply maintaining relative timings might therefore
@@ -58,13 +58,14 @@ result in injecting the remaining inputs too early or too late.
 Formally, to reliably reproduce the original invariant violation
 we need to
 inject an external input $e$ only after all other
-events (both external and internal) that precede it in the happens-before
+events (both external and internal) that precede it in the
+happens-before~\cite{Lamport:1978:TCO:359545.359563}
 relation ($\{i \mid i \rightarrow e\}$) from the original execution have
 occurred~\cite{tel2000introduction}. Internal events might include messages
 sent between the controllers and switches, or state transitions within a single
 controller. We can obtain the
 happens-before relation in our logs by having our simulator
-(to be described in the next section) interpose on all message channels and
+(to be described later) interpose on all message channels and
 log a message only after all other logged messages have been delivered.
 
 \subsection{Preserving Causality}
@@ -73,8 +74,8 @@ Unfortunately, it is non-trivial to reason about causal dependencies when transf
 (which reproduces the violation) to a subsequence of external events
 (which may or may not reproduce that violation).
 To make progress we process the happens-before
-relations~\cite{Lamport:1978:TCO:359545.359563} reflected in the original log,
-and then draw inferences about
+relations reflected in the original log,
+and draw inferences about
 the remaining causal dependencies in the subsequence.
 This involves three issues: coping with syntactic differences in internal
 events across runs, handling internal events from the original
@@ -165,7 +166,7 @@ Figure~\ref{fig:state_machines}. If we prune the link failure input, the
 master will never receive a link failure notification and
 transition to and from `Send Flush'.
 }
-Some internal events that occurred in the original log, and which causally ``happen before'' some external event,
+Some internal events from the original log, and which causally ``happen before'' some external event,
 may be absent when replaying a subsequence of that log.
 We therefore wait for expected equivalent internal events, but time out and proceed
 if they do not occur within a certain time \textepsilon.

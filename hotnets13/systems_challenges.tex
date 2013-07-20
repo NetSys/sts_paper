@@ -3,9 +3,8 @@ mechanism to replay execution logs. Building such a replay mechanism comes
 with many challenges; unlike the example applications described
 by the delta debugging paper~\cite{Zeller:1999:YMP:318773.318946}, the system we are troubleshooting is not a
 single program--it encompasses all the nodes and links of a distributed system,
-including controllers, switches, and end-hosts. The asynchrony of distributed
-systems makes it difficult to reliably replay orderings of
-events without great care.
+including controllers, switches, and end-hosts, where asynchrony
+makes it highly difficult to reliably replay orderings.
 
 Our approach is to simulate the control-plane
 behavior of network devices (with support for minimal data-plane behavior) on
@@ -40,8 +39,9 @@ allows the simulator to easily record a global, causally-consistent
 event ordering.
 
 After discovering an invariant violation of interest, the simulator replays
-the logged sequence of inputs (such as link failures, controller crashes, host migrations,
-or policy changes). For example, the simulator replays link failures
+the logged sequence of inputs (such as link failures, controller crashes, or host
+migrations).
+For example, the simulator replays link failures
 by disconnecting the edge in the simulated network, and sending a
 port status message from the adjacent switches to their parent controller(s).
 
@@ -67,8 +67,7 @@ which have more complex semantics.}
 addition to the Hassel network invariant checking library~\cite{hsa}. We have
 made the code
 for \projectname~publicly available\footnote{Omitted to preserve anonymity.},
-and have discussed with several industrial SDN companies the logistics of deploying it
-internally.
+and have discussed with several SDN companies the logistics of deploying it.
 
 \subsection{Mitigating Non-Determinism}
 
@@ -81,9 +80,9 @@ best-effort guess at what the return values of these calls should be. For exampl
 if the altered execution invokes {\tt gettimeofday()} more times than we recorded
 in the initial run, we interpolate the time values of neighboring events}
 When sending data over multiple sockets, the operating system exhibits
-non-determinism in the order it schedules the socket I/O operations.
+non-determinism in the order it schedules the I/O operations.
 \projectname~optionally ensures a deterministic order of messages
-by multiplexing all sockets in the controller process
+by multiplexing all sockets
 onto a single true socket. \projectname~currently overrides socket functionality within the control
 software itself.\footnote{Only supported for POX at the moment.}
 %In the future we plan to implement deterministic message ordering without code modifications by
@@ -97,10 +96,11 @@ small change to the control software's logging library\footnote{Only supported
 for POX and Floodlight at the moment.}: whenever a control process executes a log
 statement, we notify \projectname~that a new state transition
 is about to occur, and optionally block the process. \projectname~then sends
-an acknowledgment to unblock the controller after logging the state change. If blocking was enabled
-during recording, we force the control software to block at internal state
-transition points again during replay
-until \projectname~gives explicit acknowledgment.
+an acknowledgment to unblock the controller after logging the state change.
+%If blocking was enabled
+%during recording, we force the control software to block at internal state
+%transition points again during replay
+%until \projectname~gives explicit acknowledgment.
 
 \subsection{Coping with Non-Determinism}
 
