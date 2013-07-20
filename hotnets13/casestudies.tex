@@ -53,21 +53,21 @@ Our system returned an $18$ input MCS.
 
 \subsection{Floodlight Forwarding Loop}
 
-We used the STS Fuzzer on the current open-source version of floodlight with the
-'Forwarding' application. In about 30 minutes, the fuzzer identified a 377-event
-sequence (117 input) that caused a persistent 3-node forwarding loop. \simulator{
-} reduced the sequence to 13 input events in 8.5 hours and 324 replays.
+We applied \projectname~on the current open-source version of floodlight with the
+'Forwarding' application. In about 30 minutes, our fuzzer identified a 377-event
+sequence (117 input) that caused a persistent 3-node forwarding loop.
+\projectname~reduced the sequence to 13 input events in 324 replays and 8.5 hours. 
 
-For debugging, we repeatedly replayed the 13 event MCS, while
-successively adding instrumentation and increasing the log level. After 
-~15 replay attempts, we diagnosed that the problem was caused by interference of
-end-host traffic with ongoing link discovery packets: In our experiment, floodlight
-had not discovered an inter-switch link due to dropped LLDP packets, causing an
+For debugging, we repeatedly replayed the 13 event MCS, while successively adding
+instrumentation and increasing the log level each run. After about 15 replay
+attempts, we diagnosed that the problem was caused by interference of end-host
+traffic with ongoing link discovery packets. In our experiment, floodlight had
+not discovered an inter-switch link due to dropped LLDP packets, causing an
 end-host to flap between perceived attachment points.
 
 While this behavior cannot strictly be considered a bug in the floodlight
-code-base, the case-study nevertheless highlights the benefit of \simulator{}
-over traditional fuzzing techniques: By leveraging repeated replays of a
-significantly reduced MCS, we were able to diagnose the root cause -- a complex
-interaction between the LinkDiscovery, Forwarding, and DeviceManager
-modules -- with limited experimentation.
+code-base, the case-study nevertheless highlights the benefit of
+\projectname~over traditional fuzzing techniques: By leveraging repeated replays
+of a significantly reduced MCS, we were able to diagnose the root cause---a
+complex interaction between the LinkDiscovery, Forwarding, and DeviceManager
+modules---with limited experimentation.
