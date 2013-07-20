@@ -38,7 +38,7 @@ isolation (\ie~ACL enforcement). A bug, in this context, creates situations
 where the network violates one or more of these high-level policies; that is, even though the control plane
 has been told to implement a particular policy, the resulting configuration (\ie~flow entries in the switches)
 does not do so properly. %We call this an {\em invalid} configuration.
-These violations could arise from a hardware failure or a policy misconfiguration, and there is active work on developing tools to detect these problems \cite{hsa,atpg,??}. However, such violations could also arise from bugs in the SDN control plane software;  our focus is on trying to troubleshoot this case.  Thus, in what follows we only consider violations caused by SDN software bugs. 
+These violations could arise from a hardware failure or a policy misconfiguration, and there is active work on developing tools to detect these problems \cite{hsa,Zeng:2012:ATP:2413176.2413205}. However, such violations could also arise from bugs in the SDN control plane software;  our focus is on trying to troubleshoot this case.  Thus, in what follows we only consider violations caused by SDN software bugs. 
 
 Bugs may be triggered by uncommon sequences of inputs, such as a simultaneous link failure or controller reboot.
 The act of {\em troubleshooting} involves identifying which set of inputs is most directly responsible for triggering the bug.
