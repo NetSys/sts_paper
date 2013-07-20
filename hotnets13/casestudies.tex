@@ -51,18 +51,23 @@ Our system returned an $18$ input MCS.
 
 \tbd{}
 
-\subsection{Floodlight Discovery Loop}
+\subsection{Floodlight Forwarding Loop}
 
-In an hour-long experiment,
-our fuzzer found an event sequence with $284$ total events
-that caused the Floodlight routing module to produce a 3-node forwarding loop.
+We used the STS Fuzzer on the current open-source version of floodlight with the
+'Forwarding' application. In about 30 minutes, the fuzzer identified a 377-event
+sequence (117 input) that caused a persistent 3-node forwarding loop. \simulator{
+} reduced the sequence to 13 input events in 8.5 hours and 324 replays.
 
-\Simulator~was able to reduce the number of input events to $36$ input events.
-Comparing output traces of successful and
-unsuccessful runs, we noticed that the bug seems to correlate with specific
-thread level race conditions between state updates in the \emph{LinkDiscovery} module and
-the \emph{Forwarding} module. We are in the process of investigating the actual root cause.
+For debugging, we repeatedly replayed the 13 event MCS, while
+successively adding instrumentation and increasing the log level. After 
+~15 replay attempts, we diagnosed that the problem was caused by interference of
+end-host traffic with ongoing link discovery packets: In our experiment, floodlight
+had not discovered an inter-switch link due to dropped LLDP packets, causing an
+end-host to flap between perceived attachment points.
 
-\tbd{}
-
-\colin{Should mention how many other bugs we found.}
+While this behavior cannot strictly be considered a bug in the floodlight
+code-base, the case-study nevertheless highlights the benefit of \simulator{}
+over traditional fuzzing techniques: By leveraging repeated replays of a
+significantly reduced MCS, we were able to diagnose the root cause -- a complex
+interaction between the LinkDiscovery, Forwarding, and DeviceManager
+modules -- with limited experimentation.
