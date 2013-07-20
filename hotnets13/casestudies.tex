@@ -41,22 +41,45 @@ tracing through the many potentially faulty code paths.
 
 \subsection{NOX Discovery Loop}
 
-We initially tested NOX on a two node topology, but did not find any immediate
-problems. We then extended the topology to a four-node mesh, and discovered a
-routing loop between two switches (involving routes for two hosts) within
+We tested NOX on a four-node mesh, and discovered a
+routing loop between three switches (involving routes between one source and
+one destination) within
 roughly $20$ runs of randomly generated inputs.
 
-Our initial input size was $150$ inputs, a minute's worth of execution.
-Our system returned an $18$ input MCS.
+Our initial input size was $68$ inputs, and
+\projectname~returned an $18$ input MCS.\footnote{We had difficulty replaying
+the final MCS. The reason seems clear: this bug depends on the
+order NOX discovers links, which in turns depends on hashes computed from random memory
+addresses its discovery modules LLDP selection algorithm!}
+Our approach to debugging was to
+reconstruct from the MCS how NOX should have installed routes, then compare
+how NOX actually installed routes.
 
-\tbd{}
+The order in which NOX discovered links was crucial: at the point NOX
+installed the 3-loop, it had only discovered one link towards the destination.
+Therefore all other switches had to route to the one known neighbor switch.
+This comprised 2 of the 3 links involved in the link.
+
+The destination host only sent one packet, which caused NOX to initially learn
+its correct location. After NOX flooded the packet though, it became confused
+about its location. One flooded packet arrived at
+another switch that was currently not known to be attached to anything, so NOX
+incorrectly concluded that the host had migrated. Other flooded packets were
+dropped as a result of link failures in the network and randomly generated
+network loss. The loop was then installed when the source injected another
+packet.
+
+This case took us roughly 10 hours to debug. We are confident that without the
+minimized trace, it would have taken much
+longer to trace through the subtle sequence of events that were necessary for
+setting up the network in precisely the right conditions.
 
 \subsection{Floodlight Forwarding Loop}
 
-We applied \projectname~on the current open-source version of floodlight with the
-'Forwarding' application. In about 30 minutes, our fuzzer identified a 377-event
+We applied \projectname~to Floodlight's routing application.
+In about 30 minutes, our fuzzer identified a 377-event
 sequence (117 input) that caused a persistent 3-node forwarding loop.
-\projectname~reduced the sequence to 13 input events in 324 replays and 8.5 hours. 
+\projectname~reduced the sequence to 13 input events in 324 replays and 8.5 hours.
 
 For debugging, we repeatedly replayed the 13 event MCS, while successively adding
 instrumentation and increasing the log level each run. After about 15 replay
