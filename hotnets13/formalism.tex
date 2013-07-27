@@ -42,6 +42,8 @@ That is, an MCS is a sequence and timing of external events that reproduces the 
 where one cannot find a subsequence of the MCS that reproduces the violation.
 Note that an MCS is not necessarily {\em globally} minimal, in that there could be smaller
 sequences that reproduce this violation, but are not subsequence of this MCS.
+\colin{Problem with this definition: our approach does not provably find
+MCSes, since we don't explore all timings!}
 
 Given a log $(E_L, T_L, C_L)$ exhibiting an invariant violation,
 our goal is to identify its MCS. We could do this through brute force, trying

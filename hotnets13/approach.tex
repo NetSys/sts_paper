@@ -34,7 +34,7 @@ In what follows, we use the term {\em delta-debugging} to refer to our algorithm
 
 Simply exploring subsequences of $E_L$ does not suffice to find
 minimal causal sequences: the
-timing of those subsequences during replays is crucial for reliably
+timing of those subsequences throughout invocations of $replay()$ is crucial for reliably
 reproducing the
 invariant violation. The most natural approach would be to maintain the original
 timings, \ie~if we
@@ -166,7 +166,7 @@ Figure~\ref{fig:state_machines}. If we prune the link failure input, the
 master will never receive a link failure notification and
 transition to and from `Send Flush'.
 }
-Some internal events from the original log, and which causally ``happen before'' some external event,
+Some internal events from the original log which causally ``happen before'' some external event
 may be absent when replaying a subsequence of that log.
 We therefore wait for expected equivalent internal events, but time out and proceed
 if they do not occur within a certain time \textepsilon.
