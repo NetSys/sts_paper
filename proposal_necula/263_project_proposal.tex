@@ -43,8 +43,8 @@ Wundsam and Scott Shenker}\vspace{-15pt}}
 Many network invariant checks~\cite{HeaderSpace, Anteater} are specified in
 terms of generally undesirable
 states such as loops or blackholes.
-In this project we discuss how to check more fine-grained,
-application specific set of
+In this project we discuss how to check finer-grained,
+more application-specific
 invariants without requiring human involvement.
 Our approach is to extract the network policies already reflected in the
 network controller's data structures, and compare this to the actual state of
@@ -114,7 +114,7 @@ We use the special value $LOOP$ to distinguish
 a packet dropped by a network device from a packet entering an
 infinite loop (both of which never leave the network).
 
-\subsection{Software-defined Networks}
+\subsection{Software-defined Networks \& Network Virtualization}
 
 Software-defined Networking (SDN) is a paradigm for controlling network behavior.
 SDN control software maintains a data-structure representing the global state of the
@@ -221,7 +221,7 @@ We therefore seek to identify counterexamples:
 
 \section{Limitations}
 
-Note the price of correspondence checking's generality is that it represents
+The price of correspondence checking's generality is that it represents
 a somewhat weak notion of
 correctness. Correspondence checking only captures external behavior and
 loops; it does not capture internal behavior such as load-balancing
