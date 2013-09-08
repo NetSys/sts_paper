@@ -66,8 +66,8 @@ which have more complex semantics.}
 \projectname~is implemented in roughly 15,000 lines of Python in
 addition to the Hassel network invariant checking library~\cite{hsa}. We have
 made the code
-for \projectname~publicly available\footnote{Omitted to preserve anonymity.},
-and have discussed with several SDN companies the logistics of deploying it.
+for \projectname~publicly available~\cite{sts_repo},
+and have discussed the logistics of deploying it with several SDN companies.
 
 \subsection{Mitigating Non-Determinism}
 
@@ -113,7 +113,7 @@ replay in all cases without full visibility into internal events--a daunting
 instrumentation task.
 
 Fortunately we can cope with cases of excessive non-determinism by replaying each subsequence chosen
-by delta debugging multiple times. If the non-determinism of observing the bug
+by delta debugging multiple times. If observing the bug
 is an independent and identically distributed random variable (an optimistic
 but not completely unreasonable assumption) with some
 underlying probability $p$, then $n$

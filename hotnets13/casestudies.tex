@@ -15,7 +15,7 @@ After roughly 20 runs of randomly generated inputs,
 we detected a persistent blackhole while
 POX was bootstrapping its
 discovery of link and host locations in a small 2-switch, 2-host network.
-There were $29$ inputs in the initial trace, and \projectname~returned an $11$ input
+There were 29 inputs in the initial trace, and \projectname~returned an 11 input
 MCS.
 
 We provided the MCS to the lead developer of POX. Primarily using the
@@ -44,10 +44,10 @@ tracing through the many potentially faulty code paths.
 We tested NOX on a four-node mesh, and discovered a
 routing loop between three switches
 within
-roughly $20$ runs of randomly generated inputs.
+roughly 20 runs of randomly generated inputs.
 
-Our initial input size was $68$ inputs, and
-\projectname~returned an $18$ input MCS.\footnote{We had difficulty replaying
+Our initial input size was 68 inputs, and
+\projectname~returned an 18 input MCS.\footnote{We had difficulty replaying
 the final MCS. The reason seems clear: this bug depends on the
 order NOX discovers links, which in turns depends on hashes computed from random memory
 addresses its discovery modules LLDP selection algorithm!}
@@ -57,7 +57,7 @@ how NOX actually installed routes.
 
 The order in which NOX discovered links was crucial: at the point NOX
 installed the 3-loop, it had only discovered one link towards the destination.
-Therefore all other switches had to route to the one known neighbor switch.
+Therefore all other switches routed through the one known neighbor switch.
 This comprised 2 of the 3 links involved in the link.
 
 The destination host only sent one packet, which caused NOX to initially learn
@@ -84,13 +84,13 @@ In about 30 minutes, our fuzzing uncovered a
 We repeatedly replayed the 13 event MCS, while successively adding
 instrumentation and increasing the log level each run. After about 15 replay
 attempts, we found that the problem was caused by interference of end-host
-traffic with ongoing link discovery packets. In our experiment, floodlight had
+traffic with ongoing link discovery packets. In our experiment, Floodlight had
 not discovered an inter-switch link due to dropped LLDP packets, causing an
 end-host to flap between perceived attachment points.
 
 While this behavior cannot strictly be considered a bug in Floodlight,
 the case-study nevertheless highlights the benefit of
-\projectname~over traditional fuzzing techniques: By leveraging repeated replays
+\projectname~over traditional fuzzing techniques: by leveraging repeated replays
 of a significantly reduced MCS, we were able to diagnose the root cause--a
 complex interaction between the LinkDiscovery, Forwarding, and DeviceManager
 modules.
