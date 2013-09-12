@@ -5,11 +5,11 @@
 %\end{aquote}
 
 Would World War \rom{1} still have occurred if Archduke Ferdinand had not been
-shot? Would the Ebola virus have spread to humans if Mabalo Lokela had not
-first contracted it?
-That is, were those prior events intrinsic to the
+shot? %Would the Ebola virus have spread to humans if Mabalo Lokela had not
+%first contracted it?
+That is, was the prior event intrinsic to the
 historical outcome, or
-were they extraneous? Unfortunately we can never know such
+was it extraneous? Unfortunately we can never know such
 historical counterfactuals for sure.
 
 When troubleshooting computer systems, we often need to answer similar questions,
@@ -50,12 +50,13 @@ cause some angst, and justifiably, in the industry.''
 %we expect its complexity to increase.
 % Scott: needs more SDN war stories from VMW, BSN
 
-The troubleshooting process is hindered by the large number of hardware failures,
+The troubleshooting process, which starts by analyzing long logs gathered from either operational monitoring or QA testing
+(we focus on the latter), is hindered by the large number of hardware failures,
 policy changes, host migrations, and other inputs to SDN control software.
 As one data point, Microsoft Research
 reports 8.5 network error events per minute per
 datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}.
-Troubleshooters find little immediate use from traces containing many inputs
+Troubleshooters find little immediate use from logs containing many inputs
 prior to a fault,
 since they are forced to manually filter extraneous inputs
 before they can start fruitfully investigating the root cause.
@@ -72,13 +73,14 @@ SDN networks are designed to support high-level policies, such as inter-tenant
 isolation (\ie~ACL enforcement). A bug, in this context, creates situations
 where the network violates one or more of these high-level policies; that is, even though the control plane
 has been told to implement a particular policy, the resulting configuration (\ie~flow entries in the switches)
-does not do so properly. We call this an {\em invalid} configuration.
-We presume that the control plane functions properly in most circumstances, so
-that these policy violations are rare.
-% and are typically triggered when the control plane takes an unusual codepath.
+does not do so properly. %We call this an {\em invalid} configuration.
+These violations could arise from a hardware failure or a policy misconfiguration, and there is active work on
+developing tools to detect these problems \cite{hsa,Zeng:2012:ATP:2413176.2413205}. However, such violations
+could also arise from bugs in the SDN control plane software;  our focus is on trying to troubleshoot this case.
+
 Bugs may be triggered by uncommon sequences of inputs, such as a simultaneous link failure or controller reboot.
-The act of troubleshooting involves identifying which set of inputs triggered the bug.
-Debugging is then the act of tracking down the error in the code itself, given a
+The act of {\em troubleshooting} involves identifying which set of inputs is most directly responsible for triggering the bug.
+{\em Debugging} is then the act of tracking down the error in the code itself, given a
 set of triggering inputs.
 The smaller the set of triggering inputs, the easier debugging will be.
 
@@ -102,12 +104,12 @@ significantly reduce the number of inputs.
 Our approach is to prune inputs from the original run, replay the remaining
 inputs to the control software using simulated network devices, and
 check whether the network re-enters the invalid configuration.
-In particular, we generalize delta
-debugging~\cite{Zeller:2002:SIF:506201.506206}---an algorithm for
+Our approach is identical in spirit to delta
+debugging~\cite{Zeller:1999:YMP:318773.318946}---an algorithm for
 minimizing test cases that are inserted at a single
-point in time to a single program---to a distributed environment, where inputs
-are spread across time and involve multiple machines. \scott{I think you give
-too much credit to delta debugging}
+point in time to a single program---but
+involves a substantially different set of technical challenges since networks are
+distributed asynchronous systems rather than a single program.
 
 The main difficulty in pruning historical inputs is
 coping with divergent histories. Traditional replay
@@ -140,10 +142,9 @@ a historical view into dataplane (mis)behavior. In contrast, our technique provi
 information about precisely what caused the network to
 enter an invalid configuration in the first place.
 
-We have applied \simulator~to three open source SDN control
-platforms: Floodlight~\cite{bigswitch}, POX~\cite{pox}, and NOX~\cite{nox}.
-Of the five bugs we encountered in a five day investigation,
-\simulator~reduced the size of the input trace to 2 events in the best case
+We have applied \simulator~to four open source SDN control
+platforms: Floodlight~\cite{bigswitch}, ONOS~\cite{ONOS}, POX~\cite{pox}, and NOX~\cite{nox}.
+Of the \num{five} bugs we encountered in a five day investigation, \simulator~reduced the size of the input trace to 2 events in the best case
 and 18 events in the worst case.
 
 % Main result from our work: the amount of effort it takes to codify domain knowledge is significantly less than the effort
