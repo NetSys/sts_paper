@@ -41,8 +41,7 @@ tenants~\cite{Casado:2010:VNF:1921151.1921162}, and
 globally optimizing network utilization~\cite{urs}.
 Most of this complexity comes from
 fundamentally difficult distributed systems challenges such as asynchrony and
-partial failure. Even Google's Urs H$\ddot{\mathrm{o}}$elzle, a leading
-networking and distributed systems technologist,
+partial failure. Even Google's Urs H$\ddot{\mathrm{o}}$elzle
 attests that~\cite{urs} ``[coordination between replicated controllers] is going to
 cause some angst, and justifiably, in the industry.''
 %As SDN control software
@@ -70,7 +69,7 @@ ideal tool, most network admins said ``automated troubleshooting''~\cite{Zeng:Su
 
 Before continuing, we should clarify what we mean by `troubleshooting' and `bugs' in the SDN context.
 SDN networks are designed to support high-level policies, such as inter-tenant
-isolation (\ie~ACL enforcement). A bug, in this context, creates situations
+isolation (\ie~ACL enforcement). A bug creates situations
 where the network violates one or more of these high-level policies; that is, even though the control plane
 has been told to implement a particular policy, the resulting configuration (\ie~flow entries in the switches)
 does not do so properly. %We call this an {\em invalid} configuration.
@@ -87,7 +86,7 @@ The smaller the set of triggering inputs, the easier debugging will be.
 Our focus here is on troubleshooting. When we observe an invalid
 configuration,
 which is prima facie evidence for a bug, our goal is
-to automatically filter out inputs to the SDN software (\eg~link failures)
+to automatically filter out inputs to the SDN software
 that are not relevant to triggering the bug, leaving a small sequence of inputs
 that is directly responsible.
 This would go a long way towards achieving ``automated troubleshooting.''
