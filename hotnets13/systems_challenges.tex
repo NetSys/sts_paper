@@ -45,23 +45,6 @@ For example, the simulator replays link failures
 by disconnecting the edge in the simulated network, and sending a
 port status message from the adjacent switches to their parent controller(s).
 
-\eat{ % Maybe add this back in? This is relatively important
-The input subsequences chosen by delta debugging are not always valid. For
-example, it is not sensible to replay a recovery event without a
-preceding failure event; nor is it sensible to replay a host migration
-event without modifying its starting position when a preceding host
-migration event has been pruned. The simulator checks
-validity before replaying a given subsequence to account for this
-possibility.\footnote{Handling invalid inputs is crucial for
-ensuring that the delta debugging algorithm we employ~\cite{Zeller:1999:YMP:318773.318946}
-is guaranteed to find a minimal causal sequence, since it assumes that no unresolved
-test outcomes occur. Zeller wrote a follow-on
-paper~\cite{Zeller:2002:SIF:506201.506206} that removes the need for this assumption,
-but incurs an additional factor of $N$ in complexity in doing so.}
-Currently our simulator accounts for validity of all network state change
-events (shown in Table \ref{tab:inputs}), but does not support policy changes,
-which have more complex semantics.}
-
 \projectname~(\projectmeaning) is our realization of this simulator.
 \projectname~is implemented in roughly 15,000 lines of Python in
 addition to the Hassel network invariant checking library~\cite{hsa}. We have
