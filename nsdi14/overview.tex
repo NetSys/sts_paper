@@ -1,6 +1,6 @@
 We begin by sketching the architecture of the SDN control plane and
 illustrating the correctness challenges encountered by operators and
-implementers of SDN control software.
+implementers.
 
 SDN networks are managed by software running on a set of network-attached
 servers called `controllers'. It is the job of the controllers to configure
@@ -35,19 +35,18 @@ abstracts the details of the underlying physical network and presents a
 simplified view of the network to be configured by applications.
 In this model, multi-tenancy is implemented by providing each tenant with their
 own abstract view, which are multiplexed onto the same physical network.
-A common pattern is to treat an entire network (up to
-100,000 v-switches in a large datacenter) as a single logical switch for each
-tenant. When an entire datacenter network is
+A common pattern is to treat an entire network as a single logical switch for each
+tenant. When a large network is
 abstracted in this way, the mapping between
 the logical switch and the physical topology is highly complex.
 
 In conjunction, the challenges of maintaining virtualized and distributed
 objects while ensuring that critical invariants such as isolation between
 tenants hold at all times make
-SDN control software highly complex and bug-prone.
+SDN control software highly bug-prone.
 
 In the next section we give a formal definition of our approach to
-troubleshooting bugs. We then spend
+troubleshooting. We then spend
 the bulk of the paper describing how we realize this formalism.
 
 % \subsection{Environment / Workflow}
