@@ -142,6 +142,49 @@ triggered in only 20\% of replays, the probability that we will not trigger
 it during an intermediate replay is approximately
 1\% if we replay 20 times per subsequence.
 
+\subsection{Enabling Analysis of Production Logs}
+\colin{Cut if we need space.}
+
+\projectname~does not currently support minimization of production logs.
+Here we present a sketch of how \projectname~might support production logs as input.
+
+While \simulator~takes as input a single, totally-ordered log of the events in the
+distributed system, production systems maintain a log at each node.
+Production systems would need to include Lamport
+clocks on each message~\cite{Lamport:1978:TCO:359545.359563} or have
+sufficiently accurate clock
+synchronization~\cite{corbett2012spanner} to obtain a partial global ordering
+consistent with the happens-before relation.\footnote{
+Note that a total ordering is not needed, since it is permissible
+for \simulator~to reorder concurrent events from
+the production run so long as the happens-before relation is
+maintained~\cite{Fischer:1985:IDC:3149.214121}.}
+Inputs would also need to need to be logged in sufficient detail for \projectname~to
+replay a synthetic version of the input that is indistinguishable (in terms
+of control plane messages) from the original.
+
+Without care, a single input event may appear multiple times in the
+distributed logs. A failure of the master node, for example, could be independently
+detected and logged by all other replicas. The most robust way to
+avoid redundant input events would be to employ perfect failure
+detectors~\cite{chandra1996unreliable}, which log a failure iff
+the failure actually occurred.\footnote{Perfect failure detectors can be
+implemented in partially synchronous distributed systems by explicitly killing
+nodes that are suspected to be down.} % Ensuring that a single failure detector is in charge of logging node failure
+% events guarantees that redundant events do not appear.
+Alternatively, one
+could employ root cause analysis
+algorithms~\cite{yemini1996} or manual inspection to consolidate redundant
+alarms.
+
+Finally, some care would be needed to prevent the logs from growing so large that
+\simulator's runtime becomes intractable. Here, causally consistent
+snapshots~\cite{Chandy:1985:DSD:214451.214456} would allow \projectname~to
+bootstrap its simulation from the last snapshot before the failure rather than
+replaying from the beginning of the log.
+%If the MCS starting from this snapshot is empty, it could iteratively move backwards, starting from earlier
+%snapshots.
+
 \subsection{Limitations}
 \label{subsec:non_goals}
 
