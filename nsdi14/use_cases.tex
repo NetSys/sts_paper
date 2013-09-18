@@ -17,14 +17,6 @@ messages as needed. The overall
 simulation architecture is depicted in
 Figure~\ref{fig:architecture}.
 
-\colin{
-Need to do a better job of discussing how we stop controllers from getting
-ahead of eachother. How do we interpose on intra-controller communication?
-(as shown in one of our diagrams)
-How do we ensure the same scheduling order of controller processes? (see
-Section 4.5 of ReVirt). We observe that the controllers do not use any shared
-memory communication.}
-
 \begin{figure}[t]
     %\hspace{-10pt}
     \includegraphics[width=3.25in]{../diagrams/architecture/Debugger_Architecture.pdf}
@@ -72,21 +64,28 @@ event ordering.
 
 After discovering an invariant violation of interest, the simulator replays
 the logged sequence of inputs (such as link failures, controller crashes, or host
-migrations).
-For example, the simulator replays link failures
+migrations). For example, the simulator replays link failures
 by disconnecting the edge in the simulated network, and sending a
 OpenFlow~\cite{openflow} port status message from the adjacent switches to their parent controller(s).
+During replay, the simulator may delay or reorder controller-switch or
+controller-controller messages to maintain the causality
+reflected in the original log.
 
 \projectname~(\projectmeaning) is our realization of this simulator.
 \projectname~is implemented in roughly 18,000 lines of Python in
-addition to the Hassel network invariant checking library~\cite{hsa}. We have
+addition to the Hassel network invariant checking library~\cite{hsa}.
+\projectname~also makes use of Open vSwitch~\cite{pfaff2009extending} as an interposition point for
+messages sent between distributed controllers. We have
 made the code
 for \projectname~publicly available at \href{http://ucb-sts.github.com/sts}{ucb-sts.github.com/sts},
 and have discussed the logistics of deploying it with several SDN companies.
 
 \colin{TODO: Discuss the value of replay for root causing here? Or just let
 the use cases speak for themselves?}
-\colin{TODO: where should discussion of production logs go?}
+
+%How do we ensure the same scheduling order of controller processes? (see
+%Section 4.5 of ReVirt\cite{Dunlap:2002:REI:844128.844148}). We observe that the controllers do not use any shared
+%memory communication.}
 
 \subsection{Mitigating Non-Determinism}
 
