@@ -96,7 +96,32 @@ trace it produced made for a simple integration test.
 \subsection{POX In-flight Blackhole}
 We discovered the next bug after roughly 20 runs of randomly generated inputs.
 We noticed that \projectname~reported a persistent blackhole while POX was bootstrapping its
-discovery of link and host locations. We encountered this bug
+discovery of link and host locations. There were $29$ inputs in the initial trace, and \simulator~returned a $11$ input
+MCS (runtime shown in Figure~\ref{fig:pox_discovery}).
+
+\begin{figure}[t]
+    %\hspace{-10pt}
+    \includegraphics[width=3.25in]{../graphs/runtime/pox_blackhole.pdf}
+    \caption[]{\label{fig:pox_discovery} Minimizing the POX in-flight blackhole.}
+\end{figure}
+
+We provided the MCS to the lead developer of POX. Primarily using the
+console output, we were able to trace through the code and identify the problem
+within 7 minutes, and were able to find a fix for the race condition within 40
+minutes. By matching the console output with the code, he found that the crucial
+triggering events were two
+in-flight packets (set in motion by prior traffic injection events):
+POX first incorrectly learned a host location as a result of the first in-flight
+packet showing up immediately after POX discovered that that port belonged to
+a switch-switch link -- apparently the code had not accounted for the
+possibility of in-flight packets directly following link discovery -- and
+then as a result the
+second in-flight packet
+POX failed to return out of a nested conditional that would have
+otherwise prevented the blackholed routing entries from being installed.
+
+\eat{ % Maybe add this in -- it goes into much more depth.
+We encountered this bug
 on a simple topology, depicted in Figure~\ref{fig:simple_topo}, consisting of
 two hosts A and B
 and two switches S1 and S2 connected by a single link.
@@ -108,15 +133,7 @@ and two switches S1 and S2 connected by a single link.
     in-flight blackhole. Numbers denote port labels.}
 \end{figure}
 
-There were $29$ inputs in the initial trace, and \simulator~returned a $11$ input
-MCS (runtime shown in Figure~\ref{fig:pox_discovery}). With the MCS in hand we took out paper and pencil to decipher what had
-transpired.
 
-\begin{figure}[t]
-    %\hspace{-10pt}
-    \includegraphics[width=3.25in]{../graphs/runtime/pox_blackhole.pdf}
-    \caption[]{\label{fig:pox_discovery} Minimizing the POX in-flight blackhole.}
-\end{figure}
 
 Before the discovery module had learned of the link connecting the two
 switches,
@@ -186,8 +203,9 @@ delayed arbitrarily as it was in \projectname.
 %$IPV6$ pings), so that there were no in-flight flow notifications to POX to
 %correct the situation.
 % Discussion of how our gizmos helped.
+} % \eat
 
-\subsection{POX Migration Blackhole}
+\subsection{POX Migration Blackhole} % Cut!
 Having examined the POX code in some depth, we noticed that there might be
 some interesting corner cases related to host migrations.
 We set up randomly generated inputs, included host
@@ -214,6 +232,46 @@ case demonstrates how the MCS alone can point to the root cause.
 
 \subsection{NOX Discovery Loop}
 
+\begin{figure}[t]
+    %\hspace{-10pt}
+    \includegraphics[width=3.25in]{../graphs/runtime/nox_loop.pdf}
+    \caption[]{\label{fig:nox_discovery} Minimizing the NOX discovery loop.}
+\end{figure}
+
+We tested NOX on a four-node mesh, and discovered a
+routing loop between three switches
+within
+roughly 20 runs of randomly generated inputs.
+
+Our initial input size was 68 inputs, and
+\projectname~returned an 18 input \num{Does not match graph} MCS.\footnote{We had difficulty replaying
+the final MCS. The reason seems clear: this bug depends on the
+order NOX discovers links, which in turns depends on hashes computed from random memory
+addresses its discovery modules LLDP selection algorithm!}
+Our approach to debugging was to
+reconstruct from the MCS how NOX should have installed routes, then compare
+how NOX actually installed routes.
+
+The order in which NOX discovered links was crucial: at the point NOX
+installed the 3-loop, it had only discovered one link towards the destination.
+Therefore all other switches routed through the one known neighbor switch.
+This comprised 2 of the 3 links involved in the link.
+
+The destination host only sent one packet, which caused NOX to initially learn
+its correct location. After NOX flooded the packet though, it became confused
+about its location. One flooded packet arrived at
+another switch that was currently not known to be attached to anything, so NOX
+incorrectly concluded that the host had migrated. Other flooded packets were
+dropped as a result of link failures in the network and randomly generated
+network loss. The loop was then installed when the source injected another
+packet.
+
+This case took us roughly 10 hours to debug. We are confident that without the
+minimized trace, it would have taken much
+longer to trace through the subtle sequence of events that were necessary for
+setting up the network in precisely the right conditions.
+
+\eat{
 The next SDN control platform we examined
 was NOX, the original OpenFlow controller.
 NOX is also a single machine control platform, but unlike POX it has been used
@@ -234,21 +292,38 @@ Our initial input size was $150$ inputs, a minute's worth of execution.
 MCS were $3$ dataplane packet drops mid-way through the execution, interspersed
 with $14$ traffic injections. We are in the process of pinpointing the
 exact root cause with NOX developers, based on the $18$ input MCS.
+}
 
-\begin{figure}[t]
-    %\hspace{-10pt}
-    \includegraphics[width=3.25in]{../graphs/runtime/nox_loop.pdf}
-    \caption[]{\label{fig:nox_discovery} Minimizing the NOX discovery loop.}
-\end{figure}
 
 \subsection{Floodlight discovery loop.}
 
+\num{Need runtime graph.}
+
+We applied \projectname~to Floodlight's routing application.
+In about 30 minutes, our fuzzing uncovered a
+117 input sequence that caused a persistent 3-node forwarding loop.
+\projectname~reduced the sequence to 13 input events in 324 replays and 8.5 hours.
+
+We repeatedly replayed the 13 event MCS, while successively adding
+instrumentation and increasing the log level each run. After about 15 replay
+attempts, we found that the problem was caused by interference of end-host
+traffic with ongoing link discovery packets. In our experiment, Floodlight had
+not discovered an inter-switch link due to dropped LLDP packets, causing an
+end-host to flap between perceived attachment points.
+
+While this behavior cannot strictly be considered a bug in Floodlight,
+the case-study nevertheless highlights the benefit of
+\projectname~over traditional fuzzing techniques: by leveraging repeated replays
+of a significantly reduced MCS, we were able to diagnose the root cause--a
+complex interaction between the LinkDiscovery, Forwarding, and DeviceManager
+modules.
 We subjected the current (unmodified) open
 source version of Floodlight (git commit f37046a) to fuzz testing with a three
 node fully meshed topology and high failure event rates. In an hour-long experiment,
 the fuzzer found an event sequence with $284$ total events
 that results in a 3-node forwarding loop.
 
+\eat{
 Floodlight makes use of multiple kernel level
 threads, and thus can exhibit non-deterministic behavior.
 Thus, it is not surprising that we do not achieve full reproducibility of this
@@ -270,6 +345,7 @@ not have deterministic control over.
 The bug appears to depend on fine-grained thread-level races
 conditions that are difficult to guarantee. Still, \projectname was instrumental
 in pointing out a previously unknown bug, and reducing the input size.
+}
 
 \noindent{\bf Overall Results.} The overall results of our case studies are
 shown in Table~\ref{tab:case_studies}.
