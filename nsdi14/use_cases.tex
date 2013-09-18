@@ -13,7 +13,8 @@ top of this simulator and connect the software switches to the controllers as if
 network devices, such that the controllers believe they are configuring a true
 network. This setup allows the simulator to interpose on all communication
 channels and delay, drop, or reorder
-messages as needed. The overall
+messages as needed to induce failure modes during input generation, or to
+maintain causal dependencies during replay. The overall
 simulation architecture is depicted in
 Figure~\ref{fig:architecture}.
 
@@ -67,9 +68,6 @@ the logged sequence of inputs (such as link failures, controller crashes, or hos
 migrations). For example, the simulator replays link failures
 by disconnecting the edge in the simulated network, and sending a
 OpenFlow~\cite{openflow} port status message from the adjacent switches to their parent controller(s).
-During replay, the simulator may delay or reorder controller-switch or
-controller-controller messages to maintain the causality
-reflected in the original log.
 
 \projectname~(\projectmeaning) is our realization of this simulator.
 \projectname~is implemented in roughly 18,000 lines of Python in
