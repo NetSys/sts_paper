@@ -13,8 +13,9 @@ controllers are in \emph{backup} mode and do not perform any changes to the
 switch configurations unless they detect that the master has crashed.
 
 \begin{figure}[t]
+  \centering
   %\hspace{-10pt}
-  \includegraphics[width=3.25in]{../diagrams/case_study/example_bug.pdf}
+  \includegraphics[width=5in]{../diagrams/case_study/example_bug.pdf}
   \caption[]{\label{fig:example} Floodlight failover bug. External inputs
              are depicted as red dots, internal events are depicted as black
              dots, and the dotted message line depicts a timeout.}
@@ -72,7 +73,7 @@ preceding failure event; nor is it sensible to replay a host migration
 event without modifying its starting position when a preceding host
 migration event has been pruned. The simulator checks
 validity before replaying a given subsequence to account for this
-possibility. \footnote{Handling invalid inputs is crucial for
+possibility.\footnote{Handling invalid inputs is crucial for
 ensuring that the delta debugging algorithm finds a minimal causal
 subsequence. The algorithm we employ~\cite{Zeller:1999:YMP:318773.318946}
 makes three
@@ -86,11 +87,11 @@ events (shown in Table \ref{tab:inputs}), but does not support policy changes,
 which have more complex semantics.
 
 \begin{figure*}[t]
+\footnotesize{
 \caption{Automated Delta Debugging Algorithm From~\cite{Zeller:1999:YMP:318773.318946}}
 \begin{boxedminipage}{\textwidth}
-Input: $\cfail$ s.t. $\cfail$ is a trace and $\test(\cfail) = \DFAIL$. Output: $\dfail
-= \ddmin(\cfail)$ s.t. $\dfail \subseteq
-\cfail$, $\test(\dfail) = \DFAIL$, and~$\dfail$ is minimal.
+Input: $\cfail$ s.t. $\cfail$ is a trace and $\test(\cfail) = \DFAIL$. \\
+Output: $\dfail = \ddmin(\cfail)$ s.t. $\dfail \subseteq \cfail$, $\test(\dfail) = \DFAIL$, and~$\dfail$ is minimal.
 \begin{align*}
 \ddmin(\cfail) &= \ddmin_2(\cfail, \emptyset) \quad \text{where} \\
 \ddmin_2(\dfail, R) &=
@@ -104,15 +105,14 @@ Input: $\cfail$ s.t. $\cfail$ is a trace and $\test(\cfail) = \DFAIL$. Output: $
 R\bigr) & \text{otherwise (``interference'')}
 \end{cases}
 \end{align*}
-\begin{center}
 where $\test(T)$ denotes the state of the system after executing the trace $T$,
 $\DFAIL$ denotes a correctness violation, \\
 $\done \subset \dfail$, $\dtwo \subset \dfail$, $\done \cup \dtwo = \dfail$, $\done \cap
 \dtwo = \emptyset$, and $|\done| \approx |\dtwo| \approx |\dfail| / 2$
 hold.
-\end{center}
 \end{boxedminipage}
 \label{fig:ddmin}
+}
 \end{figure*}
 
 \eat{ % Original O(n^2) algorithm
@@ -241,6 +241,7 @@ and $i$ occurs between $i'$'s preceding and succeeding inputs in the
 happens-before relation.
 
 \begin{figure}[t]
+    \centering
     %\hspace{-10pt}
     \includegraphics[width=3.25in]{../diagrams/state_machines/controller_switch.pdf}
     \caption[]{\label{fig:state_machines} Simplified state machines for the switch and
