@@ -1,0 +1,258 @@
+The core piece of infrastructure we need to realize our approach is a
+mechanism to replay execution logs. Building such a replay mechanism comes
+with many challenges; unlike the example applications described
+by the delta debugging paper~\cite{Zeller:1999:YMP:318773.318946}, the system we are troubleshooting is not a
+single program--it encompasses all the nodes and links of a distributed system,
+including controllers, switches, and end-hosts, where asynchrony
+makes it highly difficult to reliably replay inputs.
+
+Our approach is to simulate the control-plane
+behavior of network devices (with support for minimal data-plane behavior) on
+a single machine. We then run the control software on
+top of this simulator and connect the software switches to the controllers as if they were true
+network devices, such that the controllers believe they are configuring a true
+network. This setup allows the simulator to interpose on all communication
+channels and delay, drop, or reorder
+messages as needed to induce failure modes during input generation, or to
+maintain causal dependencies during replay. The overall
+simulation architecture is depicted in
+Figure~\ref{fig:architecture}.
+
+\begin{figure}[t]
+    %\hspace{-10pt}
+    \includegraphics[width=3.25in]{../diagrams/architecture/Debugger_Architecture.pdf}
+    \caption[]{\label{fig:architecture} Simulation infrastructure. We simulate
+    network devices in software, and interpose on all communication
+    channels.}
+\end{figure}
+
+\eat{
+\begin{table}
+\centering
+\begin{tabular}{|l|l|}
+\hline
+Link failure & Link recovery \\
+\hline
+Switch failure & Switch recovery \\
+\hline
+Control server failure & Control server recovery \\
+\hline
+Dataplane packet injection & Dataplane packet drop \\
+\hline
+Dataplane packet delay & Dataplane packet permit \\
+\hline
+Control message delay & Host migration \\
+\hline
+\end{tabular}
+\caption{Input types supported by \projectname}
+\label{tab:inputs}
+\end{table}
+We show the input types supported by \projectname~in Table~\ref{tab:inputs}.
+}
+
+We begin by using our simulator to perform testing on controllers to find
+bugs. Our most common use case involves generating randomly chosen input
+sequences~\cite{Miller:1990:ESR:96267.96279}, feeding them to controller(s),
+and monitoring
+invariants~\cite{hsa} at chosen intervals.
+We also run the simulator interactively
+so that we can examine the state of any part of the simulated network,
+observe and manipulate messages, and follow our
+intuition to induce orderings that we believe may trigger bugs.
+Either way, controlling the inputs from a single location
+allows the simulator to easily record a global, causally-consistent
+event ordering.
+
+After discovering an invariant violation of interest, the simulator replays
+the logged sequence of inputs (such as link failures, controller crashes, or host
+migrations). For example, the simulator replays link failures
+by disconnecting the edge in the simulated network, and sending a
+OpenFlow~\cite{openflow} port status message from the adjacent switches to their parent controller(s).
+
+\projectname~(\projectmeaning) is our realization of this simulator.
+\projectname~is implemented in roughly 18,000 lines of Python in
+addition to the Hassel network invariant checking library~\cite{hsa}.
+\projectname~also makes use of Open vSwitch~\cite{pfaff2009extending} as an interposition point for
+messages sent between distributed controllers. We have
+made the code
+for \projectname~publicly available at \href{http://ucb-sts.github.com/sts}{ucb-sts.github.com/sts},
+and have discussed the logistics of deploying it with several SDN companies.
+
+\colin{TODO: Discuss the value of replay for root causing here? Or just let
+the use cases speak for themselves?}
+
+%How do we ensure the same scheduling order of controller processes? (see
+%Section 4.5 of ReVirt\cite{Dunlap:2002:REI:844128.844148}). We observe that the controllers do not use any shared
+%memory communication.}
+
+\subsection{Mitigating Non-Determinism}
+
+We designed \projectname~to be as resilient to non-determinism as is
+practically feasible, while avoiding modifications to control software whenever possible.
+Routing the {\tt gettimeofday()} syscall
+through \projectname~makes replay more resilient to alterations in execution
+speeds.\footnote{When the pruned trace differs from the original, we make a
+best-effort guess at what the return values of these calls should be. For example,
+if the altered execution invokes {\tt gettimeofday()} more times than we recorded
+in the initial run, we interpolate the time values of neighboring events}
+When sending data over multiple sockets, the operating system exhibits
+non-determinism in the order it schedules the I/O operations.
+\projectname~optionally ensures a deterministic order of messages
+by multiplexing all sockets
+onto a single true socket. \projectname~currently overrides socket functionality within the control
+software itself.\footnote{Only supported for POX at the moment.}
+%In the future we plan to implement deterministic message ordering without code modifications by
+%loading a shim layer on top of
+%libc (similar to liblog~\cite{Geels:2006:RDD:1267359.1267386}).
+
+\projectname~needs visibility into the control software's internal state
+changes to reliably reproduce the system execution. We achieve this by
+making a
+small change to the control software's logging library\footnote{Only supported
+for POX and Floodlight at the moment.}: whenever a control process executes a log
+statement (which indicate that an important state change is about to take
+place), we notify \projectname, and optionally block the process. \projectname~then sends
+an acknowledgment to unblock the controller after taking note of the state change.
+%If blocking was enabled
+%during recording, we force the control software to block at internal state
+%transition points again during replay
+%until \projectname~gives explicit acknowledgment.
+
+\subsection{Coping with Non-Determinism}
+
+Our current implementation does not account for other sources of non-determinism,
+such as random number generators, asynchronous signals,
+or interruptable instructions (\eg~x86's block memory
+instructions~\cite{Dunlap:2002:REI:844128.844148}). And even if these sources were
+eliminated, it would not be possible to achieve perfectly deterministic
+replay in all cases without full visibility into internal events--a daunting
+instrumentation task.
+
+Fortunately we can cope with cases of excessive non-determinism by replaying each subsequence chosen
+by delta debugging multiple times. If observing the bug
+is an independent and identically distributed random variable (an optimistic
+but not completely unreasonable assumption) with some
+underlying probability $p$, then $n$
+replays will observe the bug with probability $1-(1-p)^{n}$. The exponential
+works strongly in our favor; for example, even if the original bug is
+triggered in only 20\% of replays, the probability that we will not trigger
+it during an intermediate replay is approximately
+1\% if we replay 20 times per subsequence.
+
+\subsection{Enabling Analysis of Production Logs}
+\colin{Cut if we need space.}
+
+\projectname~does not currently support minimization of production logs.
+Here we present a sketch of how \projectname~might support production logs as input.
+
+While \simulator~takes as input a single, totally-ordered log of the events in the
+distributed system, production systems maintain a log at each node.
+Production systems would need to include Lamport
+clocks on each message~\cite{Lamport:1978:TCO:359545.359563} or have
+sufficiently accurate clock
+synchronization~\cite{corbett2012spanner} to obtain a partial global ordering
+consistent with the happens-before relation.\footnote{
+Note that a total ordering is not needed, since it is permissible
+for \simulator~to reorder concurrent events from
+the production run so long as the happens-before relation is
+maintained~\cite{Fischer:1985:IDC:3149.214121}.}
+Inputs would also need to need to be logged in sufficient detail for \projectname~to
+replay a synthetic version of the input that is indistinguishable (in terms
+of control plane messages) from the original.
+
+Without care, a single input event may appear multiple times in the
+distributed logs. A failure of the master node, for example, could be independently
+detected and logged by all other replicas. The most robust way to
+avoid redundant input events would be to employ perfect failure
+detectors~\cite{chandra1996unreliable}, which log a failure iff
+the failure actually occurred.\footnote{Perfect failure detectors can be
+implemented in partially synchronous distributed systems by explicitly killing
+nodes that are suspected to be down.} % Ensuring that a single failure detector is in charge of logging node failure
+% events guarantees that redundant events do not appear.
+Alternatively, one
+could employ root cause analysis
+algorithms~\cite{yemini1996} or manual inspection to consolidate redundant
+alarms.
+
+Finally, some care would be needed to prevent the logs from growing so large that
+\simulator's runtime becomes intractable. Here, causally consistent
+snapshots~\cite{Chandy:1985:DSD:214451.214456} would allow \projectname~to
+bootstrap its simulation from the last snapshot before the failure rather than
+replaying from the beginning of the log.
+%If the MCS starting from this snapshot is empty, it could iteratively move backwards, starting from earlier
+%snapshots.
+
+\subsection{Limitations}
+\label{subsec:non_goals}
+
+Having detailed the specifics of our approach we now
+clarify the scope of our technique's use.
+
+\noindent{\bf Partial Visibility.} Our event scheduling algorithm assumes that
+it has visibility into the occurrence of all relevant internal events. This
+may involve substantial instrumentation effort beyond
+pre-existing log statements.
+
+\noindent{\bf Non-determinism Within Individual Controllers.} Our technique is not designed to reproduce bugs
+involving non-determinism within a single controller (\eg~race-conditions between threads);
+we focus on coarser granularity errors (\eg~incorrect failover logic). Nonetheless, the
+worst case for us is that the developer ends up with what they started:
+an unpruned log.
+
+%The upshot of
+%this is that our technique is not able to minimize all possible failures.
+%Nonetheless, our worst case is that the developer ends up with what they started:
+%an unpruned log.
+
+\eat{That said, if the developer is willing to instrument their system to
+provide finer granularity log messages (\cf~\cite{Geels:2006:RDD:1267359.1267386}),
+our approach readily supports deterministic replay.}
+
+\eat{
+\noindent{\bf Troubleshooting vs.\ Debugging.} Our technique is a troubleshooting tool, not a debugger;
+by this we mean that our approach helps identify and localize inputs that
+trigger erroneous behavior, but it does not directly identify which
+line(s) of code cause the error.}
+
+\noindent{\bf Bugs Outside the Control Software.} Our goal is not to find the root
+cause of individual component failures in the system (\eg~misbehaving routers,
+link failures). Instead, we focus on
+how the distributed system as a whole reacts to the occurrence of such inputs.
+%If there is a bug in your switch, you will need to contact your hardware vendor;
+%if you have a bug in your policy specification, you will need to take a closer look at what you specified.
+
+\noindent{\bf Globally vs.\ Locally Minimal Input Sequences.}
+Our approach is not guaranteed to find the globally minimal
+causal sequence from an input trace, since this enumerating the powerset of
+$E_L$ in the worst case (a $O(2^n)$ operation).
+The delta debugging algorithm we employ does provably find a
+locally minimal causal sequence~\cite{Zeller:1999:YMP:318773.318946},
+meaning that if any input from the sequence is pruned, no invariant violation
+occurs.
+
+\noindent{\bf Correctness vs.\ Performance.}
+We are primarily focused on correctness bugs, not performance bugs.
+
+\noindent{\bf Bugs Found Through Fuzzing.}
+We generate bug traces primarily through fuzz testing, not from real bugs
+found in operation. There is a substantial practical hurdle in instrumenting
+operational systems to produce logs that can be injected into our system. % , and we have not addressed those issues yet.
+%In practice some bugs
+%found through fuzzing will not be considered worthwhile to investigate.
+
+\noindent{\bf Scaling.}
+Our discussions with companies with large SDN deployments suggest that scaling to the size of the
+large logs they collect will be a substantial challenge.
+On the other hand, the fact that these logs are so large makes the need for finding MCSes even more acute.
+
+\eat{
+\noindent{\bf Proactive vs.\ Reactive Configuration.} We focus primarily on
+\emph{proactive} configuration, where controllers react to policy and topology changes, but
+not necessarily individual packets or flows events in the
+dataplane.\footnote{Production controllers typically adopt this model for
+performance reasons.}
+The main challenge in extending our approach to reactive controllers is
+achieving efficient simulation of dataplane traffic.
+\andi{Could cut this. We actually find reactive bugs}
+}
+
