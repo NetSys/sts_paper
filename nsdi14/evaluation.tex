@@ -244,7 +244,7 @@ within
 roughly 20 runs of randomly generated inputs.
 
 Our initial input size was 68 inputs, and
-\projectname~returned an 18 input \num{Does not match graph} MCS.\footnote{We had difficulty replaying
+\projectname~returned an 18 input MCS.\footnote{We had difficulty replaying
 the final MCS. The reason seems clear: this bug depends on the
 order NOX discovers links, which in turns depends on hashes computed from random memory
 addresses its discovery modules LLDP selection algorithm!}
@@ -297,7 +297,7 @@ exact root cause with NOX developers, based on the $18$ input MCS.
 
 \subsection{Floodlight discovery loop.}
 
-\num{Need runtime graph.}
+%\num{Need runtime graph.}
 
 We applied \projectname~to Floodlight's routing application.
 In about 30 minutes, our fuzzing uncovered a
