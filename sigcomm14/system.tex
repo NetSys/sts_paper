@@ -4,7 +4,7 @@ with many challenges; unlike the example applications described
 by the delta debugging paper~\cite{Zeller:1999:YMP:318773.318946}, the system we are troubleshooting is not a
 single program--it encompasses all the nodes and links of a distributed system,
 including controllers, switches, and end-hosts, where asynchrony
-makes it highly difficult to reliably replay inputs.
+makes it difficult to reliably replay inputs.
 
 Our approach is to simulate the control-plane
 behavior of network devices (with support for minimal data-plane behavior) on
@@ -69,7 +69,7 @@ OpenFlow~\cite{openflow} port status message from the adjacent switches to their
 \projectname~(\projectmeaning) is our realization of this simulator.
 \projectname~is implemented in roughly 18,000 lines of Python in
 addition to the Hassel network invariant checking library~\cite{hsa}.
-\projectname~also makes use of Open vSwitch~\cite{pfaff2009extending} as an interposition point for
+\projectname~also optionally makes use of Open vSwitch~\cite{pfaff2009extending} as an interposition point for
 messages sent between distributed controllers. We have
 made the code
 for \projectname~publicly available at \href{http://ucb-sts.github.com/sts}{ucb-sts.github.com/sts},
@@ -84,7 +84,29 @@ the use cases speak for themselves?}
 
 \subsection{Mitigating Non-Determinism}
 
-We designed \projectname~to be as resilient to non-determinism as is
+Non-determinism in the execution of concurrent processes stems from
+differences in system call return values, scheduling decisions, and signal
+delivery. These sources of non-determinism may affect whether \projectname~is
+able to reproduce the original bug after replay.
+
+Most testing systems, such as the QA testing frameworks we are
+trying to improve, do not attempt to mitigate non-determinism; they assume
+that developers will be able replicate bugs by attempting to reproduce the
+same conditions as the original test run, else track down the the root cause simply by
+inspecting the raw execution logs.
+
+Deterministic replay techniques~\cite{Dunlap:2002:REI:844128.844148,Geels:2006:RDD:1267359.1267386},
+which precisely record and replay scheduling decisions and system call return values,
+may be deployed to reliably produce bugs in exchange for a loss in performance.
+Unfortunately these techniques do not support any changes to the processes
+involved in the replay. In particular, they do not support changes to the inputs fed to the
+processes, since changes may cause the remaining execution to
+subtly differ (\eg~the sequence numbers of packets may all differ).
+This precludes the possibility of employing deterministic replay techniques in
+\projectname, since our goal is precisely to modify the inputs fed to the
+distributed system.
+
+We therefore designed \projectname~to be as resilient to non-determinism as is
 practically feasible, while avoiding modifications to control software whenever possible.
 Routing the {\tt gettimeofday()} syscall
 through \projectname~makes replay more resilient to alterations in execution
