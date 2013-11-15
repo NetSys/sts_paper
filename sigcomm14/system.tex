@@ -98,7 +98,7 @@ inspecting the raw execution logs.
 Deterministic replay techniques~\cite{Dunlap:2002:REI:844128.844148,Geels:2006:RDD:1267359.1267386},
 which precisely record and replay scheduling decisions and system call return values,
 may be deployed to reliably produce bugs in exchange for a loss in performance.
-Unfortunately these techniques do not support any changes to the processes
+Unfortunately these techniques do not allow the user to make any modifications to the processes
 involved in the replay. In particular, they do not support changes to the inputs fed to the
 processes, since changes may cause the remaining execution to
 subtly differ (\eg~the sequence numbers of packets may all differ).
@@ -108,9 +108,8 @@ distributed system.
 
 We therefore designed \projectname~to be as resilient to non-determinism as is
 practically feasible, while avoiding modifications to control software whenever possible.
-Routing the {\tt gettimeofday()} syscall
-through \projectname~makes replay more resilient to alterations in execution
-speeds.\footnote{When the pruned trace differs from the original, we make a
+Routing the {\tt gettimeofday()} syscall through \projectname~helps ensure that timers fire
+at the appropriate point.\footnote{When the pruned trace differs from the original, we make a
 best-effort guess at what the return values of these calls should be. For example,
 if the altered execution invokes {\tt gettimeofday()} more times than we recorded
 in the initial run, we interpolate the time values of neighboring events}
@@ -124,14 +123,15 @@ software itself.\footnote{Only supported for POX at the moment.}
 %loading a shim layer on top of
 %libc (similar to liblog~\cite{Geels:2006:RDD:1267359.1267386}).
 
-\projectname~needs visibility into the control software's internal state
+\projectname~may need visibility into the control software's internal state
 changes to reliably reproduce the system execution. We achieve this by
 making a
 small change to the control software's logging library\footnote{Only supported
 for POX and Floodlight at the moment.}: whenever a control process executes a log
 statement (which indicate that an important state change is about to take
-place), we notify \projectname, and optionally block the process. \projectname~then sends
-an acknowledgment to unblock the controller after taking note of the state change.
+place), we notify \projectname. We can also use logging interposition as a
+synchronization barrier, by blocking the process when it hits crucial logging statements in the code
+until \projectname~explicitly tells the process that it may proceed.
 %If blocking was enabled
 %during recording, we force the control software to block at internal state
 %transition points again during replay
