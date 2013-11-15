@@ -82,10 +82,12 @@ the use cases speak for themselves?}
 %Section 4.5 of ReVirt\cite{Dunlap:2002:REI:844128.844148}). We observe that the controllers do not use any shared
 %memory communication.}
 
-\subsection{Mitigating Non-Determinism}
+\subsection{Coping with Non-Determinism}
 
 Non-determinism in the execution of concurrent processes stems from
-differences in system call return values, scheduling decisions, and signal
+differences in system call return values, scheduling decisions (which can
+even affect the result of individual instructions, such as x86's
+interruptable block memory instructions~\cite{Dunlap:2002:REI:844128.844148}), and signal
 delivery. These sources of non-determinism may affect whether \projectname~is
 able to reproduce the original bug after replay.
 
@@ -95,6 +97,22 @@ that developers will be able replicate bugs by attempting to reproduce the
 same conditions as the original test run, else track down the the root cause simply by
 inspecting the raw execution logs.
 
+\projectname's main approach to coping with non-determinism
+is to replay each subsequence chosen
+by delta debugging multiple times. If observing the bug
+is an independent and identically distributed random variable (an optimistic
+but not completely unreasonable assumption) with some
+underlying probability $p$, then $n$
+replays will observe the bug with probability $1-(1-p)^{n}$. The exponential
+works strongly in our favor; for example, even if the original bug is
+triggered in only 20\% of replays, the probability that we will not trigger
+it during an intermediate replay is approximately
+1\% if we replay 20 times per subsequence.
+
+\subsection{Mitigating Non-Determinism}
+
+In cases where non-determinism's effect on replayability is substantial,
+one might also seek to mitigate or prevent non-determinism altogether.
 Deterministic replay techniques~\cite{Dunlap:2002:REI:844128.844148,Geels:2006:RDD:1267359.1267386},
 which precisely record and replay scheduling decisions and system call return values,
 may be deployed to reliably produce bugs in exchange for a loss in performance.
@@ -105,6 +123,10 @@ subtly differ (\eg~the sequence numbers of packets may all differ).
 This precludes the possibility of employing deterministic replay techniques in
 \projectname, since our goal is precisely to modify the inputs fed to the
 distributed system.
+%And even if these sources were
+%eliminated, it would not be possible to achieve perfectly deterministic
+%replay in all cases without full visibility into internal events--a daunting
+%instrumentation task.
 
 We therefore designed \projectname~to be as resilient to non-determinism as is
 practically feasible, while avoiding modifications to control software whenever possible.
@@ -136,27 +158,6 @@ until \projectname~explicitly tells the process that it may proceed.
 %during recording, we force the control software to block at internal state
 %transition points again during replay
 %until \projectname~gives explicit acknowledgment.
-
-\subsection{Coping with Non-Determinism}
-
-Our current implementation does not account for other sources of non-determinism,
-such as random number generators, asynchronous signals,
-or interruptable instructions (\eg~x86's block memory
-instructions~\cite{Dunlap:2002:REI:844128.844148}). And even if these sources were
-eliminated, it would not be possible to achieve perfectly deterministic
-replay in all cases without full visibility into internal events--a daunting
-instrumentation task.
-
-Fortunately we can cope with cases of excessive non-determinism by replaying each subsequence chosen
-by delta debugging multiple times. If observing the bug
-is an independent and identically distributed random variable (an optimistic
-but not completely unreasonable assumption) with some
-underlying probability $p$, then $n$
-replays will observe the bug with probability $1-(1-p)^{n}$. The exponential
-works strongly in our favor; for example, even if the original bug is
-triggered in only 20\% of replays, the probability that we will not trigger
-it during an intermediate replay is approximately
-1\% if we replay 20 times per subsequence.
 
 \subsection{Enabling Analysis of Production Logs}
 \colin{Cut if we need space.}
@@ -212,7 +213,10 @@ it has visibility into the occurrence of all relevant internal events. This
 may involve substantial instrumentation effort beyond
 pre-existing log statements.
 
-\noindent{\bf Non-determinism Within Individual Controllers.} Our technique is not designed to reproduce bugs
+\noindent{\bf Non-determinism Within Individual Controllers.} Non-determinism
+is fundamental in networks. We try our best to mitigate and cope with
+non-determinism, but it may be so bad that bugs are reproducibility. In
+particular our technique is not designed to reproduce bugs
 involving non-determinism within a single controller (\eg~race-conditions between threads);
 we focus on coarser granularity errors (\eg~incorrect failover logic). Nonetheless, the
 worst case for us is that the developer ends up with what they started:
