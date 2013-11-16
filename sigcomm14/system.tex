@@ -30,17 +30,15 @@ Figure~\ref{fig:architecture}.
 \centering
 \begin{tabular}{|l|l|}
 \hline
-Link failure & Link recovery \\
+Link failure/recovery & Switch failure/recovery \\
 \hline
-Switch failure & Switch recovery \\
-\hline
-Control server failure & Control server recovery \\
+Controller failure/recovery & Controller partition \\
 \hline
 Dataplane packet injection & Dataplane packet drop \\
 \hline
-Dataplane packet delay & Dataplane packet permit \\
+Dataplane packet delay & Host migration \\
 \hline
-Control message delay & Host migration \\
+Control message delay & Non-deterministic TCAMs \\
 \hline
 \end{tabular}
 \caption{Input types supported by \projectname}
