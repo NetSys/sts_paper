@@ -26,25 +26,6 @@ Figure~\ref{fig:architecture}.
     channels.}
 \end{figure}
 
-\begin{table}
-\centering
-\begin{tabular}{|l|l|}
-\hline
-Link failure/recovery & Switch failure/recovery \\
-\hline
-Controller failure/recovery & Controller partition \\
-\hline
-Dataplane packet injection & Dataplane packet drop \\
-\hline
-Dataplane packet delay & Host migration \\
-\hline
-Control message delay & Non-deterministic TCAMs \\
-\hline
-\end{tabular}
-\caption{Input types supported by \projectname}
-\label{tab:inputs}
-\end{table}
-
 We begin by using our simulator to perform testing on controllers to find
 bugs. Our most common use case involves generating randomly chosen input
 sequences~\cite{Miller:1990:ESR:96267.96279}, feeding them to controller(s),
