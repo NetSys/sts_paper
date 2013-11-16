@@ -72,7 +72,7 @@ preceding failure event; nor is it sensible to replay a host migration
 event without modifying its starting position when a preceding host
 migration event has been pruned. The simulator checks
 validity before replaying a given subsequence to account for this
-possibility. \footnote{Handling invalid inputs is crucial for
+possibility.\footnote{Handling invalid inputs is crucial for
 ensuring that the delta debugging algorithm finds a minimal causal
 subsequence. The algorithm we employ~\cite{Zeller:1999:YMP:318773.318946}
 makes three
@@ -257,9 +257,11 @@ happens-before relation.
 \hline
 Internal message & Masked values \\
 \hline
-OpenFlow messages & transaction id, cookie, buffer id, statistics \\
-Dataplane packets (contained in OpenFlow packet\_outs and packet\_ins) &
-all fields except source, destination and payload \\
+OpenFlow messages & xac id, cookie, buffer id, stats \\
+\hline
+packet\_out/in payload &
+everything but src, dst, data \\
+\hline
 Log statements & varargs parameters to printf \\
 \hline
 \end{tabular}
