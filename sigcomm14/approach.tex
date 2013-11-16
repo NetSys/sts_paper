@@ -66,13 +66,13 @@ The delta debugging algorithm is shown in
 Figure~\ref{fig:ddmin} (with `$test$' replaced by `$replay$').
 
 It is worth noting that the input subsequences chosen by delta debugging are not always
-valid. For
-example, it is not sensible to replay a recovery event without a
+valid. In particular, it is not sensible to replay a recovery event without a
 preceding failure event; nor is it sensible to replay a host migration
 event without modifying its starting position when a preceding host
-migration event has been pruned. The simulator checks
-validity before replaying a given subsequence to account for this
-possibility.\footnote{Handling invalid inputs is crucial for
+migration event has been pruned. Our implementation of delta debugging therefore treats
+failure/recovery events as atomic pairs, and updates initial host locations
+whenever host migration events are pruned so that hosts do not appear at new
+locations incongruously.\footnote{Handling invalid inputs is crucial for
 ensuring that the delta debugging algorithm finds a minimal causal
 subsequence. The algorithm we employ~\cite{Zeller:1999:YMP:318773.318946}
 makes three
@@ -81,9 +81,10 @@ Violating the first two only leads to slightly inflated MCSes. Zeller wrote a fo
 paper~\cite{Zeller:2002:SIF:506201.506206} that removes the need for the
 consistency assumption,
 but incurs an additional factor of $N$ in complexity in doing so.}
-Currently our simulator accounts for validity of all network state change
-events (shown in Table \ref{tab:inputs}), but does not support policy changes,
-which have more complex semantics.
+These two heuristics account for validity of all network state change
+events our system supports (shown in Table \ref{tab:inputs}). We do not yet
+support controller policy changes, which have more complex semantic
+dependencies.
 
 \begin{figure*}[t]
 \caption{Automated Delta Debugging Algorithm From~\cite{Zeller:1999:YMP:318773.318946}}
