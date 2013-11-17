@@ -70,7 +70,7 @@ We begin by using our simulator to perform testing on controllers to find
 bugs. Our most common use case involves generating randomly chosen input
 sequences~\cite{Miller:1990:ESR:96267.96279}, feeding them to controller(s),
 and monitoring
-invariants at chosen intervals.\footenote{The full list of invariants currently
+invariants at chosen intervals.\footnote{The full list of invariants currently
 supported is shown in Table~\ref{tab:invariants}}
 We also run the simulator interactively
 so that we can examine the state of any part of the simulated network,
@@ -185,6 +185,87 @@ until \projectname~explicitly tells the process that it may proceed.
 %during recording, we force the control software to block at internal state
 %transition points again during replay
 %until \projectname~gives explicit acknowledgment.
+
+\subsection{Input Generation}
+
+XXX
+
+Not doing control plane fingerprinting besides OF, for throughput reasons
+
+How we cause controller partitions (iptables), and other events? Tradeoffs
+with interposing on all messages.
+
+How we generate dataplane traffic?
+
+\subsection{Root Causing Tools}
+
+Tools for root causing, beyond `grep` and the like.
+
+\noindent{\bf OFRewind}:
+Sometimes Replayer moves too quickly to get a good understanding of an event
+trace. InteractiveReplayer is a combination of Interactive mode and Replayer
+mode, a la OFRewind~\cite{ofrewind}.
+* visualizing the network topology
+* tracing the series of link/switch failures/recoveries
+* tracing the series of host migrations
+* tracing the series of flow\_mods
+* tracing the series of traffic injections
+* tracing the series of controller failures, recoveries, and partitions
+
+Each time we hit enter,
+the next event in the trace is executed. We can also check invariants, examine
+flow tables, visualize the topology, and even induce previously unobserved
+inputs.
+
+Because the timing of events is so delicate in a distributed system,
+InteractiveReplayer does not run controller processes. Instead, it mocks out
+OpenFlow connections, and replays the exact OpenFlow commands from the
+original trace.
+
+\noindent{\bf Packet Tracing}:
+A la xtrace and ndb~\cite{fonseca2007x,handigol2012debugger}.
+It is often useful to know what path a packet took through the network. Given
+the event id of a TrafficInjection event, the
+script will print all dataplane permits and
+drops, as well as ofp\_packet\_in's and out's associated with the
+TrafficInjection's packet.
+
+\noindent{\bf OpenFlow analysis}:
+The OpenFlow commands sent by controller software are often somewhat redundant. For
+example, flow\_mods may override each other, expire, or periodically flush the
+contents of flow tables and later repopulate them. Hence even in minimized event
+traces we often observe OpenFlow messages that are not directly relevant
+for causing an invalid network configuration such as a loop or blackhole.
+
+OpenFlowReplayer mode is designed to filter out such redundant messages,
+leaving only the flow\_mods that show up in the final routing tables.
+With this knowledge, it becomes much easier to know exactly what points in
+the trace the invalid network configuration was installed.
+After replaying all OpenFlow commands, OpenFlowReplayer infers which
+flow\_mods show up in the final routing tables.
+
+\noindent{\bf Visualization tools}:
+Understanding the timing of messages and internal events in distributed systems is a crucial part of troubleshooting.
+STS includes two visualization tools designed help with this task.
+
+We include a second visualization tool, `./tools/visualization/visualize1d.html`, to help us compare
+the behavior of two or more event traces. This tool is particularly useful for understanding the effects of non-determinism in
+intermediate runs of delta debugging.
+
+A common workflow for the trace comparison tool:
+- Run MCSFinder.
+- Discover that the final MCS does not reliably trigger the bug.
+- Open `visualize1D.html` in a web browser.
+- Load either the original (fuzzed) trace,
+  or the first replay of this trace,
+  as the first timeline. I have found that it is often better to load the
+  first replay rather than the original fuzzed trace, since this has
+  timing information that matches the other replays much more closely.
+- Load the final replay of the MCS trace,
+  as the second timeline.
+- Hover over events to further information about them, including functional equivalence
+  with events in the other traces.
+- Load intermediate replay trace timelines if needed.
 
 \subsection{Scaling and Parallelization}
 
