@@ -186,6 +186,20 @@ until \projectname~explicitly tells the process that it may proceed.
 %transition points again during replay
 %until \projectname~gives explicit acknowledgment.
 
+\subsection{Scaling and Parallelization}
+
+When minimizing very large event traces, we found that the python garbage
+collector often became overwhelmed (causing the process to slow down
+substantially) after replaying several subsequences.
+After observing this behavior we modified \projectname~to fork a process
+(either local or remote) for each subsequence chosen by delta debugging,
+and gather the results of the replay via RPC. This alleviates the slow down,
+since the replay process is fully cleaned up by the operating system once the
+replay terminates, and the
+main delta debugging process keeps little memory itself.
+As an added benefit, this architectural change allows us to support
+parallelized delta debugging across multiple cores or machines.
+
 \subsection{Enabling Analysis of Production Logs}
 \colin{Cut if we need space.}
 
