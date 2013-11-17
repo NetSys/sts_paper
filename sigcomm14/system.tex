@@ -1,21 +1,46 @@
 The core piece of infrastructure we need to realize our approach is a
-mechanism to replay execution logs. Building such a replay mechanism comes
+mechanism to produce and replay execution logs. Building such a system comes
 with many challenges; unlike the example applications described
 by the delta debugging paper~\cite{Zeller:1999:YMP:318773.318946}, the system we are troubleshooting is not a
 single program--it encompasses all the nodes and links of a distributed system,
 including controllers, switches, and end-hosts, where asynchrony
 makes it difficult to reliably replay inputs.
 
-Our approach is to simulate the control-plane
-behavior of network devices (with support for minimal data-plane behavior) on
-a single machine. We then run the control software on
+Both of the SDN controller vendors we are in contact with~\cite{nicirahomepage,bigswitch} employ a team of QA
+engineers to fuzz test their controller software on a testbed of switches and hosts.
+As depicted in Figure~\ref{fig:qa_cluster}, this fuzz testing infrastructure
+consists of the controller software under test, the testbed, and a centralized
+test orchestrator
+that chooses random input sequences, drives the behavior of the testbed,
+periodically checks invariants, and manages log files. When a bug is discovered, it is first triaged
+by a human, then logs are collected and sent to a developer for further troubleshooting.
+
+\begin{figure}[t]
+    %\hspace{-10pt}
+    \includegraphics[width=3.25in]{../diagrams/architecture/qa_cluster.jpg}
+    \caption[]{\label{fig:qa_cluster} Typical QA testbed. A centralized test
+    orchestrator drives the behavior of the network, and checks for bugs in
+    the controllers.}
+\end{figure}
+
+We do not have access to such a QA testbed.\footnote{If we did have access to
+such a QA testbed, we would simply add delta debugging to the test
+orchestrator, and potentially insert interposition points throughout the
+testbed to enforce causal relations during replay.}
+We instead built our own integration testing framework to discover bugs and
+perform replay. Our system mocks out the control-plane
+behavior of network devices in lightweight software switches and hosts (with
+support for minimal data-plane forwarding)
+within a single-threaded process. We then run the control software on
 top of this simulator and connect the software switches to the controllers as if they were true
 network devices, such that the controllers believe they are configuring a true
-network. This setup allows the simulator to interpose on all communication
-channels and delay, drop, or reorder
-messages as needed to induce failure modes during input generation, or to
-maintain causal dependencies during replay. The overall
-simulation architecture is depicted in
+network. The simulator interposes and buffers messages on all communication
+channels, allowing it to delay, drop, or reorder
+messages as needed to induce failure modes during testing. During
+replay, the simulator uses these buffers to maintain causal dependencies by
+matching messages in the buffers by their fingerprints and carefully
+controlling the order message are let through according to the subsequence chosen by
+delta debugging. The overall simulation architecture is depicted in
 Figure~\ref{fig:architecture}.
 
 \begin{figure}[t]
@@ -26,11 +51,27 @@ Figure~\ref{fig:architecture}.
     channels.}
 \end{figure}
 
+\begin{table}
+\centering
+\begin{tabular}{|l|l|}
+\hline
+All-to-all reachability & Loop freeness \\
+\hline
+Blackhole freeness & Controller liveness \\
+\hline
+POX ACL compliance & ONOS flow routing compliance \\
+\hline
+\end{tabular}
+\caption{Invariant checks currently supported by \projectname}
+\label{tab:invariants}
+\end{table}
+
 We begin by using our simulator to perform testing on controllers to find
 bugs. Our most common use case involves generating randomly chosen input
 sequences~\cite{Miller:1990:ESR:96267.96279}, feeding them to controller(s),
 and monitoring
-invariants~\cite{hsa} at chosen intervals.
+invariants at chosen intervals.\footenote{The full list of invariants currently
+supported is shown in Table~\ref{tab:invariants}}
 We also run the simulator interactively
 so that we can examine the state of any part of the simulated network,
 observe and manipulate messages, and follow our
@@ -109,6 +150,13 @@ distributed system.
 
 We therefore designed \projectname~to be as resilient to non-determinism as is
 practically feasible, while avoiding modifications to control software whenever possible.
+We began by designing \projectname~to run within a single thread, allowing it
+to replay all network events in serial order. We also ensured that all
+datastructures within \projectname~were not effected by randomness; for example,
+we avoid using hashmaps that hash keys according to their memory address,
+and sort all list return values.
+
+We also optionally interpose or modify the controller software itself.
 Routing the {\tt gettimeofday()} syscall through \projectname~helps ensure that timers fire
 at the appropriate point.\footnote{When the pruned trace differs from the original, we make a
 best-effort guess at what the return values of these calls should be. For example,
@@ -141,7 +189,8 @@ until \projectname~explicitly tells the process that it may proceed.
 \subsection{Enabling Analysis of Production Logs}
 \colin{Cut if we need space.}
 
-\projectname~does not currently support minimization of production logs.
+\projectname~does not currently support minimization of production (as opposed
+to QA) logs.
 Here we present a sketch of how \projectname~might support production logs as input.
 
 While \simulator~takes as input a single, totally-ordered log of the events in the
