@@ -86,24 +86,6 @@ events our system supports (shown in Table~\ref{tab:inputs}). We do not yet
 support controller policy changes, which have more complex semantic
 dependencies.
 
-\begin{table}
-\centering
-\begin{tabular}{|l|l|}
-\hline
-Link failure/recovery & Switch failure/recovery \\
-\hline
-Controller failure/recovery & Controller partition \\
-\hline
-Dataplane packet injection & Dataplane packet drop \\
-\hline
-Dataplane packet delay & Host migration \\
-\hline
-Control message delay & Non-deterministic TCAMs \\
-\hline
-\end{tabular}
-\caption{Input types supported by \projectname}
-\label{tab:inputs}
-\end{table}
 
 \begin{figure*}[t]
 \caption{Automated Delta Debugging Algorithm From~\cite{Zeller:1999:YMP:318773.318946}}
@@ -276,6 +258,7 @@ happens-before relation.
 \begin{tabular}{|l|l|}
 \hline
 Internal message & Masked values \\
+\hline
 \hline
 OpenFlow messages & xac id, cookie, buffer id, stats \\
 \hline

@@ -55,6 +55,38 @@ Figure~\ref{fig:architecture}.
 \centering
 \begin{tabular}{|l|l|}
 \hline
+Input Type &  Implementation \\
+\hline
+\hline
+Switch failure/recovery & TCP teardown \\
+\hline
+Controller failure/recovery & SIGKILL \\
+\hline
+Link failure/recovery & ofp\_port\_status \\
+\hline
+Controller partition & iptables \\
+\hline
+Dataplane packet injection & network namespaces \\
+\hline
+Dataplane packet drop & dataplane interposition \\
+\hline
+Dataplane packet delay & dataplane interposition \\
+\hline
+Host migration & ofp\_port\_status \\
+\hline
+Control message delay & controlplane interposition \\
+\hline
+Non-deterministic TCAMs & controlplane interposition \\
+\hline
+\end{tabular}
+\caption{Input types currently supported by \projectname}
+\label{tab:inputs}
+\end{table}
+
+\begin{table}
+\centering
+\begin{tabular}{|l|l|}
+\hline
 All-to-all reachability & Loop freeness \\
 \hline
 Blackhole freeness & Controller liveness \\
@@ -185,17 +217,6 @@ until \projectname~explicitly tells the process that it may proceed.
 %during recording, we force the control software to block at internal state
 %transition points again during replay
 %until \projectname~gives explicit acknowledgment.
-
-\subsection{Input Generation}
-
-XXX
-
-Not doing control plane fingerprinting besides OF, for throughput reasons
-
-How we cause controller partitions (iptables), and other events? Tradeoffs
-with interposing on all messages.
-
-How we generate dataplane traffic?
 
 \subsection{Root Causing Tools}
 
