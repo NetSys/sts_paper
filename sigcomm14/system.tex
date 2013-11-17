@@ -113,10 +113,9 @@ allows the simulator to easily record a global, causally-consistent
 event ordering.
 
 After discovering an invariant violation of interest, the simulator replays
-the logged sequence of inputs (such as link failures, controller crashes, or host
-migrations). For example, the simulator replays link failures
+the logged sequence of inputs (shown in Table~\ref{tab:inputs}). For example, the simulator replays link failures
 by disconnecting the edge in the simulated network, and sending a
-OpenFlow~\cite{openflow} port status message from the adjacent switches to their parent controller(s).
+ofp\_port\_status~\cite{openflow} message from the adjacent switches to their parent controller(s).
 
 \projectname~(\projectmeaning) is our realization of this simulator.
 \projectname~is implemented in roughly 18,000 lines of Python in
