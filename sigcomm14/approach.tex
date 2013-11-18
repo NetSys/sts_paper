@@ -238,8 +238,7 @@ of applying masks is that bugs involving masked fields are outside the purview o
 our approach.} These masks only need to be specified once, and can later be
 applied programmatically to event traces.
 
-We show four examples of masked values
-in Table~\ref{tab:fingerprints}. We consider an internal event $i'$ observed in the subsequence log
+We show the fields we mask in Table~\ref{tab:fingerprints}. We consider an internal event $i'$ observed in the subsequence log
 equivalent (in the sense of inheriting all of its happens-before relations) to an internal event $i$ from the original log iff all unmasked
 fields have the same value
 and $i$ occurs between $i'$'s preceding and succeeding inputs in the
