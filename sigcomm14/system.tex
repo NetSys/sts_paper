@@ -219,73 +219,46 @@ until \projectname~explicitly tells the process that it may proceed.
 
 \subsection{Root Causing Tools}
 
-Tools for root causing, beyond `grep` and the like.
+Throughout our experimentation with \projectname, we often found that
+minimized event traces alone did not provide us with enough information to
+pinpoint the root causes of bugs. We therefore implemented a number of root
+causing tools within \projectname,
+which we use along with Unix utilities such as `grep' to help us complete the final
+stage of debugging.
 
-\noindent{\bf OFRewind}:
-Sometimes Replayer moves too quickly to get a good understanding of an event
-trace. InteractiveReplayer is a combination of Interactive mode and Replayer
-mode, a la OFRewind~\cite{ofrewind}.
-* visualizing the network topology
-* tracing the series of link/switch failures/recoveries
-* tracing the series of host migrations
-* tracing the series of flow\_mods
-* tracing the series of traffic injections
-* tracing the series of controller failures, recoveries, and partitions
-
-Each time we hit enter,
-the next event in the trace is executed. We can also check invariants, examine
-flow tables, visualize the topology, and even induce previously unobserved
-inputs.
-
-Because the timing of events is so delicate in a distributed system,
-InteractiveReplayer does not run controller processes. Instead, it mocks out
-OpenFlow connections, and replays the exact OpenFlow commands from the
+\noindent{\bf OFRewind}. \projectname~supports an interactive replay mode
+similar to OFRewind~\cite{ofrewind} that allows troubleshooters to query the
+state of the network throughout replay, filter subsets of the events, check
+additional invariants, and
+even induce new events that were not part of the original event trace.
+Because the timing of events in  distributed systems is so delicate,
+this mode of \projectname~does not run concurrent controller processes,
+but instead mocks out
+OpenFlow connections and replays the exact OpenFlow commands from the
 original trace.
 
-\noindent{\bf Packet Tracing}:
-A la xtrace and ndb~\cite{fonseca2007x,handigol2012debugger}.
-It is often useful to know what path a packet took through the network. Given
-the event id of a TrafficInjection event, the
-script will print all dataplane permits and
-drops, as well as ofp\_packet\_in's and out's associated with the
-TrafficInjection's packet.
+\noindent{\bf Packet Tracing}. Especially for SDN controllers that react to
+flow events, we found it useful to trace the path of individual
+packets throughout the network. \projectname~includes a tracing tool similar
+to XTrace~\cite{fonseca2007x} and ndb~\cite{handigol2012debugger} for this
+purpose.
 
-\noindent{\bf OpenFlow analysis}:
-The OpenFlow commands sent by controller software are often somewhat redundant. For
-example, flow\_mods may override each other, expire, or periodically flush the
-contents of flow tables and later repopulate them. Hence even in minimized event
-traces we often observe OpenFlow messages that are not directly relevant
-for causing an invalid network configuration such as a loop or blackhole.
+\noindent{\bf OpenFlow Reduction}. The OpenFlow commands sent by controller software
+are often somewhat redundant. For example, controllers may override routing
+entries, allow them to expire, or periodically flush the
+contents of flow tables and later repopulate them. \projectname~includes a
+tool for filtering out such redundant messages,
+leaving only those commands that are directly relevant for invalid network
+configurations such as loops or blackholes.
 
-OpenFlowReplayer mode is designed to filter out such redundant messages,
-leaving only the flow\_mods that show up in the final routing tables.
-With this knowledge, it becomes much easier to know exactly what points in
-the trace the invalid network configuration was installed.
-After replaying all OpenFlow commands, OpenFlowReplayer infers which
-flow\_mods show up in the final routing tables.
-
-\noindent{\bf Visualization tools}:
-Understanding the timing of messages and internal events in distributed systems is a crucial part of troubleshooting.
-STS includes two visualization tools designed help with this task.
-
-We include a second visualization tool, `./tools/visualization/visualize1d.html`, to help us compare
-the behavior of two or more event traces. This tool is particularly useful for understanding the effects of non-determinism in
-intermediate runs of delta debugging.
-
-A common workflow for the trace comparison tool:
-- Run MCSFinder.
-- Discover that the final MCS does not reliably trigger the bug.
-- Open `visualize1D.html` in a web browser.
-- Load either the original (fuzzed) trace,
-  or the first replay of this trace,
-  as the first timeline. I have found that it is often better to load the
-  first replay rather than the original fuzzed trace, since this has
-  timing information that matches the other replays much more closely.
-- Load the final replay of the MCS trace,
-  as the second timeline.
-- Hover over events to further information about them, including functional equivalence
-  with events in the other traces.
-- Load intermediate replay trace timelines if needed.
+\noindent{\bf Event Visualization}. Understanding the timing of messages and internal
+events in distributed systems is a crucial part of troubleshooting.
+STS includes two visualization tools designed to aid with this task. First, we
+include a tool to visualize space-time diagrams~\cite{Lamport:1978:TCO:359545.359563}
+of event traces, such as the one depicted in Figure~\ref{fig:example}.
+Second, we include a tool to visually highlight event ordering differences
+between two or more event traces, which is especially useful for comparing the behavior of
+intermediate delta debugging replays when the original trace exhibits a high degree of non-determinism.
 
 \subsection{Scaling and Parallelization}
 
