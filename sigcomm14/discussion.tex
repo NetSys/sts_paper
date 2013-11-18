@@ -81,6 +81,28 @@ In future work we hope to measure the effectiveness of our
 technique on other control plane systems such as NAS controllers
 that share the same properties.
 
+\noindent{\bf Dataflow analysis.} Another avenue for future work is combining \projectname's replay-based
+minimization approach with dataflow analysis~\cite{kildall1973unified} to further prune events. The simplest form of dataflow analysis involves
+reasoning about happens-before relations (aka `potential causality'): if you consider a
+software-defined network as a distributed state machine,
+with individual processes sending messages between themselves, then one can safely prune an input event if
+it does not induce any messages before
+the occurrence of the invalid configuration~\cite{Lamport:1978:TCO:359545.359563}.
+Unfortunately we found that pruning inputs in this way does not
+significantly reduce the number of inputs, but one might go further by analyzing the controller code that generates messages
+to reason about which inputs have a causal linkage to the bug of interest.
+
+\noindent{\bf Optimizing delta debugging.} Delta debugging is agnostic to how
+input sequences are split. Currently we
+split by time, but it may be more effective to try other approaches.
+In particular, splitting events according to their location in the network
+topology may yield faster minimization, since bugs will often only involve a
+small number of nodes in the distributed system.
+
+%\noindent{\bf Optimizing for reproducibility, not minimality.}
+%Often non-determinsm is a killer, and a slightly inflated MCS will be better than
+%an MCS that very rarely is able to reproduce the bug.
+
 %\begin{itemize}
 %\item Aren't these types of bugs (e.g. failover logic) rare? Why should we
 %focus on them? $\rightarrow$ msoft citation on how many man-hours it takes to debug concurrency errors

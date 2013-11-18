@@ -338,10 +338,9 @@ we focus on coarser granularity errors (\eg~incorrect failover logic). Nonethele
 worst case for us is that the developer ends up with what they started:
 an unpruned log.
 
-%The upshot of
-%this is that our technique is not able to minimize all possible failures.
-%Nonetheless, our worst case is that the developer ends up with what they started:
-%an unpruned log.
+\colin{Note that there are NO widely used tools that help with this kind of
+non-determinism! For the most part research projects designed to aid with
+this problem have not left the ivory tower. We are no worse than the status quo!}
 
 \eat{That said, if the developer is willing to instrument their system to
 provide finer granularity log messages (\cf~\cite{Geels:2006:RDD:1267359.1267386}),
