@@ -52,7 +52,7 @@ infinitely large set of possible timings. Thus, we must approximate MCSes by fin
 for which events to eliminate and, more importantly, which timings to test.
 
 In the next section we describe our heuristics for finding MCSes, and then describe the system we built in \S\ref{sec:systems_challenges} to implement these heuristics.
-The key component of this system is a network simulator that can execute the $replay()$ function.
+The key component of this system is a mock network that can execute the $replay()$ function.
 Because we do not have access to operational logs \colin{sounds defensive}, all of our focus is on
 discovering bugs in control software using this
-simulator and then finding the relevant MCSes that trigger these bugs.
+mock network and then finding the relevant MCSes that trigger these bugs.

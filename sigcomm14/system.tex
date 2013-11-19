@@ -36,12 +36,12 @@ within a single-threaded process.\footnote{To achieve a deterministic order of
 events during replay either we had to serialize events in multiple threads via
 mutual exclusion or replay them in a single thread, and it turned out that
 the latter was cleaner and does not substantially impact performance.} We then run the control software on
-top of this simulator and connect the software switches to the controllers as if they were true
+top of this mock network and connect the software switches to the controllers as if they were true
 network devices, such that the controllers believe they are configuring a true
-network. The simulator interposes and buffers messages on all communication
+network. The mock network interposes and buffers messages on all communication
 channels, allowing it to delay, drop, or reorder
 messages as needed to induce failure modes during testing. During
-replay, the simulator uses these buffers to maintain causal dependencies by
+replay, we use these buffers to maintain causal dependencies by
 matching messages in the buffers by their fingerprints and managing
 the order message are let through. The overall simulation architecture is depicted in
 Figure~\ref{fig:architecture}.
@@ -101,26 +101,27 @@ POX ACL compliance & ONOS flow routing compliance \\
 \label{tab:invariants}
 \end{table}
 
-We begin by using our simulator to perform testing on controllers to find
+We begin by using our mock network to perform testing on controllers to find
 bugs. Our most common use case involves generating randomly chosen input
 sequences~\cite{Miller:1990:ESR:96267.96279}, feeding them to controller(s),
 and monitoring
 invariants at chosen intervals.\footnote{The full list of invariants currently
 supported is shown in Table~\ref{tab:invariants}.}
-We also run the simulator interactively
+We also run the mock network interactively
 so that we can examine the state of any part of the simulated network,
 observe and manipulate messages, and follow our
 intuition to induce orderings that we believe may trigger bugs.
 Either way, controlling the inputs from a single location
-allows the simulator to easily record a global, causally-consistent
+allows the mock network to easily record a global, causally-consistent
 event ordering.
 
-After discovering an invariant violation of interest, the simulator replays
-the logged sequence of inputs (shown in Table~\ref{tab:inputs}). For example, the simulator replays link failures
+After discovering an invariant violation of interest, our system replays
+the logged sequence of inputs (shown in Table~\ref{tab:inputs}). For example,
+the system replays link failures
 by disconnecting the edge in the simulated network, and sending a
 ofp\_port\_status~\cite{openflow} message from the adjacent switches to their parent controller(s).
 
-\projectname~(\projectmeaning) is our realization of this simulator.
+\projectname~(\projectmeaning) is our realization of this system.
 \projectname~is implemented in roughly 18,000 lines of Python in
 addition to the Hassel network invariant checking library~\cite{hsa}.
 \projectname~also optionally makes use of Open vSwitch~\cite{pfaff2009extending} as an interposition point for

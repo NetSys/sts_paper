@@ -190,7 +190,7 @@ relation ($\{i \mid i \rightarrow e\}$) from the original execution have
 occurred~\cite{tel2000introduction}. Internal events might include messages
 sent between the controllers and switches, or state transitions within a single
 controller. We can obtain the
-happens-before relation in our logs by having our simulator
+happens-before relation in our logs by having our mock network
 (to be described later) interpose on all message channels and
 log a message only after all other logged messages have been delivered.
 
@@ -215,7 +215,7 @@ we become aware of new internal events throughout replay by
 (i) monitoring
 control message receipts between controllers and switches,
 and (ii) interposing on the controllers' logging library and notifying the
-simulator whenever the control software executes a log statement (which serve to mark relevant state
+replayer whenever the control software executes a log statement (which serve to mark relevant state
 transitions). Note that to achieve truly deterministic
 replay, these log statements would need to
 be highly granular, capturing information such as thread scheduling decisions;
