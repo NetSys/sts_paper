@@ -23,24 +23,27 @@ by a human, then logs are collected and sent to a developer for further troubles
     the controllers.}
 \end{figure}
 
-We do not have access to such a QA testbed.\footnote{If we did have access to
-such a QA testbed, we would simply add delta debugging to the test
+Users with existing
+QA testbeds can simply add delta debugging to the test
 orchestrator, and potentially insert interposition points throughout the
-testbed to enforce causal relations during replay.}
-We instead built our own integration testing framework to discover bugs and
+testbed to enforce causal relations during replay.
+We do not have access to such a QA testbed however, and instead built our own
+integration testing framework to discover bugs and
 perform replay. Our system mocks out the control-plane
 behavior of network devices in lightweight software switches and hosts (with
 support for minimal data-plane forwarding)
-within a single-threaded process. We then run the control software on
+within a single-threaded process.\footnote{To achieve a deterministic order of
+events during replay either we had to serialize events in multiple threads via
+mutual exclusion or replay them in a single thread, and it turned out that
+the latter was cleaner and does not substantially impact performance.} We then run the control software on
 top of this simulator and connect the software switches to the controllers as if they were true
 network devices, such that the controllers believe they are configuring a true
 network. The simulator interposes and buffers messages on all communication
 channels, allowing it to delay, drop, or reorder
 messages as needed to induce failure modes during testing. During
 replay, the simulator uses these buffers to maintain causal dependencies by
-matching messages in the buffers by their fingerprints and carefully
-controlling the order message are let through according to the subsequence chosen by
-delta debugging. The overall simulation architecture is depicted in
+matching messages in the buffers by their fingerprints and managing
+the order message are let through. The overall simulation architecture is depicted in
 Figure~\ref{fig:architecture}.
 
 \begin{figure}[t]
@@ -103,7 +106,7 @@ bugs. Our most common use case involves generating randomly chosen input
 sequences~\cite{Miller:1990:ESR:96267.96279}, feeding them to controller(s),
 and monitoring
 invariants at chosen intervals.\footnote{The full list of invariants currently
-supported is shown in Table~\ref{tab:invariants}}
+supported is shown in Table~\ref{tab:invariants}.}
 We also run the simulator interactively
 so that we can examine the state of any part of the simulated network,
 observe and manipulate messages, and follow our
