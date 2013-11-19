@@ -34,14 +34,26 @@ logging interposition enabled.}}
 \label{tab:case_studies}
 \end{table*}
 
-We have applied \projectname~to three open source and one proprietary SDN control platform:
+The gold standard for evaluating \projectname~would be a large scale A/B test
+showing how much time it takes for developers to troubleshoot bugs found in
+QA clusters with and without minimized event traces. Unfortunately
+expert developers are scarce; to achieve statistical significance we would
+need 10s to 100s of developers to spend 5 or more hours on each bug we find.
+In addition we lack access to the QA testbeds of the scale and complexity
+used to test production controller software.
+
+We instead begin our evaluation by applying \projectname~to find bugs in three open source and one proprietary SDN control platform:
 Floodlight~\cite{bigswitch}, ONOS~\cite{ONOS}, POX~\cite{pox}, and NOX~\cite{nox}.
-Over a span of roughly five days of
-investigation we found a total of five bugs. We show a high-level overview
+The remainder of our evaluation
+involves qualitatively approximating A/B testing with in-depth case
+studies on the troubleshooting process with and without minimized traces.
+
+We show a high-level overview
 of our results in Table~\ref{tab:case_studies}, and
 illustrate in detail how \simulator~found their minimal causal sequences
 in the rest of this section. Interactive visualizations and replayable event traces
 for all of these case studies are publicly available (anonymized).
+
 % \href{http://ucb-sts.github.com/experiments}{ucb-sts.github.com/experiments}.
 
 \subsection{POX List Removal}
