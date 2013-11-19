@@ -414,7 +414,35 @@ relevant for the control software.
 \subsection{Parameters}
 \label{subsec:params}
 
-Our algorithm leaves an open question as to what value
+We found throughout our experimentation that \projectname~leaves open several
+parameters that need to be set properly in order to effectively find and troubleshoot bugs.
+
+\noindent{\bf Setting fuzzing parameters.} \projectname's fuzzer allows the
+user to set the rates at which different event types are triggered. In our initial experiments with
+\projectname~we found several times that we needed to set these parameters
+such that we avoided bugs that were not of interest to developers.
+In one case we discovered that a high dataplane
+packet drop rate dropped too many LLDP packets, preventing the controller from ever successfully discovering the topology.
+In another case we found that setting
+controller failure rates too high would sometimes cause the entire distributed
+controller cluster to
+go down or become partitioned, which creates situations that developers assume
+will not occur in practice. Tweaking fuzzing parameters remains an important
+part of experiment setup.
+
+\noindent{\bf Differentiating persistent and transient violations.} In
+networks there is a fundamental delay between the initial occurrence of an
+event and the time when other nodes are notified of the event. This delay implies
+that invariant violations such as loops or blackholes can appear
+before the controller(s) have time to correct the network configuration. In
+many cases such transient invariant violations are not of interest to
+developers. We therefore need to set manually set a threshold
+how long a invariant violation should persist before
+\projectname~reports it as a problem. In general, setting this
+threshold will depend on the parameters of the network and the invariants of
+interest.
+
+\noindent{\bf Setting Epsilon.} Our algorithm leaves an open question as to what value
 \textepsilon~should be set to. We experimentally varied \textepsilon~on the
 POX in-flight blackhole and the POX list removal bugs.
 We found for both cases that the number of events we timed out on while isolating the MCS became stable for values above $25$ milliseconds.
