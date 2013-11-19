@@ -195,7 +195,7 @@ Routing the {\tt gettimeofday()} syscall through \projectname~helps ensure that 
 at the appropriate point.\footnote{When the pruned trace differs from the original, we make a
 best-effort guess at what the return values of these calls should be. For example,
 if the altered execution invokes {\tt gettimeofday()} more times than we recorded
-in the initial run, we interpolate the time values of neighboring events}
+in the initial run, we interpolate the time values of neighboring events.}
 When sending data over multiple sockets, the operating system exhibits
 non-determinism in the order it schedules the I/O operations.
 \projectname~optionally ensures a deterministic order of messages
@@ -224,21 +224,24 @@ until \projectname~explicitly tells the process that it may proceed.
 
 Throughout our experimentation with \projectname, we often found that
 minimized event traces alone did not provide us with enough information to
-pinpoint the root causes of bugs. We therefore implemented a number of root
+pinpoint the root causes of bugs. We therefore implemented a number of
+complementary root
 causing tools within \projectname,
-which we use along with Unix utilities such as `grep' to help us complete the final
-stage of debugging.
+which we use along with Unix utilities to help us complete the final
+stage of debugging. We describe in the next section how exactly we use
+these tools.
 
 \noindent{\bf OFRewind}. \projectname~supports an interactive replay mode
 similar to OFRewind~\cite{ofrewind} that allows troubleshooters to query the
 state of the network throughout replay, filter subsets of the events, check
 additional invariants, and
 even induce new events that were not part of the original event trace.
-Because the timing of events in  distributed systems is so delicate,
-this mode of \projectname~does not run concurrent controller processes,
-but instead mocks out
-OpenFlow connections and replays the exact OpenFlow commands from the
-original trace.
+Similar to OFRewind, we do not run concurrent controller processes while the
+user is interactively performing replay, since proper replay across
+concurrent processes requires precise timing.
+Instead, \projectname~replays the exact OpenFlow commands from the
+original trace to the switches, and creates mock TCP connections that drop
+whatever messages the switches attempt to send back to the controllers.
 
 \noindent{\bf Packet Tracing}. Especially for SDN controllers that react to
 flow events, we found it useful to trace the path of individual
@@ -265,9 +268,10 @@ intermediate delta debugging replays when the original trace exhibits a high deg
 
 \subsection{Scaling and Parallelization}
 
-When minimizing very large event traces, we found that the python garbage
-collector often became overwhelmed (causing the process to slow down
-substantially) after replaying several subsequences.
+When minimizing very large event traces we found that the garbage
+collector often became overwhelmed (causing the simulation process to slow down
+substantially) after replaying several subsequences, since each replay could
+occupy gigabytes of memory space with many small objects.
 After observing this behavior we modified \projectname~to fork a process
 (either local or remote) for each subsequence chosen by delta debugging,
 and gather the results of the replay via RPC. This alleviates the slow down,
