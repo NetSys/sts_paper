@@ -333,26 +333,25 @@ Having detailed the specifics of our approach we now
 clarify the scope of our technique's use.
 
 \noindent{\bf Partial Visibility.} Our event scheduling algorithm assumes that
-it has visibility into the occurrence of all relevant internal events. This
-may involve substantial instrumentation effort beyond
+it has visibility into the occurrence of all relevant internal events. For
+some controllers this may involve substantial instrumentation effort beyond
 pre-existing log statements.
 
-\noindent{\bf Non-determinism Within Individual Controllers.} Non-determinism
-is fundamental in networks. We try our best to mitigate and cope with
-non-determinism, but it may be so bad that bugs are reproducibility. In
+\noindent{\bf Non-determinism.} Non-determinism
+is fundamental in networks. We implement
+several techniques for mitigating non-determinism, but it may be the case that
+that some bugs are not reproducibility. In
 particular our technique is not designed to reproduce bugs
 involving non-determinism within a single controller (\eg~race-conditions between threads);
-we focus on coarser granularity errors (\eg~incorrect failover logic). Nonetheless, the
-worst case for us is that the developer ends up with what they started:
-an unpruned log.
+we focus on coarser granularity errors (\eg~incorrect failover logic).
 
-\colin{Note that there are NO widely used tools that help with this kind of
-non-determinism! For the most part research projects designed to aid with
-this problem have not left the ivory tower. We are no worse than the status quo!}
-
-\eat{That said, if the developer is willing to instrument their system to
-provide finer granularity log messages (\cf~\cite{Geels:2006:RDD:1267359.1267386}),
-our approach readily supports deterministic replay.}
+It is worth noting that deterministic replay techniques
+are not widely deployed in practice, and the existing QA testing frameworks we are
+trying to improve get by without coping with non-determinism. For
+particularly non-deterministic bugs, it is not uncommon in practice for developers to throw
+up their hands, and simply wait until the next time the bug is observed before
+continuing with diagnosis. In the worst case our techniques leaves the developer ends up
+with what they started: an unpruned log.
 
 \eat{
 \noindent{\bf Troubleshooting vs.\ Debugging.} Our technique is a troubleshooting tool, not a debugger;
