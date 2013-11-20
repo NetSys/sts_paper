@@ -1,8 +1,8 @@
 % Just realized: b/c of anonymity, the PC can't chastise us for
 % running our system on our own code -- we can't tell them that it's our code!
-Or evaluation of \simulator~leaves open several questions, which we discuss
-here. \colin{Should add a discussion of non-determinism within individual
-controllers}
+\colin{Needs to be updated, e.g. we now have distributed controllers.}
+Our evaluation of \simulator~leaves open several questions, which we discuss
+here.
 
 \noindent{\bf Aren't SDN controllers relatively simple and bug free?}
 It is true that the freely available SDN applications we investigated are relatively simple. However, they
@@ -77,9 +77,12 @@ crucial for codifying functional equivalencies. Moreover, controllers are small 
 to the size of overall network, which makes it much easier to superimpose on
 messages.
 
-In future work we hope to measure the effectiveness of our
-technique on other control plane systems such as NAS controllers
-that share the same properties.
+Although we focus on
+troubleshooting SDN control software, we believe that our general approach can
+be readily applied to other distributed control plane management systems.
+In future work we hope to deploy and validate our
+technique on other such systems such as NAS controllers or MapReduce
+coordinators.
 
 \noindent{\bf Dataflow analysis.} Another avenue for future work is combining \projectname's replay-based
 minimization approach with dataflow analysis~\cite{kildall1973unified} to further prune events. The simplest form of dataflow analysis involves

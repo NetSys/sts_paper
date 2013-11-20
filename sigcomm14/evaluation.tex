@@ -43,7 +43,7 @@ In addition we lack access to the QA testbeds of the scale and complexity
 used to test production controller software.
 
 We instead begin our evaluation by applying \projectname~to find bugs in three open source and one proprietary SDN control platform:
-Floodlight~\cite{bigswitch}, ONOS~\cite{ONOS}, POX~\cite{pox}, and NOX~\cite{nox}.
+ONOS~\cite{ONOS}, POX~\cite{pox}, NOX~\cite{nox}, and Floodlight~\cite{bigswitch}.
 The remainder of our evaluation
 involves qualitatively approximating A/B testing with in-depth case
 studies on the troubleshooting process with and without minimized traces.
@@ -454,7 +454,7 @@ how long a invariant violation should persist before
 threshold will depend on the parameters of the network and the invariants of
 interest.
 
-\noindent{\bf Setting Epsilon.} Our algorithm leaves an open question as to what value
+\noindent{\bf Setting \textepsilon.} Our algorithm leaves an open question as to what value
 \textepsilon~should be set to. We experimentally varied \textepsilon~on the
 POX in-flight blackhole and the POX list removal bugs.
 We found for both cases that the number of events we timed out on while isolating the MCS became stable for values above $25$ milliseconds.

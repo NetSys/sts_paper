@@ -34,7 +34,7 @@ virtualization~\cite{bigswitch,nicirahomepage,contextream}, a technology that
 abstracts the details of the underlying physical network and presents a
 simplified view of the network to be configured by applications.
 In this model, multi-tenancy is implemented by providing each tenant with their
-own abstract view, which are multiplexed onto the same physical network.
+own abstract network view, which are multiplexed onto the same physical network.
 A common pattern is to treat an entire network as a single logical switch for each
 tenant. When a large network is
 abstracted in this way, the mapping between
@@ -49,24 +49,24 @@ To cope with these difficulties, software developers strive to thoroughly test
 their software in a controlled environment before deploying to
 production environments. The most common form of testing is unit testing,
 where developers manually codify test cases to verify that individual software
-components react correctly. Each developer only has time to test a limited
+components behave correctly. Each developer only has time to test a limited
 number of cases though, and the number of test cases to consider is
 practically unbounded, especially in
 distributed systems. For this reason both of the SDN controller vendors we are
 in contact with~\cite{nicirahomepage,bigswitch} employ a team of QA
-engineers to fuzz test their controller software on a testbed of switches and hosts.
+engineers to automatically fuzz test their controller software on a testbed of switches and hosts.
 When a bug is discovered in the QA testbed, it is first triaged
 by a human, then logs are collected and sent to a developer for further troubleshooting.
 
 Troubleshooting bugs found through QA testing is often an arduous task.
 Fuzz tests frequently run for many hours before bugs are found, and involve
 a large number of distributed nodes. Moreover, QA testing frameworks do little to mitigate
-non-determinism, making it difficult for developers to replicate bugs on their
-local machine. Lastly, unlike the diverse set of tools available for debugging
+non-determinism, making it difficult for developers to replicate bugs.
+Lastly, unlike the diverse set of tools available for debugging
 individual programs, there are very few widely deployed debugging tools for
 distributed systems~\cite{tooling_gap}; for highly non-deterministic bugs, it is not
 uncommon for developers to throw
-up their hands, and simply wait until the next time the bug is observed before
+up their hands and simply wait until the next time the bug is observed before
 continuing with diagnosis. It is our goal to improve this troubleshooting
 process.
 

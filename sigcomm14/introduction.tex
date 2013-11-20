@@ -101,8 +101,8 @@ Unfortunately, pruning only those inputs without a potential causal relation to
 the invalid configuration does not
 significantly reduce the number of inputs.
 
-Our approach is to prune inputs from the original run, replay the remaining
-inputs to the control software using simulated network devices, and
+Our approach is to prune inputs from the original execution, replay the remaining
+inputs to the control software using mock network devices, and
 check whether the network re-enters the invalid configuration.
 Our approach is identical in spirit to delta
 debugging~\cite{Zeller:1999:YMP:318773.318946}---an algorithm for
@@ -128,8 +128,8 @@ equivalent messages and maintain causal dependencies throughout replay despite
 altered histories.
 
 Painstaking manual analysis of logs is the
-{\em de facto} method of troubleshooting production SDN control software
-today. As far as we know, our work
+{\em de facto} method of troubleshooting distributed systems in practice.
+As far as we know, our work
 is the first to programmatically isolate fault-inducing inputs to a distributed
 system. Record and replay techniques such as
 OFRewind~\cite{ofrewind} and liblog~\cite{Geels:2006:RDD:1267359.1267386}
@@ -140,7 +140,9 @@ the set of potentially triggering inputs verges on unmanageable.
 Tracing tools such as ndb~\cite{handigol2012debugger} provide
 a historical view into dataplane (mis)behavior. In contrast, our technique provides
 information about precisely what caused the network to
-enter an invalid configuration in the first place.
+enter an invalid configuration in the first place. Although we focus on
+troubleshooting SDN control software, we believe that our general approach can
+be readily applied to other distributed control plane management systems.
 
 We have applied \simulator~to four open source SDN control
 platforms: Floodlight~\cite{bigswitch}, ONOS~\cite{ONOS}, POX~\cite{pox}, and NOX~\cite{nox}.

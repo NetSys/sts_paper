@@ -26,7 +26,7 @@ by a human, then logs are collected and sent to a developer for further troubles
 Users with existing
 QA testbeds can simply add delta debugging to the test
 orchestrator, and optionally insert interposition points throughout the
-testbed to enforce causal relations during replay.
+testbed to enforce causal dependencies during replay.
 We do not have access to such a QA testbed however, and instead built our own
 integration testing framework to discover bugs and
 perform replay. Our system mocks out the control-plane
@@ -49,8 +49,8 @@ Figure~\ref{fig:architecture}.
 \begin{figure}[t]
     %\hspace{-10pt}
     \includegraphics[width=3.25in]{../diagrams/architecture/Debugger_Architecture.pdf}
-    \caption[]{\label{fig:architecture} Simulation infrastructure. We simulate
-    network devices in software, and interpose on all communication
+    \caption[]{\label{fig:architecture} \projectname~runs mock
+    network devices, and interpose on all communication
     channels.}
 \end{figure}
 
