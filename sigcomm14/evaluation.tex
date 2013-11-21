@@ -435,11 +435,7 @@ user to set the rates at which different event types are triggered. In our initi
 such that we avoided bugs that were not of interest to developers.
 In one case we discovered that a high dataplane
 packet drop rate dropped too many LLDP packets, preventing the controller from ever successfully discovering the topology.
-In another case we found that setting
-controller failure rates too high would sometimes cause the entire distributed
-controller cluster to
-go down or become partitioned, which creates situations that developers assume
-will not occur in practice. Tweaking fuzzing parameters remains an important
+Tweaking fuzzing parameters remains an important
 part of experiment setup.
 
 \noindent{\bf Differentiating persistent and transient violations.} In
@@ -448,7 +444,7 @@ event and the time when other nodes are notified of the event. This delay implie
 that invariant violations such as loops or blackholes can appear
 before the controller(s) have time to correct the network configuration. In
 many cases such transient invariant violations are not of interest to
-developers. We therefore need to set manually set a threshold
+developers. We therefore provide a threshold parameter in \projectname~for
 how long a invariant violation should persist before
 \projectname~reports it as a problem. In general, setting this
 threshold will depend on the parameters of the network and the invariants of
