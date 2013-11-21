@@ -338,17 +338,18 @@ some controllers this may involve substantial instrumentation effort beyond
 pre-existing log statements.
 
 \noindent{\bf Non-determinism.} Non-determinism
-is fundamental in networks. We implement
-several techniques for mitigating non-determinism, but it may be the case that
-that some bugs are not reproducibility. In
-particular our technique is not designed to reproduce bugs
-involving non-determinism within a single controller (\eg~race-conditions between threads);
-we focus on coarser granularity errors (\eg~incorrect failover logic).
+is fundamental in networks. When non-determinism is present
+\projectname~(i) replays multiple times per subsequence, and (ii) employs
+software techniques for mitigating non-determinism, but it may nonetheless
+output a non-minimal causal sequence. In the common case \projectname~is
+better than what developers had before, since developers generally
+do not have tools for reproducing non-deterministic bugs.
+In the worst case \projectname~leaves the
+developer where they started: an unpruned log.
 
-It is worth noting that deterministic replay techniques
-are not widely deployed in practice, and the existing QA testing frameworks we are
-trying to improve get by without coping with non-determinism. In the worst case our techniques leaves the developer ends up
-with what they started: an unpruned log.
+%In particular our technique is not designed to reproduce bugs
+%involving non-determinism within a single controller (\eg~race-conditions between threads);
+%we focus on coarser granularity errors (\eg~incorrect failover logic).
 
 \eat{
 \noindent{\bf Troubleshooting vs.\ Debugging.} Our technique is a troubleshooting tool, not a debugger;
