@@ -2,18 +2,15 @@
 
 Our work spans three fields: software engineering, programming languages, and
 systems and networking.
-\colin{Misleading to say that we span Programming Languages. Should lump in
-with SE...}
 
 \noindent{\bf Software Engineering \& Programming Languages}
 Sherlog~\cite{Yuan:2010:SED:1736020.1736038} takes on-site logs from a
 single program that ended in a failure as input, and applies static analysis to infer the
 program execution (both code paths and data values) that lead up to the failure.
-%Along a similar vein, execution
-%synthesis~\cite{Zamfir:2010:EST:1755913.1755946} takes a program and a bug
-%report as input, and employs symbolic execution to find a thread schedule that will
-%reproduce the failure.
-The authors of delta debugging
+Along a similar vein, execution
+synthesis~\cite{Zamfir:2010:EST:1755913.1755946} takes a program and a bug
+report as input, and employs symbolic execution to find a thread schedule that will
+reproduce the failure. The authors of delta debugging
 applied their technique to multi-threaded (single-core) programs
 to identify the minimum set of thread
 switches from a thread schedule (a single input file) that reproduces
