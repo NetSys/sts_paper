@@ -221,7 +221,50 @@ until \projectname~explicitly tells the process that it may proceed.
 %transition points again during replay
 %until \projectname~gives explicit acknowledgment.
 
+%\subsection{Timing Heuristics}
+%\label{subsec:timing_heuristics}
+%\colin{Not sure if this is the right place for this}
+%\colin{TODO: add more experiments here}
+%
+%Basically trial and error. Use visualization tools (described in \S\ref{subsec:root_causing}) to validate
+%the effectiveness of these techniques by comparing replay executions with and
+%without them enabled.
+%
+%\noindent{\bf Scheduling Events}
+%Include discussion of dumb event scheduler: only maintains deltas between
+%events. Our current event scheduler on the other hand accounts for time taken
+%to run the event, i.e. delta from real run - time.time() - time we last
+%injected. Especially important for timeouts! Not just injection time.
+%BTW, we have found cases where one worked and the other didn't. Our current
+%one is mostly better though.
+%
+%\noindent{\bf peek()}
+%We had this crazy algorithm that sorta worked. See algorithm.tex.
+%
+%\noindent{\bf Whitelisting control plane packets}
+%We whitelist some packets LLDP. (problems therein.)
+%We also tried another algorithm: let new
+%internal messages through, keep a window of what we expect. If we don't
+%expect, let it through. Problem: false positive: accidentally let through
+%internal messages too early, then we time out on them after.
+%
+%\noindent{\bf Using logging statements as barriers}
+%Need to be careful: if controller goes through a new internal state change, it
+%will block. STS therefore needs to track wether the controller becomes blocked
+%unexpectedly, and unblock it to proceed with the rest of replay.
+%
+%\noindent{\bf Predicting whether a dataplane packet is unexpected}
+%In general, timeouts during replay strongly effect the execution. Timeouts are
+%much larger than the execution time of an event. This is ameliorated somewhat
+%by buffers, but the timing with the controller may be off somewhat.
+%Dataplane permit events constitue a substantial portion of events. In an
+%attempt to reduce timeouts, we tried to make dataplane permit the default,
+%such that we never time out on them. To do this we keep a window of expected
+%dp *drops* into the future. We then allow the dp packet through, *unless* we
+%see that we should drop it in the near future.
+
 \subsection{Root Causing Tools}
+\label{subsec:root_causing}
 
 Throughout our experimentation with \projectname, we often found that
 minimized event traces alone did not provide us with enough information to
