@@ -235,13 +235,14 @@ modification messages may cause switches to make the same change to their forwar
 even if the transaction identifier of the messages differ.
 
 We leverage this observation by defining
-domain-specific masks over semantically extraneous fields of
+masks over semantically extraneous fields of
 internal events.\footnote{One consequence
 of applying masks is that bugs involving masked fields are outside the purview of
 our approach.} These masks only need to be specified once, and can later be
 applied programmatically to event traces.
 
-We show the fields we mask in Table~\ref{tab:fingerprints}. We consider an internal event $i'$ observed in the subsequence log
+We show the fields we mask in Table~\ref{tab:fingerprints}. We consider an
+internal event $i'$ observed in the replay
 equivalent (in the sense of inheriting all of its happens-before relations) to an internal event $i$ from the original log iff all unmasked
 fields have the same value
 and $i$ occurs between $i'$'s preceding and succeeding inputs in the
@@ -264,7 +265,7 @@ Internal message & Masked values \\
 \hline
 OpenFlow messages & xac id, cookie, buffer id, stats \\
 \hline
-packet\_out/in payload & everything but src, dst, data \\
+packet\_out/in payload & all values except src, dst, data \\
 \hline
 Log statements & varargs parameters to printf \\
 \hline
@@ -274,23 +275,25 @@ define equivalence classes.}
 \label{tab:fingerprints}
 \end{table}
 
-{\bf Handling Absent Internal Events:} Some internal events from the original log which causally ``happen before'' some external event
+{\bf Handling Absent Internal Events:} Some internal events from the original
+log which causally ``happen before'' some external input
 may be absent when replaying a subsequence of that log.
 The structure of the control software's state machine (which we do not assume to know) determines whether
-internal events disappear. Consider the simplified state machines for the switch and
+internal events cease to appear. Consider the simplified state machines for the switch and
 controllers from the Floodlight case shown in
 Figure~\ref{fig:state_machines}. If we prune the link failure input, the
 master will never receive a link failure notification and
 transition to and from `Send Flush'.
 
-We handle this possibility by waiting for expected equivalent internal events,
-but timing out and proceeding
-if they do not occur within a certain time \textepsilon.
-If the event scheduling algorithm detects that it has waited too long (such
-that a happens-before successor has occurred before a predecessor), it
-replays the log from the beginning up until the immediately prior input, this time
-knowing which internal events in the current input interval are
-and are not going to occur before injecting the next input. We show the overall event scheduling algorithm
+We handle this possibility by waiting for each expected internal event
+for a certain time \textepsilon. If the internal event does not occur within
+this time, we assume that it is absent and proceed. If, however, we find 
+during the \textepsilon~time units we were waiting that another internal that
+happens \emph{after} our next input occurs, we know that we have waited too
+long and violated causality. In this case we need to restart the replay
+process, this time knowing which internal events in the current
+input interval are and are not going to occur before injecting the next input.
+We show our overall event scheduling algorithm
 in Figure~\ref{fig:peek}.
 
 \begin{figure}
@@ -352,7 +355,7 @@ possibilities for every new internal event. This implies an exponential number o
 possibilities to be explored in the worst case.
 
 Exponential search over these possibilities is not a practical option. Our heuristic when waiting for expected internal
-events is to proceed normally if there are intermediate new internal events,
+events is to proceed normally if there are new internal events,
 always injecting the next input when its last expected predecessor
 either occurs or times out. This ensures that we always find suffixes that
 contain only a subset of the (equivalent) original internal events, but leaves open the
