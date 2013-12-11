@@ -24,9 +24,13 @@ by a human, then logs are collected and sent to a developer for further troubles
 \end{figure}
 
 Users with existing
-QA testbeds can simply add delta debugging to the test
+QA testbeds can simply add delta debugging to their test
 orchestrator, and optionally insert interposition points throughout the
 testbed to enforce causal dependencies during replay.
+In this way they can continue simulating large scale networks with
+the switches, middleboxes, hosts, and routing protocols they had already
+chosen to include in their QA testbed.
+
 We do not have access to such a QA testbed however, and instead built our own
 integration testing framework to discover bugs and
 perform replay. Our system mocks out the control-plane
@@ -50,7 +54,7 @@ Figure~\ref{fig:architecture}.
     %\hspace{-10pt}
     \includegraphics[width=3.25in]{../diagrams/architecture/Debugger_Architecture.pdf}
     \caption[]{\label{fig:architecture} \projectname~runs mock
-    network devices, and interpose on all communication
+    network devices, and interposes on all communication
     channels.}
 \end{figure}
 
@@ -79,7 +83,7 @@ Host migration & ofp\_port\_status \\
 \hline
 Control message delay & controlplane interposition \\
 \hline
-Non-deterministic TCAMs & controlplane interposition \\
+Non-deterministic TCAMs & modified switches \\
 \hline
 \end{tabular}
 \caption{Input types currently supported by \projectname}
