@@ -54,24 +54,24 @@ number of cases though, and the number of test cases to consider is
 practically unbounded, especially in
 distributed systems. For this reason both of the SDN controller vendors we are
 in contact with~\cite{nicirahomepage,bigswitch} employ a team of QA
-engineers to automatically fuzz test their controller software on a testbed of switches and hosts.
+engineers to automatically fuzz test~\cite{Miller:1990:ESR:96267.96279} their controller software
+on a testbed of switches and hosts.
 When a bug is discovered in the QA testbed, it is first triaged
 by a human, then logs are collected and sent to a developer for further troubleshooting.
 
-Troubleshooting bugs found through QA testing is often an arduous task, even
-though the majority of bugs developers deal with in practice are relatively
-trivial. Fuzz tests frequently run for many hours before bugs are found, and involve
+Troubleshooting bugs found through QA testing is often an arduous task,
+despite the fact that many bugs developers deal with in practice
+are mundane. Fuzz tests frequently run for many hours before bugs are found, and involve
 a large number of distributed nodes. Moreover, QA testing frameworks do little to mitigate
-non-determinism (and often introduce non-determinism of their own that's
-different from what would be seen in production or on developer's local
+non-determinism (and often introduce non-determinism of their own that
+differs from what would be seen in production or on developer's local
 machines), making it difficult for developers to replicate bugs.
 Lastly, unlike the diverse set of tools available for debugging
 individual programs, there are very few widely deployed debugging tools for
 distributed systems~\cite{tooling_gap}; for highly non-deterministic bugs, it is not
 uncommon for developers to throw
 up their hands and simply wait until the next time the bug is observed before
-continuing with diagnosis. It is our goal to improve this troubleshooting
-process.
+continuing with diagnosis. We seek to improve this troubleshooting process.
 
 In the next section we give a formal definition of our approach to
 troubleshooting. We then spend
