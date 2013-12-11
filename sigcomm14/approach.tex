@@ -389,8 +389,7 @@ the controllers quickly converge to a single state (either ``Master'' or
 \subsection{Complexity}
 \label{subsec:complexity}
 
-The delta debugging algorithm terminates after
-$O(log\,n)$
+The delta debugging algorithm terminates after $O(log\,n)$
 invocations of $replay$ in the best case, where $n$ is the number of inputs in the original
 trace~\cite{Zeller:1999:YMP:318773.318946}. In the worst case, delta debugging
 has $O(n)$ complexity.
@@ -406,12 +405,8 @@ $n \times \frac{n+1}{2} \in O(n^2)$ replayed inputs. In terms of replayed
 inputs, the
 overall worst case is therefore $O(n^3)$.
 
-The runtime can be decreased by observing that delta debugging is readily
-parallizable. Specifically, the worst case runtime could be
-decreased to $O(n^2)$ by enumerating all subsequences that delta debugging
-can possibly examine (of which there are $O(n)$), replaying them in parallel, and joining the
-results.
-
+The runtime might be decreased by parallelizing delta debugging:
+speculatively replaying subsequences in parallel, and joining the results.
 The runtime can be further decreased by taking snapshots of the controller
 state at regular intervals. When the replay algorithm detects that it has waited too
 long, it could then restart from a recent snapshot rather than replaying the
