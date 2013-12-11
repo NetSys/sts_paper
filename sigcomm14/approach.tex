@@ -62,7 +62,7 @@ The delta debugging algorithm is shown in
 Figure~\ref{fig:ddmin} (with `$test$' replaced by `$replay$').
 
 It is worth noting that the input subsequences chosen by delta debugging are not always
-valid. In particular, it is not sensible to replay a recovery event without a
+valid. In our case, it is not sensible to replay a recovery event without a
 preceding failure event; nor is it sensible to replay a host migration
 event without modifying its starting position when a preceding host
 migration event has been pruned. Our implementation of delta debugging therefore treats
@@ -85,7 +85,7 @@ is to ensure that subsequences are always semantically valid by applying the two
 heuristics described above.}
 These two heuristics account for validity of all network state change
 events our system supports (shown in Table~\ref{tab:inputs}). We do not yet
-support controller policy changes, which have more complex semantic
+support network policy changes as events, which have more complex semantic
 dependencies.\footnote{If codifying the semantic dependencies of
 policy changes turns out to be difficult, one could just employ the more
 expensive version of delta debugging to account for
@@ -157,7 +157,7 @@ minimal causal sequences: the
 timing of those subsequences throughout invocations of $replay()$ is crucial for reliably
 reproducing the
 invariant violation. The most natural approach would be to maintain the original
-timings, \ie~if we
+timings; \ie~if we
 define $t_i$ as the timestamp of the $i^{th}$ input from the original run and $t'_i$ as the
 replay clock value when it injects that same input
 (which may or may not be the $i$'th input in the subsequence), then we might
