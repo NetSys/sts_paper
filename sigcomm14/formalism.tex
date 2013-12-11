@@ -48,11 +48,11 @@ MCSes, since we don't explore all timings!}
 Given a log $(E_L, T_L, C_L)$ exhibiting an invariant violation,
 our goal is to identify its MCS. We could do this through brute force, trying
 all subsequence and timings, but this is clearly impractical given the large size of logs and the
-infinitely large set of possible timings. Thus, we must approximate MCSes by finding good heuristics
+infinitely large set of possible timings. Thus, we must approximate MCSes by finding heuristics
 for which events to eliminate and, more importantly, which timings to test.
 
 In the next section we describe our heuristics for finding MCSes, and then describe the system we built in \S\ref{sec:systems_challenges} to implement these heuristics.
 The key component of this system is a mock network that can execute the $replay()$ function.
-Because we do not have access to operational logs \colin{sounds defensive}, all of our focus is on
+Because we do not have access to operational QA or production logs, our focus is on
 discovering bugs in control software using this
 mock network and then finding the relevant MCSes that trigger these bugs.
