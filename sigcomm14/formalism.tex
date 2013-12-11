@@ -54,5 +54,6 @@ for which events to eliminate and, more importantly, which timings to test.
 In the next section we describe our heuristics for finding MCSes, and then describe the system we built in \S\ref{sec:systems_challenges} to implement these heuristics.
 The key component of this system is a mock network that can execute the $replay()$ function.
 Because we do not have access to operational QA or production logs, our focus is on
-discovering bugs in control software using this
-mock network and then finding the relevant MCSes that trigger these bugs.
+using the mock network to generate random inputs (shown in
+Table\ref{tab:inputs}), detecting bugs in control software, 
+and then finding the relevant MCSes that trigger these bugs.
