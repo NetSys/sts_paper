@@ -39,12 +39,15 @@ support for minimal data-plane forwarding)
 within a single-threaded process.\footnote{To achieve a deterministic order of
 events during replay either we had to serialize events in multiple threads via
 mutual exclusion or replay them in a single thread, and it turned out that
-the latter was cleaner and does not substantially impact performance.} We then run the control software on
+the latter was cleaner and does not substantially impact performance.} We then
+run the control software on
 top of this mock network and connect the software switches to the controllers as if they were true
 network devices, such that the controllers believe they are configuring a true
 network. The mock network interposes and buffers messages on all communication
 channels, allowing it to delay, drop, or reorder
-messages as needed to induce failure modes during testing. During
+messages as needed to induce failure modes during testing. This interposition
+allows us to replicate many of the failure modes caused by asynchrony in real
+networks, in a more deterministic manner. During
 replay, we use these buffers to maintain causal dependencies by
 matching messages in the buffers by their fingerprints and managing
 the order message are let through. The overall simulation architecture is depicted in
