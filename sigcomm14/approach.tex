@@ -35,17 +35,13 @@ is the conjunction of the two external inputs (E1,E3) in conjunction.
 
 A developer or operator encountering this bug in practice would not be
 given this concise version of events. Instead, the trace would contain a wealth
-of extraneous inputs, making it difficult
+of extraneous input events, all of which may appear characteristic of normal
+operating conditions at first glance, making it difficult
 to reason about the underlying root cause.
-In the worst scenario, operators may need to examine logs from a production
-network, which contain a substantial number of hardware failures, topology changes,
-and other potential triggering events,
-all of which may appear characteristic of normal operating
-conditions at first glance; assuming 8.5 network error events per
+Consider that an hour long QA fuzz test, assuming 8.5 network error events per
 minute~\cite{Greenberg:2009:VSF:1592568.1592576}, and 500 VM migrations per
 hour~\cite{Soundararajan:2010:CBS:1899928.1899941},
-there would be at least $8.5 \cdot 60 + 500 \approx 1000$ inputs reflected in
-an hour-long trace.
+would contain $8.5 \cdot 60 + 500 \approx 1000$ inputs.
 
 \subsection{Searching for Subsequences}
 \label{subsec:delta_debugging}
