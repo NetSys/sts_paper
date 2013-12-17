@@ -39,7 +39,7 @@ of extraneous input events, all of which may appear characteristic of normal
 operating conditions at first glance, making it difficult
 to reason about the underlying root cause.
 Consider that an hour long QA fuzz test, assuming 8.5 network error events per
-minute~\cite{Greenberg:2009:VSF:1592568.1592576}, and 500 VM migrations per
+minute~\cite{Greenberg:2009:VSF:1592568.1592576} and 500 VM migrations per
 hour~\cite{Soundararajan:2010:CBS:1899928.1899941},
 would contain $8.5 \cdot 60 + 500 \approx 1000$ inputs.
 
@@ -325,7 +325,8 @@ in Figure~\ref{fig:peek}.
   \end{pseudocode}
   \caption{{\tt Replay} is responsible for replaying subsequences of events
   chosen by delta debugging and determining
-  if the bug reappears. \colin{Fix framebox width}}
+  if the bug reappears. \colin{Fix framebox width.} \colin{Doesn't account for
+      snapshots}}
     \label{fig:peek}
 \end{figure}
 
@@ -404,12 +405,13 @@ $e_i$, it replays inputs $e_1,\dots,e_i$, for a total of
 $n \times \frac{n+1}{2} \in O(n^2)$ replayed inputs. In terms of replayed
 inputs, the
 overall worst case is therefore $O(n^3)$.
+\colin{TODO: doesn't account for snapshots}
 
-The runtime might be decreased by parallelizing delta debugging:
+The runtime can be decreased by parallelizing delta debugging:
 speculatively replaying subsequences in parallel, and joining the results.
 The runtime can be further decreased by taking snapshots of the controller
-state at regular intervals. When the replay algorithm detects that it has waited too
-long, it could then restart from a recent snapshot rather than replaying the
+state at regular intervals, so that when the replay algorithm detects that it has waited too
+long it can restart from a recent snapshot rather than replaying the
 entire prefix.
 
 \eat{

@@ -92,6 +92,7 @@ that are not relevant to triggering the bug, leaving a small sequence of inputs
 that is directly responsible.
 This would go a long way towards achieving ``automated troubleshooting.''
 
+% Cut this paragraph for space?
 If you consider a software-defined network as a distributed state machine,
 with individual processes sending messages between themselves, one straightforward approach is
 to account for potential causality: if an external input does not induce any messages before
@@ -127,6 +128,8 @@ throughout the distributed system. In this way we can recognize functionally
 equivalent messages and maintain causal dependencies throughout replay despite
 altered histories.
 
+% TODO: rewrite and/or move this paragraph once we have the improved related work
+% section written.
 Painstaking manual analysis of logs is the
 {\em de facto} method of troubleshooting distributed systems in practice.
 As far as we know, our work
