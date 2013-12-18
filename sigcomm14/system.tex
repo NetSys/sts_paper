@@ -9,7 +9,8 @@ makes it difficult to reliably replay inputs.
 Both of the SDN controller vendors we are in contact with~\cite{nicirahomepage,bigswitch} employ a team of QA
 engineers to fuzz test their controller software on small to large testbeds of switches and hosts.
 As depicted in Figure~\ref{fig:qa_cluster}, this fuzz testing infrastructure
-consists of the controller software under test, the testbed, and a centralized
+consists of the controller software under test, the network testbed (which may
+be software or hardware), and a centralized
 test orchestrator
 that chooses random input sequences, drives the behavior of the testbed,
 periodically checks invariants, and manages log files. When a bug is discovered, it is first triaged
@@ -26,7 +27,7 @@ by a human, then logs are collected and sent to a developer for further troubles
 Users with existing
 QA testbeds can simply add delta debugging to their test
 orchestrator, and optionally insert interposition points throughout the
-testbed to enforce causal dependencies during replay.
+testbed to control event ordering during replay.
 In this way they can continue simulating large scale networks with
 the switches, middleboxes, hosts, and routing protocols they had already
 chosen to include in their QA testbed.
@@ -37,7 +38,7 @@ perform replay. Our system mocks out the control-plane
 behavior of network devices in lightweight software switches and hosts (with
 support for minimal data-plane forwarding)
 within a single-threaded process.\footnote{To achieve a deterministic order of
-events during replay either we had to serialize events in multiple threads via
+events during replay either we had to serialize events across threads via
 mutual exclusion or replay them in a single thread, and it turned out that
 the latter was cleaner and does not substantially impact performance.} We then
 run the control software on
