@@ -30,7 +30,7 @@ inconsistent reads, race conditions over message arrivals, and
 unintended consequences of failover logic.
 
 Several production SDN controllers support network
-virtualization~\cite{bigswitch,nicirahomepage,contextream}, a technology that
+virtualization~\cite{bigswitch,netvirt,contextream}, a technology that
 abstracts the details of the underlying physical network and presents a
 simplified view of the network to be configured by applications.
 In this model, multi-tenancy is implemented by providing each tenant with their
@@ -206,8 +206,8 @@ datacenter~\cite{Greenberg:2009:VSF:1592568.1592576}.
 In this paper we focus on bugs in the virtualization and controller coordination
 components of the SDN software stack. We focus on a \emph{proactive} mode of
 operation where forwarding state updates are triggered by policy or topology
-changes, not data-plane events.\footnote{It is possible to generalize our
-approach to include inputs from the data-plane, subject to performance limitations.}
+changes, not data plane events.\footnote{It is possible to generalize our
+approach to include inputs from the data plane, subject to performance limitations.}
 }
 
 %We are primarily concerned with corner-case scenarios such as

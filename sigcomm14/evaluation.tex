@@ -1,5 +1,4 @@
 \label{subsec:case_studies}
-
 \colin{How often did we have to back up?}
 
 \begin{table*}
@@ -34,11 +33,11 @@ logging interposition enabled.}}
 \label{tab:case_studies}
 \end{table*}
 
-The gold standard for evaluating \projectname~would be a large scale A/B test
+The gold standard for evaluating \simulator~would be a large scale A/B test~\cite{neyman}
 showing how much time it takes for developers to troubleshoot bugs found in
 QA clusters with and without minimized event traces. Unfortunately
 expert developers are scarce, and their skills vary widely; to achieve statistical significance we would
-need tens to hundreds of developers to spend 5 or more hours on each bug we find.
+need tens to hundreds of developers to spend substantial time on each bug we find.
 In addition we lack access to the QA testbeds of the scale and complexity
 used to test production controller software.
 
@@ -359,7 +358,9 @@ conditions that are difficult to guarantee. Still, \projectname was instrumental
 in pointing out a previously unknown bug, and reducing the input size.
 }
 
-\noindent{\bf Overall Results.} The overall results of our case studies are
+\subsection{Overall Results.}
+
+The overall results of our case studies are
 shown in Table~\ref{tab:case_studies}.
 We show the initial input size and MCS input size in the last two columns.
 For the Replay Success Rate column we
@@ -372,10 +373,10 @@ gettimeofday()}, and waiting on
 POX's logging messages. We expect that we would see similar improvements if we
 applied these techniques to Floodlight.
 
-We measured the runtime of \simulator~for these case studies in Figures $6 \& 8--11$.
+We measured the runtime of \simulator~for these case studies in Figures $6\;\&\;8-11$.
 While some instances ran in logarithmic time, the worst case was minimizing NOX discovery loop,
-which took more than $5.5$ hours. Nonetheless, we conjecture that even long iteration
-sizes are often preferable to spending software developer's time on manual
+which took more than $5.5$ hours. Nonetheless, we believe that even long minimization runtime
+is preferable to spending software developer's time on manual
 diagnosis.
 
 %\subsection{Overhead}
@@ -402,19 +403,19 @@ diagnosis.
 Simulating networks in a single process potentially prevents \projectname~from
 triggering bugs that only appear at large scale. We ran
 \projectname~on large FatTree networks to see where these scaling limits lie.
-On a machine with 6GB of memory, we booted POX as the controller, and measured the
+On a machine with 6GB of memory, we ran POX as the controller, and measured the
 time to create successively larger FatTree
 topologies, complete the OpenFlow handshakes for each switch,
 cut $5\%$ of links, and process POX's response to the link failures. As shown in
 Figure~\ref{fig:scaling}, \projectname's processing time scales roughly
 linearly up to $2464$ switches (a 45-pod FatTree). At that point, the machine
-started thrashing, but this limitation could easily be removed by running an a
-machine with more memory.
+started thrashing, but this limitation could easily be removed by running on a
+machine with more than 6GB of memory.
 
 Note that \projectname~is not designed for simulating high-throughput dataplane
 traffic; we only forward what is necessary to exercise the controller
 software. In proactive SDN setups, dataplane events are not
-relevant for the control software.
+relevant for the control software, except perhaps for host discovery.
 
 \begin{figure}[t]
     %\hspace{-10pt}
@@ -430,10 +431,10 @@ We found throughout our experimentation that \projectname~leaves open several
 parameters that need to be set properly in order to effectively find and troubleshoot bugs.
 
 \noindent{\bf Setting fuzzing parameters.} \projectname's fuzzer allows the
-user to set the rates at which different event types are triggered. In our initial experiments with
+user to set the rates at which different event types are triggered. In our experiments with
 \projectname~we found several times that we needed to set these parameters
 such that we avoided bugs that were not of interest to developers.
-In one case we discovered that a high dataplane
+For example, in one case we discovered that a high dataplane
 packet drop rate dropped too many LLDP packets, preventing the controller from ever successfully discovering the topology.
 Tweaking fuzzing parameters remains an important
 part of experiment setup.
@@ -477,10 +478,9 @@ In general, larger values of \textepsilon~are preferable to
 smaller values (disregarding runtime considerations), since we can always
 detect when we have waited too long (\viz~when a successor of the next input
 has occurred), but we cannot detect when we have timed out
-early on an internal event that is in fact going to occur.
-Analyzing event frequencies for particular bugs could provide more ideal
-\textepsilon~values.
-
+early on an internal event that is in fact going to occur shortly after.
+%Analyzing event frequencies for particular bugs could provide more ideal
+%\textepsilon~values.
 
 % ------------------------------------- %
 %    OLD TEXT

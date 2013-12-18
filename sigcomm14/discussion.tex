@@ -4,20 +4,24 @@
 Our evaluation of \simulator~leaves open several questions, which we discuss
 here.
 
+\colin{Hopefully not necessary:}
 \noindent{\bf Aren't SDN controllers relatively simple and bug free?}
 It is true that the freely available SDN applications we investigated are relatively simple. However, they
 are most definitely not bug-free since, in a short period of time, we were able to demonstrate bugs in all of them. 
-Production SDN platforms are far more complex than the freely available ones, for a variety of reasons. Larger deployments cannot be managed with reactive microflows, and thus
-require more complex proactive or hybrid strategies. For fault tolerance,
-controllers are replicated on multiple physical servers, and sharded for
-scalability~\cite{onix}. Multi-tenant virtualization critically requires tenant
-isolation to be preserved at all times. SDN controller platforms interact with
+Production SDN controller software is far more complex than freely
+available software, for a variety of reasons. Larger deployments cannot be managed with reactive microflows, and thus
+require more complex proactive or hybrid strategies. As described in \S\ref{sec:overview}
+fault tolerance, scale, high churn, and stringent invariants are difficult
+design requirements to uphold.
+SDN controllers also interact with
 cloud orchestration platforms and must correctly react to concurrent changes on
-their north- and southbound interfaces. Thus, we expect that these production SDN platforms will continue
-to be under active development, and have ongoing issues with bugs, for years to come. From our conversations with several SDN
+their north- and southbound interfaces~\cite{netvirt}. Thus, we expect that
+these production SDN control software will continue
+to be under active development, and have ongoing issues with bugs for years to come. From our conversations with several SDN
 controller vendors, we are aware that they all invest significant resources to troubleshooting. Several commercial players have voiced
-interest in our tool as a way to improve their troubleshooting. 
+interest in our tool as a way to improve their troubleshooting.
 
+\colin{Hopefully not necessary:}
 \noindent{\bf Aren't the bugs described here trivial in nature?} Yes, the bugs we found were trivial, but that
 is evidence that without better troubleshooting tools tracking down even trivial bugs is difficult.
 We were particularly
@@ -28,6 +32,7 @@ unexpected interactions between different elements in the control plane (e.g.,
 shortest path routing and topology discovery). We expect more complex bugs to
 surface once we aim our tool at more complex platforms, such as those used in production settings.
 
+\eat{ % No longer relevant
 \noindent{\bf Are simulated failures really indistinguishable from actual
 failures?} There will always be some failure modes observed in practice that are
 not reproducible without adding significant complexity to the mock network. Our
@@ -40,9 +45,10 @@ built in software, it is in principle possible to add more fine grained
 low-level behavior simulation at the cost of performance (with logical clock
 speeds adjusted accordingly).  Additional experience with production systems will help
 us determine how to best trade off improved simulation fidelity against degraded performance.
+}
 
 \noindent{\bf Will this approach work on all control platforms?} We make limited
-assumptions about the controller platform in use. Two of the three investigated
+assumptions about the controller platform in use. \num{Two of the three} investigated
 controller platforms were exercised with \simulator~without any modifications.
 Limited changes to the controller platforms (e.g., the possibility to override
 {\tt gettimeofday()}) can increase replay accuracy further.
@@ -74,7 +80,7 @@ syntax and semantics of interfaces between components of the system
 Quantum's API between the control application and the network
 hypervisor~\cite{quantum}), are open and well-defined--a property that is
 crucial for codifying functional equivalencies. Moreover, controllers are small in number compared
-to the size of overall network, which makes it much easier to superimpose on
+to the size of the overall network, making it much easier to interpose on
 messages.
 
 Although we focus on
