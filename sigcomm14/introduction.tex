@@ -92,16 +92,6 @@ that are not relevant to triggering the bug, leaving a small sequence of inputs
 that is directly responsible.
 This would go a long way towards achieving ``automated troubleshooting.''
 
-% Cut this paragraph for space?
-If you consider a software-defined network as a distributed state machine,
-with individual processes sending messages between themselves, one straightforward approach is
-to account for potential causality: if an external input does not induce any messages before
-the occurrence of the invalid configuration, it
-cannot possibly have affected the outcome~\cite{Lamport:1978:TCO:359545.359563}.
-Unfortunately, pruning only those inputs without a potential causal relation to
-the invalid configuration does not
-significantly reduce the number of inputs.
-
 Our approach is to prune inputs from the original execution, replay the remaining
 inputs to the control software using mock network devices, and
 check whether the network re-enters the invalid configuration.

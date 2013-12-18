@@ -85,12 +85,16 @@ technique on other such systems such as NAS controllers or MapReduce
 coordinators.
 
 \noindent{\bf Dataflow analysis.} Another avenue for future work is combining \projectname's replay-based
-minimization approach with dataflow analysis~\cite{kildall1973unified} to further prune events. The simplest form of dataflow analysis involves
+minimization approach with dataflow analysis~\cite{kildall1973unified} to
+further prune or preprocess events.
+The simplest form of dataflow analysis involves
 reasoning about happens-before relations (aka `potential causality'): if you consider a
 software-defined network as a distributed state machine,
 with individual processes sending messages between themselves, then one can safely prune an input event if
 it does not induce any messages before
-the occurrence of the invalid configuration~\cite{Lamport:1978:TCO:359545.359563}.
+the occurrence of the invalid
+configuration, since it could not have
+possibly affected the outcome~\cite{Lamport:1978:TCO:359545.359563}.
 Unfortunately we found that pruning inputs in this way does not
 significantly reduce the number of inputs, but one might go further by analyzing the controller code that generates messages
 to reason about which inputs have a causal linkage to the bug of interest.
