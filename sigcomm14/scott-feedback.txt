@@ -1,0 +1,67 @@
+12/19/13
+
+ - Need to be more direct -> collapse first three sections
+ - What of consistency, monotonicity, etc. do we ensure or not?
+ - Don't claim minimality.
+ - Two experiments:
+   - playing with # intermediate replays
+   - how well peek helps
+
+Minor:  Mock testbed as opposed to mock network.
+ 
+Idea: do O(n) heuristics to minimize initially, then go to peek() (O(n^2)) to
+further minimize.
+
+What graphs would we have for snapshotting?
+ - How much does it help to optimize delta debugging by eliminating delta
+   debugging's replaying redundant prefixes
+
+ - (How it helps non-determinism. Seems hard to have a graph for)
+
+ - Peek vs. peek with snapshots vs. not-peek. And another two .
+(CDF of snapshots, where cranking up complexity of heuristics gets us closer
+and closer to minimal)
+
+----
+
+Priority list:
+  - Running peek() on FL
+  - intermediate replays experiment
+  - Run MCS on reported (fixed) bugs in ONOS
+  - Inject bugs into POX
+
+Our point: we're not good at QA. But we have not find a MCS that was not
+substantially smaller (bottom line)
+
+Separate ourselves from static analysis. There are two steps to eval:
+  - QA is responsible for finding bugs. That's not really our job.
+  - Once you have the bug, here's what you do with it.
+
+We only did a good enough job in the first to be able to show the second.
+(Synthetic is fine). And from this analysis, we found what works well and what
+doesn't.
+
+So that we can show that we handle all the major classes of bugs: here are all
+the flavors. We created synthetic of all these types of bugs, and showed how
+well we do on all of these types.
+
+TODO for next meeting: brainstorm synthetic bugs we want to induce.
+
+TODO: tell Ahmed to swap to prior bugs in ONOS ASAP. Run fuzzing in
+background.
+
+Types of bugs:
+ - packet in race condition
+ - multiple thread race condition
+ - failover race condition
+ - software crash
+ - memory corruption that causes a crash much later
+ - algorithm misimplentation (e.g. routing causing loops)
+ - handling timers.
+ - disconnect between what developer thinks is in routing tables, and what's
+   actually in routing tables. e.g. transient blackholes w/o consistent
+   updates.
+ - misunderstanding of the consistency across controllers.
+ - handling a case that the developer didn't expect (e.g. host migration).
+
+In no case did we end up with a place where the developer was worse off.
