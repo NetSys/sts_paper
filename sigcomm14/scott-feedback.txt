@@ -11,8 +11,8 @@ Minor:  Mock testbed as opposed to mock network.
 substantially smaller (bottom line)
 
 Separate ourselves from static analysis. There are two steps to eval:
-  - QA is responsible for finding bugs. That's not really our job.
-  - Once you have the bug, here's what you do with it.
+ - QA is responsible for finding bugs. That's not really our job.
+ - Once you have the bug, here's what you do with it.
 
 We only did a good enough job in the first to be able to show the second.
 (Synthetic is fine). And from this analysis, we found what works well and what
