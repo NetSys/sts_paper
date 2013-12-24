@@ -1,3 +1,98 @@
+Our goal is to transform
+event traces (`test cases') into minimal sequences of inputs.
+The closest work to us is delta
+debugging~\cite{Zeller:1999:YMP:318773.318946,Zeller:2002:SIF:506201.506206}
+and other domain specific variants such as Chronus~\cite{whitaker2004configuration},
+which seek to minimize test cases to individual programs. As far as we know we
+are the first to apply delta debugging to a distributed system, where test
+cases are injected over a period of time rather than at once, and involve
+causal relationships between multiple actors. The authors of delta debugging
+have applied their technique to multi-threaded % single-core
+programs to minimize thread schedules that lead to race conditions, but this still
+involves injecting a single input (the schedule) to a single entity (the
+scheduler)~\cite{choi2002isolating}.
+
+We characterize the other approaches taken by the troubleshooting literature
+as (i) instrumentation,
+(ii) bug detection, (iii) replay, and (iv) root cause analysis.
+
+\noindent{\bf Instrumentation.} Unstructured
+log files collected at each node are the most common form of diagnostic information. The goal of
+tracing
+frameworks~\cite{pip,fonseca2007x,Chen02pinpoint:problem,ndb14,barham2004using} 
+is to produce structured logs that can be easily analyzed, such as DAGs tracking the events triggered by
+requests passing through the distributed system. An example within the SDN
+problem space is ndb~\cite{ndb14}, which
+allows users to retroactively examine traces of the OpenFlow forwarding rules
+encountered by dataplane packets. Our goal is to minimize such
+traces.
+
+\noindent{\bf Bug Detection.} With instrumentation available, it becomes possible
+to check expectations about the
+the system's state (either offline~\cite{Liu07widschecker} or online~\cite{d3s,dao2009live}), or about the paths requests take through
+the system~\cite{pip}. Within the field of networking, this research is
+primarily focused on verifying routing tables~\cite{hsa,hsa_realtime,anteater,khurshid2012veriflow}
+or forwarding behavior~\cite{Zeng:2012:ATP:2413176.2413205,libra}.
+We use bug detection techniques to guide delta debugging's minimization
+process.
+
+It is also possible to automatically infer
+performance anomalies by building probabilistic models from
+collections of traces~\cite{barham2004using,Chen02pinpoint:problem}.
+Our goal is to produce exact minimal causal sequences without
+depending on probabilistic models, and is primarily focused on correctness
+instead of performance.
+
+Model checkers~\cite{killian2007life,nice} seek to
+proactively find bugs by enumerating all possible code paths.
+Model checking works well for small
+programs and a small number of machines, but suffers from exponential
+state explosion when run on large systems. For example, NICE~\cite{nice} took 30 hours to
+model check a network with two switches, two hosts, the NOX MAC-learning
+control program (98 LoC), and five concurrent
+messages between the hosts. Rather than exploring all
+possibilities, we discover bugs through testing.
+\colin{TODO: discuss how finding the critical transition is related to finding the MCS}
+
+\noindent{\bf Replay.} Crucial diagnostic information is often missing from traces.
+Record and replay techniques~\cite{Geels:2006:RDD:1267359.1267386,lin2009towards}
+instead allow users to step through executions and interactively examine the
+state of the system. % in exchange for a loss in runtime performance.
+Replay analysis can also be conducted offline %, without incurring runtime performance overhead,
+to find code paths that lead up to software
+crashes~\cite{Yuan:2010:SED:1736020.1736038} or thread schedules that reproduce
+race conditions~\cite{Zamfir:2010:EST:1755913.1755946}.
+Within the SDN problem space, OFRewind~\cite{ofrewind} provides
+record and replay of OpenFlow channels between controllers and switches.
+Manually examining long system executions can be tedious; our goal is to
+automatically minimize system executions.
+
+%Rx~\cite{qin2005rx} is a technique for improving availability: upon
+%encountering a crash, it starts from a previous checkpoint, fuzzes
+%the environment (\eg~random number generator seeds) to avoid triggering the same bug,
+%and restarts the program. Our
+%approach perturbs the inputs rather than the environment
+%prior to a failure.
+
+\noindent{\bf Root Cause Analysis.} Without perfect instrumentation,
+it is often not possible to know exactly what events are occurring in a
+distributed system. Root cause analysis~\cite{yemini1996,Kandula:2009:DDE:1592568.1592597}
+techniques seek to identify the minimum set of failed
+components (\eg~link failures) needed to explain a collection of alarms. Rather than
+focusing on individual events (component failures), we seek to minimize inputs that affect the behavior
+of the overall distributed system.
+
+It is worth mentioning another goal outside the purview of distributed systems, but
+closely in line with ours: program slicing~\cite{weiser1981program} is a
+technique for finding the
+minimal subset of a program that could possibly affect (either through control flow or data
+flow) the result of a particular line of code.
+Our technique can be viewed as a form of program slicing,
+except that our `program' is a distributed event schedule,
+and the result we are interested in is the network misconfiguration at
+the end of the execution.
+
+\eat{ % Most recent version 
 \colin{Should cite Interactive Debugging for ISPs~\cite{lin2009towards}.}
 
 Our work spans three fields: software engineering, programming languages, and
@@ -69,7 +164,7 @@ configuration in the first place.
 \colin{
 Runtime invariant checking.
 WiDS checker introduced the notion of recording
-production executions to be later replayed and verified in a controlled simulation~\cite{Liu07widschecker:}.
+production executions to be later replayed and verified in a controlled simulation~\cite{Liu07widschecker}.
 D3S made this invariant checking process realtime.
 }
 
@@ -83,6 +178,7 @@ identifying low probability paths.
 Our approach identifies the exact minimal causal set of inputs without
 depending on probabilistic models.
 
+\colin{Cut:}
 Network simulators such as
 Mininet~\cite{handigol2012reproducible}, ns-3~\cite{ns3}, and ModelNet~\cite{Vahdat:2002:SAL:844128.844154}
 are used to prototype and test network software.
@@ -100,131 +196,7 @@ of the overall distributed system.
 % Debug Determinism~\cite{zamfir2011debug}: suggests that replay debuggers should not seek to achieve
 % perfect fidelity -- the utility of the replay can still be high, even if all failure modes can't be reproduced.
 % Our approach follows this argument: can't catch everything, but it's still useful!
-
-% ----------------------------------------- %
-%          OLD TEXT
-\eat{
+} % \eat most recent version
 
 \colin{Reviewer OD: read Knowledge Plane For The
 Internet~\cite{Clark:2003:KPI:863955.863957}}
-
-\colin{Reviewer OA: tools already exist that systematically exercise the
-behavior of a good part of the network (if not the whole network).}
-
-%-- Program Slicing --
-
-The delta debugging algorithm~\cite{Zeller:2002:SIF:506201.506206} seeks to solve
-a problem that is exactly analogous to ours on a single machine: given input that causes a test case
-to fail, what is the minimum subset of the input that still produces the failure?
-We apply the same reasoning to a distributed system.
-
-%-- Deterministic Replay (OFRewind) --
-
-Deterministic replay techniques such as OFRewind~\cite{ofrewind}
-are designed to allow developers to interactively prune
-the inputs that lead up to errant behavior. We present an algorithm that
-automates this process.
-
-%-- Model checking (NICE): --
-
-NICE~\cite{nice} combines model checking with concolic execution
-to enumerate all possible code paths taken by control software (NOX)
-and identify concrete inputs (\eg{} control message orderings) that cause
-the network to enter invalid configurations. NICE works well for small
-control programs and a small number of machines, but suffers from exponential
-state explosion when run on large systems. For example, NICE took 30 hours to
-model check a network with two switches, two hosts, the MAC-learning
-control program (98 LoC), and five concurrent
-messages between the hosts~\cite{nice}. We chose to avoid state-space explosion by analyzing logs
-{\em post-hoc}, after they have been observed in production.
-
-%-- Invariant Checking? --
-
-\eat{
-Invariant checking tools such as Anteater~\cite{anteater} and HSA~\cite{hsa}
-detect problems in the dataplane. We leverage invariant checking tools
-to distinguish inputs that are necessary for reproducing a given invariant violation.
-}
-
-%-- Root cause analysis? --
-
-Root cause analysis techniques~\cite{577079} seek to identify the minimum set of failed
-components (\eg{} link failures) needed to explain a collection of alarms. Rather than
-focusing on individual component failures, we seek to minimize inputs that affect the behavior
-of the overall distributed system.
-
-%-- Distributed Systems debuggers --
-
-Pip~\cite{pip} is a framework for instrumenting general-purpose distributed systems
-with code to record, display, and check invariants on causal paths throughout
-live executions. \Simulator{} observes the causal behavior of the
-distributed system in a simulated environment, enabling us to iteratively prune extraneous input events.
-
-% ------------ OLD -----------
-
-\eat{
-This work extends a growing literature on troubleshooting tools for
-Software-Defined Networks.
-
-The work most closely related to ours is NICE~\cite{nice}. NICE combines concolic execution
-and model checking to automate the process of testing NOX applications. This enables one to catch bugs before
-they are deployed.
-
-Our approach and NICE complement each other in several ways.  First, NICE's systematic exploration of failure orderings
-is potentially of great use for finding corner-case errors, which we could then add to our regression suite. NICE may also be applied directly to the code-base of the SDN platform, but in the case that only a subset
-of all possible code-paths in the SDN platform can be model-checked due to state-space explosion;
-our mechanisms allows users to troubleshoot errors
-{\it post-hoc} after they are observed in production, so we can find bugs that might be missed due to truncating the state-space exploration.
-In complement to NICE, correspondence checking helps developers isolate the
-specific component of the SDN platform responsible for an error, without needing to specify invariants.
-
-Focusing on the physical network, Anteater~\cite{anteater} and HSA~\cite{hsa}
-are alternative approaches to statically checking invariants in the
-configuration of switches and routers. Both take take as input a snapshot of
-the FIB of each network device. To check invariants, Anteater generates a set of constraint functions and feeds them through a SAT
-solver, while HSA defines an algebra for virtual packets and
-their transformation through the network. We leverage the HSA work in \projectname{}, and our simulator allows us to detect correctness violations not just in a given set of tables but what tables are produced by a wide range of scenarios. \
-
-Also focusing on the physical network, OFRewind~\cite{ofrewind} develops
-record and replay techniques for the control plane of OpenFlow networks.
-Unlike \simulator, OFRewind focuses specifically on OpenFlow
-interactions, while we focus on more course-grained replay of
-failures and topology changes. Running replay within a simulator also allows
-us to manually modify the execution of the system, rather than playing a
-static recording.
-
-Another line of work aims to prevent bugs from being introduced in the first
-place. Frenetic~\cite{frenetic} presents a language-based approach to building
-robust SDN applications. By providing a specialized programming model,
- Frenetic helps developers avoid writing common classes of
-bugs, such as `composition errors' where installed flow entries override each other.
-Reitblatt et al.~\cite{consistentupdates} developed a technique for ensuring
-consistent routing updates, guaranteeing that all switches in the network either route
-a given packet under the new configuration or under the old configuration,
-but not both. These abstractions are valuable for preventing common, difficult errors
-in platform logic.
-
-Several other network simulators exist for testing SDN controllers. Mininet is a
-platform for emulating OpenFlow switches and hosts within a single
- VM~\cite{Lantz:2010:NLR:1868447.1868466}. The ns-series of network simulators
-provides a general framework for testing new protocols, topologies,
-and traffic mixes~\cite{ns3}. We found that these existing simulators did
-not provide sufficient support for the corner-cases situations which are the
-focus of our work, such as failures and VM migration.
-
-Many of our ideas originate from the literature on troubleshooting general
-distributed systems. Pip~\cite{pip} defines a DSL and collection of annotation tools to
-reason about causal paths throughout the execution of the
-distributed system. Finally, end-to-end tracing
-frameworks such as X-Trace~\cite{Fonseca:2007:XPN:1973430.1973450} and
-Pinpoint~\cite{Chen02pinpoint:problem} provide a framework for tracing requests throughout
-a distributed system in order to infer correctness errors between layers and
-across components. Our work solves a more constrained problem; we leverage
-the structure of the SDN stack to enable a simple notion of platform
-correctness. In addition, these systems assume that invariants should hold at
-all times; we observe that in an eventually-consistent system such as SDN,
-transient correctness violations are inevitable. We built \simulator{} to help troubleshooters
-differentiate ephemeral from persistent errors.
-
-}
-}

@@ -37,8 +37,8 @@ More fundamentally though, modern SDN controller software is highly complex,
 distributing state between replicated
 servers~\cite{floodlight},
 providing isolation and resource arbitration between multiple
-tenants~\cite{Casado:2010:VNF:1921151.1921162}, and
-globally optimizing network utilization~\cite{urs}.
+tenants~\cite{Casado:2010:VNF:1921151.1921162,netvirt}, and
+globally optimizing network utilization~\cite{jain2013b4,hong2013achieving}.
 Most of this complexity comes from
 fundamentally difficult distributed systems challenges such as asynchrony and
 partial failure. Even Google's Urs H$\ddot{\mathrm{o}}$elzle
@@ -74,7 +74,7 @@ where the network violates one or more of these high-level policies; that is, ev
 has been told to implement a particular policy, the resulting configuration (\ie~flow entries in the switches)
 does not do so properly. %We call this an {\em invalid} configuration.
 These violations could arise from a hardware failure or a policy misconfiguration, and there is active work on
-developing tools to detect these problems \cite{hsa,Zeng:2012:ATP:2413176.2413205}. However, such violations
+developing tools to detect these problems~\cite{hsa,Zeng:2012:ATP:2413176.2413205,anteater,libra}. However, such violations
 could also arise from bugs in the SDN control plane software; our focus is on
 this case.
 
@@ -130,7 +130,7 @@ allow you to manually step through the original execution and verify whether a
 set of inputs triggered a bug,
 but the original run is often so large that the
 the set of potentially triggering inputs verges on unmanageable.
-Tracing tools such as ndb~\cite{handigol2012debugger} provide
+Tracing tools such as ndb~\cite{ndb14} provide
 a historical view into dataplane (mis)behavior. In contrast, our technique provides
 information about precisely what caused the network to
 enter an invalid configuration in the first place. Although we focus on
