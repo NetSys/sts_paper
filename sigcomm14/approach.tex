@@ -78,13 +78,14 @@ An event trace that violates monotonicity may contain events that `undo` the
 invariant violation triggered by the MCS, and may therefore exhibit slightly
 inflated MCSes. An event trace that violates unambiguity may exhibit multiple MCSes; delta debugging
 will return one of them. The most important assumption is consistency, which
-requires that the test outcome can always be determined. Zeller wrote a follow-on
-paper~\cite{Zeller:2002:SIF:506201.506206} that removes the need for the
-consistency assumption,
-but incurs an additional factor of $N$ in complexity in doing so. Our approach
-is to ensure that subsequences are always semantically valid by applying the two
-heuristics described above.}
-These two heuristics account for validity of all network state change
+requires that the test outcome can always be determined. 
+We do not
+guarantee monotonicity nor unambiguity, but we guarantee consistency by
+ensuring that subsequences are always semantically valid by applying the two
+heuristics described above. Zeller wrote a follow-on
+paper~\cite{Zeller:2002:SIF:506201.506206} that removes the need for these
+assumptions, but incurs an additional factor of $n$ in complexity in doing so. }
+These two heuristics account for validity of all network
 events shown in Table~\ref{tab:inputs}. We do not yet
 support network policy changes as events, which have more complex semantic
 dependencies.\footnote{If codifying the semantic dependencies of
@@ -180,20 +181,27 @@ result in injecting the remaining inputs too early or late.
 
 Formally, to reliably reproduce the original invariant violation
 we need to inject an input event $e$ only after all other
-events (including internal events outside our control,
-such as messages sent between controllers) that precede it in the
+events, including internal events triggered by the control software itself,
+that precede it in the
 happens-before~\cite{Lamport:1978:TCO:359545.359563}
 relation ($\{i \mid i \rightarrow e\}$) from the original execution have
-occurred~\cite{tel2000introduction}. We can obtain the
-happens-before relation in our logs by having our mock network
-(to be described later) interpose on all message channels, and
-log an event only after all prior events are guarenteed to have completed.
+occurred~\cite{tel2000introduction}. Internal events include
+(i) message deliver events, either between controllers or
+between controllers and switches, and (ii) state transitions
+within controllers (\eg~a backup node deciding to become master).
+We obtain visibility into (i) by having our mock network
+(to be described in \S\ref{sec:systems_challenges}) interpose on all message channels.
+We optionally obtain visibility into (ii) by instrumenting controller
+software (to be described in \S\ref{subsec:mitigating}).
+With visibility into internal events and control over input events, the mock
+network records a precise happens-before relation by logging an event only after
+all prior events are guaranteed to have completed.
 
 \subsection{Preserving Causality}
 
 Transforming the original log (which reproduces the violation)
 to a subsequence of external events (which may or may not reproduce that
-violation) may perturb causal dependencies substantially.
+violation) may perturb causal dependencies.
 To make progress we draw inferences about
 the remaining causal dependencies in the subsequence based on the causal
 dependencies reflected in the original log.
@@ -222,7 +230,7 @@ successfully reproduce bugs.
 %\footnote{We discuss this problem further in
 %\S\ref{subsec:domain_knowledge}.}
 %Note that the developer must provide enough logging statements
-%so that relevant internal state changes are captured and visible to our
+%so that relevant internal state transitions are captured and visible to our
 %tool.
 
 {\bf Functional Equivalence: }The first issue is that internal events may differ syntactically (\eg~sequence numbers
