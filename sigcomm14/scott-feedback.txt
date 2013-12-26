@@ -2,7 +2,7 @@
 
 Writing:
 ---------------
-Minor:  Mock testbed as opposed to mock network.
+Minor: Mock testbed as opposed to mock network.
 
  - Need to be more direct -> collapse first three sections
  - What type of consistency, monotonicity, etc. do we ensure or not?

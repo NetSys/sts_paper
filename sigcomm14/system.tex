@@ -42,9 +42,9 @@ events during replay either we had to serialize events across threads via
 mutual exclusion or replay them in a single thread, and it turned out that
 the latter was cleaner and does not substantially impact performance.} We then
 run the control software on
-top of this mock network and connect the software switches to the controllers as if they were true
+top of this \tester~and connect the software switches to the controllers as if they were true
 network devices, such that the controllers believe they are configuring a true
-network. The mock network interposes and buffers messages on all communication
+network. The \tester~interposes and buffers messages on all communication
 channels, allowing it to delay, drop, or reorder
 messages as needed to induce failure modes during testing. This interposition
 allows us to replicate many of the failure modes caused by asynchrony in real
@@ -109,13 +109,13 @@ POX ACL compliance & ONOS flow routing compliance \\
 \label{tab:invariants}
 \end{table}
 
-We begin by using our mock network to perform testing on controllers to find
+We begin by using our \tester~to perform testing on controllers to find
 bugs. Our most common use case involves generating randomly chosen input
 sequences~\cite{Miller:1990:ESR:96267.96279}, feeding them to controller(s),
 and monitoring
 invariants at chosen intervals.\footnote{The full list of invariants currently
 supported is shown in Table~\ref{tab:invariants}.}
-We also run the mock network interactively
+We also run the \tester~interactively
 so that we can examine the state of any part of the network,
 observe and manipulate messages, and follow our
 intuition to induce orderings that we believe may trigger bugs.
@@ -126,7 +126,7 @@ event ordering.
 After discovering an invariant violation of interest, our system replays
 the logged sequence of inputs (shown in Table~\ref{tab:inputs}). For example,
 the system replays link failures
-by disconnecting the edge in the mock network, and sending a
+by disconnecting the edge in the \tester, and sending a
 ofp\_port\_status~\cite{openflow} message from the adjacent switches to their parent controller(s).
 
 \projectname~(\projectmeaning) is our realization of this system.
@@ -334,7 +334,7 @@ intermediate delta debugging replays when the original trace exhibits a high deg
 \subsection{Scaling and Parallelization}
 
 When minimizing very large event traces we found that the garbage collector
-for our mock network often became overwhelmed (causing the process to slow down
+for our \tester~often became overwhelmed (causing the process to slow down
 substantially) after replaying several subsequences, since each replay could
 occupy gigabytes of memory space with many small objects.
 After observing this behavior we modified \projectname~to fork a process
