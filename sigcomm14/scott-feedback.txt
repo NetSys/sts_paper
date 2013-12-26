@@ -7,8 +7,8 @@ Minor: Mock testbed as opposed to mock network.
  - Need to be more direct -> collapse first three sections
  - What type of consistency, monotonicity, etc. do we ensure or not?
  - Don't claim minimality.
- - Fence post evaluation section. Our point: we're not good at QA. But we have not find a MCS that was not
-substantially smaller (bottom line)
+ - Fence post evaluation section. Our point: we're not good at QA. But we have
+   not founnd a MCS that was not substantially smaller (bottom line)
 
 Separate ourselves from static analysis. There are two steps to eval:
  - QA is responsible for finding bugs. That's not really our job.
