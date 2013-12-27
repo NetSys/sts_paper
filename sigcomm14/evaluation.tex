@@ -39,18 +39,18 @@ showing how much time it takes for developers to troubleshoot bugs found in
 QA clusters with and without minimized event traces. Unfortunately
 expert developers are scarce, and their skills vary widely; to achieve statistical significance we would
 need tens to hundreds of developers to spend substantial time on each bug we find.
-We also lack access to bugs found by QA testbeds of the scale and complexity
-used to test production controller software.
+%We also lack access to bugs found by QA testbeds of the scale and complexity
+%used to test production controller software.
 
 We instead take two approaches to evaluating \simulator.
 First, we need bugs to demonstrate \simulator's effectiveness in
 troubleshooting. We used \projectname~to find new bugs in three open source and one proprietary SDN control platform:
-ONOS~\cite{ONOS}, POX~\cite{pox}, NOX~\cite{nox}, and
-Floodlight~\cite{bigswitch}, and debugged these with and
+ONOS~\cite{ONOS} (Java), POX~\cite{pox} (Python), NOX~\cite{nox} (C++), and
+Floodlight~\cite{bigswitch} (Java), and debugged these with and
 without the help of \simulator. Second, we demonstrate the
 boundaries of where \simulator~works well and where it does not by using it to
-troubleshoot synthetic bugs that span a range of bug types.
-Throughout our evaluation we strive to qualitatively approximate A/B testing
+troubleshoot synthetic bugs that span a range of bug types encountered in
+practice. Throughout our evaluation we strive to qualitatively approximate A/B testing
 with in-depth case studies on the troubleshooting process.
 
 We show a high-level overview
