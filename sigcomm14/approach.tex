@@ -179,19 +179,19 @@ time to respond to the remaining inputs events.
 Simply maintaining relative timings might
 result in injecting the remaining inputs too early or late.
 
-Formally, to reliably reproduce the original invariant violation
+To reliably reproduce the original invariant violation
 we need to inject an input event $e$ only after all other
 events, including internal events triggered by the control software itself,
 that precede it in the
 happens-before~\cite{Lamport:1978:TCO:359545.359563}
 relation ($\{i \mid i \rightarrow e\}$) from the original execution have
 occurred~\cite{tel2000introduction}. Internal events include
-(i) message deliver events, either between controllers or
-between controllers and switches, and (ii) state transitions
+(a) message deliver events, either between controllers or
+between controllers and switches, and (b) state transitions
 within controllers (\eg~a backup node deciding to become master).
-We obtain visibility into (i) by having our
+We obtain visibility into (a) by having our
 \tester~(to be described in \S\ref{sec:systems_challenges}) interpose on all message channels.
-We optionally obtain visibility into (ii) by instrumenting controller
+We optionally obtain visibility into (b) by instrumenting controller
 software (to be described in \S\ref{subsec:mitigating}).
 With visibility into internal events and control over input events, the
 \tester~records a precise happens-before relation by logging an event only after
