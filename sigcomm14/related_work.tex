@@ -1,10 +1,10 @@
 Our goal is to transform
 event traces (`test cases') into minimal sequences of inputs.
-In order to achieve this goal we are as far we know the first to extend
- extend delta debugging~\cite{Zeller:1999:YMP:318773.318946,Zeller:2002:SIF:506201.506206}
- to a distributed system, where there are multiple actors rather than a single point of
- execution and an ongoing sequence of inputs rather than a single flat file.
-The authors of delta debugging
+In order to achieve this goal we are as far we know the first to
+extend delta debugging~\cite{Zeller:1999:YMP:318773.318946,Zeller:2002:SIF:506201.506206}
+to a distributed system, where there is an ongoing sequence of inputs
+involving multiple actors rather than a single flat file fed to a single point of
+execution. The authors of delta debugging
 have applied their technique to multi-threaded % single-core
 programs to minimize thread schedules that lead to race conditions, but this still
 involves injecting a single input (the schedule) to a single entity (the
@@ -25,8 +25,9 @@ is to produce structured logs that can be easily analyzed, such as DAGs tracking
 requests passing through the distributed system. An example within the SDN
 problem space is ndb~\cite{ndb14}, which
 allows users to retroactively examine the paths dataplane packets
-take through OpenFlow networks. Our goal is to transform such diagnostic
-information to the minimum needed to understand what triggered a given bug.
+take through OpenFlow networks. Our goal is to filter the signal from the
+noise from such diagnostic information to find the minimum needed
+to understand what triggered a given bug.
 
 \vspace{0.05in}
 \noindent{\bf Bug Detection.} With instrumentation available, it becomes possible
@@ -54,15 +55,15 @@ model check a network with two switches, two hosts, the NOX MAC-learning
 control program (98 LoC), and five concurrent
 messages between the hosts. Rather than exploring all
 possibilities, we discover bugs through testing of selected scenarios,
-which we believe fits more naturally into the way today's software engineers
-have chosen to develop and test distributed systems.
+which we believe fits more naturally into software engineers' preferred
+way of developing and testing distributed systems.
 \colin{TODO: discuss how finding the critical transition is related to finding the MCS}
 
 \vspace{0.05in}
 \noindent{\bf Replay.} Crucial diagnostic information is often missing from traces.
 Record and replay techniques~\cite{Geels:2006:RDD:1267359.1267386,lin2009towards}
 instead allow users to step through executions and interactively examine the
-state of the system. % in exchange for a loss in runtime performance.
+state of the system in exchange for a loss in runtime performance.
 Replay analysis can also be conducted offline %, without incurring runtime performance overhead,
 to find code paths that lead up to software
 crashes~\cite{Yuan:2010:SED:1736020.1736038} or thread schedules that reproduce
@@ -71,8 +72,8 @@ Within the SDN problem space, OFRewind~\cite{ofrewind} provides
 record and replay of OpenFlow channels between controllers and switches.
 Manually examining long system executions can be tedious, and our goal is to
 automatically minimize such executions; that is, we minimize the length of
-the execution in question so that developers find it easier to find the
-problematic code via replay or other means.
+the execution in question so that developers find it easier to identify the
+problematic code through replay or other means.
 
 %Rx~\cite{qin2005rx} is a technique for improving availability: upon
 %encountering a crash, it starts from a previous checkpoint, fuzzes
@@ -89,6 +90,7 @@ seeks to reconstruct those unknown events from limited monitoring data.
 Here we know exactly which events occurred, but
 seek to identify the minimal set of events that could trigger a particular bug.
 
+\colin{Cut if we need space:}
 \vspace{0.05in}
 It is worth mentioning another goal outside the purview of distributed systems, but
 closely in line with ours: program slicing~\cite{weiser1981program} is a
