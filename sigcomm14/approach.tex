@@ -78,7 +78,7 @@ An event trace that violates monotonicity may contain events that `undo` the
 invariant violation triggered by the MCS, and may therefore exhibit slightly
 inflated MCSes. An event trace that violates unambiguity may exhibit multiple MCSes; delta debugging
 will return one of them. The most important assumption is consistency, which
-requires that the test outcome can always be determined. 
+requires that the test outcome can always be determined.
 We do not
 guarantee monotonicity nor unambiguity, but we guarantee consistency by
 ensuring that subsequences are always semantically valid by applying the two
@@ -186,8 +186,9 @@ that precede it in the
 happens-before~\cite{Lamport:1978:TCO:359545.359563}
 relation ($\{i \mid i \rightarrow e\}$) from the original execution have
 occurred~\cite{tel2000introduction}. Internal events include
-(a) message deliver events, either between controllers or
-between controllers and switches, and (b) state transitions
+(a) message deliver events, either between controllers (\eg~database
+synchronization messages) or
+between controllers and switches (\eg~OpenFlow commands), and (b) state transitions
 within controllers (\eg~a backup node deciding to become master).
 We obtain visibility into (a) by having our
 \tester~(to be described in \S\ref{sec:systems_challenges}) interpose on all message channels.
