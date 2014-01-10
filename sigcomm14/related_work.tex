@@ -20,7 +20,7 @@ as (i) instrumentation (tracing),
 \noindent{\bf Instrumentation.} Unstructured
 log files collected at each node are the most common form of diagnostic information. The goal of
 tracing
-frameworks~\cite{pip,fonseca2007x,Chen02pinpoint:problem,ndb14,barham2004using} 
+frameworks~\cite{pip,fonseca2007x,Chen02pinpoint:problem,ndb14,barham2004using}
 is to produce structured logs that can be easily analyzed, such as DAGs tracking the events triggered by
 requests passing through the distributed system. An example within the SDN
 problem space is ndb~\cite{ndb14}, which
@@ -48,14 +48,14 @@ instead of performance.
 
 Model checkers~\cite{killian2007life,nice} seek to
 proactively find bugs by enumerating all possible code paths.
-Model checking works well for small
-programs and a small number of machines, but suffers from exponential
+After identifying a bug with model checking, finding a minimal code path leading to it is
+straightforward. However, model checking suffers from exponential
 state explosion when run on large systems. For example, NICE~\cite{nice} took 30 hours to
 model check a network with two switches, two hosts, the NOX MAC-learning
 control program (98 LoC), and five concurrent
 messages between the hosts. Rather than exploring all
 possibilities, we discover bugs through testing of selected scenarios,
-which we believe fits more naturally into software engineers' preferred
+which we believe fits more naturally into software engineers' chosen
 way of developing and testing distributed systems.
 \colin{TODO: discuss how finding the critical transition is related to finding the MCS}
 
@@ -64,7 +64,7 @@ way of developing and testing distributed systems.
 Record and replay techniques~\cite{Geels:2006:RDD:1267359.1267386,lin2009towards}
 instead allow users to step through executions and interactively examine the
 state of the system in exchange for a loss in runtime performance.
-Replay analysis can also be conducted offline %, without incurring runtime performance overhead,
+Static analysis and symbolic execution can also be applied post-hoc %, without incurring runtime performance overhead,
 to find code paths that lead up to software
 crashes~\cite{Yuan:2010:SED:1736020.1736038} or thread schedules that reproduce
 race conditions~\cite{Zamfir:2010:EST:1755913.1755946}.
@@ -84,7 +84,8 @@ problematic code through replay or other means.
 
 \vspace{0.05in}
 \noindent{\bf Root Cause Analysis.} Without perfect instrumentation,
-it is often not possible to know exactly what events are occurring in a
+it is often not possible to know exactly what events are occurring (\eg~which
+network devices have failed) in a
 distributed system. Root cause analysis~\cite{yemini1996,Kandula:2009:DDE:1592568.1592597}
 seeks to reconstruct those unknown events from limited monitoring data.
 Here we know exactly which events occurred, but
