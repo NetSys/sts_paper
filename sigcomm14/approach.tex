@@ -295,18 +295,20 @@ transition to and from `Send Flush'.
 
 We handle this possibility by attempting to infer the presence of internal
 events before we replay each subsequence. Our algorithm for inferring the
-present of internal events is depicted in
-Figure~\ref{fig:peek}. The core technique is to inject each input, take a
-snapshot\footnote{We discuss the implementation details of snapshotting in~\ref{subsec:snapshotting}} of
-the network and the control software's state, allow the system to proceed up
-until the following input (plus a small time $\epsilon$), record the observed events, and finally match up the
+presence of internal events is depicted in
+Figure~\ref{fig:peek}. The algorithm injects each input, takes a
+snapshot\footnote{We discuss the implementation details of snapshotting
+in~\ref{subsec:snapshotting}.} of
+the network and the control software's state, allows the system to proceed up
+until the following input (plus a small time $\epsilon$), records the observed
+events, and finally matches up the
 recorded events with the functionally equivalent internal events observed in
 the original trace. With these inferred causal dependencies, we then replay
 the subsequence, this time waiting to inject each input until each of its
-(functionally equivalent) causal predecessors have occurred.\footnote{In the
+(functionally equivalent) predecessors have occurred.\footnote{In the
 case that, due
 to non-determinism, an internal event occurs during Peek() but does not occur
-during replay, we time out for internal events after $\epsilon$ seconds of
+during replay, we time out on internal events after $\epsilon$ seconds of
 their expected occurrence.}
 
 \eat{ % Old version without peek()
@@ -369,8 +371,7 @@ in Figure~\ref{fig:replay}.
       \Delta \GETS |e\textsubscript{i}.time - e\textsubscript{i-1}.time| + \epsilon \\
       record\ events\ for\ \Delta\ seconds \\
       matched \GETS original\ events\ \&\ recorded\ events \\
-      inferred << e\textsubscript{i} \\
-      inferred << matched \\
+      inferred << e\textsubscript{i} << matched \\
       restore\ snapshot \\
     \END \\
     \RETURN{inferred}
@@ -446,14 +447,13 @@ invocations of $replay$ in the best case, where $n$ is the number of inputs in t
 trace~\cite{Zeller:1999:YMP:318773.318946}. In the worst case, delta debugging
 has $O(n)$ complexity.
 
-Replaying a single subsequence chosen by delta debugging takes $O(N)$ time
-(one iteration for Peek(), and one iteration for the replay itself.),
-for an overall runtime of $O(nlog\,n)$ replayed inputs in the best case.
+Each $replay$ takes $O(n)$ time
+(one iteration for Peek(), and one iteration for the replay itself),
+for an overall runtime of $O(nlog\,n)$ replayed inputs.
 The runtime can be decreased by parallelizing delta debugging:
 speculatively replaying subsequences in parallel, and joining the results.
-Storing periodic snapshots throughout testing can also reduce runtime, as we can
-replay inputs starting from a recent snapshot rather than the beginning
-of the trace.
+Storing periodic snapshots throughout testing can also reduce runtime, as it
+allows us to replay starting from a recent snapshot rather than the beginning of the trace.
 
 \eat{
 SDN platform developers can reduce the probability that the replay algorithm

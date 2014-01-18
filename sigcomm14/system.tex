@@ -140,7 +140,6 @@ and have discussed the logistics of deploying it with several SDN companies.
 
 \colin{TODO: Discuss the value of replay for root causing here? Or just let
 the use cases speak for themselves?}
-
 %How do we ensure the same scheduling order of controller processes? (see
 %Section 4.5 of ReVirt\cite{Dunlap:2002:REI:844128.844148}). We observe that the controllers do not use any shared
 %memory communication.}
@@ -246,21 +245,23 @@ until \projectname~explicitly tells the process that it may proceed.
 To efficiently implement the Peek() algorithm depicted in
 Figure~\ref{fig:peek} we assume the ability to record snapshots of the state of the
 system under test. We currently implement snapshotting for the POX
-controller by telling it to {\texttt fork()} itself and suspend its child,
-and later resume the child after cloning the original sockets of the parent
-(which constitute shared state between the parent and the child processes,
-since the socket state is managed by the kernel). This simple mechanism does
-not work for controllers that use other shared state, such as disk.
-To handle other shared state one could either use Unix containers or virtual
-machine snapshotting. For distributed controllers, one
+controller by telling it to fork() itself and suspend its child,
+cloning the sockets of the parent
+(which constitute shared state between the parent and child processes,
+since the socket state is managed by the kernel),
+and later resuming the child. This simple mechanism does
+not work for controllers that use other shared state such as disk.
+To handle other shared state one could either fork child processes within Unix containers, or one
+could run \projectname~and the control software within a VM and
+snapshot the entire VM. For distributed controllers, one
 would also need to implement a consistent cut
 algorithm~\cite{Chandy:1985:DSD:214451.214456} to take snapshots across controllers.
 
 If implementers of \simulator~do not choose to implement a snapshotting mechanism,
 they can still implement Peek() by replaying the prefix for each input
 interval from the beginning of the trace, thereby increasing replay runtime by
-a factor of $N$. Alternatively, they can
-simply employ some of the event scheduling heuristics described in
+a factor of $n$. Alternatively, they can
+avoid Peek() and just employ some of the event scheduling heuristics described in
 \ref{subsec:timing_heuristics}.
 
 Beyond its use in Peek(), snapshotting has three advantages as a primitive
