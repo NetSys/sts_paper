@@ -240,6 +240,38 @@ until \projectname~explicitly tells the process that it may proceed.
 %transition points again during replay
 %until \projectname~gives explicit acknowledgment.
 
+\subsection{Snapshotting}
+\label{subsec:snapshotting}
+
+To efficiently implement the Peek() algorithm depicted in
+Figure~\ref{fig:peek} we assume the ability to record snapshots of the state of the
+system under test. We currently implement snapshotting for the POX
+controller by telling it to {\texttt fork()} itself and suspend its child,
+and later resume the child after cloning the original sockets of the parent
+(which constitute shared state between the parent and the child processes,
+since the socket state is managed by the kernel). This simple mechanism does
+not work for controllers that use other shared state, such as disk.
+To handle other shared state one could either use Unix containers or virtual
+machine snapshotting. For distributed controllers, one
+would also need to implement a consistent cut
+algorithm~\cite{Chandy:1985:DSD:214451.214456} to take snapshots across controllers.
+
+If users of \projectname~do not choose to implement a snapshotting mechanism,
+they can still implement Peek() by replaying the prefix for each input
+interval from the beginning of the trace, thereby increasing replay runtime by
+a factor of $N$. Alternatively, they can
+simply employ some of the event scheduling heuristics described in
+\ref{subsec:timing_heuristics}.
+
+Beyond its use in Peek(), snapshotting has three advantages as a primitive
+in \projectname. As mentioned in \S\ref{subsec:complexity}, replaying from a
+recent snapshot rather than the beginning of the trace can reduce \simulator's runtime.
+By shortening the replay time, snapshotting coincidentally helps cope
+with the effects of non-determinism, as there is less opportunity for
+divergence in timing. Lastly, snapshotting can improve the runtime of delta
+debugging, since many of the subsequences chosen throughout delta debugging's
+execution share common input prefixes.
+
 %\subsection{Timing Heuristics}
 %\label{subsec:timing_heuristics}
 %\colin{Not sure if this is the right place for this}
@@ -383,15 +415,6 @@ Alternatively, one
 could employ root cause analysis
 algorithms~\cite{yemini1996} or manual inspection to consolidate redundant
 alarms.
-
-\colin{Cut if we add a section on snapshots}
-Finally, some care would be needed to prevent the logs from growing so large that
-\simulator's runtime becomes intractable. Here, causally consistent
-snapshots~\cite{Chandy:1985:DSD:214451.214456} would allow \projectname~to
-bootstrap its simulation from the last snapshot before the failure rather than
-replaying from the beginning of the log.
-%If the MCS starting from this snapshot is empty, it could iteratively move backwards, starting from earlier
-%snapshots.
 
 \subsection{Limitations}
 \label{subsec:non_goals}

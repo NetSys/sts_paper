@@ -176,7 +176,7 @@ causal dependencies from the original execution. The crucial point here is that 
 subsequence of the original inputs, the reaction of the control software
 can change, such that it behaves differently or takes a different amount of
 time to respond to the remaining inputs events.
-Simply maintaining relative timings might
+In practice we have observed that simply maintaining relative timings can
 result in injecting the remaining inputs too early or late.
 
 To reliably reproduce the original invariant violation
@@ -186,16 +186,16 @@ that precede it in the
 happens-before~\cite{Lamport:1978:TCO:359545.359563}
 relation ($\{i \mid i \rightarrow e\}$) from the original execution have
 occurred~\cite{tel2000introduction}. Internal events include
-(a) message deliver events, either between controllers (\eg~database
+(a) message delivery events, either between controllers (\eg~database
 synchronization messages) or
 between controllers and switches (\eg~OpenFlow commands), and (b) state transitions
 within controllers (\eg~a backup node deciding to become master).
 We obtain visibility into (a) by having our
 \tester~(to be described in \S\ref{sec:systems_challenges}) interpose on all message channels.
 We optionally obtain visibility into (b) by instrumenting controller
-software (to be described in \S\ref{subsec:mitigating}).
+software with a simple interposition layer (to be described in \S\ref{subsec:mitigating}).
 With visibility into internal events and control over input events, the
-\tester~records a precise happens-before relation by logging an event only after
+\tester~records a totally-ordered trace by logging an event only after
 all prior events are guaranteed to have completed.
 
 \subsection{Preserving Causality}
@@ -204,7 +204,7 @@ Transforming the original log (which reproduces the violation)
 to a subsequence of external events (which may or may not reproduce that
 violation) may perturb causal dependencies.
 To make progress we draw inferences about
-the remaining causal dependencies in the subsequence based on the causal
+the causal dependencies in the subsequence based on the causal
 dependencies reflected in the original log.
 This involves three issues: coping with syntactic differences in internal
 events across runs,
@@ -225,8 +225,7 @@ replay, these log statements would need to
 be highly granular, capturing information such as thread scheduling decisions;
 we show in \S\ref{subsec:case_studies}
 however that pre-existing, course granular log statements are often sufficient to
-successfully reproduce bugs.
-}
+successfully reproduce bugs.}
 
 %\footnote{We discuss this problem further in
 %\S\ref{subsec:domain_knowledge}.}
@@ -294,49 +293,92 @@ Figure~\ref{fig:state_machines}. If we prune the link failure input, the
 master will never receive a link failure notification and
 transition to and from `Send Flush'.
 
+We handle this possibility by attempting to infer the presence of internal
+events before we replay each subsequence. Our algorithm for inferring the
+present of internal events is depicted in
+Figure~\ref{fig:peek}. The core technique is to inject each input, take a
+snapshot\footnote{We discuss the implementation details of snapshotting in~\ref{subsec:snapshotting}} of
+the network and the control software's state, allow the system to proceed up
+until the following input (plus a small time $\epsilon$), record the observed events, and finally match up the
+recorded events with the functionally equivalent internal events observed in
+the original trace. With these inferred causal dependencies, we then replay
+the subsequence, this time waiting to inject each input until each of its
+(functionally equivalent) causal predecessors have occurred.\footnote{In the
+case that, due
+to non-determinism, an internal event occurs during Peek() but does not occur
+during replay, we time out for internal events after $\epsilon$ seconds of
+their expected occurrence.}
+
+\eat{ % Old version without peek()
 We handle this possibility by waiting for each expected internal event
 for a certain time \textepsilon. If the internal event does not occur within
-this time, we assume that it is absent and proceed. If, however, we find 
+this time, we assume that it is absent and proceed. If, however, we find
 during the \textepsilon~time units we were waiting that another internal that
 happens \emph{after} our next input occurs, we know that we have waited too
 long and violated causality. In this case we need to restart the replay
 process, this time knowing which internal events in the current
 input interval are and are not going to occur before injecting the next input.
 We show our overall event scheduling algorithm
-in Figure~\ref{fig:peek}.
+in Figure~\ref{fig:replay}.
+}
 
+\eat{ % Somewhat redundant with peek()
 \begin{figure}
   \begin{pseudocode}[framebox]{CausalInference}{events}
     \PROCEDURE{Replay}{subsequence}
+    subsequence \GETS \CALL{Peek}{subsequence} \\
     \FOR e\textsubscript{i}\ in\ subsequence \\
-    \BEGIN
-    \IF e\textsubscript{i}\ is\ an\ internal\ event \\
-    \AND e\textsubscript{i}\ is\ not\ marked\ absent:
-    \THEN
-    \BEGIN
-      \Delta \GETS |e\textsubscript{i}.time - e\textsubscript{i-1}.time| + \epsilon \\
-      wait\ up\ to\ \Delta\ seconds\ for\ e\textsubscript{i} \\
-      \IF e\textsubscript{i}\ did\ not\ occur:
-      \THEN mark\ e\textsubscript{i}\ as\ absent
-    \END
-    \ELSEIF e\textsubscript{i}\ is\ an\ input:
-    \THEN
-    \BEGIN
-      \IF a\ successor\ of\ e\textsubscript{i}\ occurred: \\
-      \INLINECOMMENT{waited too long}
+      \BEGIN
+      \IF e\textsubscript{i}\ is\ an\ internal\ event \\
+      \AND e\textsubscript{i}\ is\ not\ marked\ absent:
       \THEN
-        \RETURN{\CALL{Replay}{subsequence}}
-      \ELSE
-        inject\ e\textsubscript{i}
-      \END
-    \END
+        \BEGIN
+          \Delta \GETS |e\textsubscript{i}.time - e\textsubscript{i-1}.time| + \epsilon \\
+          wait\ up\ to\ \Delta\ seconds\ for\ e\textsubscript{i} \\
+          \IF e\textsubscript{i}\ did\ not\ occur:
+          \THEN mark\ e\textsubscript{i}\ as\ absent
+        \END
+      \ELSEIF e\textsubscript{i}\ is\ an\ input:
+      \THEN
+        \BEGIN
+          \IF a\ successor\ of\ e\textsubscript{i}\ occurred: \\
+          \INLINECOMMENT{waited too long}
+          \THEN
+            \RETURN{\CALL{Replay}{subsequence}}
+          \ELSE
+            inject\ e\textsubscript{i}
+          \END
+        \END
     \ENDPROCEDURE
   \end{pseudocode}
   \caption{{\tt Replay} is responsible for replaying subsequences of events
   chosen by delta debugging and determining
-  if the bug reappears. \colin{Fix framebox width.} \colin{Doesn't account for
-      snapshots}}
-    \label{fig:peek}
+  if the bug reappears. \colin{Fix framebox width.}}
+    \label{fig:replay}
+\end{figure}
+}
+
+\begin{figure}
+  \begin{pseudocode}[framebox]{Peek}{events}
+    \PROCEDURE{Peek}{input\ subsequence}
+    inferred \GETS [\ ] \\
+    \FOR e\textsubscript{i}\ in\ subsequence \\
+    \BEGIN
+      snapshot\ system \\
+      inject\ e\textsubscript{i} \\
+      \Delta \GETS |e\textsubscript{i}.time - e\textsubscript{i-1}.time| + \epsilon \\
+      record\ events\ for\ \Delta\ seconds \\
+      matched \GETS original\ events\ \&\ recorded\ events \\
+      inferred << e\textsubscript{i} \\
+      inferred << matched \\
+      restore\ snapshot \\
+    \END \\
+    \RETURN{inferred}
+    \ENDPROCEDURE
+  \end{pseudocode}
+  \caption{{\tt Peek} is responsible for determining which internal events
+  from the original sequence are going to occur for a given subsequence.
+  \label{fig:peek}}
 \end{figure}
 
 {\bf Handling New Internal Events:}
@@ -404,24 +446,14 @@ invocations of $replay$ in the best case, where $n$ is the number of inputs in t
 trace~\cite{Zeller:1999:YMP:318773.318946}. In the worst case, delta debugging
 has $O(n)$ complexity.
 
-If the replay algorithm
-never needs to back up, it replays $n$ inputs,
-for an overall runtime of $O(nlog\,n)$ replayed inputs in the best case, and $O(n^2)$ in the worst case.
-Conversely, if the event scheduling
-needs to back up in every iteration, another factor of $n$ is added to the
-runtime: for each input event
-$e_i$, it replays inputs $e_1,\dots,e_i$, for a total of
-$n \times \frac{n+1}{2} \in O(n^2)$ replayed inputs. In terms of replayed
-inputs, the
-overall worst case is therefore $O(n^3)$.
-\colin{TODO: doesn't account for snapshots}
-
+Replaying a single subsequence chosen by delta debugging takes $O(N)$ time
+(one iteration for Peek(), and one iteration for the replay itself.),
+for an overall runtime of $O(nlog\,n)$ replayed inputs in the best case.
 The runtime can be decreased by parallelizing delta debugging:
 speculatively replaying subsequences in parallel, and joining the results.
-The runtime can be further decreased by taking snapshots of the controller
-state at regular intervals, so that when the replay algorithm detects that it has waited too
-long it can restart from a recent snapshot rather than replaying the
-entire prefix.
+Storing periodic snapshots throughout testing can also reduce runtime, as we can
+replay inputs starting from a recent snapshot rather than the beginning
+of the trace.
 
 \eat{
 SDN platform developers can reduce the probability that the replay algorithm
@@ -436,6 +468,7 @@ make another optimization.."}
 
 In the next section we describe some
 of the practical challenges we have overcome to realize our approach.
+\colin{Cut this section?}
 In our initial experiments we have found that applying delta debugging to explore
 subsequences of $E_L$ and striving to maintain a single timing $T$ that maintains
 causal dependencies reliably finds small MCSes.
