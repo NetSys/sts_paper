@@ -275,43 +275,65 @@ execution share common input prefixes.
 
 \subsection{Timing Heuristics}
 \label{subsec:timing_heuristics}
-TODO
-%\colin{TODO: add more experiments here}
-%
-%Basically trial and error. Use visualization tools (described in \S\ref{subsec:root_causing}) to validate
-%the effectiveness of these techniques by comparing replay executions with and
-%without them enabled.
-%
-%\noindent{\bf Scheduling Events}
-%Include discussion of dumb event scheduler: only maintains deltas between
-%events. Our current event scheduler on the other hand accounts for time taken
-%to run the event, i.e. delta from real run - time.time() - time we last
-%injected. Especially important for timeouts! Not just injection time.
-%BTW, we have found cases where one worked and the other didn't. Our current
-%one is mostly better though.
-%
-%\noindent{\bf Whitelisting control plane packets}
-%We whitelist some packets LLDP. (problems therein.)
+\colin{TODO: add more experiments here}
+
+Throughout our experimentation with \projectname~we have found a number of
+heuristics to be useful for ensuring that invariant violations are reliably reproduced during replay.
+These heuristics may be used alongside the Peek() algorithm, or they may be
+used instead of Peek(). Our approach for evaluating the effectiveness
+of these heuristics has been to use \projectname's visualization tools
+(described in \S\ref{subsec:root_causing}) to compare replay executions with and
+without the heuristics enabled.
+
+\noindent{\bf Event Scheduling.} If we had perfect visibility into
+the internal state transitions of control software, we would be able to replay inputs at precisely the correct point in
+the happens-before relation. Unfortunately this is impractical.
+
+We find that ensuring that the wall-clock spacing between replay events
+is close to the recorded timing helps (but does not suffice, as described in
+\S\ref{subsec:algorithm}) ensure that invariant violations are reliable
+reproduced. When replaying events, we sleep() between each
+event for the same interval duration that was recorded in the original trace,
+minus the amount of time it takes to replay each event. Accounting for the
+extra amount of time it takes to replay events is especially important when we
+time out on internal events, or when input events take a long time to inject.
+
+\noindent{\bf Whitelisting keepalive messages.} We observed during some
+of our experiments that the control software incorrectly inferred that links or switches had
+failed during replay, when it had not not done so in the original execution.
+Upon further examination we found in these cases that LLDP and OpenFlow echo
+packets periodically sent by the control software were
+staying in \projectname's buffers too long during replay, such that the
+control software would time out on them. We therefore added an option to always pass through
+keepalive messages which has mitigated the problem. The limitation of this
+heuristic is that it cannot be used on bugs involving keepalive messages.
+
 %We also tried another algorithm: let new
 %internal messages through, keep a window of what we expect. If we don't
 %expect, let it through. Problem: false positive: accidentally let through
 %internal messages too early, then we time out on them after.
-%
-%\noindent{\bf Using logging statements as barriers}
-%Need to be careful: if controller goes through a new internal state
-%transition, it
-%will block. STS therefore needs to track wether the controller becomes blocked
-%unexpectedly, and unblock it to proceed with the rest of replay.
-%
-%\noindent{\bf Predicting whether a dataplane packet is unexpected}
-%In general, timeouts during replay strongly effect the execution. Timeouts are
-%much larger than the execution time of an event. This is ameliorated somewhat
-%by buffers, but the timing with the controller may be off somewhat.
-%Dataplane permit events constitue a substantial portion of events. In an
-%attempt to reduce timeouts, we tried to make dataplane permit the default,
-%such that we never time out on them. To do this we keep a window of expected
+
+\noindent{\bf Whitelisting dataplane events.} Dataplane forward/drop events constitute a
+substantial portion of overall events. For
+many of the controller applications we are interested in though, dataplane
+forwarding is only relevant insofar as it triggers control plane events
+(\eg~host discovery). We find that allowing dataplane forward events through by
+default, \ie~never timing out on them during replay, can greatly decrease
+skew between the wall-clock timing of the original vs. replayed trace.
+%we keep a window of expected
 %dp *drops* into the future. We then allow the dp packet through, *unless* we
 %see that we should drop it in the near future.
+
+\noindent{\bf Using logging statements as barriers.} We briefly experimented
+with using logging statements within control software to manipulate its execution speed,
+for use in the rare cases where we observed high variability in the
+controllers' response time. Our technique is to cause our logging
+interposition layer to block the entire controller
+process each time it issues a logging statement until \projectname~gives it
+explicit permission to proceed. We found that some care is needed to deal
+with unexpected state transitions, since the controller process will block
+indefinitely until \projectname~gives it acknowledgment.
+We currently turn this heuristic off by default.
 
 \subsection{Root Causing Tools}
 \label{subsec:root_causing}
