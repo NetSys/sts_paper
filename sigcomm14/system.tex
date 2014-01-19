@@ -36,12 +36,8 @@ We do not have access to such a QA testbed however, and instead built our own
 integration testing framework to discover bugs and
 perform replay. Our framework mocks out the control plane
 behavior of network devices in lightweight software switches and hosts (with
-support for minimal data plane forwarding)
-within a single-threaded process.\footnote{To achieve a deterministic order of
-events during replay either we had to serialize events across threads via
-mutual exclusion or replay them in a single thread, and it turned out that
-the latter was cleaner and does not substantially impact performance.} We then
-run the control software on
+support for minimal data plane forwarding).
+We then run the control software on
 top of this \tester~and connect the software switches to the controllers as if they were true
 network devices, such that the controllers believe they are configuring a true
 network. The \tester~interposes and buffers messages on all communication
@@ -96,13 +92,11 @@ Non-deterministic TCAMs & modified switches \\
 
 \begin{table}
 \centering
-\begin{tabular}{|l|l|}
+\begin{tabular}{|ll|}
 \hline
-All-to-all reachability & Loop freeness \\
-\hline
-Blackhole freeness & Controller liveness \\
-\hline
-POX ACL compliance & ONOS flow routing compliance \\
+- All-to-all reachability & - Loop freeness \\
+- Blackhole freeness & - Controller liveness \\
+- POX ACL compliance & - ONOS flow routing compliance \\
 \hline
 \end{tabular}
 \caption{Invariant checks currently supported by \projectname}
