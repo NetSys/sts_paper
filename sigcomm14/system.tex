@@ -157,7 +157,7 @@ able to reproduce the original bug during replay.
 Most testing systems, such as the QA testing frameworks we are
 trying to improve, do not attempt to mitigate non-determinism; they assume
 that developers will be able replicate bugs by attempting to reproduce the
-same conditions as the original test run, else track down the the root cause
+same conditions as the original test run, else track down the root cause
 only by
 inspecting the raw execution logs.
 
@@ -300,7 +300,7 @@ time out on internal events, or when input events take a long time to inject.
 
 \noindent{\bf Whitelisting keepalive messages.} We observed during some
 of our experiments that the control software incorrectly inferred that links or switches had
-failed during replay, when it had not not done so in the original execution.
+failed during replay, when it had not done so in the original execution.
 Upon further examination we found in these cases that LLDP and OpenFlow echo
 packets periodically sent by the control software were
 staying in \projectname's buffers too long during replay, such that the
@@ -319,7 +319,7 @@ many of the controller applications we are interested in though, dataplane
 forwarding is only relevant insofar as it triggers control plane events
 (\eg~host discovery). We find that allowing dataplane forward events through by
 default, \ie~never timing out on them during replay, can greatly decrease
-skew between the wall-clock timing of the original vs. replayed trace.
+skew between the wall-clock timing of the original vs.\ replayed trace.
 %we keep a window of expected
 %dp *drops* into the future. We then allow the dp packet through, *unless* we
 %see that we should drop it in the near future.
