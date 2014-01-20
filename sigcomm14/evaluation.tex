@@ -2,29 +2,59 @@
 
 \begin{table*}
 \centering
-\begin{tabular}{l|l|l|l|l}
-Bug Name & Topology & Replay Success Rate & Total Inputs & MCS Size \\
+\begin{tabular}{l|l|l|l}
+Bug Name & Topology & Replay Success Rate & MCS Size \\
 \hline
-POX list removal & 2 switch mesh & 20/20 & 69 & 2 \\
+Newly found Bugs & - & - & - \\
+\hline
+Pyretic loop & 3 switch mesh & TBD & 2 \\
+% TBD
+POX list removal & 2 switch mesh & 20/20 & 2 \\
+% Total inpujts: 69
 % With DP events: 72/2
 % Original: config/eugene_epsilon_replay.py
 % MCS: config/eugene_epsilon_mcs.py
-POX in-flight blackhole & 2 switch mesh & 15/20 [20/20*] & 26 & 11 \\
-% With DP events: 68/25
-% Original: 7ba95ed82ca4e32f12ab511d9c4301dbac2c59d5
-% MCS: 399cf861db87a65e600283d9ae7760400c4676e2
-% Updated: updated_debug_branch_loop/
-POX migration blackhole & 4 switch mesh & 20/20* & 29 & 3 \\
+POX in-flight blackhole & 2 switch mesh & 15/20 [20/20*] & 11 \\
+% Total inputs: 29
 % With DP events: 117/3
 % fuzz_pox_4mesh_blackhole
 % Updated (fat tree): pox_fattree_migration
-NOX discovery loop & 4 switch mesh & 18/20 & 150 & 18 \\
+NOX discovery loop & 4 switch mesh & 18/20 & 18 \\
+% Total inputs: 150
 % With DP events: 358/58
 % Original: ce547fc1df3bde279b6f3dd589c909663e295f1e
 % MCS: 5f49e791b0c1a611454cf0930f54aa609dd635d3
 % Updated to new format: nox_mesh_4_loop
-Floodlight loop & 3 switch mesh & 15/50 & 284 & 36 \\
+Floodlight loop & 3 switch mesh & 15/50 & 36 \\
+% Total inputs: 284
 % Andi
+\hline
+Known Bugs & - & - & - \\
+\hline
+% Total inputs: 26
+% With DP events: 68/25
+% Original: 7ba95ed82ca4e32f12ab511d9c4301dbac2c59d5
+% MCS: 399cf861db87a65e600283d9ae7760400c4676e2
+% Updated: updated_debug_branch_loop/
+POX migration blackhole & 4 switch mesh & 20/20* & 3 \\
+% TBD: Ahmed
+ONOS controller partition & TBD & TBD & TBD \\
+ONOS forgotten flows & TBD & TBD & TBD \\
+\hline
+Synthetic Bugs & - & - & - \\
+\hline
+Timer misfire & TBD & TBD & TBD \\
+Algorithm misimplentation & TBD & TBD & TBD \\
+Forgotten flow entries & TBD & TBD & TBD \\
+Unexpected input type & TBD & TBD & TBD \\
+Null pointer & TBD & TBD & TBD \\
+Multithreaded race condition & TBD & TBD & TBD \\
+Memory corruption & TBD & TBD & TBD \\
+Failover bug & TBD & TBD & TBD \\
+Consistency misunderstanding & TBD & TBD & TBD \\
+Misconfigured service & TBD & TBD & TBD \\
+Latency spike & TBD & TBD & TBD \\
+Invalid sleep value & TBD & TBD & TBD \\
 \end{tabular}
 \caption{Overview of Case Studies. \newline
 \textmd{*with multiplexed sockets, overridden {\tt gettimeofday()}, and
