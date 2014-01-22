@@ -2,29 +2,60 @@
 
 \begin{table*}
 \centering
-\begin{tabular}{l|l|l|l|l}
-Bug Name & Topology & Replay Success Rate & Total Inputs & MCS Size \\
+\begin{tabular}{l|l|l|l}
+Bug Name & Topology & Replay Success Rate & MCS Size \\
 \hline
-POX list removal & 2 switch mesh & 20/20 & 69 & 2 \\
+Newly found Bugs & - & - & - \\
+\hline
+Pyretic loop & 3 switch mesh & TBD & 2 \\
+% TBD
+POX list removal & 2 switch mesh & 20/20 & 2 \\
+% Total inpujts: 69
 % With DP events: 72/2
 % Original: config/eugene_epsilon_replay.py
 % MCS: config/eugene_epsilon_mcs.py
-POX in-flight blackhole & 2 switch mesh & 15/20 [20/20*] & 26 & 11 \\
-% With DP events: 68/25
-% Original: 7ba95ed82ca4e32f12ab511d9c4301dbac2c59d5
-% MCS: 399cf861db87a65e600283d9ae7760400c4676e2
-% Updated: updated_debug_branch_loop/
-POX migration blackhole & 4 switch mesh & 20/20* & 29 & 3 \\
+POX in-flight blackhole & 2 switch mesh & 15/20 [20/20*] & 11 \\
+% Total inputs: 29
 % With DP events: 117/3
 % fuzz_pox_4mesh_blackhole
 % Updated (fat tree): pox_fattree_migration
-NOX discovery loop & 4 switch mesh & 18/20 & 150 & 18 \\
+NOX discovery loop & 4 switch mesh & 18/20 & 18 \\
+% Total inputs: 150
 % With DP events: 358/58
 % Original: ce547fc1df3bde279b6f3dd589c909663e295f1e
 % MCS: 5f49e791b0c1a611454cf0930f54aa609dd635d3
 % Updated to new format: nox_mesh_4_loop
-Floodlight loop & 3 switch mesh & 15/50 & 284 & 36 \\
+Floodlight loop & 3 switch mesh & 15/50 & 36 \\
+% Total inputs: 284
 % Andi
+\hline
+Known Bugs & - & - & - \\
+\hline
+% Total inputs: 26
+% With DP events: 68/25
+% Original: 7ba95ed82ca4e32f12ab511d9c4301dbac2c59d5
+% MCS: 399cf861db87a65e600283d9ae7760400c4676e2
+% Updated: updated_debug_branch_loop/
+POX migration blackhole & 4 switch mesh & 20/20* & 3 \\
+% TBD: Ahmed
+ONOS controller partition & TBD & TBD & TBD \\
+ONOS forgotten flows & TBD & TBD & TBD \\
+\hline
+Synthetic Bugs & - & - & - \\
+\hline
+Timer misfire & TBD & TBD & TBD \\
+Algorithm misimplentation & TBD & TBD & TBD \\
+Forgotten flow entries & TBD & TBD & TBD \\
+Neglect to check failed flow\_mod & TBD & TBD & TBD \\
+Unexpected input type & TBD & TBD & TBD \\
+Null pointer & TBD & TBD & TBD \\
+Multithreaded race condition & TBD & TBD & TBD \\
+Memory corruption & TBD & TBD & TBD \\
+Failover bug & TBD & TBD & TBD \\
+Consistency misunderstanding & TBD & TBD & TBD \\
+Misconfigured service & TBD & TBD & TBD \\
+Latency spike & TBD & TBD & TBD \\
+Invalid sleep value & TBD & TBD & TBD \\
 \end{tabular}
 \caption{Overview of Case Studies. \newline
 \textmd{*with multiplexed sockets, overridden {\tt gettimeofday()}, and
@@ -133,7 +164,7 @@ minutes. By matching the console output with the code, he found that the crucial
 triggering events were two
 in-flight packets (set in motion by prior traffic injection events):
 POX first incorrectly learned a host location as a result of the first in-flight
-packet showing up immediately after POX discovered that that port belonged to
+packet showing up immediately after POX discovered that port belonged to
 a switch-switch link -- apparently the code had not accounted for the
 possibility of in-flight packets directly following link discovery -- and
 then as a result the
@@ -153,8 +184,6 @@ and two switches S1 and S2 connected by a single link.
     \caption[]{\label{fig:simple_topo} Topology for POX
     in-flight blackhole. Numbers denote port labels.}
 \end{figure}
-
-
 
 Before the discovery module had learned of the link connecting the two
 switches,
@@ -202,7 +231,7 @@ the faulty routing entry would eventually expire $30$ seconds later.
 We investigated the code that handled in-flight packets
 arriving on switch-switch ports. The log statement that we had observed
 earlier was inside a nested conditional, and the code for
-installing the path was below and outside of the nested conditional conditional.
+installing the path was below and outside of the nested conditional.
 What struck us was that there was a commented out return statement directly
 after the log statement. The comment above it read: ``Should flood instead of
 dropping''. We tried reinserting the return statement and replaying, and
@@ -577,7 +606,7 @@ simulator was able to identify the correct correctness violation.
 
 \noindent{\bf Floodlight: Distributed controller failover race condition}
 We were able to reproduce the problem shown in Figure~\ref{fig:example} in our
-simulation environment\footnote{The code is publicly available},
+simulation environment,\footnote{The code is publicly available}
 and apply \simulator{} successfully.
 We modified the Floodlight software to provide an interface for extracting its
 physical view. We did not interpose on internal events of the controller, but instead used a

@@ -36,12 +36,8 @@ We do not have access to such a QA testbed however, and instead built our own
 integration testing framework to discover bugs and
 perform replay. Our framework mocks out the control plane
 behavior of network devices in lightweight software switches and hosts (with
-support for minimal data plane forwarding)
-within a single-threaded process.\footnote{To achieve a deterministic order of
-events during replay either we had to serialize events across threads via
-mutual exclusion or replay them in a single thread, and it turned out that
-the latter was cleaner and does not substantially impact performance.} We then
-run the control software on
+support for minimal data plane forwarding).
+We then run the control software on
 top of this \tester~and connect the software switches to the controllers as if they were true
 network devices, such that the controllers believe they are configuring a true
 network. The \tester~interposes and buffers messages on all communication
@@ -96,13 +92,11 @@ Non-deterministic TCAMs & modified switches \\
 
 \begin{table}
 \centering
-\begin{tabular}{|l|l|}
+\begin{tabular}{|ll|}
 \hline
-All-to-all reachability & Loop freeness \\
-\hline
-Blackhole freeness & Controller liveness \\
-\hline
-POX ACL compliance & ONOS flow routing compliance \\
+- All-to-all reachability & - Loop freeness \\
+- Blackhole freeness & - Controller liveness \\
+- POX ACL compliance & - ONOS flow routing compliance \\
 \hline
 \end{tabular}
 \caption{Invariant checks currently supported by \projectname}
@@ -157,7 +151,7 @@ able to reproduce the original bug during replay.
 Most testing systems, such as the QA testing frameworks we are
 trying to improve, do not attempt to mitigate non-determinism; they assume
 that developers will be able replicate bugs by attempting to reproduce the
-same conditions as the original test run, else track down the the root cause
+same conditions as the original test run, else track down the root cause
 only by
 inspecting the raw execution logs.
 
@@ -251,13 +245,13 @@ cloning the sockets of the parent
 since the socket state is managed by the kernel),
 and later resuming the child. This simple mechanism does
 not work for controllers that use other shared state such as disk.
-To handle other shared state one could either fork child processes within Unix containers, or one
-could run \projectname~and the control software within a VM and
-snapshot the entire VM. For distributed controllers, one
+To handle other shared state one could checkpoint processes within
+lightweight Unix containers~\cite{lxc}. For distributed controllers, one
 would also need to implement a consistent cut
-algorithm~\cite{Chandy:1985:DSD:214451.214456} to take snapshots across controllers.
+algorithm~\cite{Chandy:1985:DSD:214451.214456}, which is available in several open source
+implementations~\cite{DMTCP}.
 
-If implementers of \simulator~do not choose to implement a snapshotting mechanism,
+If implementers of \simulator~do not choose to use a snapshotting mechanism,
 they can still implement Peek() by replaying the prefix for each input
 interval from the beginning of the trace, thereby increasing replay runtime by
 a factor of $n$. Alternatively, they can
@@ -300,7 +294,7 @@ time out on internal events, or when input events take a long time to inject.
 
 \noindent{\bf Whitelisting keepalive messages.} We observed during some
 of our experiments that the control software incorrectly inferred that links or switches had
-failed during replay, when it had not not done so in the original execution.
+failed during replay, when it had not done so in the original execution.
 Upon further examination we found in these cases that LLDP and OpenFlow echo
 packets periodically sent by the control software were
 staying in \projectname's buffers too long during replay, such that the
@@ -319,7 +313,7 @@ many of the controller applications we are interested in though, dataplane
 forwarding is only relevant insofar as it triggers control plane events
 (\eg~host discovery). We find that allowing dataplane forward events through by
 default, \ie~never timing out on them during replay, can greatly decrease
-skew between the wall-clock timing of the original vs. replayed trace.
+skew between the wall-clock timing of the original vs.\ replayed trace.
 %we keep a window of expected
 %dp *drops* into the future. We then allow the dp packet through, *unless* we
 %see that we should drop it in the near future.
