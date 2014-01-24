@@ -105,6 +105,8 @@ possibly affected the outcome~\cite{Lamport:1978:TCO:359545.359563}.
 Unfortunately we found that pruning inputs in this way does not
 significantly reduce the number of inputs, but one might go further by analyzing the controller code that generates messages
 to reason about which inputs have a causal linkage to the bug of interest.
+% Maybe just try to apply dataflow analysis to the mock network's code, not to
+% the control software code. That way we aren't language dependent.
 
 %Along a similar vein, dataflow analysis has the potential to help address the
 %problem described in~\ref{subsec:timing_heuristics} of timeouts adversely affecting replay;
