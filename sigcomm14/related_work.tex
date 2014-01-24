@@ -22,9 +22,10 @@ software in order to remain language independent and avoid substantial runtime
 overhead. % Our Peek() algorithm is a
 % contribution in how to infer dependencies without access to software internals
 Moreover, our use of
-functional equivalence relations applied to inputs events allows us to minimize
+functional equivalence relations applied to the relatively small space of
+possible input events allows us to minimize
 inputs more aggressively, whereas they are forced to consider all control-flow
-and data-flow dependencies.
+and data-flow dependencies in the control software.
 
 We characterize the other approaches taken by the troubleshooting literature
 as (i) instrumentation (tracing),
