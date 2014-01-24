@@ -4,20 +4,20 @@ In order to achieve this goal we are as far we know the first to
 extend delta debugging~\cite{Zeller:1999:YMP:318773.318946,Zeller:2002:SIF:506201.506206}
 to a distributed system, where there is an ongoing sequence of inputs
 involving multiple actors rather than a single flat file fed to a single point of
-execution. Delta debugging has been applied to identify and prune threads from
-execution traces that are not necessary for triggering concurrency bugs~\cite{huang2012lean},
-and to minimize thread context switches leading up to race conditions~\cite{choi2002isolating}, but this still
-involves injecting a single input (the schedule) to a single entity (the
+execution. Delta debugging has been applied to minimize thread context switches
+leading up to race conditions~\cite{choi2002isolating}, and to
+prune irrelevant threads from execution traces~\cite{huang2012lean}, but this still
+involves injecting a single input (the thread schedule) to a single entity (the
 scheduler).
 
 Other than delta debugging, the closest work to ours involves reasoning about
 control- and data-flow dependencies
 (which may be recorded at runtime~\cite{Lee:2011:TGR:1993498.1993528}, or
-may be inferred by replaying with code tracing enabled~\cite{tallam2007enabling})
+may be inferred by replaying once with code tracing enabled~\cite{tallam2007enabling})
 in order to reduce the
 length of deterministic replay executions. This work applies only to a single
 machine, requires extensive code
-instrumentation (including human annotation), and can be too conservative when
+instrumentation (including human annotation), and can be overly conservative when
 pruning.
 
 We characterize the other approaches taken by the troubleshooting literature
