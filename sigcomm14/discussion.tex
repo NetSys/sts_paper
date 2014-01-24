@@ -90,9 +90,10 @@ In future work we hope to deploy and validate our
 technique on other such systems such as NAS controllers or MapReduce
 coordinators.
 
-\noindent{\bf Dataflow analysis.} Another avenue for future work is combining \projectname's replay-based
-minimization approach with dataflow analysis~\cite{kildall1973unified} to
-further prune or preprocess events.
+\noindent{\bf Dataflow analysis.} Another avenue for future work is to apply
+dataflow
+analysis~\cite{kildall1973unified,Lee:2011:TGR:1993498.1993528,tallam2007enabling}
+to further prune or preprocess events.
 The simplest form of dataflow analysis involves
 reasoning about happens-before relations (aka `potential causality'): if you consider a
 software-defined network as a distributed state machine,
