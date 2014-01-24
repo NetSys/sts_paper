@@ -249,7 +249,7 @@ To handle other shared state one could checkpoint processes within
 lightweight Unix containers~\cite{lxc}. For distributed controllers, one
 would also need to implement a consistent cut
 algorithm~\cite{Chandy:1985:DSD:214451.214456}, which is available in several open source
-implementations~\cite{DMTCP}.
+implementations~\cite{ansel2009dmtcp}.
 
 If implementers of \simulator~do not choose to use a snapshotting mechanism,
 they can still implement Peek() by replaying the prefix for each input

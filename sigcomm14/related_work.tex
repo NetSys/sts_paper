@@ -4,11 +4,21 @@ In order to achieve this goal we are as far we know the first to
 extend delta debugging~\cite{Zeller:1999:YMP:318773.318946,Zeller:2002:SIF:506201.506206}
 to a distributed system, where there is an ongoing sequence of inputs
 involving multiple actors rather than a single flat file fed to a single point of
-execution. The authors of delta debugging
-have applied their technique to multi-threaded % single-core
-programs to minimize thread schedules that lead to race conditions, but this still
+execution. Delta debugging has been applied to identify and prune threads from
+execution traces that are not necessary for triggering concurrency bugs~\cite{huang2012lean},
+and to minimize thread context switches leading up to race conditions~\cite{choi2002isolating}, but this still
 involves injecting a single input (the schedule) to a single entity (the
-scheduler)~\cite{choi2002isolating}.
+scheduler).
+
+Other than delta debugging, the closest work to ours involves reasoning about
+control- and data-flow dependencies
+(which may be recorded at runtime~\cite{Lee:2011:TGR:1993498.1993528}, or
+may be inferred by replaying with code tracing enabled~\cite{tallam2007enabling})
+in order to reduce the
+length of deterministic replay executions. This work applies only to a single
+machine, requires extensive code
+instrumentation (including human annotation), and can be too conservative when
+pruning.
 
 We characterize the other approaches taken by the troubleshooting literature
 as (i) instrumentation (tracing),
@@ -98,10 +108,12 @@ closely in line with ours: program slicing~\cite{weiser1981program} is a
 technique for finding the
 minimal subset of a program that could possibly affect (either through control flow or data
 flow) the result of a particular line of code.
-Our technique can be viewed as a form of program slicing,
-except that our `program' is a distributed event schedule,
-and the result we are interested in is the network misconfiguration at
-the end of the execution.
+Our goal is to slice the temporal dimension of an execution rather than the
+code dimension.
+%Our technique can be viewed as a form of program slicing,
+%except that our `program' is a distributed event schedule,
+%and the result we are interested in is the network misconfiguration at
+%the end of the execution.
 
 \eat{ % Most recent version 
 \colin{Should cite Interactive Debugging for ISPs~\cite{lin2009towards}.}
