@@ -33,16 +33,6 @@ the switch, but without ever clearing the routing entries for
 the failed link (resulting in a persistent blackhole). In this example, the MCS
 is the conjunction of the two external inputs (E1,E3) in conjunction.
 
-A developer or operator encountering this bug in practice would not be
-given this concise version of events. Instead, the trace would contain a wealth
-of extraneous input events, all of which may appear characteristic of normal
-operating conditions at first glance, making it difficult
-to reason about the underlying root cause.
-Consider that an hour long QA fuzz test, assuming 8.5 network error events per
-minute~\cite{Greenberg:2009:VSF:1592568.1592576} and 500 VM migrations per
-hour~\cite{Soundararajan:2010:CBS:1899928.1899941},
-would contain $8.5 \cdot 60 + 500 \approx 1000$ inputs.
-
 \subsection{Searching for Subsequences}
 \label{subsec:delta_debugging}
 

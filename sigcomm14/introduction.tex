@@ -1,12 +1,43 @@
-Software defined networking (SDN) proposes to simplify network management by providing a simple logically-centralized API upon which network management programs can be written.  However, the software used to support this API is anything but simple: the SDN control plane (consisting of the network operating system and higher layers) is a complicated distributed system that must react quickly and correctly to link/controller failures, host migrations, and policy-configuration changes.
-All complicated distributed systems are prone to bugs, and from our first-hand familiarity with several important open-source (NOX, POX, Floodlight, Frenetic, ONOS) \emph{and} the three major commercial closed-source controllers, we can attest that SDN control platforms are no exception. 
+Software-defined networking (SDN) proposes to simplify network management by
+providing a simple logically-centralized API upon which network management
+programs can be written.  However, the software used to support this API is
+anything but simple: the SDN control plane (consisting of the network
+operating system and higher layers) is a complicated distributed system that
+must react quickly and correctly to link/controller failures, host migrations,
+policy-configuration changes, and other events.
+All complicated distributed systems are prone to bugs, and from our first-hand familiarity with several important open-source (NOX, POX, Floodlight, Frenetic, ONOS) \emph{and} the three major commercial closed-source controllers, we can attest that SDN control platforms are no exception.
 % All complicated distributed systems are prone to bugs and from our first-hand familiarity with several important open-source (NOX, POX, Floodlight, Frenetic, ONOS) and closed-source controllers (Google, VMware, BigSwitch), we can attest that SDN control platforms are no exception. 
 
-Moreover, it is very hard to identify which events (\ie, which set of link failures, controller failures, policy changes) are triggering the bug; this act of ``troubleshooting'' (which typically precedes the act of debugging the underlying code) is extremely time-consuming, as developers spend hours and hours poring over multigigabyte traces.\footnote{A recent study suggested that software developers in general spend roughly half (49\% according to one
-study~\cite{msoft_concurrency}) of their time troubleshooting, and spend considerable time on bugs that are difficult to trigger (the same study found that 70\% of the reported concurrency bugs take days to months to fix).} Bugs are a fact of life; our aim is to make the troubleshooting process easier.
+When faced with a bug, it is difficult to identify which events (\ie, which
+set of link failures, controller failures, policy changes) are triggering the
+bug; this act of ``troubleshooting'' (which precedes the act of debugging the
+underlying code) is extremely time-consuming, as developers spend many hours poring
+over multigigabyte execution traces.\footnote{A recent study suggested that software developers in general spend roughly half (49\% according to one
+study~\cite{msoft_concurrency}) of their time troubleshooting, and spend
+considerable time on bugs that are difficult to trigger (the same study found
+that 70\% of the reported concurrency bugs take days to months to fix).} Bugs
+are a fact of life; our aim is to make the troubleshooting process easier.
 
-To that end, we have built a troubleshooting system for the SDN control plane. Given a large trace, our tool attempts to automatically eliminate trace events that are not causally related to the bug, producing a ``Minimal Causal Sequence'' (MCS) of triggering events. Only after the original trace has been reduced to an MCS (or an approximation thereof) is the set of events handed to a developer to actually embark on the debugging process. The intent is that the greatly reduced size of the trace makes it easier for the developer to figure out which code path might be responsible for the underlying bug.
+To that end, we have built a troubleshooting system for the SDN control plane.
+Given a large execution trace, our tool attempts to automatically eliminate
+trace events that are not causally related to the bug, producing a ``Minimal
+Causal Sequence'' (MCS) of triggering events. Once the original trace has
+been reduced to an MCS (or an approximation thereof), the developer embarks
+on the debugging process. Our intent is that the greatly reduced size of the trace makes it easier for the developer to figure out which code path might be responsible for the underlying bug.
 
-This is in the spirit of delta debugging, but our problem is harder in two dimensions: our system is distributed in space (\ie, spread across many machines) and the input is distributed in time (\ie, the input is not a single file, but a set of events spread over time). This completely changes the nature of the required troubleshooting infrastructure, and we are not aware of any other system that tackles these challenges (though we discuss the vast amount of related work later in the paper).
+Our goal of minimizing test cases is in the spirit of delta debugging~\cite{Zeller:1999:YMP:318773.318946}, but our
+problem is harder in two dimensions: our system is distributed in space (\ie,
+spread across many machines) and the input is distributed in time (\ie, the
+input is not a single file, but a sequence of events spread over time). This
+completely changes the nature of the required troubleshooting infrastructure,
+and we are not aware of any other system that tackles these challenges (though
+we discuss the vast amount of related work in \S\ref{sec:related_work}).
 
-Our troubleshooting system, which we call {\projectname} for SDN Troubleshooting System, consists of 21,000 lines of Python, and is designed to integrate with existing QA test infrastructures (which we discuss later). We have used it to analyze bugs in several of the major open-source SDN controllers and also with one closed-source controller. We first demonstrate the viability of our approach by inserting synthetic bugs (\ie, we insert a known bug, generate traces from tests that trigger that bug, and then look at the MCS that results), and then we analyze previously unknown bugs in various controllers.
+Our troubleshooting system, which we call {\projectname} for \projectmeaning,
+consists of 21,000 lines of Python, and is designed to
+integrate with existing QA test infrastructure (which we discuss later). We
+have used \projectname~to analyze bugs in \num{several} of the major open-source SDN
+controllers, as well as one closed-source controller. We first demonstrate the
+viability of our approach by inserting synthetic bugs (\ie, we insert known
+bugs, generate test traces that trigger those bugs, and then examine the MCSes that
+result), and then we analyze newly found bugs in unmodified controllers.
