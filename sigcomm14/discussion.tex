@@ -1,7 +1,7 @@
 % Just realized: b/c of anonymity, the PC can't chastise us for
 % running our system on our own code -- we can't tell them that it's our code!
 \colin{Needs to be updated, e.g. we now have distributed controllers.}
-Our evaluation of \simulator~leaves open several questions, which we discuss
+Our evaluation of \projectname~leaves open several questions, which we discuss
 here.
 
 \colin{Hopefully not necessary:}
@@ -49,10 +49,10 @@ us determine how to best trade off improved simulation fidelity against degraded
 
 \noindent{\bf Will this approach work on all control platforms?} We make limited
 assumptions about the controller platform in use. \num{Two of the three} investigated
-controller platforms were exercised with \simulator~without any modifications.
+controller platforms were exercised with \projectname~without any modifications.
 Limited changes to the controller platforms (e.g., the possibility to override
 {\tt gettimeofday()}) can increase replay accuracy further.
-In general, we expect \simulator~ to support controllers conforming to
+In general, we expect \projectname~to support controllers conforming to
 OpenFlow~1.0 out of the box.
 
 \noindent{\bf Why do you focus on SDN networks?} SDN represents both an
