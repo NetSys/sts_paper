@@ -5,7 +5,7 @@ anything but simple: the SDN control plane (consisting of the network
 operating system and higher layers) is a complicated distributed system that
 must react quickly and correctly to link/controller failures, host migrations,
 policy-configuration changes, and other events.
-All complicated distributed systems are prone to bugs, and from our first-hand familiarity with several important open-source (NOX, POX, Floodlight, Frenetic, ONOS) \emph{and} the three major commercial closed-source controllers, we can attest that SDN control platforms are no exception.
+All complicated distributed systems are prone to bugs, and from our first-hand familiarity with several important open-source (NOX, POX, Floodlight, Frenetic, ONOS) and three major commercial closed-source controllers, we can attest that SDN control platforms are no exception.
 % All complicated distributed systems are prone to bugs and from our first-hand familiarity with several important open-source (NOX, POX, Floodlight, Frenetic, ONOS) and closed-source controllers (Google, VMware, BigSwitch), we can attest that SDN control platforms are no exception. 
 
 When faced with a bug, it is difficult to identify which events (\ie, which
@@ -35,9 +35,10 @@ we discuss the vast amount of related work in \S\ref{sec:related_work}).
 
 Our troubleshooting system, which we call {\projectname} for \projectmeaning,
 consists of 21,000 lines of Python, and is designed to
-integrate with existing QA test infrastructure (which we discuss later). We
-have used \projectname~to analyze bugs in \num{several} of the major open-source SDN
-controllers, as well as one closed-source controller. We first demonstrate the
-viability of our approach by inserting synthetic bugs (\ie, we insert known
+integrate with existing QA test infrastructure (discussed in
+\S\ref{sec:architecture}). We
+have used \projectname~to analyze bugs in \num{five} of the major open-source SDN
+controllers, as well as one closed-source controller. We first evaluate
+our approach by inserting synthetic bugs (\ie, we insert known
 bugs, generate test traces that trigger those bugs, and then examine the MCSes that
-result), and then we analyze newly found bugs in unmodified controllers.
+result), and then demonstrate its viability by analyzing \num{six} newly discovered bugs.

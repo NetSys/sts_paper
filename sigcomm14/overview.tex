@@ -1,38 +1,38 @@
 In this section we review some of the key aspects of SDN systems, starting with the nature of the control plane and then the process of troubleshooting.
 
 \subsection{SDN Control Planes}
-Network operating systems, which are the key component of the SDN software
+Network operating systems, which are the key component of SDN software
 infrastructure, consist of controller software running on a replicated set of
 servers, each running a controller instance. The replicas typically use a
-consensus protocol for leader election and a distributed database to ensure
-consistency of state~\cite{onix}. A controller receives input events and
-statistics from switches (whether physical or virtual), configuration and
-policy changes via a management interface, and sometimes packets from the data
-plane. In response to one or more of these events, the
-controller issues packet forwarding instructions to the switches.  All input
+consensus protocol for leader election and a distributed database to store
+state~\cite{onix}. Controllers receive input events and
+statistics from switches (either physical or virtual), configuration and
+policy changes via a management interface, and possibly packets from the data
+plane. In response these events, the
+controllers issue packet forwarding instructions to switches. All input
 and output events are asynchronous, and individual controllers may fail at any
-time. These controller instances may communicate
+time. The controller instances may communicate
 with each other over the network they manage, or use a separate dedicated
 network. In either case, the controllers may become partitioned.
 
 \subsection{Bugs, QA Testing, and Troubleshooting}
 The goal of a network control plane is to configure the switch forwarding entries so as to
 enforce one or more invariants, such as connectivity (\ie, ensuring that a
-routing path exists between every endpoint pair), isolation and access control (\ie, various limitations on
+route exists between every endpoint pair), isolation and access control (\ie, various limitations on
 connectivity), and virtualization (\ie, ensuring that packets are handled by
-the network's switches in a manner consistent with what would happen in the specified virtual
+in a manner consistent with what would happen in the specified virtual
 network). A bug causes an invariant to be violated. Bugs can occur in the
 configuration management system, \eg~OpenStack~\cite{quantum} (\ie, the
 management system or a human improperly specified their goals), or it
 can occur within the SDN control plane. In this paper we focus on bugs in the
 SDN control plane after it has been given a configuration from the management
-system, largely because the goal of SDN is to simplify the network management
-system and push complexity into the control plane.
+system, largely because the goal of SDN is to pull complexity out from network management
+and push it into the control plane.
 
 In commercial SDN development, software developers work with a team of QA engineers whose
-job it is to find bugs.  The QA engineers run test scenarios that involve
+job it is to find bugs. The QA engineers run automated test scenarios that involve
 sequences of external events such as failures, migrations, or policy changes
-on large network testbeds, either real or emulated.
+on large network testbeds (either real or emulated).
 If they detect an invariant violation, they hand the resulting trace to a developer for analysis.
 
 The space of possible bugs is enormous, and it is often difficult and time
@@ -46,9 +46,11 @@ minute~\cite{Greenberg:2009:VSF:1592568.1592576} and 500 VM migrations per
 hour~\cite{Soundararajan:2010:CBS:1899928.1899941},
 would contain $8.5 \cdot 60 + 500 \approx 1000$ inputs.
 
-The act of {\em troubleshooting} involves identifying which sequence of external events is most directly responsible for triggering the bug; identifying these events helps the developer understand which code paths might hold the offending code. Currently, painstaking manual analysis of logs is the {\em de facto} method of troubleshooting distributed systems in practice.
-{\em Debugging} is then the act of tracking down the error in the code itself,
-given a sequence
-of triggering inputs. The smaller the sequence of triggering inputs, the easier debugging will
-be. Minimizing the sequence of triggering inputs is the goal of our system.
+The act of {\em troubleshooting} involves identifying which sequence of
+external events is most directly responsible for triggering the bug;
+identifying these events helps the developer in the act of {\em debugging},
+\ie~understanding which code paths might
+hold the offending code. Currently, painstaking manual analysis of logs is the {\em de facto} method of troubleshooting distributed systems in practice.
+The smaller the sequence of triggering inputs, the easier debugging will
+be. Minimizing the sequence of inputs is the goal of our system.
 
