@@ -19,15 +19,15 @@ network. In either case, the controllers may become partitioned.
 The goal of a network control plane is to configure the switch forwarding entries so as to
 enforce one or more invariants, such as connectivity (\ie, ensuring that a
 route exists between every endpoint pair), isolation and access control (\ie, various limitations on
-connectivity), and virtualization (\ie, ensuring that packets are handled by
+connectivity), and virtualization (\ie, ensuring that packets are handled
 in a manner consistent with what would happen in the specified virtual
 network). A bug causes an invariant to be violated. Bugs can occur in the
 configuration management system, \eg~OpenStack~\cite{quantum} (\ie, the
 management system or a human improperly specified their goals), or it
 can occur within the SDN control plane. In this paper we focus on bugs in the
-SDN control plane after it has been given a configuration from the management
-system, largely because the goal of SDN is to pull complexity out from network management
-and push it into the control plane.
+SDN control plane after it has been given a configuration,
+largely because the goal of SDN is to push complexity out of network management
+and into the control plane.
 
 In commercial SDN development, software developers work with a team of QA engineers whose
 job it is to find bugs. The QA engineers run automated test scenarios that involve
@@ -35,11 +35,11 @@ sequences of external events such as failures, migrations, or policy changes
 on large network testbeds (either real or emulated).
 If they detect an invariant violation, they hand the resulting trace to a developer for analysis.
 
-The space of possible bugs is enormous, and it is often difficult and time
+The space of possible bugs is enormous, and it is difficult and time
 consuming to link the
 symptom of a bug (\eg, a routing loop) to the sequence of events in the QA
 trace (which includes both the external events and monitoring data on the
-system itself), since QA traces often contain a wealth
+system itself), since QA traces contain a wealth
 of extraneous input events, all of which may appear characteristic of normal
 operating conditions at first glance. Consider that an hour long QA fuzz test, assuming 8.5 network error events per
 minute~\cite{Greenberg:2009:VSF:1592568.1592576} and 500 VM migrations per
