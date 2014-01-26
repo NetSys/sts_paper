@@ -10,40 +10,39 @@ prune irrelevant threads from execution traces~\cite{huang2012lean}, but this st
 involves injecting a single input (the thread schedule) to a single entity (the
 scheduler).
 
-Other than delta debugging, the closest work to ours involves reasoning about
+We characterize the other approaches taken by the troubleshooting literature
+as (i) program flow analysis (ii) instrumentation (tracing),
+(iii) bug detection (invariant checking),
+(iv) replay (of buggy executions), and
+(v) root cause analysis (of network device failures).
+
+\vspace{0.05in}
+\noindent{\bf Program Flow Analysis.} Other than delta debugging,
+the closest work to ours involves reasoning about
 control- and data-flow dependencies
 (which may be recorded at runtime~\cite{Lee:2011:TGR:1993498.1993528}, or
 may be inferred by replaying once with code tracing enabled~\cite{tallam2007enabling})
 in order to reduce the length of deterministic replay executions. These
-techniques are tied to a single language (or even to a single codebase) because of the extensive effort
-required for instrumentation and annotation; we choose to solve a harder
-problem by not considering the internal decision processes of control
-software in order to remain language independent and avoid substantial runtime
-overhead. % Our Peek() algorithm is a
+techniques are tied to a single language because of the extensive effort
+required for instrumentation and annotation; we do not consider the internal
+decision processes of control software in order to remain language
+independent and avoid the overhead of deterministic replay. % Our Peek() algorithm is a
 % contribution in how to infer dependencies without access to software internals
-Moreover, our use of
-functional equivalence relations applied to the relatively small space of
-possible input events allows us to minimize
+Moreover, our application of functional equivalence to the space of
+possible inputs allows us to minimize
 inputs more aggressively, whereas they are forced to consider all control-flow
 and data-flow dependencies in the control software.
-
-We characterize the other approaches taken by the troubleshooting literature
-as (i) instrumentation (tracing),
-(ii) bug detection (invariant checking),
-(iii) replay (of buggy executions), and
-(iv) root cause analysis (of network device failures).
 
 \vspace{0.05in}
 \noindent{\bf Instrumentation.} Unstructured
 log files collected at each node are the most common form of diagnostic information. The goal of
-tracing
-frameworks~\cite{pip,fonseca2007x,Chen02pinpoint:problem,ndb14,barham2004using}
+tracing frameworks~\cite{pip,fonseca2007x,Chen02pinpoint:problem,ndb14,barham2004using}
 is to produce structured logs that can be easily analyzed, such as DAGs tracking the events triggered by
 requests passing through the distributed system. An example within the SDN
 problem space is ndb~\cite{ndb14}, which
 allows users to retroactively examine the paths dataplane packets
-take through OpenFlow networks. Our goal is to filter the signal from the
-noise from such diagnostic information to find the minimum needed
+take through OpenFlow networks. These traces may contain gigabytes of
+extraneous information; our goal is to identify the minimum information needed
 to understand what triggered a given bug.
 
 \vspace{0.05in}
