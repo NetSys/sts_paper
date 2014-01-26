@@ -288,7 +288,7 @@ delayed arbitrarily as it was in \projectname.
 % Discussion of how our gizmos helped.
 } % \eat
 
-\subsection{POX Migration Blackhole} % Cut!
+\subsection{POX Migration Blackhole}
 Having examined the POX code in some depth, we noticed that there might be
 some interesting corner cases related to host migrations.
 We set up randomly generated inputs, included host
@@ -400,13 +400,14 @@ the case-study nevertheless highlights the benefit of
 of a significantly reduced MCS, we were able to diagnose the root cause--a
 complex interaction between the LinkDiscovery, Forwarding, and DeviceManager
 modules.
+
+\eat{
 We subjected the current (unmodified) open
 source version of Floodlight (git commit f37046a) to fuzz testing with a three
 node fully meshed topology and high failure event rates. In an hour-long experiment,
 the fuzzer found an event sequence with $284$ total events
 that results in a 3-node forwarding loop.
 
-\eat{
 Floodlight makes use of multiple kernel level
 threads, and thus can exhibit non-deterministic behavior.
 Thus, it is not surprising that we do not achieve full reproducibility of this
