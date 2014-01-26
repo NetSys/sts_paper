@@ -233,12 +233,12 @@ until \projectname~explicitly tells the process that it may proceed.
 %transition points again during replay
 %until \projectname~gives explicit acknowledgment.
 
-\subsection{Snapshotting}
+\subsection{Checkpointing}
 \label{subsec:snapshotting}
 
 To efficiently implement the Peek() algorithm depicted in
 Figure~\ref{fig:peek} we assume the ability to record snapshots of the state of the
-system under test. We currently implement snapshotting for the POX
+system under test. We currently implement checkpointing for the POX
 controller by telling it to fork() itself and suspend its child,
 cloning the sockets of the parent
 (which constitute shared state between the parent and child processes,
@@ -251,8 +251,8 @@ would also need to implement a consistent cut
 algorithm~\cite{Chandy:1985:DSD:214451.214456}, which is available in several open source
 implementations~\cite{ansel2009dmtcp}.
 
-If implementers of technique do not choose to use a snapshotting mechanism,
-they can still implement Peek() by replaying the prefix for each input
+If developers do not choose to employ checkpointing,
+they can use our implementation of Peek() that replays the prefix for each input
 interval from the beginning of the trace, thereby increasing replay runtime by
 a factor of $n$. Alternatively, they can
 avoid Peek() and just employ some of the event scheduling heuristics described in
@@ -260,10 +260,10 @@ avoid Peek() and just employ some of the event scheduling heuristics described i
 
 Beyond its use in Peek(), snapshotting has three advantages as a primitive
 in \projectname. As mentioned in \S\ref{subsec:complexity}, replaying from a
-recent snapshot rather than the beginning of the trace can reduce runtime.
-By shortening the replay time, snapshotting coincidentally helps cope
+recent checkpoint rather than the beginning of the trace can reduce runtime.
+By shortening the replay time, checkpointing coincidentally helps cope
 with the effects of non-determinism, as there is less opportunity for
-divergence in timing. Lastly, snapshotting can improve the runtime of delta
+divergence in timing. Lastly, checkpointing can improve the runtime of delta
 debugging, since many of the subsequences chosen throughout delta debugging's
 execution share common input prefixes.
 
