@@ -20,8 +20,9 @@ as (i) program flow analysis (ii) instrumentation (tracing),
 \noindent{\bf Program Flow Analysis.} Other than delta debugging,
 the closest work to ours involves reasoning about
 control- and data-flow dependencies
-(which may be recorded at runtime~\cite{Lee:2011:TGR:1993498.1993528}, or
-may be inferred by replaying once with code tracing enabled~\cite{tallam2007enabling})
+(which may be recorded at runtime~\cite{Lee:2011:TGR:1993498.1993528},
+statically inferred~\cite{huang2012lean}, or
+inferred by replaying once with code tracing enabled~\cite{tallam2007enabling})
 in order to reduce the length of deterministic replay executions. These
 techniques are tied to a single language because of the extensive effort
 required for instrumentation and annotation; we do not consider the internal
