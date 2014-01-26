@@ -15,6 +15,13 @@ POX list removal & 2 switch mesh & 20/20 & 2 \\
 % Original: config/eugene_epsilon_replay.py
 % MCS: config/eugene_epsilon_mcs.py
 POX in-flight blackhole & 2 switch mesh & 15/20 [20/20*] & 11 \\
+% Total inputs: 26
+% With DP events: 68/25
+% Original: 7ba95ed82ca4e32f12ab511d9c4301dbac2c59d5
+% MCS: 399cf861db87a65e600283d9ae7760400c4676e2
+% Updated: updated_debug_branch_loop/
+% TODO(cs): move to "known bugs"?
+POX migration blackhole & 4 switch mesh & 20/20* & 3 \\
 % Total inputs: 29
 % With DP events: 117/3
 % fuzz_pox_4mesh_blackhole
@@ -31,12 +38,7 @@ Floodlight loop & 3 switch mesh & 15/50 & 36 \\
 \hline
 Known Bugs & - & - & - \\
 \hline
-% Total inputs: 26
-% With DP events: 68/25
-% Original: 7ba95ed82ca4e32f12ab511d9c4301dbac2c59d5
-% MCS: 399cf861db87a65e600283d9ae7760400c4676e2
-% Updated: updated_debug_branch_loop/
-POX migration blackhole & 4 switch mesh & 20/20* & 3 \\
+Floodlight example failover bug & 2 switch mesh & N/A & 2 \\
 % TBD: Ahmed
 ONOS controller partition & TBD & TBD & TBD \\
 ONOS forgotten flows & TBD & TBD & TBD \\
@@ -97,22 +99,22 @@ logging interposition enabled.}}
 \end{table*}
 
 Our goal in this section is to show that \projectname~successfully produces
-minimized event traces that are useful for troubleshooting.
-The gold standard for evaluating \projectname~would be a large scale A/B test~\cite{neyman}
+minimized event traces that are useful for troubleshooting. The
+gold standard for evaluating \projectname~would be a large scale A/B test~\cite{neyman}
 showing how much time it takes for developers to troubleshoot bugs found in
 QA clusters with and without minimized event traces. Unfortunately
 expert developers are scarce, and their skills vary widely; to achieve statistical significance we would
-need tens to hundreds of developers to spend substantial time on each bug we find.
+need hundreds of developers to spend substantial time on each bug we find.
 %We also lack access to bugs found by QA testbeds of the scale and complexity
 %used to test production controller software.
 
 We instead take two approaches to evaluating \projectname.
-First, we need bugs to demonstrate \projectname's effectiveness in
-troubleshooting. We used \projectname~to find new bugs in three open source and one proprietary SDN control platform:
-\colin{TODO: get LOC for each controller}
-ONOS~\cite{ONOS} (Java), POX~\cite{pox} (Python), NOX~\cite{nox} (C++), and
-Floodlight~\cite{bigswitch} (Java), and debugged these with and
-without the help of \projectname. Second, we demonstrate the
+First, we need to demonstrate \projectname's viability in
+troubleshooting real bugs. We used \projectname~to find new bugs in \num{five} open source
+SDN control platforms:
+ONOS~\cite{ONOS} (Java), POX~\cite{pox} (Python), NOX~\cite{nox} (C++),
+Pyretic~\cite{frenetic} (Python), and Floodlight~\cite{bigswitch} (Java), and
+debugged these with \num{and without} the help of \projectname. Second, we demonstrate the
 boundaries of where \projectname~works well and where it does not by using it to
 troubleshoot synthetic bugs that span a range of bug types encountered in
 practice. Throughout our evaluation we strive to qualitatively approximate A/B testing
@@ -121,38 +123,39 @@ with in-depth case studies on the troubleshooting process.
 We show a high-level overview
 of our results in Table~\ref{tab:case_studies}, and
 illustrate in detail how \projectname~found their minimal causal sequences
-in the rest of this section.\footnote{We note that the example Floodlight
-described in \S\ref{sec:approach} was documented in open source code, but
-the code used to implement distribution is closed source, making it impossible
-to reproduce this bug.} Interactive visualizations and replayable event traces
+in the rest of this section. Interactive visualizations and replayable event traces
 for all of these case studies are publicly available (anonymized).
+
+\subsection{New Bugs}
 
 % \href{http://ucb-sts.github.com/experiments}{ucb-sts.github.com/experiments}.
 
-\subsection{POX List Removal}
-The first SDN control platform we examined was POX, the successor of NOX. POX is
-a single-machine control platform intended primarily for research prototyping
-and educational use (\ie~not large scale production use). Nevertheless, POX has
-been deployed on real networks, and has a growing set of users.
-
+\subsubsection{POX List Removal}
+The first SDN control platform we examined was POX. %the successor of NOX. POX is
+%a single-machine control platform intended primarily for research prototyping
+%and educational use (\ie~not large scale production use). Nevertheless, POX has
+%been deployed on real networks, and has a growing set of users.
 The POX application we ran was a layer two routing module (`l2\_multi') that
-learns host locations and installs exact match per-flow paths between known hosts using a variant of the
-Floyd-Warshall algorithm. It depends on a discovery module, which sends
-LLDP packets to discovery links in the network, and a spanning tree module,
-which configures switches to only flood packets for unknown hosts along a
-spanning tree.
+learns host locations and installs exact match per-flow paths between known
+hosts, after discovering links in the network. %, and a spanning tree module,
+%which configures switches to only flood packets for unknown hosts along a
+%spanning tree.
 
-We start with a relatively trivial bug to illustrate that
+We start with a simple bug to illustrate that
 \projectname~is useful for early stage development and testing.
 We employed \projectname~to generate random sequences of
 inputs, and found after some time that POX threw an exception due to
 attempting to remove an element from a list where the element was not present.
 
 There were $69$ randomly generated inputs in the trace leading up to the
-exception. We invoked \projectname~to identify a two element MCS:
+exception. We invoked \projectname~to identify a two element MCS (runtime
+shown in Figure~\ref{fig:list_runtime}):
 a failure of a connected switch followed by a reboot/initialization of the same switch.
-The nearly logarithmic runtime
-behavior of \projectname~for this case is shown in Figure~\ref{fig:list_runtime}.
+The stack trace made it easy to identify the code path that
+immediately preceded the exception, and with
+the knowledge that the initial triggering event was a switch failure we were able to
+find why the original element was inserted into the list and fix the
+problem within 15 minutes.
 
 \begin{figure}[t]
     %\hspace{-10pt}
@@ -160,6 +163,7 @@ behavior of \projectname~for this case is shown in Figure~\ref{fig:list_runtime}
     \caption[]{\label{fig:list_runtime} Minimizing the POX list remove trace.}
 \end{figure}
 
+\eat{ % -----------------------------------
 Apparently the developers of POX had not anticipated this particular event
 sequence. Given the rarity of switch recovery events, and the tediousness of
 writing unit tests for scenarios such as this
@@ -174,11 +178,12 @@ surprising.
 at a high semantic level,
 and the minimized event
 trace it produced made for a simple integration test.
+} % -----------------------------------
 
 %We illustrate type errors to show how STS is a useful framework for exploring
 %code paths that you forget to unit tests.
 
-\subsection{POX In-flight Blackhole}
+\subsubsection{POX In-flight Blackhole}
 We discovered the next bug after roughly 20 runs of randomly generated inputs.
 We noticed that \projectname~reported a persistent blackhole while POX was bootstrapping its
 discovery of link and host locations. There were $29$ inputs in the initial trace, and \projectname~returned a $11$ input
@@ -198,14 +203,14 @@ triggering events were two
 in-flight packets (set in motion by prior traffic injection events):
 POX first incorrectly learned a host location as a result of the first in-flight
 packet showing up immediately after POX discovered that port belonged to
-a switch-switch link -- apparently the code had not accounted for the
-possibility of in-flight packets directly following link discovery -- and
+a switch-switch link---apparently the code had not accounted for the
+possibility of in-flight packets directly following link discovery---and
 then as a result the
 second in-flight packet
 POX failed to return out of a nested conditional that would have
 otherwise prevented the blackholed routing entries from being installed.
 
-\eat{ % Maybe add this in -- it goes into much more depth.
+\eat{ % Maybe add this in -- it goes into much more depth. % -----------------------------------
 We encountered this bug
 on a simple topology, depicted in Figure~\ref{fig:simple_topo}, consisting of
 two hosts A and B
@@ -286,9 +291,10 @@ delayed arbitrarily as it was in \projectname.
 %$IPV6$ pings), so that there were no in-flight flow notifications to POX to
 %correct the situation.
 % Discussion of how our gizmos helped.
-} % \eat
+} % \eat % -----------------------------------
 
-\subsection{POX Migration Blackhole}
+\subsubsection{POX Migration Blackhole}
+\colin{Move to "known bugs" section?}
 Having examined the POX code in some depth, we noticed that there might be
 some interesting corner cases related to host migrations.
 We set up randomly generated inputs, included host
@@ -297,14 +303,15 @@ $29$ inputs.
 Before investigating the bug we
 ran \projectname, and ended up with a $3$ input MCS (shown
 in Figure~\ref{fig:pox_migration}): a packet injection from a
-host A, followed
-by a packet injection by a host B towards A, followed by a host migration of host A. This made it immediately
+host (`A'), followed
+by a packet injection by another host (`B') towards A, followed by a host migration of A. This made it immediately
 clear what the problem was. After learning the location of A and installing a
 flow from B to A, the routing entries in the path were never removed after A
 migrated, causing all traffic from B to A to blackhole until the routing
-entries expired. We did not know it at the time, but this was a known problem,
-and this particular routing module did not support host migrations. Nonetheless, this
-case demonstrates how the MCS alone can point to the root cause.
+entries expired.
+%We did not know it at the time, but this was a known problem,
+%and this particular routing module did not support host migrations. Nonetheless, this
+%case demonstrates how the MCS alone can point to the root cause.
 
 \begin{figure}[t]
     %\hspace{-10pt}
@@ -315,22 +322,23 @@ case demonstrates how the MCS alone can point to the root cause.
 
 \subsection{NOX Discovery Loop}
 
-\begin{figure}[t]
-    %\hspace{-10pt}
-    \includegraphics[width=3.25in]{../graphs/runtime/nox_loop.pdf}
-    \caption[]{\label{fig:nox_discovery} Minimizing the NOX discovery loop.}
-\end{figure}
+\colin{TODO: rerun this! Need to try to replay it, or explain better why it
+didn't replay}
+%\begin{figure}[t]
+%    %\hspace{-10pt}
+%    \includegraphics[width=3.25in]{../graphs/runtime/nox_loop.pdf}
+%    \caption[]{\label{fig:nox_discovery} Minimizing the NOX discovery loop.}
+%\end{figure}
 
-We tested NOX on a four-node mesh, and discovered a
-routing loop between three switches
-within
+Next we tested NOX on a four-node mesh, and discovered a
+routing loop between three switches within
 roughly 20 runs of randomly generated inputs.
 
 Our initial input size was 68 inputs, and
-\projectname~returned an 18 input MCS.\footnote{We had difficulty replaying
-the final MCS. The reason seems clear: this bug depends on the
+\projectname~returned an 18 input MCS.\footnote{\num{We had difficulty
+replaying} the final MCS. The reason seems clear: this bug depends on the
 order NOX discovers links, which in turns depends on hashes computed from random memory
-addresses its discovery modules LLDP selection algorithm!}
+addresses its discovery modules LLDP selection algorithm}
 Our approach to debugging was to
 reconstruct from the MCS how NOX should have installed routes, then compare
 how NOX actually installed routes.
@@ -354,7 +362,7 @@ minimized trace, it would have taken much
 longer to trace through the subtle sequence of events that were necessary for
 setting up the network in precisely the right conditions.
 
-\eat{
+\eat{ % -----------------------------------
 The next SDN control platform we examined
 was NOX, the original OpenFlow controller.
 NOX is also a single machine control platform, but unlike POX it has been used
@@ -375,11 +383,9 @@ Our initial input size was $150$ inputs, a minute's worth of execution.
 MCS were $3$ dataplane packet drops mid-way through the execution, interspersed
 with $14$ traffic injections. We are in the process of pinpointing the
 exact root cause with NOX developers, based on the $18$ input MCS.
-}
-
+} % -----------------------------------
 
 \subsection{Floodlight discovery loop.}
-
 %\num{Need runtime graph.}
 
 We applied \projectname~to Floodlight's routing application.
@@ -401,7 +407,7 @@ of a significantly reduced MCS, we were able to diagnose the root cause--a
 complex interaction between the LinkDiscovery, Forwarding, and DeviceManager
 modules.
 
-\eat{
+\eat{ % ------------------
 We subjected the current (unmodified) open
 source version of Floodlight (git commit f37046a) to fuzz testing with a three
 node fully meshed topology and high failure event rates. In an hour-long experiment,
@@ -429,13 +435,34 @@ not have deterministic control over.
 The bug appears to depend on fine-grained thread-level races
 conditions that are difficult to guarantee. Still, \projectname was instrumental
 in pointing out a previously unknown bug, and reducing the input size.
-}
+} % ----------------------
+
+\subsection{Known Bugs}
+
+\subsubsection{Floodlight example failover bug}
+
+We were able to reproduce the problem shown in Figure~\ref{fig:example} with
+\projectname. We ran two Floodlight controller
+instances, connected to two simulated switches, and injected 200 extraneous link
+and switch failures, with the controller crash and switch connect event\footnote{We used a switch connect
+event rather than a link failure event for logistical reasons, but both
+can trigger the race condition} that triggered the blackhole interleaved among them.
+We were able to succesfully isolate the 2-event MCS.
+%On ten repeated runs, the algorithm successfully pruned all extraneous
+%inputs despite non-determinism in the Floodlight internal events. With full determinism and
+%interposition, we expect that the algorithm should work well for less
+%fabricated cases.
+
+\subsection{Synthetic Bugs}
+
+\url{https://docs.google.com/document/d/1l4sbpLhd7wOMhL-u6Q-zlPS5YQMLqk5ILqU7RhUxdgA/edit}.
 
 \subsection{Overall Results.}
 
 The overall results of our case studies are
 shown in Table~\ref{tab:case_studies}.
-We show the initial input size and MCS input size in the last two columns.
+\num{We show the initial input size and MCS input size in the last two
+columns.}
 For the Replay Success Rate column we
 repeatedly replayed the original unpruned event trace, and measured how often we
 were able to reproduce the policy violation. There was indeed non-determinism
@@ -443,14 +470,17 @@ in some cases, especially Floodlight. For the specific case of
 POX in-flight blackhole, we were able to eliminate the relevant
 non-determinism by employing multiplexed sockets, overriding {\tt
 gettimeofday()}, and waiting on
-POX's logging messages. We expect that we would see similar improvements if we
-applied these techniques to Floodlight.
+POX's logging messages. \num{We expect that we would see similar improvements if we
+applied these techniques to Floodlight.}
 
-We measured the runtime of \projectname~for these case studies in Figures $6\;\&\;8-11$.
-While some instances ran in logarithmic time, the worst case was minimizing NOX discovery loop,
-which took more than $5.5$ hours. Nonetheless, we believe that even long minimization runtime
-is preferable to spending software developer's time on manual
-diagnosis.
+We measured the runtime of \projectname~for these case studies in Figures
+\num{$6\;\&\;8-11$}.
+While some instances ran in logarithmic time, the worst case was minimizing
+the Floodlight loop,
+which took more than $8.5$ hours.
+%Nonetheless, we believe that even long minimization runtime
+%is preferable to spending software developer's time on manual
+%diagnosis.
 
 %\subsection{Overhead}
 %
@@ -483,7 +513,7 @@ cut $5\%$ of links, and process POX's response to the link failures. As shown in
 Figure~\ref{fig:scaling}, \projectname's processing time scales roughly
 linearly up to $2464$ switches (a 45-pod FatTree). At that point, the machine
 started thrashing, but this limitation could easily be removed by running on a
-machine with more than 6GB of memory.
+machine with >6GB of memory.
 
 Note that \projectname~is not designed for simulating high-throughput dataplane
 traffic; we only forward what is necessary to exercise the controller
@@ -557,7 +587,7 @@ early on an internal event that is in fact going to occur shortly after.
 
 % ------------------------------------- %
 %    OLD TEXT
-\eat{
+\eat{ % -----------------------------------
 
 % Just realized: b/c of anonymity, the PC can't chastise us for
 % running our system on our own code -- we can't tell them that it's our code!
@@ -641,7 +671,7 @@ simulator was able to identify the correct correctness violation.
 \noindent{\bf Floodlight: Distributed controller failover race condition}
 We were able to reproduce the problem shown in Figure~\ref{fig:example} in our
 simulation environment,\footnote{The code is publicly available}
-and apply \projectname{} successfully.
+and apply \projectname~successfully.
 We modified the Floodlight software to provide an interface for extracting its
 physical view. We did not interpose on internal events of the controller, but instead used a
 heuristic to wait for $.5$ seconds between injecting inputs to allow the
@@ -811,4 +841,4 @@ account for this class of policies.
 \colin{reviewer B: in fact, in addition to temporal properties, the
 correspondence checking algorithm cannot verify any properties involving
 individual links since it only accounts for externally observable behavior!}
-}
+}    % -----------------------------------
