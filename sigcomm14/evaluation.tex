@@ -46,26 +46,10 @@ ONOS forgotten flows & TBD & TBD & TBD \\
 Synthetic Bugs & - & - & - \\
 \hline
 Load Balancer Flow Table Space & TBD & TBD & TBD \\
-% Jefferson
 Ignored Bad OpenFlow args & TBD & TBD & TBD \\
-% "Risk"
 Overlapping flow entries & TBD & TBD & TBD \\
-% Notes:
-% Apps:
-% - NAT
-% - blockmac
-% - ip loadbalancer
-% - forwarding
-% - spanning tree
-% Just forget to specify priorities correctly.
-% This "class" of bug is highly reactive, i.e. dependent on dataplane flows.
-%
-% Create a simple app that listens to PacketIns. Installs drop rule if
-% certain MAC.
-% Problem: HSA doesn't deal with priorities correctly ATM.
 Decision based on last byte of TCP SYN & TBD & TBD & TBD \\
 Timer misfire & TBD & TBD & TBD \\
-% Already have an experiment, documented in gdoc
 Algorithm misimplentation & TBD & TBD & TBD \\
 % topo_proactive notes:
 %  - It works on mininet with just ARP
@@ -75,22 +59,13 @@ Algorithm misimplentation & TBD & TBD & TBD \\
 Forgotten flow entries & TBD & TBD & TBD \\
 % Could also use topo_proactive.
 Multithreaded race condition & TBD & TBD & TBD \\
-% Spawn a bunch of threads, and set up a quasi deterministic order that causes
-% a crash. E.g. if 7th thread gets 15th PacketIn, crash.
 Memory corruption & TBD & TBD & TBD \\
-% -= 1 to a counter that should never be non-negative. But it is later, then
-% crash.
 Failover bug & TBD & TBD & TBD \\
-% ONOS
 Consistency misunderstanding & TBD & TBD & TBD \\
-% ONOS
 Misconfigured daemon & TBD & TBD & TBD \\
-% ONOS. Cause it to crash every once in awhile.
 Latency spike & TBD & TBD & TBD \\
 Invalid sleep value & TBD & TBD & TBD \\
-% Latency spike could actually be folded into this -> longer sleep than
-% expected -> queuing -> failover timers go off incorrectly.
-Non-deterministic TCAMs -> transient tenant isolation brach & TBD & TBD & TBD \\
+Non-deterministic TCAMs -> transient tenant isolation breach & TBD & TBD & TBD \\
 \end{tabular}
 \caption{Overview of Case Studies. \newline
 \textmd{*with multiplexed sockets, overridden {\tt gettimeofday()}, and
