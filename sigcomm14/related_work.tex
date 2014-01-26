@@ -1,14 +1,12 @@
 Our goal is to transform
-event traces (`test cases') into minimal sequences of inputs.
-In order to achieve this goal we are as far we know the first to
-extend delta debugging~\cite{Zeller:1999:YMP:318773.318946,Zeller:2002:SIF:506201.506206}
-to a distributed system, where there is an ongoing sequence of inputs
-involving multiple actors rather than a single flat file fed to a single point of
+event traces (``test cases'') into minimal sequences of inputs.
+To achieve this, we are the first, to our knowledge, to extend extend delta debugging~\cite{Zeller:1999:YMP:318773.318946,Zeller:2002:SIF:506201.506206}
+to a distributed system in which there is an ongoing sequence of inputs
+involving multiple entities rather than a single flat file fed to a single point of
 execution. Delta debugging has been applied to minimize thread context switches
-leading up to race conditions~\cite{choi2002isolating}, and to
-prune irrelevant threads from execution traces~\cite{huang2012lean}, but this still
-involves injecting a single input (the thread schedule) to a single entity (the
-scheduler).
+leading up to race conditions~\cite{choi2002isolating} and to
+prune irrelevant threads from execution traces~\cite{huang2012lean}, but these
+applications still involve injecting a single input (the thread schedule) to a single entity (the scheduler).
 
 We characterize the other approaches taken by the troubleshooting literature
 as (i) program flow analysis (ii) instrumentation (tracing),
@@ -25,9 +23,9 @@ statically inferred~\cite{huang2012lean}, or
 inferred by replaying once with code tracing enabled~\cite{tallam2007enabling})
 in order to reduce the length of deterministic replay executions. These
 techniques are tied to a single language because of the extensive effort
-required for instrumentation and annotation; we do not consider the internal
-decision processes of control software in order to remain language
-independent and avoid the overhead of deterministic replay. % Our Peek() algorithm is a
+required for instrumentation and annotation.  To remain language independent and avoid the
+overhead of deterministic replay, we do not consider the internal
+decision processes of control software. % Our Peek() algorithm is a
 % contribution in how to infer dependencies without access to software internals
 Moreover, our application of functional equivalence to the space of
 possible inputs allows us to minimize
@@ -43,7 +41,7 @@ requests passing through the distributed system. An example within the SDN
 problem space is ndb~\cite{ndb14}, which
 allows users to retroactively examine the paths dataplane packets
 take through OpenFlow networks. Tools like ndb allow developers to understand
-how, when, and where the dataplane broke; in contrast we focus on making it
+how, when, and where the dataplane broke. In contrast, we focus on making it
 easier for developers to understand what caused the control software to
 misconfigure the network. %in the first place.
 
