@@ -447,7 +447,7 @@ instances, connected to two simulated switches, and injected 200 extraneous link
 and switch failures, with the controller crash and switch connect event\footnote{We used a switch connect
 event rather than a link failure event for logistical reasons, but both
 can trigger the race condition} that triggered the blackhole interleaved among them.
-We were able to succesfully isolate the 2-event MCS.
+We were able to successfully isolate the 2-event MCS.
 %On ten repeated runs, the algorithm successfully pruned all extraneous
 %inputs despite non-determinism in the Floodlight internal events. With full determinism and
 %interposition, we expect that the algorithm should work well for less
