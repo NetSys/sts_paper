@@ -1,15 +1,16 @@
 Given a log $(E_L, T_L, C_L)$ exhibiting an invariant violation,
-our goal is to identify its MCS. Achieving this goal involves two tasks:
-searching for subsequences of $E_L$, and searching for replay timings for those
+our goal is to identify its MCS. This involves two tasks:
+searching for subsequences of $E_L$ \barath{Don't we want to say "searching for
+subsequences of $E_L$ that still violate the invariant"?}, and searching for replay timings for those
 subsequences.
 
-We illustrate the mechanics of our approach by describing an example bug in the Floodlight
-open source control platform~\cite{floodlight_bug}. Floodlight is distributed across
+We introduce our approach using an example bug in the Floodlight open-source control
+platform~\cite{floodlight_bug}. Floodlight is distributed across
 multiple controllers for high availability, and provides support for
 virtualization. Switches maintain one hot connection to a master controller and
 several cold connections to replica controllers. The \emph{master} holds the
 authority to modify the configuration of switches, while the other
-controllers are in \emph{backup} mode and do not perform any changes to the
+controllers are in \emph{backup} mode and do not change the
 switch configurations unless they detect that the master has crashed.
 
 \begin{figure}[t]
@@ -20,7 +21,7 @@ switch configurations unless they detect that the master has crashed.
              dots, and the dotted message line depicts a timeout.}
 \end{figure}
 
-The failover logic in Floodlight is not implemented correctly, leading to the
+The failover logic in Floodlight is incorrect, leading to the
 following race condition\footnote{Note that this issue was
 originally documented by the developers of Floodlight~\cite{floodlight_bug}.} depicted in
 Figure~\ref{fig:example}:
@@ -30,8 +31,8 @@ the backup role and will not take responsibility for updating the switch
 flow table (E5). At some point, a backup notices the master failure and
 elevates itself to the master role (E6). The new master will proceed to manage
 the switch, but without ever clearing the routing entries for
-the failed link (resulting in a persistent blackhole). In this example, the MCS
-is the conjunction of the two external inputs (E1,E3) in conjunction.
+the failed link, resulting in a persistent blackhole. In this example, the MCS
+is the conjunction of the two external inputs (E1,E3).
 
 \subsection{Searching for Subsequences}
 \label{subsec:delta_debugging}
@@ -40,21 +41,19 @@ Checking random subsequences of $E_L$ would be one viable but inefficient
 approach to achieving our first task. We can do better by leveraging a
 divide-and-conquer search technique from the software engineering community:
 the delta
-debugging algorithm~\cite{Zeller:1999:YMP:318773.318946} provides a provably
-correct means to isolating fault-inducing inputs. In our case, we use delta
-debugging to iteratively select subsequences of $E_L$, replay each
-subsequence with
-some timing $T$, and check whether the bug persists. If the bug persists,
-delta debugging ignores the
+debugging algorithm~\cite{Zeller:1999:YMP:318773.318946} provides a provably-correct
+\barath{Do we want to say provably correct here given that the proof doesn't really apply
+to us?} means of isolating fault-inducing inputs. In our case, we use delta
+debugging to iteratively select subsequences of $E_L$ and replay each
+subsequence with some timing $T$. If the bug persists, delta debugging ignores the
 other inputs, and proceeds with the search for an MCS within this subsequence.
 In what follows, we use the term {\em delta debugging} to refer to our algorithm for finding relevant subsequences.
-The delta debugging algorithm is shown in
-Figure~\ref{fig:ddmin} (with `$test$' replaced by `$replay$').
+The delta debugging algorithm is shown in Figure~\ref{fig:ddmin} (with `$test$' replaced by `$replay$').
 
-It is worth noting that the input subsequences chosen by delta debugging are not always
+The input subsequences chosen by delta debugging are not always
 valid. Of the possible inputs sequences we generate (shown in
 Table~\ref{tab:inputs}), it is not sensible to replay a recovery event without a
-preceding failure event, nor is it sensible to replay a host migration
+preceding failure event, nor to replay a host migration
 event without modifying its starting position when a preceding host
 migration event has been pruned. Our implementation of delta debugging therefore treats
 failure/recovery events as atomic pairs, and updates initial host locations
@@ -64,17 +63,16 @@ ensuring that the delta debugging algorithm finds a minimal causal
 subsequence. The algorithm we employ~\cite{Zeller:1999:YMP:318773.318946}
 makes three
 assumptions about inputs: monotonicity, unambiguity, and consistency.
-An event trace that violates monotonicity may contain events that `undo` the
+An event trace that violates monotonicity may contain events that ``undo'' the
 invariant violation triggered by the MCS, and may therefore exhibit slightly
 inflated MCSes. An event trace that violates unambiguity may exhibit multiple MCSes; delta debugging
 will return one of them. The most important assumption is consistency, which
 requires that the test outcome can always be determined.
-We do not
-guarantee monotonicity nor unambiguity, but we guarantee consistency by
+We guarantee neither monotonicity nor unambiguity, but we guarantee consistency by
 ensuring that subsequences are always semantically valid by applying the two
 heuristics described above. Zeller wrote a follow-on
 paper~\cite{Zeller:2002:SIF:506201.506206} that removes the need for these
-assumptions, but incurs an additional factor of $n$ in complexity in doing so. }
+assumptions, but incurs an additional factor of $n$ in complexity in doing so.}
 These two heuristics account for validity of all network
 events shown in Table~\ref{tab:inputs}. We do not yet
 support network policy changes as events, which have more complex semantic
@@ -84,7 +82,6 @@ expensive version of delta debugging to account for
 inconsistency~\cite{Zeller:2002:SIF:506201.506206}.}
 
 \begin{figure*}[t]
-\caption{\colin{Cut if we need space} Automated Delta Debugging Algorithm From~\cite{Zeller:1999:YMP:318773.318946}}
 \begin{boxedminipage}{\textwidth}
 Input: $\cfail$ s.t. $\cfail$ is a trace and $\test(\cfail) = \DFAIL$. Output: $\dfail
 = \ddmin(\cfail)$ s.t. $\dfail \subseteq
@@ -111,6 +108,7 @@ hold.
 \end{center}
 \end{boxedminipage}
 \label{fig:ddmin}
+\caption{\colin{Cut if we need space} Automated Delta Debugging Algorithm From~\cite{Zeller:1999:YMP:318773.318946}}
 \end{figure*}
 
 \eat{ % Original O(n^2) algorithm
