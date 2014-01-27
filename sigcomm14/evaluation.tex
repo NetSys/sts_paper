@@ -353,12 +353,18 @@ exact root cause with NOX developers, based on the $18$ input MCS.
 } % -----------------------------------
 
 \subsection{Floodlight discovery loop.}
-%\num{Need runtime graph.}
+
+\begin{figure}[t]
+    %\hspace{-10pt}
+    \includegraphics[width=3.25in]{../graphs/runtime/floodlight_loop.pdf}
+    \caption[]{\label{fig:fl_loop} Minimizing the Floodlight loop.}
+\end{figure}
 
 We applied \projectname~to Floodlight's routing application.
 In about 30 minutes, our fuzzing uncovered a
 117 input sequence that caused a persistent 3-node forwarding loop.
-\projectname~reduced the sequence to 13 input events in 324 replays and 8.5 hours.
+\projectname~reduced the sequence to 13 input events in 324 replays and 8.5
+hours (runtime shown in Figure~\ref{fig:fl_loop}).
 
 We repeatedly replayed the 13 event MCS, while successively adding
 instrumentation and increasing the log level each run. After about 15 replay
