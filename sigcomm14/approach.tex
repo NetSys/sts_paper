@@ -1,8 +1,7 @@
 Given a log $(E_L, T_L, C_L)$ exhibiting an invariant violation,
 our goal is to identify its MCS. This involves two tasks:
-searching for subsequences of $E_L$ \barath{Don't we want to say "searching for
-subsequences of $E_L$ that still violate the invariant"?}, and searching for replay timings for those
-subsequences.
+searching through subsequences of $E_L$, and searching for replay timings for those
+subsequences that if possible trigger the original invariant violation.
 
 We introduce our approach using an example bug in the Floodlight open-source control
 platform~\cite{floodlight_bug}. Floodlight is distributed across
@@ -40,10 +39,8 @@ is the conjunction of the two external inputs (E1,E3).
 Checking random subsequences of $E_L$ would be one viable but inefficient
 approach to achieving our first task. We can do better by leveraging a
 divide-and-conquer search technique from the software engineering community:
-the delta
-debugging algorithm~\cite{Zeller:1999:YMP:318773.318946} provides a provably-correct
-\barath{Do we want to say provably correct here given that the proof doesn't really apply
-to us?} means of isolating fault-inducing inputs. In our case, we use delta
+the delta debugging algorithm~\cite{Zeller:1999:YMP:318773.318946} provides a % provably-correct
+means of isolating fault-inducing inputs. In our case, we use delta
 debugging to iteratively select subsequences of $E_L$ and replay each
 subsequence with some timing $T$. If the bug persists, delta debugging ignores the
 other inputs, and proceeds with the search for an MCS within this subsequence.
@@ -239,8 +236,7 @@ applied programmatically to event traces.
 We show the fields we mask in Table~\ref{tab:fingerprints}. We consider an
 internal event $i'$ observed in the replay
 equivalent (in the sense of inheriting all of its happens-before relations) to an internal
-event $i$ from the original log iff \barath{Is this "if and only if"?  If so, maybe expand
-it.} all unmasked fields have the same value
+event $i$ from the original log if and only if all unmasked fields have the same value
 and $i$ occurs between $i'$'s preceding and succeeding inputs in the
 happens-before relation.
 
@@ -428,22 +424,19 @@ the controllers quickly converge to a single state (either ``Master'' or
 \subsection{Complexity}
 \label{subsec:complexity}
 
-The delta debugging algorithm terminates after $O(\log n)$
-invocations of $replay$ in the best case, where $n$ is the number of inputs in the original
-trace~\cite{Zeller:1999:YMP:318773.318946}. In the worst case, delta debugging
-has $O(n)$ complexity. \barath{Isn't this abusing big-O notation?  Is the intent here to
-say that delta debugging is $\Omega(\log n)$ and $O(n)$?}
+The delta debugging algorithm terminates after $\Omega(\log n)$
+invocations of $replay$ in the best case, and $O(n)$ in the worst case. where $n$ is the number of inputs in the original
+trace~\cite{Zeller:1999:YMP:318773.318946}.
 
-Each $replay$ takes $O(n)$ time
+Each invocation of $replay$ takes $O(n)$ time
 (one iteration for Peek(), and one iteration for the replay itself),
-for an overall runtime of $O(n \log n)$ replayed inputs. \barath{The preceding sentence
-doesn't make sense to me.}
+for an overall runtime of $O(n \log n)$ replayed inputs.
 The runtime can be decreased by parallelizing delta debugging:
 speculatively replaying subsequences in parallel, and joining the results.
 Storing periodic snapshots throughout testing can also reduce runtime, as it
 allows us to replay starting from a recent snapshot rather than the beginning of the
 trace. \barath{But doesn't this approach break due to non-determinism?  Sometimes we want
-a replay run to be different from a previous replay run...}
+a replay run to be different from a previous replay run...} 
 
 \eat{
 SDN platform developers can reduce the probability that the replay algorithm
