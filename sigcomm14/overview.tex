@@ -1,14 +1,14 @@
 In this section we review some of the key aspects of SDN systems, starting with the nature of the control plane and then the process of troubleshooting.
 
 \subsection{SDN Control Planes}
-Network operating systems, which are the key component of SDN software
+Network operating systems, the key component of SDN software
 infrastructure, consist of controller software running on a replicated set of
-servers, each running a controller instance. The replicas typically use a
+servers each running a controller instance. The replicas typically use a
 consensus protocol for leader election and a distributed database to store
 state~\cite{onix}. Controllers receive input events and
 statistics from switches (either physical or virtual), configuration and
 policy changes via a management interface, and possibly packets from the data
-plane. In response these events, the
+plane. In response to these events, the
 controllers issue packet forwarding instructions to switches. All input
 and output events are asynchronous, and individual controllers may fail at any
 time. The controller instances may communicate
@@ -40,13 +40,14 @@ consuming to link the
 symptom of a bug (\eg, a routing loop) to the sequence of events in the QA
 trace (which includes both the external events and monitoring data on the
 system itself), since QA traces contain a wealth
-of extraneous input events, all of which may appear characteristic of normal
+of extraneous events, all of which may appear characteristic of normal
 operating conditions at first glance. Consider that an hour long QA fuzz test
 emulating event rates observed in production networks could contain 8.5 network error events per
 minute~\cite{Greenberg:2009:VSF:1592568.1592576} and 500 VM migrations per
 hour~\cite{Soundararajan:2010:CBS:1899928.1899941},
 for a total of $8.5 \cdot 60 + 500 \approx 1000$ inputs.
 
+\colin{Cut if we need space (redundant with intro):}
 The act of {\em troubleshooting} involves identifying which sequence of
 external events is most directly responsible for triggering the bug;
 identifying these events helps the developer in the act of {\em debugging},
