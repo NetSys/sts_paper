@@ -6,8 +6,7 @@ operating system and higher layers) is a complicated distributed system that
 must react quickly and correctly to controller/switch/link failures, host migrations,
 policy-configuration changes, and other events.
 All complicated distributed systems are prone to bugs, and from our first-hand
-familiarity with five open source controllers (Floodlight~\cite{floodlight}, NOX~\cite{nox},
-POX~\cite{pox}, Pyretic~\cite{frenetic}, ONOS~\cite{ONOS}) and three major commercial
+familiarity with five open source controllers and three major commercial
 controllers, we can attest that SDN control software is no exception.
 % All complicated distributed systems are prone to bugs and from our first-hand familiarity with several important open-source (NOX, POX, Floodlight, Frenetic, ONOS) and closed-source controllers (Google, VMware, BigSwitch), we can attest that SDN control platforms are no exception. 
 
@@ -57,7 +56,9 @@ range of synthetic bugs that we inject into open-source controllers. Second, we 
 the effectiveness of troubleshooting with {\projectname} on known bugs.
 Third, and most significantly, we use {\projectname} to troubleshoot
 previously unknown bugs---involving event concurrency during topology discovery,
-failure-induced routing table holes, internal-state errors triggered by unexpected
-input sequences, and deadlocks in distributed databases---we found in four distinct controllers (Floodlight, NOX, POX, Pyretic)
+failure-induced blackholes, internal-state errors triggered by unexpected
+input sequences, and deadlocks in distributed databases---we found in
+\num{five} controllers (Floodlight~\cite{floodlight}, NOX~\cite{nox},
+POX~\cite{pox}, Pyretic~\cite{frenetic}, ONOS~\cite{ONOS})
 written in three different languages (Java, C++, Python). In our evaluation of these bugs,
 we show that \projectname~is able to minimize traces by up to \num{X\%}.
