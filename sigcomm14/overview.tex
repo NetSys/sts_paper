@@ -3,17 +3,16 @@ In this section we review some of the key aspects of SDN systems, starting with 
 \subsection{SDN Control Planes}
 Network operating systems, the key component of SDN software
 infrastructure, consist of controller software running on a replicated set of
-servers each running a controller instance. The replicas typically use a
-consensus protocol for leader election and a distributed database to store
-state~\cite{onix}. Controllers receive input events and
+servers each running a controller instance. Controllers coordinate between
+themselves, and receive input events and
 statistics from switches (either physical or virtual), configuration and
 policy changes via a management interface, and possibly packets from the data
 plane. In response to these events, the
-controllers issue packet forwarding instructions to switches. All input
-and output events are asynchronous, and individual controllers may fail at any
+controllers issue forwarding instructions to switches. All input
+events are asynchronous, and individual controllers may fail at any
 time. The controller instances may communicate
 with each other over the network they manage, or use a separate dedicated
-network. In either case, the controllers may become partitioned.
+network. In either case, controllers may become partitioned.
 
 \subsection{Bugs, QA Testing, and Troubleshooting}
 The goal of a network control plane is to configure the switch forwarding entries so as to

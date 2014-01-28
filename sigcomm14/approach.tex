@@ -52,8 +52,8 @@ valid. Of the possible inputs sequences we generate (shown in
 Table~\ref{tab:inputs}), it is not sensible to replay a recovery event without a
 preceding failure event, nor to replay a host migration
 event without modifying its starting position when a preceding host
-migration event has been pruned. Our implementation of delta debugging therefore treats
-failure/recovery events as atomic pairs, and updates initial host locations
+migration event has been pruned. Our implementation of delta debugging
+therefore prunes failure/recovery event pairs as a single unit, and updates initial host locations
 whenever host migration events are pruned so that hosts do not appear at new
 locations incongruously.\footnote{Handling invalid inputs is crucial for
 ensuring that the delta debugging algorithm finds a minimal causal
