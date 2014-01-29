@@ -31,7 +31,7 @@ NOX discovery loop & 4 switch mesh & 18/20 & 18 \\
 % With DP events: 358/58
 % Original: ce547fc1df3bde279b6f3dd589c909663e295f1e
 % MCS: 5f49e791b0c1a611454cf0930f54aa609dd635d3
-% Updated to new format: nox_mesh_4_loop
+% Updated to new format: nox_mesh_4_loop_repro_verbose
 Floodlight loop & 3 switch mesh & 15/50 & 36 \\
 % Total inputs: 284
 % Andi
@@ -289,13 +289,11 @@ entries expired.
 
 \subsection{NOX Discovery Loop}
 
-\colin{TODO: rerun this! Need to try to replay it, or explain better why it
-didn't replay}
-%\begin{figure}[t]
-%    %\hspace{-10pt}
-%    \includegraphics[width=3.25in]{../graphs/runtime/nox_loop.pdf}
-%    \caption[]{\label{fig:nox_discovery} Minimizing the NOX discovery loop.}
-%\end{figure}
+\begin{figure}[t]
+    %\hspace{-10pt}
+    \includegraphics[width=3.25in]{../graphs/runtime/nox_loop.pdf}
+    \caption[]{\label{fig:nox_discovery} Minimizing the NOX discovery loop.}
+\end{figure}
 
 Next we tested NOX on a four-node mesh, and discovered a
 routing loop between three switches within
