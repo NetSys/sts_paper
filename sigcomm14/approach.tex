@@ -344,28 +344,6 @@ in Figure~\ref{fig:replay}.
 \end{figure}
 }
 
-\begin{figure}
-  \begin{pseudocode}[framebox]{Peek}{events}
-    \PROCEDURE{Peek}{input\ subsequence}
-    inferred \GETS [\ ] \\
-    \FOR e\textsubscript{i}\ in\ subsequence \\
-    \BEGIN
-      snapshot\ system \\
-      inject\ e\textsubscript{i} \\
-      \Delta \GETS |e\textsubscript{i}.time - e\textsubscript{i-1}.time| + \epsilon \\
-      record\ events\ for\ \Delta\ seconds \\
-      matched \GETS original\ events\ \&\ recorded\ events \\
-      inferred << e\textsubscript{i} << matched \\
-      restore\ snapshot \\
-    \END \\
-    \RETURN{inferred}
-    \ENDPROCEDURE
-  \end{pseudocode}
-  \caption{{\tt Peek} is responsible for determining which internal events
-  from the original sequence are going to occur for a given subsequence.
-  \label{fig:peek}}
-\end{figure}
-
 {\bf Handling New Internal Events. } The last possible change induced by input pruning is the occurrence of new
 internal events that were not observed in the original log.
 New events present multiple possibilities for where
@@ -427,10 +405,9 @@ the controllers quickly converge to a single state (either ``Master'' or
 The delta debugging algorithm terminates after $\Omega(\log n)$
 invocations of $replay$ in the best case, and $O(n)$ in the worst case. where $n$ is the number of inputs in the original
 trace~\cite{Zeller:1999:YMP:318773.318946}.
-
 Each invocation of $replay$ takes $O(n)$ time
 (one iteration for Peek(), and one iteration for the replay itself),
-for an overall runtime of $O(n \log n)$ replayed inputs.
+for an overall runtime of $\Omega(n \log n)$ best case and $O(n^2)$ worst case replayed inputs.
 The runtime can be decreased by parallelizing delta debugging:
 speculatively replaying subsequences in parallel, and joining the results.
 Storing periodic snapshots throughout testing can also reduce runtime, as it
@@ -449,9 +426,9 @@ algorithm can know
 \colin{Describe Andrew's input type pruning optimization and measurements. "We
 make another optimization.."}
 
-In the next section we describe some
-of the practical challenges we have overcome to realize our approach.
-\colin{Cut this section?}
-In our initial experiments we have found that applying delta debugging to explore
-subsequences of $E_L$ and striving to maintain a single timing $T$ that maintains
-causal dependencies reliably finds small MCSes.
+% In the next section we describe some of the practical challenges we have overcome to realize our approach.
+
+% \colin{Cut this section?}
+% In our initial experiments we have found that applying delta debugging to explore
+% subsequences of $E_L$ and striving to maintain a single timing $T$ that maintains
+% causal dependencies reliably finds small MCSes.
