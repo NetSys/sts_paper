@@ -93,9 +93,10 @@ Load Balancer Flow Table Space & TBD & TBD & TBD & TBD \\
 logging interposition enabled.}}
 \label{tab:case_studies}
 \end{table*}
+\tbd{Align order with intro}
 
 Our goal in this section is to show that \projectname~successfully produces
-minimized event traces that are useful for troubleshooting. The
+MCSes that are useful for troubleshooting. The
 gold standard for evaluating \projectname~would be a large scale A/B test~\cite{neyman}
 showing how much time it takes for developers to troubleshoot bugs found in
 QA clusters with and without minimized event traces. Unfortunately
@@ -106,15 +107,16 @@ need hundreds of developers to spend substantial time on each bug we find.
 
 We instead take two approaches to evaluating \projectname.
 First, we need to demonstrate \projectname's viability in
-troubleshooting real bugs. We used \projectname~to find new bugs in \num{five} open source
+troubleshooting real bugs. We found \num{five} new bugs by fuzz testing open source
 SDN control platforms:
 ONOS~\cite{ONOS} (Java), POX~\cite{pox} (Python), NOX~\cite{nox} (C++),
 Pyretic~\cite{frenetic} (Python), and Floodlight~\cite{bigswitch} (Java), and
 debugged these with the help of \projectname. Second, we demonstrate the
 boundaries of where \projectname~works well and where it does not by using it to
 troubleshoot previously known and synthetic bugs that span a range of bug types encountered in
-practice. Throughout our evaluation we strive to provide qualitative
-evaluation of \projectname's use in the troubleshooting process.
+practice. Throughout our evaluation
+we quantitatively show \projectname's ability to minimize traces, and we
+qualitatively demonstrate the use of MCSes for troubleshooting.
 
 We show a high-level overview
 of our results in Table~\ref{tab:case_studies}, and

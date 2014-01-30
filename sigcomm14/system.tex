@@ -1,10 +1,11 @@
-Functionality to process and replay execution logs is key to the success of our approach.
-However unlike the example applications described
-by the delta debugging paper~\cite{Zeller:1999:YMP:318773.318946}, the system we are troubleshooting is not a
-single program---it encompasses all the nodes and links of a distributed system,
-including controllers, switches, and end-hosts, where asynchrony
-makes it difficult to reliably replay inputs.
+%Functionality to process and replay execution logs is key to the success of our approach.
+%However unlike the example applications described
+%by the delta debugging paper~\cite{Zeller:1999:YMP:318773.318946}, the system we are troubleshooting is not a
+%single program---it encompasses all the nodes and links of a distributed system,
+%including controllers, switches, and end-hosts, where asynchrony
+%makes it difficult to reliably replay inputs.
 
+Our technique depends on infrastucture for testing SDN control software.
 All three of the major commercial SDN controller teams that we have first-hand knowledge of employ a team of QA
 engineers to fuzz test their controller software on small to large testbeds of switches and hosts.
 As depicted in Figure~\ref{fig:qa_cluster}, this fuzz testing infrastructure
@@ -22,7 +23,6 @@ engineer triages it and then sends logs to a developer for further troubleshooti
     orchestrator drives the behavior of the network, and checks for bugs in
     the controllers.}
 \end{figure}
-
 
 Engineering organizations with existing
 QA testbeds can add delta debugging to their test
@@ -153,12 +153,12 @@ delivery. These sources of non-determinism can affect whether \projectname~is
 able to reproduce the original bug during replay.
 
 Most testing systems, such as the QA testing frameworks we are
-trying to improve, do not attempt to mitigate non-determinism; they assume
-that developers will be able replicate bugs by attempting to reproduce the
-same conditions as the original test run, else track down the root cause
-only by
-inspecting the raw execution logs.
-
+trying to improve, do not attempt to mitigate non-determinism.
+%;they assume
+%that developers will be able replicate bugs by attempting to reproduce the
+%same conditions as the original test run, else track down the root cause
+%only by
+%inspecting the raw execution logs.
 \projectname's main approach to coping with non-determinism
 is to replay each subsequence chosen
 by delta debugging multiple times. If observing the bug
@@ -393,13 +393,14 @@ configurations such as loops or blackholes.
 state transitions is a crucial part of troubleshooting distributed systems.
 STS includes two visualization tools designed to aid with this task. First, we
 include a tool to visualize space-time diagrams~\cite{Lamport:1978:TCO:359545.359563}
-of event traces, such as the one depicted in Figure~\ref{fig:example}.
+of event traces.
+%, such as the one depicted in Figure~\ref{fig:example}.
 Second, we include a tool to visually highlight event ordering differences
 between two or more event traces, which is especially useful for comparing the behavior of
 intermediate delta debugging replays when the original trace exhibits a high degree of non-determinism.
 
 \subsection{Scaling and Parallelization}
-
+\scott{this not needed}
 When minimizing very large event traces we found that the garbage collector
 for our \tester~often became overwhelmed (causing the process to slow down
 substantially) after replaying several subsequences, since each replay could
@@ -420,7 +421,8 @@ clarify the scope of our technique's use.
 \noindent{\bf Partial Visibility.} Our event scheduling algorithm assumes that
 it has visibility into the occurrence of all relevant internal events. For
 some controllers this may involve substantial instrumentation effort beyond
-pre-existing log statements.
+pre-existing log statements, though as we show in our evaluation, most bugs
+we encoutered can be minimized without perfect visibility.
 
 \noindent{\bf Non-determinism.} Non-determinism
 is fundamental in networks. When non-determinism is present
@@ -462,11 +464,13 @@ occurs.
 \noindent{\bf Correctness vs.\ Performance.}
 We are primarily focused on correctness bugs, not performance bugs.
 
+\eat{
 \noindent{\bf Bugs Found Through Fuzzing.}
 We generate bugs primarily through fuzz testing, not by finding them in
 operational traces. There is a substantial practical hurdle in instrumenting
 operational systems to produce logs that can be injected into our system, as
 discussed in \S\ref{subsec:production_logs}.
+}
 % , and we have not addressed those issues yet.
 %In practice some bugs
 %found through fuzzing will not be considered worthwhile to investigate.

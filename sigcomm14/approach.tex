@@ -3,6 +3,7 @@ our goal is to identify its MCS. This involves two tasks:
 searching through subsequences of $E_L$, and searching for replay timings for those
 subsequences that if possible trigger the original invariant violation.
 
+\eat{
 We introduce our approach using an example bug in the Floodlight open-source control
 platform~\cite{floodlight_bug}. Floodlight is distributed across
 multiple controllers for high availability, and provides support for
@@ -32,20 +33,24 @@ elevates itself to the master role (E6). The new master will proceed to manage
 the switch, but without ever clearing the routing entries for
 the failed link, resulting in a persistent blackhole. In this example, the MCS
 is the conjunction of the two external inputs (E1,E3).
+}
 
 \subsection{Searching for Subsequences}
 \label{subsec:delta_debugging}
 
 Checking random subsequences of $E_L$ would be one viable but inefficient
-approach to achieving our first task. We can do better by leveraging a
-divide-and-conquer search technique from the software engineering community:
-the delta debugging algorithm~\cite{Zeller:1999:YMP:318773.318946} provides a % provably-correct
-means of isolating fault-inducing inputs. In our case, we use delta
+approach to achieving our first task. We can do better by leveraging
+%a
+%divide-and-conquer search technique from the software engineering community:
+the delta debugging algorithm~\cite{Zeller:1999:YMP:318773.318946}, a
+divide-and-conquer algorithm for
+isolating fault-inducing inputs. In our case, we use delta
 debugging to iteratively select subsequences of $E_L$ and replay each
 subsequence with some timing $T$. If the bug persists, delta debugging ignores the
 other inputs, and proceeds with the search for an MCS within this subsequence.
 In what follows, we use the term {\em delta debugging} to refer to our algorithm for finding relevant subsequences.
-The delta debugging algorithm is shown in Figure~\ref{fig:ddmin} (with `$test$' replaced by `$replay$').
+The delta debugging algorithm is shown in Figure~\ref{fig:ddmin}.
+%(with `$test$' replaced by `$replay$').
 
 The input subsequences chosen by delta debugging are not always
 valid. Of the possible inputs sequences we generate (shown in
@@ -54,8 +59,8 @@ preceding failure event, nor to replay a host migration
 event without modifying its starting position when a preceding host
 migration event has been pruned. Our implementation of delta debugging
 therefore prunes failure/recovery event pairs as a single unit, and updates initial host locations
-whenever host migration events are pruned so that hosts do not appear at new
-locations incongruously.\footnote{Handling invalid inputs is crucial for
+whenever host migration events are pruned so that hosts do not magically appear at new
+locations.\footnote{Handling invalid inputs is crucial for
 ensuring that the delta debugging algorithm finds a minimal causal
 subsequence. The algorithm we employ~\cite{Zeller:1999:YMP:318773.318946}
 makes three
@@ -143,7 +148,8 @@ Simply exploring subsequences of $E_L$ is insufficient for finding MCSes: the
 timing of those subsequences throughout invocations of $replay()$ is crucial for reliably
 reproducing the
 invariant violation. The most natural approach would be to maintain the original
-timings; \ie~if we
+timings.
+\eat{\ie~if we
 define $t_i$ as the timestamp of the $i^{th}$ input from the original run and $t'_i$ as the
 replay clock value when it injects that same input
 (which may or may not be the $i$'th input in the subsequence), then we might
@@ -154,22 +160,24 @@ t'_0 = t_0 \\
 t'_i = t'_{i-1} + |t_{i} - t_{i-1}|
 \end{align*}
 }
-
+}
 Unfortunately, this approach does not work in practice because it can violate
-causal dependencies from the original execution: when we replay only a
-subsequence of the original inputs, the reaction of the control software
-can change, such that it behaves differently or takes a different amount of
-time to respond to the remaining inputs events.
-In practice we have observed that simply maintaining relative timings can
-result in injecting the remaining inputs too early or late.
-
-To reliably reproduce the original invariant violation
+causal dependencies from the original execution due to changes in the behavior
+of the control software. %\eat{: when we replay only a
+%subsequence of the original inputs, the reaction of the control software
+%can change, such that it behaves differently or takes a different amount of
+%time to respond to the remaining inputs events.
+%In practice we have observed that simply maintaining relative timings can
+%result in injecting the remaining inputs too early or late.}
+To reliably reproduce the invariant violation
 we need to inject an input event $e$ only after all other
 events, including internal events triggered by the control software itself,
 that precede it in the
 happens-before~\cite{Lamport:1978:TCO:359545.359563}
 relation ($\{i \mid i \rightarrow e\}$) from the original execution have
-occurred~\cite{tel2000introduction}. Internal events include
+occurred~\cite{tel2000introduction}.
+
+Internal events include
 (a) message delivery events, either between controllers (\eg~database
 synchronization messages) or
 between controllers and switches (\eg~OpenFlow commands), and (b) state transitions
@@ -180,17 +188,14 @@ We optionally obtain visibility into (b) by instrumenting controller
 software with a simple interposition layer (to be described in \S\ref{subsec:mitigating}).
 With visibility into internal events and control over input events, the
 \tester~records a totally-ordered trace by logging an event only after
-all prior events are guaranteed to have completed.
+all prior events are completed.
 
-\subsection{Preserving Causality}
+%\subsection{Preserving Causality}
 
-Transforming the original log (which reproduces the violation)
-to a subsequence of external events (which may or may not reproduce that
-violation) may perturb causal dependencies.
-To make progress we draw inferences about
-the causal dependencies in the subsequence based on the causal
-dependencies reflected in the original log.
-This involves three issues: coping with syntactic differences in internal
+Maintaining the happens-before relation from the original trace
+(which reproduces the violation) throughout replay of subsequences of the
+trace (which may or may not reproduce that
+violation) involves three issues: coping with syntactic differences in internal
 events across runs,
 handling internal events from the original
 execution that may not occur after pruning, and dealing with new internal events that were not
@@ -240,6 +245,7 @@ event $i$ from the original log if and only if all unmasked fields have the same
 and $i$ occurs between $i'$'s preceding and succeeding inputs in the
 happens-before relation.
 
+\eat{
 \begin{figure}[t]
     %\hspace{-10pt}
     \includegraphics[width=3.25in]{../diagrams/state_machines/controller_switch.pdf}
@@ -247,7 +253,7 @@ happens-before relation.
     controllers in the example Floodlight bug. Double outlined states
     represent presence of the blackhole.}
 \end{figure}
-
+}
 \begin{table}
 \centering
 \begin{tabular}{|l|l|}
@@ -270,15 +276,18 @@ define equivalence classes.}
 {\bf Handling Absent Internal Events. } Some internal events from the original
 log which causally ``happen before'' some external input
 may be absent when replaying a subsequence of that log.
+For instance, if we prune a link failure event, then
+the corresponding link failure notification will never arise as an internal event.
+\eat{
 The control software's state machine (which we do not assume to know) determines whether
 internal events cease to appear. Consider the simplified state machines for the switch and
 controllers from the Floodlight case shown in
 Figure~\ref{fig:state_machines}. If we prune the link failure input, the
 master will never receive a link failure notification and
-transition to and from \emph{Send Flush}.
+transition to and from \emph{Send Flush}.}
 
 We handle this by attempting to infer the presence of internal
-events before we replay each subsequence. Our algorithm for inferring the
+events before we replay each subsequence. Our algorithm (called PEEK) for inferring the
 presence of internal events is depicted in
 Figure~\ref{fig:peek}. The algorithm injects each input, takes a
 snapshot\footnote{We discuss the implementation details of snapshotting
@@ -344,7 +353,7 @@ in Figure~\ref{fig:replay}.
 \end{figure}
 }
 
-{\bf Handling New Internal Events. } The last possible change induced by input pruning is the occurrence of new
+{\bf Handling New Internal Events.} The last possible change induced by pruning is the occurrence of new
 internal events that were not observed in the original log.
 New events present multiple possibilities for where
 we should inject the next input. Consider the following case:
@@ -371,8 +380,8 @@ Exponential search over these possibilities is not a practical option. Our heuri
 events is to proceed normally if there are new internal events,
 always injecting the next input when its last expected predecessor
 either occurs or times out. This ensures that we always find suffixes that
-contain only a subset of the (equivalent) original internal events, but leaves open the
-possibility of finding divergent suffixes that still lead to the invariant
+contain a subset of the (equivalent) original internal events, but leaves open the
+possibility of finding divergent suffixes that lead to the invariant
 violation.
 %This is reasonable because not even branching on new
 %internal events is guaranteed to find the globally shortest fault-inducing input
@@ -406,7 +415,7 @@ The delta debugging algorithm terminates after $\Omega(\log n)$
 invocations of $replay$ in the best case, and $O(n)$ in the worst case. where $n$ is the number of inputs in the original
 trace~\cite{Zeller:1999:YMP:318773.318946}.
 Each invocation of $replay$ takes $O(n)$ time
-(one iteration for Peek(), and one iteration for the replay itself),
+(one iteration for PEEK(), and one iteration for the replay itself),
 for an overall runtime of $\Omega(n \log n)$ best case and $O(n^2)$ worst case replayed inputs.
 The runtime can be decreased by parallelizing delta debugging:
 speculatively replaying subsequences in parallel, and joining the results.

@@ -13,52 +13,57 @@ controllers, we can attest that SDN control software is no exception.
 %When faced with a bug, it is difficult to identify which events are triggering
 %the bug; this act of ``troubleshooting'' (which precedes the act of debugging the
 %underlying code) is extremely time-consuming,
-When faced with symptoms of a network problem,
+When faced with symptoms of a network problem (\eg~a persistent loop)
+that suggest the presence of a bug in the control plane software,
 software developers must first identify which events are triggering
-the apparent bug in the control software; this act of ``troubleshooting'' (which precedes the act of debugging the
+this apparent bug before they can begin to isolate and fix it.
+This act of ``troubleshooting'' (which precedes the act of debugging the
 underlying code) is extremely time-consuming, as developers spend hours poring
-over multigigabyte execution traces.\footnote{A recent study suggested that software developers in general spend roughly half (49\% according to one
+over multigigabyte execution traces.\footnote{Software developers in general spend roughly half (49\% according to one
 study~\cite{msoft_concurrency}) of their time troubleshooting, and spend
 considerable time troubleshooting bugs that are difficult to trigger (the same study found
 that 70\% of the reported concurrency bugs take days to months to fix).}
 % Bugs are a fact of life;
-Our aim is to reduce time spent on troubleshooting.
+Our aim is to reduce effort spent on troubleshooting SDN control software.
 
-To that end, we have built a troubleshooting system for the SDN control plane.
-Given an execution trace, our tool attempts to automatically eliminate
+
+To that end, we have built a troubleshooting system that,
+given an execution trace, attempts to automatically eliminate
 trace events that are not causally related to the bug, producing a ``minimal
 causal sequence'' (MCS) of triggering events. Once the original trace has
 been reduced to an MCS (or an approximation thereof), the developer embarks
 on the debugging process. Our claim is that the greatly reduced size of the
-trace makes it easier for the developer to figure out which code path might be
-responsible for the underlying bug, allowing them to focus their effort on
-the (equally difficult) task of fixing the problematic code itself. After the bug has been fixed, the MCS
+trace makes it easier for the developer to figure out which code path contains
+the underlying bug, allowing them to focus their effort on
+the task of fixing the problematic code itself. After the bug has been fixed, the MCS
 can serve as a test case to prevent regression,
 and can help identify redundant bug reports where the MCSes are the same.
 
 Our goal of minimizing test cases is in the spirit of
 delta debugging~\cite{Zeller:1999:YMP:318773.318946}, but our
-problem is harder in two dimensions: control software is distributed in space (\ie,
-spread across many machines) and the input is distributed in time (\ie, the
-input is not a single file, but a sequence of events).
+problem is harder in two dimensions: control software is distributed
+across many machines, and the input is distributed in time (\ie, the
+input is not a single file, but an ongoing sequence of events).
 We are therefore forced to cope with asynchrony and non-determinism while
-we actively perturb causal relations (discounting deterministic replay
-techniques), without making assumptions about the language
+we speculatively eliminate various input events,
+without making assumptions about the language
 or instrumentation of the control software under test.
 We are not aware of any other system that tackles these
 challenges (though we discuss the vast amount of related work in \S\ref{sec:related_work}).
 
-Our troubleshooting system, which we call {\projectname} for \projectmeaning,
-consists of 21,000 lines of Python, and is designed to
-integrate with existing QA test infrastructure (discussed in
-\S\ref{sec:architecture}). First, we demonstrate the viability of our approach across a
-range of synthetic bugs that we inject into open-source controllers. Second, we evaluate
-the effectiveness of troubleshooting with {\projectname} on known bugs.
-Third, and most significantly, we use {\projectname} to troubleshoot
+Our troubleshooting system, which we call {\projectname} ({\projectmeaning}),
+consists of 21,000 lines of Python, and is designed so that organizations can
+implement the technology within their existing QA test infrastructure (discussed in
+\S\ref{sec:architecture}). We evaluate the effectiveness of {\projectname} in
+two ways. First, we demonstrate the viability of our approach on previously
+reported bugs and across a
+range of synthetic bugs that we inject into open-source controllers.
+Second, and most significantly, we use {\projectname} to troubleshoot
 previously unknown bugs---involving event concurrency during topology discovery,
 failure-induced blackholes, internal-state errors triggered by unexpected
-input sequences, and deadlocks in distributed databases---we found in
+input sequences, and deadlocks in distributed databases---that we found in
 \num{five} controllers (Floodlight~\cite{floodlight}, NOX~\cite{nox},
 POX~\cite{pox}, Pyretic~\cite{frenetic}, ONOS~\cite{ONOS})
 written in three different languages (Java, C++, Python). In our evaluation of these bugs,
-we show that \projectname~is able to minimize traces by up to \num{X\%}.
+we quantitatively show that \projectname~is able to minimize traces by up to \num{X\%}, and we anecdotally found that reducing
+the input trace to an MCS made it easy to understand the root cause of the bug.

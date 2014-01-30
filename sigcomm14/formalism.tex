@@ -23,7 +23,7 @@ We denote a replay attempt by $replay(E_L,T)$.
 The output of $replay$ is a sequence of forwarding state configurations
 $C_R = \hat{c}_1,\hat{c}_2,\dots,\hat{c}_n$. In the ideal case $replay(E_L,T_L)$ reproduces the same
 sequence of network configurations as occurred in the original run
-(\ie~$\forall_i. c_i = \hat{c}_i$), but as we discuss later in the paper there are reasons why
+(\ie~$\forall_i. c_i = \hat{c}_i$), but as we discuss later in the paper
 this does not always hold.
 
 If the original log $(E_L, T_L, C_L)$ violated predicate $P$
@@ -41,7 +41,7 @@ there is no timing $T$ s.t. $replay(E_N,T)$ reproduces the violation.
 That is, an MCS is a sequence and timing of external events that reproduces the violation,
 where one cannot find a subsequence of the MCS that reproduces the violation.
 Note that an MCS is not necessarily {\em globally} minimal, in that there could be smaller
-sequences that reproduce this violation, but are not subsequence of this MCS.
+sequences that reproduce this violation, but are not a subsequence of this MCS.
 \colin{Problem with this definition: our approach does not provably find
 MCSes, since we don't explore all timings!}
 
@@ -51,9 +51,10 @@ all subsequence and timings, but this is clearly impractical given the large siz
 infinitely large set of possible timings. Thus, we must approximate MCSes by finding heuristics
 for which events to eliminate and, more importantly, which timings to test.
 
-In the next section we describe our heuristics for finding MCSes, and then describe the system we built in \S\ref{sec:systems_challenges} to implement these heuristics.
-The key component of this system is a \tester~that can execute the $replay()$ function.
-Because we do not have access to operational QA or production logs, our focus is on
-using the \tester~to generate random inputs (shown in
-Table~\ref{tab:inputs}), detecting bugs in control software, 
-and then finding the relevant MCSes that trigger these bugs.
+In the next section we describe our heuristics for finding (approximate) MCSes, and then
+describe the system we built in \S\ref{sec:systems_challenges} to implement these heuristics.
+The key component of this system is a \tester~that can execute $replay()$.
+%Because we do not have access to operational QA or production logs, our focus is on
+%using the \tester~to generate random inputs (shown in
+%Table~\ref{tab:inputs}), detecting bugs in control software,
+%and then finding MCSes that trigger them.
