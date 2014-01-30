@@ -111,7 +111,7 @@ ONOS~\cite{ONOS} (Java), POX~\cite{pox} (Python), NOX~\cite{nox} (C++),
 Pyretic~\cite{frenetic} (Python), and Floodlight~\cite{bigswitch} (Java), and
 debugged these with the help of \projectname. Second, we demonstrate the
 boundaries of where \projectname~works well and where it does not by using it to
-troubleshoot synthetic and previously known bugs that span a range of bug types encountered in
+troubleshoot previously known and synthetic bugs that span a range of bug types encountered in
 practice. Throughout our evaluation we strive to provide qualitative
 evaluation of \projectname's use in the troubleshooting process.
 
@@ -124,10 +124,6 @@ for all of these case studies are publicly available (anonymized).
 \subsection{New Bugs}
 % \href{http://ucb-sts.github.com/experiments}{ucb-sts.github.com/experiments}.
 
-\noindent{\bf POX Premature Handshake.}
-
-Andi
-
 \noindent{\bf POX List Removal.} The first
 SDN controller we examined was POX. %the successor of NOX. POX is
 %a single-machine control platform intended primarily for research prototyping
@@ -139,8 +135,8 @@ hosts, after discovering links in the network. %, and a spanning tree module,
 %which configures switches to only flood packets for unknown hosts along a
 %spanning tree.
 
-We start with a simple bug to illustrate that
-\projectname~is useful for early stage development and testing.
+We start with a simple bug. %to illustrate that
+%\projectname~is useful for early stage development and testing.
 We employed \projectname~to generate random sequences of
 inputs, and found after some time that POX threw an exception due to
 attempting to remove an element from a list where the element was not present.
@@ -180,6 +176,8 @@ trace it produced made for a simple integration test.
 
 %We illustrate type errors to show how STS is a useful framework for exploring
 %code paths that you forget to unit tests.
+
+\noindent{\bf POX Premature Handshake.} Andi.
 
 \noindent{\bf POX In-flight Blackhole.} We
 discovered the next bug after roughly 20 runs of randomly generated inputs.
@@ -378,6 +376,8 @@ with $14$ traffic injections. We are in the process of pinpointing the
 exact root cause with NOX developers, based on the $18$ input MCS.
 } % -----------------------------------
 
+\noindent{\bf ONOS distributed database locking.} XXX
+
 \noindent{\bf Floodlight discovery loop.} We
 applied \projectname~to Floodlight's routing application.
 In about 30 minutes, our fuzzing uncovered a
@@ -439,11 +439,11 @@ in pointing out a previously unknown bug, and reducing the input size.
 
 \noindent{\bf Floodlight example failover bug.}  We were able to reproduce the problem shown in Figure~\ref{fig:example} with
 \projectname. We ran two Floodlight controller
-instances, connected to two simulated switches, and injected 200 extraneous link
+instances, connected to two switches, and injected 200 extraneous link
 and switch failures, with the controller crash and switch connect event\footnote{We used a switch connect
 event rather than a link failure event for logistical reasons, but both
 can trigger the race condition} that triggered the blackhole interleaved among them.
-We were able to successfully isolate the 2-event MCS.
+We were able to successfully isolate the two event MCS.
 %On ten repeated runs, the algorithm successfully pruned all extraneous
 %inputs despite non-determinism in the Floodlight internal events. With full determinism and
 %interposition, we expect that the algorithm should work well for less
