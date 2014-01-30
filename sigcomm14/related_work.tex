@@ -1,9 +1,9 @@
 Our goal is to transform
-event traces (``test cases'') into minimal sequences of inputs.
-To achieve this, we are the first, to our knowledge, to extend extend delta debugging~\cite{Zeller:1999:YMP:318773.318946,Zeller:2002:SIF:506201.506206}
-to a distributed system in which there is an ongoing sequence of inputs
-involving multiple entities rather than a single flat file fed to a single point of
-execution. Delta debugging has been applied to minimize thread context switches
+event traces into minimal sequences of inputs.
+To achieve this we are the first to our knowledge to extend extend delta debugging~\cite{Zeller:1999:YMP:318773.318946,Zeller:2002:SIF:506201.506206}
+to a distributed system where there is an ongoing sequence of inputs
+involving multiple entities rather than a single file fed to a single
+entity. Delta debugging has been applied to minimize thread context switches
 leading up to race conditions~\cite{choi2002isolating} and to
 prune irrelevant threads from execution traces~\cite{huang2012lean}, but these
 applications still involve injecting a single input (the thread schedule) to a single entity (the scheduler).
@@ -19,13 +19,12 @@ as (i) program flow analysis (ii) instrumentation (tracing),
 the closest work to ours involves reasoning about
 control- and data-flow dependencies
 (which may be recorded at runtime~\cite{Lee:2011:TGR:1993498.1993528},
-statically inferred~\cite{huang2012lean}, or
-inferred by replaying once with code tracing enabled~\cite{tallam2007enabling})
+or dynamically inferred~\cite{huang2012lean, tallam2007enabling})
 in order to reduce the length of deterministic replay executions. These
 techniques are tied to a single language because of the extensive effort
-required for instrumentation and annotation.  To remain language independent and avoid the
-overhead of deterministic replay, we do not consider the internal
-decision processes of control software. % Our Peek() algorithm is a
+required for instrumentation and annotation. We avoid making assumptions about
+the language or instrumentation of the controller software.
+%decision processes of control software. % Our Peek() algorithm is a
 % contribution in how to infer dependencies without access to software internals
 Moreover, our application of functional equivalence to the space of
 possible inputs allows us to minimize
@@ -42,8 +41,8 @@ problem space is ndb~\cite{ndb14}, which
 allows users to retroactively examine the paths dataplane packets
 take through OpenFlow networks. Tools like ndb allow developers to understand
 how, when, and where the dataplane broke. In contrast, we focus on making it
-easier for developers to understand what caused the control software to
-misconfigure the network. %in the first place.
+easier for developers to understand why the control software
+misconfigured the network. %in the first place.
 
 \vspace{0.05in}
 \noindent{\bf Bug Detection.} With instrumentation available, it becomes possible
@@ -55,7 +54,7 @@ or forwarding behavior~\cite{Zeng:2012:ATP:2413176.2413205,libra}.
 We use bug detection techniques (invariant checking) to guide delta debugging's minimization
 process.
 
-It is also possible to automatically infer
+It is also possible to infer
 performance anomalies by building probabilistic models from
 collections of traces~\cite{barham2004using,Chen02pinpoint:problem}.
 Our goal is to produce exact minimal causal sequences without
@@ -79,16 +78,15 @@ way of developing and testing distributed systems.
 \noindent{\bf Replay.} Crucial diagnostic information is often missing from traces.
 Record and replay techniques~\cite{Geels:2006:RDD:1267359.1267386,lin2013defined}
 instead allow users to step through executions and interactively examine the
-state of the system in exchange for a loss in runtime performance.
-Static analysis and symbolic execution can also be applied post-hoc %, without incurring runtime performance overhead,
-to find code paths that lead up to software
-crashes~\cite{Yuan:2010:SED:1736020.1736038} or thread schedules that reproduce
-race conditions~\cite{Zamfir:2010:EST:1755913.1755946}.
-Within the SDN problem space, OFRewind~\cite{ofrewind} provides
+state of the system in exchange for runtime recording overhead.
+%Static analysis and symbolic execution can also be applied post-hoc %, without incurring runtime performance overhead,
+%to find code paths that lead up to software
+%crashes~\cite{Yuan:2010:SED:1736020.1736038} or thread schedules that reproduce
+%race conditions~\cite{Zamfir:2010:EST:1755913.1755946}.
+Within SDN, OFRewind~\cite{ofrewind} provides
 record and replay of OpenFlow channels between controllers and switches.
 Manually examining long system executions can be tedious, and our goal is to
-automatically minimize such executions; that is, we minimize the length of
-the execution in question so that developers find it easier to identify the
+minimize such executions so that developers find it easier to identify the
 problematic code through replay or other means.
 
 %Rx~\cite{qin2005rx} is a technique for improving availability: upon

@@ -287,7 +287,7 @@ master will never receive a link failure notification and
 transition to and from \emph{Send Flush}.}
 
 We handle this by attempting to infer the presence of internal
-events before we replay each subsequence. Our algorithm (called PEEK) for inferring the
+events before we replay each subsequence. Our algorithm (called {\sc Peek()}) for inferring the
 presence of internal events is depicted in
 Figure~\ref{fig:peek}. The algorithm injects each input, takes a
 snapshot\footnote{We discuss the implementation details of snapshotting
@@ -300,7 +300,7 @@ the original trace. With these inferred causal dependencies, we then replay
 the subsequence, this time waiting to inject each input until each of its
 (functionally equivalent) predecessors have occurred.\footnote{In the
 case that, due
-to non-determinism, an internal event occurs during Peek() but does not occur
+to non-determinism, an internal event occurs during {\sc Peek()} but does not occur
 during replay, we time out on internal events after $\epsilon$ seconds of
 their expected occurrence.}
 
@@ -415,7 +415,7 @@ The delta debugging algorithm terminates after $\Omega(\log n)$
 invocations of $replay$ in the best case, and $O(n)$ in the worst case. where $n$ is the number of inputs in the original
 trace~\cite{Zeller:1999:YMP:318773.318946}.
 Each invocation of $replay$ takes $O(n)$ time
-(one iteration for PEEK(), and one iteration for the replay itself),
+(one iteration for {\sc Peek()} and one iteration for the replay itself),
 for an overall runtime of $\Omega(n \log n)$ best case and $O(n^2)$ worst case replayed inputs.
 The runtime can be decreased by parallelizing delta debugging:
 speculatively replaying subsequences in parallel, and joining the results.

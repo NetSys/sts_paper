@@ -1,7 +1,8 @@
 % Just realized: b/c of anonymity, the PC can't chastise us for
 % running our system on our own code -- we can't tell them that it's our code!
-Our evaluation of \projectname~leaves open several questions, which we discuss
-here.
+
+%Our evaluation of \projectname~leaves open several questions, which we discuss
+%here.
 
 \eat{
 \noindent{\bf Aren't SDN controllers relatively simple and bug free?}
@@ -62,14 +63,14 @@ opportunity and a challenge. In terms of a challenge,
 SDN control software---both proprietary and open source---is in its infancy, which means
 that bugs are pervasive.
 
-In terms of an opportunity, SDN's architecture facilitates the implementation of~\projectname. The
+In terms of an opportunity, SDN's architecture facilitates the implementation
+of systems like~\projectname. The
 interfaces between components of the system
-(\eg~OpenFlow between controllers and switches~\cite{openflow}, or OpenStack
-Quantum's API between the control application and the network
-hypervisor~\cite{quantum}) are open and well-defined--a property that is
-crucial for codifying functional equivalencies. Moreover, controllers are small in number compared
-to the size of the overall network, making it easy to interpose on
-messages. Lastly, the control flow of SDN control software is such that it repeatedly returns to
+(\eg~OpenFlow for switches~\cite{openflow} and OpenStack
+Neutron for management~\cite{quantum}) are well-defined, which is
+crucial for codifying functional equivalencies. % Moreover, controllers are small in number compared
+% to the size of the overall network, making it easy to interpose on messages.
+Moreover, the control flow of SDN control software repeatedly returns to
 a quiescent state after processing inputs, which means that many inputs can be pruned.
 
 %SDN control platforms have two properties that make
@@ -87,26 +88,28 @@ a quiescent state after processing inputs, which means that many inputs can be p
 
 Although we focus on
 troubleshooting SDN control software, we believe that our general approach can
-be readily applied to other distributed control plane management systems.
-In future work we hope to deploy and validate our
+be applied to other distributed systems.
+In future work we hope to validate our
 technique on other such systems. % such as replicated state machines or NAS
 % controllers.
 
 \noindent{\bf Dataflow analysis.} Another avenue for future work would be to apply
 dataflow
-analysis~\cite{kildall1973unified,Lee:2011:TGR:1993498.1993528,tallam2007enabling}
-to further prune or preprocess events.
+analysis~\cite{Lee:2011:TGR:1993498.1993528,tallam2007enabling}
+to further prune events.
 The simplest form of dataflow analysis involves
-reasoning about happens-before relations (aka `potential causality'): if you consider a
+reasoning about happens-before relations: if you consider a
 software-defined network as a distributed state machine,
-with individual processes sending messages between themselves, then one can safely prune an input event if
+then one can safely prune an input event if
 it does not induce any messages before
 the occurrence of the invalid
-configuration, since it could not have
-possibly affected the outcome~\cite{Lamport:1978:TCO:359545.359563}.
+configuration~\cite{Lamport:1978:TCO:359545.359563}.
+% since it could not have possibly affected the outcome
 Unfortunately we found that pruning inputs in this way does not
-significantly reduce the number of inputs, but one might go further by analyzing the controller code that generates messages
-to reason about which inputs have a causal linkage to the bug of interest.
+significantly reduce the number of inputs, but one might go further by
+analyzing the control software itself.
+%code that generates messages
+%to reason about which inputs have a causal linkage to the bug of interest.
 % Maybe just try to apply dataflow analysis to the mock network's code, not to
 % the control software code. That way we aren't language dependent.
 
@@ -118,10 +121,9 @@ to reason about which inputs have a causal linkage to the bug of interest.
 
 \noindent{\bf Optimizing delta debugging.} Delta debugging is agnostic to how
 input sequences are split. Currently we
-split by time, but it may be more effective to try other approaches.
-In particular, splitting events according to their location in the network
-topology may yield faster minimization, since bugs will often only involve a
-small number of nodes in the distributed system.
+split by time, but it may be more effective to split events by type or by location in the network
+topology.% may yield faster minimization, since bugs will often only involve a
+%small number of nodes in the distributed system.
 
 \noindent{\bf Enabling analysis of production logs.} \projectname~does
 not currently support minimization of production (as opposed
