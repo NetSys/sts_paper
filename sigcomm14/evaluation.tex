@@ -39,7 +39,7 @@ NOX discovery loop & 4 switch mesh & 18/20 & 18 & No \\
 Floodlight loop & 3 switch mesh & 15/50 & 36 & Yes \\
 % Total inputs: 284
 % Andi
-ONOS distributed database locking & TBD & 3 & Yes \\
+ONOS distributed database locking & 2 switch mesh & TBD & 3 & Yes \\
 % Ahmed
 \hline
 Known Bugs & - & - & - & - \\
@@ -66,10 +66,11 @@ Algorithm misimplementation & 3 switch mesh & TBD & 7 & No \\
 % experiments/experiments/pox_broken_floyd_mcs
 % total original inputs: 40
 % MCS is inflated! link failure / recovery in MCS not related to triggering events.
-Multithreaded race condition & 10 switch mesh & TBD & TBD & TBD \\
-% experiments/trigger_multithreading_bug_mcs
-% total original inputs: 1597
-% Currently running on c5
+Multithreaded race condition & 4 switch mesh & TBD & 2\footnote{The race
+condition triggered by any I/O events, so the final MCS was essentially
+random} & Yes\footnote{With multiple replays per subsequence} \\
+% experiments/trigger_multithreading_bug_small_mcs
+% total original inputs: 1046
 Memory Leak & 2 switch mesh & TBD & TBD & TBD \\
 % experiments/trigger_memory_leak2/
 % Currently running on c75
@@ -177,7 +178,7 @@ trace it produced made for a simple integration test.
 %We illustrate type errors to show how STS is a useful framework for exploring
 %code paths that you forget to unit tests.
 
-\noindent{\bf POX Premature Handshake.} Andi.
+\noindent{\bf POX Premature Handshake.} Andi, TBD.
 
 \noindent{\bf POX In-flight Blackhole.} We
 discovered the next bug after roughly 20 runs of randomly generated inputs.
@@ -288,6 +289,27 @@ delayed arbitrarily as it was in \projectname.
 %correct the situation.
 % Discussion of how our gizmos helped.
 } % \eat % -----------------------------------
+
+\noindent{\bf Pyretic Loop.} We discovered a loop when fuzzing Pyretic's hub
+module, whose purpose is to flood packets along a minimum spanning tree. After
+minimizing the execution, we found that the triggering events
+were a link failure at the beginning of the trace, followed some time later by
+the recovery of that link. After roughly 9 hours over two days of examining
+Pyretic's (unfamiliar to us) code, we found what we believed to be the problem
+in its logic for computing minimum spanning trees: it appeared that down links
+weren't properly being accounted for, such that flow entries were installed
+along that link even when it was down. When the link recovered, a loop was
+created, as the flow entries were still in place. The loop seemed to persist until
+Pyretic periodically flushed all flow entries.
+
+We proceeded to file a bug report, along with a replayable trace of the
+minimized execution to the developers of Pyretic. They found after roughly
+five hours of replaying the trace with \projectname~and examining openflow exchanges that Pyretic told switches to
+flood out all links before the entire
+network topology had been learned (including the down link). By adding a timer before installing
+entries to allow for links to be discovered, the developers were able to verify
+that the loop no longer appeared. A long term fix for this issue is currently being discussed by the developers of
+Pyretic.
 
 \noindent{\bf POX Migration Blackhole.} Having
 examined the POX code in some depth, we noticed that there might be
