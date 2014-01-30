@@ -122,14 +122,13 @@ in the rest of this section. Interactive visualizations and replayable event tra
 for all of these case studies are publicly available (anonymized).
 
 \subsection{New Bugs}
-
 % \href{http://ucb-sts.github.com/experiments}{ucb-sts.github.com/experiments}.
 
-\subsubsection{POX Premature Handshake}
+\noindent{\bf POX Premature Handshake}
 
 Andi
 
-\subsubsection{POX List Removal}
+\noindent{\bf POX List Removal}
 The first SDN control platform we examined was POX. %the successor of NOX. POX is
 %a single-machine control platform intended primarily for research prototyping
 %and educational use (\ie~not large scale production use). Nevertheless, POX has
@@ -182,7 +181,7 @@ trace it produced made for a simple integration test.
 %We illustrate type errors to show how STS is a useful framework for exploring
 %code paths that you forget to unit tests.
 
-\subsubsection{POX In-flight Blackhole}
+\noindent{\bf POX In-flight Blackhole}
 We discovered the next bug after roughly 20 runs of randomly generated inputs.
 We noticed that \projectname~reported a persistent blackhole while POX was bootstrapping its
 discovery of link and host locations. There were $29$ inputs in the initial trace, and \projectname~returned a $11$ input
@@ -292,8 +291,7 @@ delayed arbitrarily as it was in \projectname.
 % Discussion of how our gizmos helped.
 } % \eat % -----------------------------------
 
-\subsubsection{POX Migration Blackhole}
-\colin{Move to "known bugs" section?}
+\noindent{\bf POX Migration Blackhole}
 Having examined the POX code in some depth, we noticed that there might be
 some interesting corner cases related to host migrations.
 We set up randomly generated inputs, included host
@@ -382,7 +380,7 @@ with $14$ traffic injections. We are in the process of pinpointing the
 exact root cause with NOX developers, based on the $18$ input MCS.
 } % -----------------------------------
 
-\subsection{Floodlight discovery loop.}
+\subsection{\noindent Floodlight discovery loop.}
 
 \begin{figure}[t]
     %\hspace{-10pt}
@@ -442,7 +440,7 @@ in pointing out a previously unknown bug, and reducing the input size.
 
 \subsection{Known Bugs}
 
-\subsubsection{Floodlight example failover bug}
+\noindent{\bf Floodlight example failover bug}
 
 We were able to reproduce the problem shown in Figure~\ref{fig:example} with
 \projectname. We ran two Floodlight controller
@@ -456,11 +454,15 @@ We were able to successfully isolate the 2-event MCS.
 %interposition, we expect that the algorithm should work well for less
 %fabricated cases.
 
+\noindent{\bf ONOS master election bug}
+
+XXX
+
 \subsection{Synthetic Bugs}
 
 \url{https://docs.google.com/document/d/1l4sbpLhd7wOMhL-u6Q-zlPS5YQMLqk5ILqU7RhUxdgA/edit}.
 
-\subsection{Overall Results.}
+\subsection{Overall Results}
 
 The overall results of our case studies are
 shown in Table~\ref{tab:case_studies}.
@@ -485,13 +487,6 @@ which took more than $8.5$ hours.
 %is preferable to spending software developer's time on manual
 %diagnosis.
 
-%\subsection{Overhead}
-%
-%Unlike traditional record and replay techniques, \projectname (at least in
-%testing mode) does not incur
-%Overhead: none! Logs already there. Deterministic replay on the other
-%hand has a huge overhead.
-
 %\subsection{Mitigating Non-Determinism}
 %
 %Our implementation of multiplexed sockets and
@@ -503,6 +498,16 @@ which took more than $8.5$ hours.
 %How often do unexpected internal events occur in practice?
 % The logging statements must also contain enough context[d] to allow for
 % unambiguous fingerprinting. -> what exactly this means
+
+%\subsection{Peek effectiveness}
+% How well does peek() work vs. only the heuristics?
+
+%\subsection{Replaying multiple times to mitigate non-determinsm}
+% How well does it work? -> Andrew
+
+\subsection{Instrumentation Complexity}
+
+How many LOC to instrument POX, Floodlight?
 
 \subsection{Scalability}
 
