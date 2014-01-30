@@ -124,12 +124,12 @@ for all of these case studies are publicly available (anonymized).
 \subsection{New Bugs}
 % \href{http://ucb-sts.github.com/experiments}{ucb-sts.github.com/experiments}.
 
-\noindent{\bf POX Premature Handshake}
+\noindent{\bf POX Premature Handshake.}
 
 Andi
 
-\noindent{\bf POX List Removal}
-The first SDN control platform we examined was POX. %the successor of NOX. POX is
+\noindent{\bf POX List Removal.} The first
+SDN controller we examined was POX. %the successor of NOX. POX is
 %a single-machine control platform intended primarily for research prototyping
 %and educational use (\ie~not large scale production use). Nevertheless, POX has
 %been deployed on real networks, and has a growing set of users.
@@ -181,8 +181,8 @@ trace it produced made for a simple integration test.
 %We illustrate type errors to show how STS is a useful framework for exploring
 %code paths that you forget to unit tests.
 
-\noindent{\bf POX In-flight Blackhole}
-We discovered the next bug after roughly 20 runs of randomly generated inputs.
+\noindent{\bf POX In-flight Blackhole.} We
+discovered the next bug after roughly 20 runs of randomly generated inputs.
 We noticed that \projectname~reported a persistent blackhole while POX was bootstrapping its
 discovery of link and host locations. There were $29$ inputs in the initial trace, and \projectname~returned a $11$ input
 MCS (runtime shown in Figure~\ref{fig:pox_discovery}).
@@ -291,8 +291,8 @@ delayed arbitrarily as it was in \projectname.
 % Discussion of how our gizmos helped.
 } % \eat % -----------------------------------
 
-\noindent{\bf POX Migration Blackhole}
-Having examined the POX code in some depth, we noticed that there might be
+\noindent{\bf POX Migration Blackhole.} Having
+examined the POX code in some depth, we noticed that there might be
 some interesting corner cases related to host migrations.
 We set up randomly generated inputs, included host
 migrations this time, and checked for blackholes. Our initial input size was
@@ -317,17 +317,15 @@ entries expired.
     blackhole.}
 \end{figure}
 
-\subsection{NOX Discovery Loop}
+\noindent{\bf NOX Discovery Loop.} Next we tested NOX on a four-node mesh, and discovered a
+routing loop between three switches within
+roughly 20 runs of randomly generated inputs.
 
 \begin{figure}[t]
     %\hspace{-10pt}
     \includegraphics[width=3.25in]{../graphs/runtime/nox_loop.pdf}
     \caption[]{\label{fig:nox_discovery} Minimizing the NOX discovery loop.}
 \end{figure}
-
-Next we tested NOX on a four-node mesh, and discovered a
-routing loop between three switches within
-roughly 20 runs of randomly generated inputs.
 
 Our initial input size was 68 inputs, and
 \projectname~returned an 18 input MCS.\footnote{\num{We had difficulty
@@ -380,19 +378,18 @@ with $14$ traffic injections. We are in the process of pinpointing the
 exact root cause with NOX developers, based on the $18$ input MCS.
 } % -----------------------------------
 
-\subsection{\noindent Floodlight discovery loop.}
+\noindent{\bf Floodlight discovery loop.} We
+applied \projectname~to Floodlight's routing application.
+In about 30 minutes, our fuzzing uncovered a
+117 input sequence that caused a persistent 3-node forwarding loop.
+\projectname~reduced the sequence to 13 input events in 324 replays and 8.5
+hours (runtime shown in Figure~\ref{fig:fl_loop}).
 
 \begin{figure}[t]
     %\hspace{-10pt}
     \includegraphics[width=3.25in]{../graphs/runtime/floodlight_loop.pdf}
     \caption[]{\label{fig:fl_loop} Minimizing the Floodlight loop.}
 \end{figure}
-
-We applied \projectname~to Floodlight's routing application.
-In about 30 minutes, our fuzzing uncovered a
-117 input sequence that caused a persistent 3-node forwarding loop.
-\projectname~reduced the sequence to 13 input events in 324 replays and 8.5
-hours (runtime shown in Figure~\ref{fig:fl_loop}).
 
 We repeatedly replayed the 13 event MCS, while successively adding
 instrumentation and increasing the log level each run. After about 15 replay
@@ -440,9 +437,7 @@ in pointing out a previously unknown bug, and reducing the input size.
 
 \subsection{Known Bugs}
 
-\noindent{\bf Floodlight example failover bug}
-
-We were able to reproduce the problem shown in Figure~\ref{fig:example} with
+\noindent{\bf Floodlight example failover bug.}  We were able to reproduce the problem shown in Figure~\ref{fig:example} with
 \projectname. We ran two Floodlight controller
 instances, connected to two simulated switches, and injected 200 extraneous link
 and switch failures, with the controller crash and switch connect event\footnote{We used a switch connect
@@ -454,9 +449,7 @@ We were able to successfully isolate the 2-event MCS.
 %interposition, we expect that the algorithm should work well for less
 %fabricated cases.
 
-\noindent{\bf ONOS master election bug}
-
-XXX
+\noindent{\bf ONOS master election bug.} XXX
 
 \subsection{Synthetic Bugs}
 
