@@ -7,7 +7,7 @@ Bug Name & Topology & Replay Success Rate & MCS Size & Final MCS replayable? \\
 \hline
 Newly found Bugs & - & - & - & - \\
 \hline
-Pyretic loop & 3 switch mesh & TBD & 2 & Yes \\
+Pyretic loop & 3 switch mesh & 20/20 & 2 & Yes \\
 % experiments/new_pyretic_loop_mcs/
 % Total original inputs: 36
 POX in-flight blackhole & 2 switch mesh & 15/20 [20/20*] & 11 & Yes \\
@@ -73,8 +73,9 @@ Multithreaded race condition & 10 switch mesh & TBD & TBD & TBD \\
 Memory Leak & 2 switch mesh & TBD & TBD & TBD \\
 % experiments/trigger_memory_leak2/
 % Currently running on c75
-Execution-speed race condition & TBD & TBD & TBD \\
-% Andrew
+Execution-speed race condition & 3 switch mesh & 9 & Yes \\
+% "floodlight" branch: experiments/floodlight_loop_2014_mcs_*
+% Total original inputs: 157
 Memory Corruption & TBD & TBD & TBD & TBD \\
 % Andi
 Load Balancer Flow Table Space & TBD & TBD & TBD & TBD \\
@@ -108,11 +109,11 @@ troubleshooting real bugs. We used \projectname~to find new bugs in \num{five} o
 SDN control platforms:
 ONOS~\cite{ONOS} (Java), POX~\cite{pox} (Python), NOX~\cite{nox} (C++),
 Pyretic~\cite{frenetic} (Python), and Floodlight~\cite{bigswitch} (Java), and
-debugged these with \num{and without} the help of \projectname. Second, we demonstrate the
+debugged these with the help of \projectname. Second, we demonstrate the
 boundaries of where \projectname~works well and where it does not by using it to
-troubleshoot synthetic bugs that span a range of bug types encountered in
-practice. Throughout our evaluation we strive to qualitatively approximate A/B testing
-with in-depth case studies on the troubleshooting process.
+troubleshoot synthetic and previously known bugs that span a range of bug types encountered in
+practice. Throughout our evaluation we strive to provide qualitative
+evaluation of \projectname's use in the troubleshooting process.
 
 We show a high-level overview
 of our results in Table~\ref{tab:case_studies}, and
