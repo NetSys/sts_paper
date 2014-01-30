@@ -509,6 +509,9 @@ and not routes will traverse it. We managed to reproduce this situation with
 
 \url{https://docs.google.com/document/d/1l4sbpLhd7wOMhL-u6Q-zlPS5YQMLqk5ILqU7RhUxdgA/edit}.
 
+\tbd{Explain in rough terms what the categories are, and explain for the cases that
+didn't work so well why we didn't expect them to work so well.}
+
 \subsection{Overall Results}
 
 The overall results of our case studies are
@@ -554,7 +557,29 @@ which took more than $8.5$ hours.
 
 \subsection{Instrumentation Complexity}
 
-How many LOC to instrument POX, Floodlight?
+%andi@aquil-vm:~/entw/openflow/floodlight-sts$ git diff --stat f37046a..HEAD | grep '|' | grep -v 'slf4j' | grep .java | grep sts | perl -pai -e '$sum += $F[2]; END { print $sum, "\n"; }'
+% .../aspects/sts/HorribleMicroSecondTimeSource.java |   92 +++
+% src/main/aspects/sts/MicroSecondTime.java          |   54 ++
+% src/main/aspects/sts/MicrosecondTimeSource.java    |    7 +
+% src/main/aspects/sts/SimpleLogger.java             |   44 ++
+% src/main/aspects/sts/SyncMessageDecoder.java       |   34 +
+% src/main/aspects/sts/SyncMessageEncoder.java       |   29 +
+% src/main/aspects/sts/sync/StsSyncModule.java       |   53 ++
+% src/main/aspects/sts/sync/StsSyncService.java      |  192 +++++
+% src/main/aspects/sts/sync/message/StateChange.java |   42 ++
+% src/main/aspects/sts/sync/message/SyncMessage.java |   59 ++
+% .../sts/sync/message/SyncMessageBuilder.java       |   75 ++
+% .../sts/HorribleMicroSecondTimeSourceTest.java     |   41 ++
+%722
+
+%cs@yossarian:~/Research/UCB/code/sts/sts/syncproto$ wc -l *py
+%      15 __init__.py
+%     215 base.py
+%     205 pox_syncer.py
+%     147 sts_syncer.py
+%     582 total
+
+Here we show how much effort it took us to interpose on logging, gettimeofday.
 
 \subsection{Scalability}
 
