@@ -179,6 +179,13 @@ trace it produced made for a simple integration test.
 %code paths that you forget to unit tests.
 
 \noindent{\bf POX Premature Handshake.} Andi, TBD.
+Runtime in Figure~\ref{fig:pox_handshake}.
+
+\begin{figure}[t]
+    %\hspace{-10pt}
+    \includegraphics[width=3.25in]{../graphs/runtime/pox_early_packetin.pdf}
+    \caption[]{\label{fig:pox_handshake} Minimizing the POX premature handshake.}
+\end{figure}
 
 \noindent{\bf POX In-flight Blackhole.} We
 discovered the next bug after roughly 20 runs of randomly generated inputs.
@@ -290,27 +297,6 @@ delayed arbitrarily as it was in \projectname.
 % Discussion of how our gizmos helped.
 } % \eat % -----------------------------------
 
-\noindent{\bf Pyretic Loop.} We discovered a loop when fuzzing Pyretic's hub
-module, whose purpose is to flood packets along a minimum spanning tree. After
-minimizing the execution, we found that the triggering events
-were a link failure at the beginning of the trace, followed some time later by
-the recovery of that link. After roughly 9 hours over two days of examining
-Pyretic's (unfamiliar to us) code, we found what we believed to be the problem
-in its logic for computing minimum spanning trees: it appeared that down links
-weren't properly being accounted for, such that flow entries were installed
-along that link even when it was down. When the link recovered, a loop was
-created, as the flow entries were still in place. The loop seemed to persist until
-Pyretic periodically flushed all flow entries.
-
-We proceeded to file a bug report, along with a replayable trace of the
-minimized execution to the developers of Pyretic. They found after roughly
-five hours of replaying the trace with \projectname~and examining openflow exchanges that Pyretic told switches to
-flood out all links before the entire
-network topology had been learned (including the down link). By adding a timer before installing
-entries to allow for links to be discovered, the developers were able to verify
-that the loop no longer appeared. A long term fix for this issue is currently being discussed by the developers of
-Pyretic.
-
 \noindent{\bf POX Migration Blackhole.} Having
 examined the POX code in some depth, we noticed that there might be
 some interesting corner cases related to host migrations.
@@ -336,6 +322,33 @@ entries expired.
     \caption[]{\label{fig:pox_migration} Minimizing the POX migration
     blackhole.}
 \end{figure}
+
+\noindent{\bf Pyretic Loop.} We discovered a loop when fuzzing Pyretic's hub
+module, whose purpose is to flood packets along a minimum spanning tree. After
+minimizing the execution (runtime in figure~\ref{fig:pyretic_loop}), we found that the triggering events
+were a link failure at the beginning of the trace, followed some time later by
+the recovery of that link. After roughly 9 hours over two days of examining
+Pyretic's (unfamiliar to us) code, we found what we believed to be the problem
+in its logic for computing minimum spanning trees: it appeared that down links
+weren't properly being accounted for, such that flow entries were installed
+along that link even when it was down. When the link recovered, a loop was
+created, as the flow entries were still in place. The loop seemed to persist until
+Pyretic periodically flushed all flow entries.
+
+\begin{figure}[t]
+    %\hspace{-10pt}
+    \includegraphics[width=3.25in]{../graphs/runtime/pyretic_loop.pdf}
+    \caption[]{\label{fig:pyretic_loop} Minimizing the Pyretic loop.}
+\end{figure}
+
+We proceeded to file a bug report, along with a replayable trace of the
+minimized execution to the developers of Pyretic. They found after roughly
+five hours of replaying the trace with \projectname~and examining openflow exchanges that Pyretic told switches to
+flood out all links before the entire
+network topology had been learned (including the down link). By adding a timer before installing
+entries to allow for links to be discovered, the developers were able to verify
+that the loop no longer appeared. A long term fix for this issue is currently being discussed by the developers of
+Pyretic.
 
 \noindent{\bf NOX Discovery Loop.} Next we tested NOX on a four-node mesh, and discovered a
 routing loop between three switches within
