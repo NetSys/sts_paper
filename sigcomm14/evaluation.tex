@@ -2,62 +2,89 @@
 
 \begin{table*}
 \centering
-\begin{tabular}{l|l|l|l}
-Bug Name & Topology & Replay Success Rate & MCS Size \\
+\begin{tabular}{l|l|l|l|l|}
+Bug Name & Topology & Replay Success Rate & MCS Size & Final MCS replayable? \\
 \hline
-Newly found Bugs & - & - & - \\
+Newly found Bugs & - & - & - & - \\
 \hline
-Pyretic loop & 3 switch mesh & TBD & 2 \\
-% TBD
-POX list removal & 2 switch mesh & 20/20 & 2 \\
-% Total inpujts: 69
-% With DP events: 72/2
-% Original: config/eugene_epsilon_replay.py
-% MCS: config/eugene_epsilon_mcs.py
-POX in-flight blackhole & 2 switch mesh & 15/20 [20/20*] & 11 \\
+Pyretic loop & 3 switch mesh & TBD & 2 & Yes \\
+% experiments/new_pyretic_loop_mcs/
+% Total original inputs: 36
+POX in-flight blackhole & 2 switch mesh & 15/20 [20/20*] & 11 & Yes \\
 % Total inputs: 26
 % With DP events: 68/25
 % Original: 7ba95ed82ca4e32f12ab511d9c4301dbac2c59d5
 % MCS: 399cf861db87a65e600283d9ae7760400c4676e2
 % Updated: updated_debug_branch_loop/
 % TODO(cs): move to "known bugs"?
-POX migration blackhole & 4 switch mesh & 20/20* & 3 \\
+POX premature handshake & 4 switch mesh & 20/20 & 2 & Yes \\
+% Andi: experiments/pox_early_packetin
+% Total inputs: 102
+POX migration blackhole & 4 switch mesh & 20/20* & 3 & Yes \\
 % Total inputs: 29
 % With DP events: 117/3
 % fuzz_pox_4mesh_blackhole
 % Updated (fat tree): pox_fattree_migration
-NOX discovery loop & 4 switch mesh & 18/20 & 18 \\
+POX list removal & 2 switch mesh & 20/20 & 2 & Yes \\
+% Total inpujts: 69
+% With DP events: 72/2
+% Original: config/eugene_epsilon_replay.py
+% MCS: config/eugene_epsilon_mcs.py
+NOX discovery loop & 4 switch mesh & 18/20 & 18 & No \\
 % Total inputs: 150
 % With DP events: 358/58
 % Original: ce547fc1df3bde279b6f3dd589c909663e295f1e
 % MCS: 5f49e791b0c1a611454cf0930f54aa609dd635d3
 % Updated to new format: nox_mesh_4_loop_repro_verbose
-Floodlight loop & 3 switch mesh & 15/50 & 36 \\
+Floodlight loop & 3 switch mesh & 15/50 & 36 & Yes \\
 % Total inputs: 284
 % Andi
+ONOS distributed database locking & TBD & 3 & Yes \\
+% Ahmed
 \hline
-Known Bugs & - & - & - \\
+Known Bugs & - & - & - & - \\
 \hline
-Floodlight example failover bug & 2 switch mesh & N/A & 2 \\
-% TBD: Ahmed
-ONOS controller partition & TBD & TBD & TBD \\
-ONOS forgotten flows & TBD & TBD & TBD \\
+Floodlight example failover bug & 2 switch mesh & TBD & 2 & Yes \\
+% Predates the experiment directory
+ONOS master election & TBD & TBD & TBD & TBD \\
+% Ahmed
+% --------
+%ONOS forgotten flows & TBD & TBD & TBD \\
 \hline
-Synthetic Bugs & - & - & - \\
+Synthetic Bugs & - & - & - & - \\
 \hline
-Load Balancer Flow Table Space & TBD & TBD & TBD \\
-Ignored Bad OpenFlow args & TBD & TBD & TBD \\
-Overlapping flow entries & TBD & TBD & TBD \\
-Decision based on last byte of TCP SYN & TBD & TBD & TBD \\
-Timer misfire & TBD & TBD & TBD \\
-Algorithm misimplentation & TBD & TBD & TBD \\
-Multithreaded race condition & TBD & TBD & TBD \\
-Memory corruption & TBD & TBD & TBD \\
-Failover bug & TBD & TBD & TBD \\
-Consistency misunderstanding & TBD & TBD & TBD \\
-Latency spike & TBD & TBD & TBD \\
-Invalid sleep value & TBD & TBD & TBD \\
-Non-deterministic TCAMs -> transient tenant isolation breach & TBD & TBD & TBD \\
+Null pointer on rarely used codepath & 20 switch FatTree & TBD & 2 & Yes \\
+% experiments/experiments/pox_null_pointer_mcs
+% total original inputs: 365
+Overlapping flow entries & 2 switch mesh & TBD & 2 & Yes \\
+% experiments/trigger_priority_mismatch_small_mcs
+% total original inputs: 27
+Delicate timer interleaving & 3 switch mesh & TBD & 39 & No \\
+% experiments/snapshot_demo_synthetic_link_failure
+% total original inputs: 39
+Algorith misimplementation & 3 switch mesh & TBD & 7 & No \\
+% experiments/experiments/pox_broken_floyd_mcs
+% total original inputs: 40
+% MCS is inflated! link failure / recovery in MCS not related to triggering events.
+Multithreaded race condition & 10 switch mesh & TBD & TBD & TBD \\
+% experiments/trigger_multithreading_bug_mcs
+% total original inputs: 1597
+% Currently running on c5
+Memory Leak & 2 switch mesh & TBD & TBD & TBD \\
+% experiments/trigger_memory_leak2/
+% Currently running on c75
+Execution-speed race condition & TBD & TBD & TBD \\
+% Andrew
+Memory Corruption & TBD & TBD & TBD & TBD \\
+% Andi
+Load Balancer Flow Table Space & TBD & TBD & TBD & TBD \\
+% Jefferson
+% ----
+%Ignored Bad OpenFlow args & TBD & TBD & TBD \\
+%Latency spike & TBD & TBD & TBD \\
+%Invalid sleep value & TBD & TBD & TBD \\
+%Non-deterministic TCAMs -> transient tenant isolation breach & TBD & TBD & TBD \\
+%Decision based on last byte of TCP SYN & TBD & TBD & TBD \\
 \end{tabular}
 \caption{Overview of Case Studies. \newline
 \textmd{*with multiplexed sockets, overridden {\tt gettimeofday()}, and
@@ -96,6 +123,10 @@ for all of these case studies are publicly available (anonymized).
 \subsection{New Bugs}
 
 % \href{http://ucb-sts.github.com/experiments}{ucb-sts.github.com/experiments}.
+
+\subsubsection{POX Premature Handshake}
+
+Andi
 
 \subsubsection{POX List Removal}
 The first SDN control platform we examined was POX. %the successor of NOX. POX is
