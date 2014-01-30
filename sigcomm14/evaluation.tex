@@ -448,7 +448,7 @@ in pointing out a previously unknown bug, and reducing the input size.
 
 \noindent{\bf Floodlight example failover bug.}  We were able to reproduce the problem shown in Figure~\ref{fig:example} with
 \projectname. We ran two Floodlight controller
-instances, connected to two switches, and injected 200 extraneous link
+instances (a version before the bug was fixed), connected to two switches, and injected 200 extraneous link
 and switch failures, with the controller crash and switch connect event\footnote{We used a switch connect
 event rather than a link failure event for logistical reasons, but both
 can trigger the race condition} that triggered the blackhole interleaved among them.
@@ -458,7 +458,17 @@ We were able to successfully isolate the two event MCS.
 %interposition, we expect that the algorithm should work well for less
 %fabricated cases.
 
-\noindent{\bf ONOS master election bug.} XXX
+\noindent{\bf ONOS master election bug.} We reproduced another bug,
+previously reported in earlier versions and later fixed, in
+ONOS' master election protocol. If two adjacent switches are connected to two
+separate controllers, the controllers must decide between themselves who will
+be responsible for tracking the liveness of the link. They make this decision
+by electing the controller with the lower ID as the master for that link.
+When the master dies, and later reboots, it is assigned a new ID. If
+its new ID is higher than the other controllers', both will incorrectly
+believe that they are not responsible for tracking the liveness of the link,
+and not routes will traverse it. We managed to reproduce this situation with
+\projectname~and minimize the MCS for it: \num{TBD.}
 
 \subsection{Synthetic Bugs}
 
