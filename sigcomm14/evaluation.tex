@@ -376,7 +376,16 @@ with $14$ traffic injections. We are in the process of pinpointing the
 exact root cause with NOX developers, based on the $18$ input MCS.
 } % -----------------------------------
 
-\noindent{\bf ONOS distributed database locking.} XXX
+\noindent{\bf ONOS distributed database locking.} When testing ONOS, a
+distributed open-source controller, we noticed that ONOS controllers would
+occasionally reject switch's attempts to connect upon initialization.
+We minimized the (already small) sequence of startup events to 3 inputs.
+When examining the ONOS logs, we found that the particular timing between the 3
+input events caused both ONOS controllers to encounter a "failed to obtain
+lock" error from their distributed graph database (Titan). We suspect that the ONOS controllers
+were attempting to concurrently insert the same key, a known problem in Titan \num{cite}.
+We modified ONOS' initialization logic to retry when inserting switches,
+and found the problem went away.
 
 \noindent{\bf Floodlight discovery loop.} We
 applied \projectname~to Floodlight's routing application.
