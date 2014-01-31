@@ -477,8 +477,8 @@ The runtime can be decreased by parallelizing delta debugging:
 speculatively replaying subsequences in parallel, and joining the results.
 Storing periodic checkpoints of the system state throughout testing can also reduce runtime, as it
 allows us to replay starting from a recent checkpoint rather than the beginning of the
-trace. \barath{But doesn't this approach break due to non-determinism?  Sometimes we want
-a replay run to be different from a previous replay run...} 
+trace.% \barath{But doesn't this approach break due to non-determinism?  Sometimes we want
+%a replay run to be different from a previous replay run...} 
 
 \eat{
 SDN platform developers can reduce the probability that the replay algorithm

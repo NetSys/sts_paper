@@ -392,7 +392,7 @@ how NOX actually installed routes.
 The order in which NOX discovered links was crucial: at the point NOX
 installed the 3-loop, it had only discovered one link towards the destination.
 Therefore all other switches routed through the one known neighbor switch. The
-links adjacent to the neihbor switch formed 2 of the 3 links in the loop.
+links adjacent to the neighbor switch formed 2 of the 3 links in the loop.
 %\barath{I don't understand this:} This comprised 2 of the 3 links involved in the link.
 
 The destination host only sent one packet, which caused NOX to initially learn
@@ -605,7 +605,7 @@ unable to replay.\\[0.5ex]
 \noindent{\bf Algorithm misimplementation}
 We modified POX's implementation of Floyd-Warshall to create loops.
 We noticed that the MCS was inflated by at least two events: a link failure
-and a link recovery that we did not belive were relevant to trigger the bug we
+and a link recovery that we did not believe were relevant to trigger the bug we
 induced. Moreover, the final MCS was not replayable on the first try.
 We suspect that these problems may have been introduced by the fact that the
 routing implementation depended on the discovery module to find links in the
@@ -729,29 +729,37 @@ indirection, and for POX we needed 415 line of Python.
 
 \subsection{Coping with Non-determinism}
 
+\eat{
 The most elusive class of bugs is those that are not always reproducible. These bugs are
 usually highly dependent on the specific timings of the sequence of relevant events, either
 across threads or across nodes. This limits the effectiveness of \projectname{} to minimize the
 size of the MCS, as the underlying algorithm relies on the ability to successfully replay
-invariant violations.
+invariant violations.}
 
-To mitigate the effects of non-determinism, we replay the given sequence of events multiple times
+Recall that \projectname~optionally replays subsequences multiple times
+throughout delta debugging to
+mitigate the effects of non-determinism. We evaluate the effectiveness of this
+approach on the minimization a non-deterministic loop created by Floodlight.
+Figure~\ref{fig:non-determinism} demonstrates that the size of the resulting MCS decreases
+with the number of replays per subsequence. This shows that replaying multiple times is
+effective at coping with non-determinism, at the cost of increased runtime.
+
+\eat{
+This is because the algorithm narrows its search every time
+the expected violation is triggered; replaying a subsequence multiple times significantly improves its
+likelihood of successfully reproducing the violation.}
+
+\eat{
 during MCS computation. This approach is motivated by the following observation: the probability
 of failure in reproducing an invariant violation diminishes at a rate of $(1 - x)^n$, where $x$ is
 the probability of success, and $n$ the number of replays. As an example, after 10 replays, a
 sequence that triggers a violation with a probability of $0.5$ now has a probability of less than
-$0.001$ of failure in reproducing the violation.
-
-We evaluate the effectiveness of this approach on the MCS computation of a non-deterministic Floodlight
-loop. Figure~\ref{fig:non-determinism} demonstrates that the size of the resulting MCS decreases
-exponentially with the number of replays. This is because the algorithm narrows its search every time
-the expected violation is triggered; replaying a subsequence multiple times significantly improves its
-likelihood of successfully reproducing the violation.
+$0.001$ of failure in reproducing the violation.}
 
 \begin{figure}[t]
     \includegraphics[trim=0 0.5cm 0 0, width=3.25in]{../graphs/non-determinism/replays.pdf}
-    \caption[]{\label{fig:non-determinism} Effect of replaying a sequence multiple times on
-non-determinism during MCS computation.}
+    \caption[]{\label{fig:non-determinism} Effectiveness of replaying
+    subsequences multiple times in mitigating non-determinism.}
 \end{figure}
 
 \subsection{Scalability}
