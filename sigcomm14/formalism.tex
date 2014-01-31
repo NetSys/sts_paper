@@ -18,8 +18,8 @@ configurations $C_L$.
 A replay of log $L$ involves replaying the external events along with a
 particular timing $T$,
 which need not be identical to the original timings $T_L$ captured in the log.
-We need to account for timings $T$ because as we prune events, we
-are not be able to use the original timings $T_L$.
+We need to account for timings $T$ because as we prune events we
+are unable to use the original timings $T_L$.
 We denote a replay attempt by $replay(E_L,T)$.
 The output of $replay$ is a sequence of forwarding state configurations
 $C_R = \hat{c}_1,\hat{c}_2,\dots,\hat{c}_n$. In the ideal case $replay(E_L,T_L)$ reproduces the same
