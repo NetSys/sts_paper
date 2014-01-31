@@ -2,28 +2,28 @@
 
 \begin{table*}
 \centering
-\begin{tabular}{|l||l|l|l|l|l|}
-  \cline{2-6}
+\footnotesize
+\begin{tabular}{|l||l|l|r|r|r|l|}
+  \cline{2-7}
   \multicolumn{1}{c|}{~} & \textbf{Bug Name} & \textbf{Topology} &
-  \textbf{Input Size} &
-  \textbf{MCS Size} & \textbf{MCS helpful?}  \\\cline{2-6} \hline
+  \textbf{Runtime (s)} & \textbf{MCS Size} & \textbf{Final MCS replayable?}  \\\cline{2-6} \hline
   \multirow{8}{*}{\rotatebox[origin=c]{90}{\bf Newly Found}}
-& Pyretic loop & 3 switch mesh & 36 & 2 & Yes \\
+& Pyretic loop & 3 switch mesh & 266.2 & 36 & 2 & Yes \\
 % 20/20
 % experiments/new_pyretic_loop_mcs/
 % Total original inputs: 36
-& POX premature packetin & 4 switch mesh & 102 & 2 & Yes \\
+& POX premature packetin & 4 switch mesh & 249.1 & 102 & 2 & Yes \\
 % 20/20
 % Andi: experiments/pox_early_packetin_mcs
 % Total inputs: 102
-& POX in-flight blackhole & 2 switch mesh & 46 & 7 & Yes \\
+& POX in-flight blackhole & 2 switch mesh & 641.1 & 46 & 7 & Yes \\
 % \colin{15/20 [20/20*]}
 % Total inputs: 46
 % With DP events: 68/25
 % Original: 7ba95ed82ca4e32f12ab511d9c4301dbac2c59d5
 % MCS: 399cf861db87a65e600283d9ae7760400c4676e2
 % Updated: updated_debug_branch_loop_v3_mcs/
-& POX migration blackhole & 4 switch mesh & 29 & 3 & Yes \\
+& POX migration blackhole & 4 switch mesh & 1796.0 & 29 & 3 & Yes \\
 % 20/20
 % Total inputs: 29
 % With DP events: 117/3
@@ -33,27 +33,27 @@
 %% With DP events: 72/2
 %% Original: config/eugene_epsilon_replay.py
 %% MCS: config/eugene_epsilon_mcs.py
-& NOX discovery loop & 4 switch mesh & 150 & 18 & Not directly \\
+& NOX discovery loop & 4 switch mesh & 4990.9s & 150 & 18 & Indirectly \\
 % 18/20
 % Total inputs: 150
 % With DP events: 358/58
 % Original: ce547fc1df3bde279b6f3dd589c909663e295f1e
 % MCS: 5f49e791b0c1a611454cf0930f54aa609dd635d3
 % Updated to new format: nox_mesh_4_loop_repro_verbose
-& Floodlight loop & 3 switch mesh & 117 & 13 & Yes \\
+& Floodlight loop & 3 switch mesh & 27930.6 & 117 & 13 & Yes \\
 % 15/50
 % Total inputs: 284
 % zeta_final/, on floodlight branch of experiments repo
-& ONOS distributed database locking & 2 switch mesh & 1 & 1 & N/A \\
+& ONOS distributed database locking & 2 switch mesh & - & 1 & 1 & N/A \\
 % Ahmed
 \hline
 \hline
 \multirow{3}{*}{\rotatebox[origin=c]{90}{\bf Known}}
-& Floodlight failover bug & 2 switch mesh & 202 & 2 & Yes \\
+& Floodlight failover bug & 2 switch mesh & & 202 & 2 & Yes \\
 % Predates the experiment directory
-& ONOS master election & 2 switch mesh & 30 & 30 & No \\
+& ONOS master election & 2 switch mesh & & 30 & 30 & No \\
 % Ahmed
-& Load balancer flow table space & 3 switch mesh & 106 & 24 (N+1) & Yes \\
+& Load balancer flow table space & 3 switch mesh & & 106 & 24 (N+1) & Yes \\
 % load_balancer_fuzzer_mcs/
 % Total original inputs: 106
 % --------
@@ -61,31 +61,29 @@
 \hline
 \hline
 \multirow{7}{*}{\rotatebox[origin=c]{90}{\bf Synthetic}} & Null pointer on
-rarely used codepath & 20 switch FatTree & 365 & 2 & Yes \\
+rarely used codepath & 20 switch FatTree & & 365 & 2 & Yes \\
 % experiments/experiments/pox_null_pointer_mcs
 % total original inputs: 365
-& Overlapping flow entries & 2 switch mesh & 27 & 2 & Yes \\
+& Overlapping flow entries & 2 switch mesh & & 27 & 2 & Yes \\
 % experiments/trigger_priority_mismatch_small_mcs
 % total original inputs: 27
-& Delicate timer interleaving & 3 switch mesh & 39 & 39 & No \\
+& Delicate timer interleaving & 3 switch mesh & & 39 & 39 & No \\
 % experiments/snapshot_demo_synthetic_link_failure
 % total original inputs: 39
-& Algorithm misimplementation & 3 switch mesh & 40 & 7 & Not directly \\
+& Algorithm misimplementation & 3 switch mesh & & 40 & 7 & Indirectly \\
 % experiments/experiments/pox_broken_floyd_mcs
 % total original inputs: 40
 % MCS is inflated! link failure / recovery in MCS not related to triggering events.
-& Multithreaded race condition & 10 switch mesh & 1596 & 2\footnote{The race
-condition triggered by any I/O events, so the final MCS was essentially
-random} & Not directly \\
+& Multithreaded race condition & 10 switch mesh & & 1596 & 2 & Indirectly \\
 % experiments/trigger_multithreading_bug_mcs
 % total original inputs: 1596
-& Memory Leak & 2 switch mesh & 719 & 30 (M) & Not directly \\
+& Memory Leak & 2 switch mesh & & 719 & 30 (M) & Indirectly \\
 % experiments/trigger_memory_leak3_mcs/
 % total original inputs: 719
 %Execution-speed race condition & 3 switch mesh & - & 9 & Yes \\
 %% "floodlight" branch: experiments/floodlight_loop_2014_mcs_*
 %% Total original inputs: 157
-& Memory Corruption & 4 switch mesh & 341 & 2 & Yes \\
+& Memory Corruption & 4 switch mesh & & 341 & 2 & Yes \\
 % syn_mem_corruption_3switch_fuzzer_mcs
 % Total original inputs: 341
 % ----
@@ -96,9 +94,7 @@ random} & Not directly \\
 %Decision based on last byte of TCP SYN & TBD & TBD & TBD \\
 \hline
 \end{tabular}
-\caption{Overview of Case Studies. \newline
-\textmd{*with multiplexed sockets, overridden {\tt gettimeofday()}, and
-logging interposition enabled.}}
+\caption{Overview of Case Studies.}
 \label{tab:case_studies}
 \end{table*}
 
@@ -148,12 +144,12 @@ along that link even though it was down. When the link recovered, a loop was
 created, as the flow entries were still in place. The loop seemed to persist until
 Pyretic periodically flushed all flow entries.
 
-\begin{figure}[t]
-    %\hspace{-10pt}
-    \includegraphics[width=3.25in]{../graphs/runtime/pyretic_loop.pdf}
-    \caption[]{\label{fig:pyretic_loop} Minimizing the Pyretic loop. (total
-    runtime: 266.2, original runtime: 5.8s)}
-\end{figure}
+%\begin{figure}[t]
+%    %\hspace{-10pt}
+%    \includegraphics[width=3.25in]{../graphs/runtime/pyretic_loop.pdf}
+%    \caption[]{\label{fig:pyretic_loop} Minimizing the Pyretic loop. (total
+%    runtime: 266.2, original runtime: 5.8s)}
+%\end{figure}
 
 We proceeded to file a bug report along with a replayable trace of the
 minimized execution to the developers of Pyretic. They found after roughly
@@ -243,11 +239,38 @@ behave unexpectedly and in a non-trivial manner that is hard to understand
 without being able to repeat the experiment with a minimal trace. Making heavy
 use of the MCS replay, a developer unfamiliar with the two subsystems involved
 was able to root-cause the bug in about 30 minutes.
+\begin{figure*}[!htb]
+\begin{subfigure}{0.32\textwidth}
+    \includegraphics[width=\textwidth]{../graphs/runtime/pyretic_loop.pdf}
+    \caption[]{\label{fig:pyretic_loop} Pyretic loop.}
+\end{subfigure}\hfill
+\begin{subfigure}{0.32\textwidth}
+    %\hspace{-10pt}
+    \includegraphics[width=\textwidth]{../graphs/runtime/pox_early_packetin.pdf}
+    \caption[]{\label{fig:pox_handshake} POX Premature Packet-In Failure.}
+\end{subfigure}\hfill
+\begin{subfigure}{0.32\textwidth}
+    \includegraphics[width=\textwidth]{../graphs/runtime/pox_blackhole.pdf}
+    \caption[]{\label{fig:pox_discovery} POX in-flight blackhole. }
+\end{subfigure}\hfill
+\begin{subfigure}{0.32\textwidth}
+    \includegraphics[width=\textwidth]{../graphs/runtime/pox_migration_blackhole.pdf}
+    \caption[]{\label{fig:pox_migration} POX migration blackhole. }
+\end{subfigure}\hfill
+\begin{subfigure}{0.32\textwidth}
+    \includegraphics[width=\textwidth]{../graphs/runtime/nox_loop.pdf}
+    \caption[]{\label{fig:nox_discovery} NOX discovery loop. }
+\end{subfigure}\hfill
+\begin{subfigure}{0.32\textwidth}
+    \includegraphics[width=\textwidth]{../graphs/runtime/floodlight_loop.pdf}
+    \caption[]{\label{fig:fl_loop} Floodlight loop. }
+\end{subfigure}
+\caption{Minimization results}
+\end{figure*}
+
+
 \begin{figure}[t]
     %\hspace{-10pt}
-    \includegraphics[width=3.25in]{../graphs/runtime/pox_early_packetin.pdf}
-    \caption[]{\label{fig:pox_handshake} Minimizing the POX Premature
-    Packet-In Failure. (total runtime: 249.1s, original runtime: 2.7s)}
 \end{figure}
 \noindent{\bf POX In-flight Blackhole.} We discovered another bug
 after roughly 20 runs of randomly generated inputs. We noticed a persistent
@@ -258,12 +281,12 @@ We were able to reliably replay it by employing multiplexed sockets, overriding 
 and waiting on POX's logging messages. \projectname~returned a $7$ input MCS
 (runtime shown in Figure~\ref{fig:pox_discovery}).
 
-\begin{figure}[t]
-    %\hspace{-10pt}
-    \includegraphics[width=3.25in]{../graphs/runtime/pox_blackhole.pdf}
-    \caption[]{\label{fig:pox_discovery} Minimizing the POX in-flight
-    blackhole. (total runtime: 641.1, original runtime: 4.9s)}
-\end{figure}
+%\begin{figure}[t]
+%    %\hspace{-10pt}
+%    \includegraphics[width=3.25in]{../graphs/runtime/pox_blackhole.pdf}
+%    \caption[]{\label{fig:pox_discovery} Minimizing the POX in-flight
+%    blackhole. (total runtime: 641.1, original runtime: 4.9s)}
+%\end{figure}
 
 We provided the MCS to the lead developer of POX. Primarily using the
 console output, we were able to trace through the code and identify the problem
@@ -377,22 +400,23 @@ entries expired.\\[0.5ex]
 %We did not know it at the time, but this was a known problem,
 %and this particular routing module did not support host migrations. Nonetheless, this
 %case demonstrates how the MCS alone can point to the root cause.
-\begin{figure}[t]
-    %\hspace{-10pt}
-    \includegraphics[width=3.25in]{../graphs/runtime/pox_migration_blackhole.pdf}
-    \caption[]{\label{fig:pox_migration} Minimizing the POX migration
-    blackhole. (total runtime: 1796.0s, original runtime: 10.3s}
-\end{figure}
+%\begin{figure}[t]
+%    %\hspace{-10pt}
+%    \includegraphics[width=3.25in]{../graphs/runtime/pox_migration_blackhole.pdf}
+%    \caption[]{\label{fig:pox_migration} Minimizing the POX migration
+%    blackhole. (total runtime: 1796.0s, original runtime: 10.3s}
+%\end{figure}
+
 \noindent{\bf NOX Discovery Loop.} Next we tested NOX on a four-node mesh, and discovered a
 routing loop between three switches within
 roughly 20 runs of randomly generated inputs.
 
-\begin{figure}[t]
-    %\hspace{-10pt}
-    \includegraphics[width=3.25in]{../graphs/runtime/nox_loop.pdf}
-    \caption[]{\label{fig:nox_discovery} Minimizing the NOX discovery loop.
-    (total runtime: 4990.9s, original runtime: 4.0s)}
-\end{figure}
+%\begin{figure}[t]
+%    %\hspace{-10pt}
+%    \includegraphics[width=3.25in]{../graphs/runtime/nox_loop.pdf}
+%    \caption[]{\label{fig:nox_discovery} Minimizing the NOX discovery loop.
+%    (total runtime: 4990.9s, original runtime: 4.0s)}
+%\end{figure}
 
 Our initial input size was 68 inputs, and
 \projectname~returned an 18 input MCS.
@@ -468,12 +492,12 @@ floodlight at the time).} With this, \projectname~reduced the sequence to 13
 input events in 324 replays and 8.5 hours (runtime shown in
 Figure~\ref{fig:fl_loop}).
 
-\begin{figure}[t]
-    %\hspace{-10pt}
-    \includegraphics[width=3.25in]{../graphs/runtime/floodlight_loop.pdf}
-    \caption[]{\label{fig:fl_loop} Minimizing the Floodlight loop. (total
-    runtime: 27930.6s, original runtime: 194.0s)}
-\end{figure}
+%\begin{figure}[t]
+%    %\hspace{-10pt}
+%    \includegraphics[width=3.25in]{../graphs/runtime/floodlight_loop.pdf}
+%    \caption[]{\label{fig:fl_loop} Minimizing the Floodlight loop. (total
+%    runtime: 27930.6s, original runtime: 194.0s)}
+%\end{figure}
 
 We repeatedly replayed the 13 event MCS while successively adding
 instrumentation and increasing the log level each run. After about 15 replay
