@@ -244,6 +244,38 @@ event $i$ from the original log if and only if all unmasked fields have the same
 and $i$ occurs between $i'$'s preceding and succeeding inputs in the
 happens-before relation.
 
+\begin{table}
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Input Type} & \textbf{Implementation} \\
+\hline
+\hline
+Switch failure/recovery & TCP teardown \\
+\hline
+Controller failure/recovery & \verb=SIGKILL= \\
+\hline
+Link failure/recovery & \verb=ofp_port_status= \\
+\hline
+Controller partition & \verb=iptables= \\
+\hline
+Dataplane packet injection & Network namespaces \\
+\hline
+Dataplane packet drop & Dataplane interposition \\
+\hline
+Dataplane packet delay & Dataplane interposition \\
+\hline
+Host migration & \verb=ofp_port_status= \\
+\hline
+Control message delay & Controlplane interposition \\
+\hline
+Non-deterministic TCAMs & Modified switches \\
+\hline
+\end{tabular}
+\caption{Input types currently supported by \projectname}
+\label{tab:inputs}
+\end{table}
+
 \eat{
 \begin{figure}[t]
     %\hspace{-10pt}

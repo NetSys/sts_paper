@@ -46,7 +46,7 @@ allows us to replicate many of the failure modes caused by asynchrony in real
 networks in a more deterministic manner. During
 replay, we use these buffers to enforce event orderings by
 matching messages in the buffers by their fingerprints and managing
-the order in which messages are let through. The overall simulation architecture is depicted in
+the order in which messages are let through. The overall architecure is depicted in
 Figure~\ref{fig:architecture}.
 
 \begin{figure}[t]
@@ -56,38 +56,6 @@ Figure~\ref{fig:architecture}.
     network devices, and interposes on all communication
     channels. \colin{Bad figure}}
 \end{figure}
-
-\begin{table}
-\centering
-\begin{tabular}{|l|l|}
-\hline
-\textbf{Input Type} & \textbf{Implementation} \\
-\hline
-\hline
-Switch failure/recovery & TCP teardown \\
-\hline
-Controller failure/recovery & \verb=SIGKILL= \\
-\hline
-Link failure/recovery & \verb=ofp_port_status= \\
-\hline
-Controller partition & \verb=iptables= \\
-\hline
-Dataplane packet injection & Network namespaces \\
-\hline
-Dataplane packet drop & Dataplane interposition \\
-\hline
-Dataplane packet delay & Dataplane interposition \\
-\hline
-Host migration & \verb=ofp_port_status= \\
-\hline
-Control message delay & Controlplane interposition \\
-\hline
-Non-deterministic TCAMs & Modified switches \\
-\hline
-\end{tabular}
-\caption{Input types currently supported by \projectname}
-\label{tab:inputs}
-\end{table}
 
 % \begin{table}
 % \centering
@@ -139,7 +107,6 @@ the use cases speak for themselves?}
 %How do we ensure the same scheduling order of controller processes? (see
 %Section 4.5 of ReVirt\cite{Dunlap:2002:REI:844128.844148}). We observe that the controllers do not use any shared
 %memory communication.}
-
 
 \subsection{Coping with Non-Determinism}
 
@@ -281,8 +248,8 @@ without the heuristics enabled.
 the internal state transitions of control software, we would be able to replay inputs at precisely the correct point in
 the happens-before relation. Unfortunately this is impractical.
 
-We find that ensuring that the wall-clock spacing between replay events
-is close to the recorded timing helps (but does not alone suffice) to
+We find that keeping the wall-clock spacing between replay events
+close to the recorded timing helps (but does not alone suffice) to
 ensure that invariant violations are reliably
 reproduced. When replaying events, we \verb=sleep()= between each
 event for the same duration that was recorded in the original trace,
