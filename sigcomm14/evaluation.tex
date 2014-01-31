@@ -182,7 +182,7 @@ trace it produced made for a simple integration test.
 %We illustrate type errors to show how STS is a useful framework for exploring
 %code paths that you forget to unit tests.
 
-\noindent{\bf POX Premature Packet-In.} We discovered this bug accidentally
+\noindent{\bf POX Premature Packet-In Failure.} We discovered this bug accidentally
 while working on a synthetic test case. During a particular fuzzing run, the
 \emph{l2\_multi} module failed unexpectedly with a KeyError. The initial trace
 had $102$ input events. Within 6 iterations and 249 seconds,
@@ -201,7 +201,7 @@ already forwards events triggered by switch messages.
 
 In this case, the switch was simulated to be slow in completing the second part
 of the handshake, causing the \emph{SwitchUp} to be delayed. During this window,
-a\emph{PacketIn} event related to an LLDP packet was forwarded to POX's
+a \emph{PacketIn} event related to an LLDP packet was forwarded to POX's
 \emph{discovery} module, which in turned raised a \emph{LinkEvent} to
 \emph{l2\_multi}. \emph{l2\_multi} would then fail because it relied on the
 invariant that \emph{SwitchUp} would occur first. This case study demonstrates
@@ -215,7 +215,7 @@ about 30 minutes.
 \begin{figure}[t]
     %\hspace{-10pt}
     \includegraphics[width=3.25in]{../graphs/runtime/pox_early_packetin.pdf}
-    \caption[]{\label{fig:pox_handshake} Minimizing the POX premature handshake.}
+    \caption[]{\label{fig:pox_handshake} Minimizing the POX Premature Packet-In Failure}
 \end{figure}
 
 \noindent{\bf POX In-flight Blackhole.} We
