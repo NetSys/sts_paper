@@ -221,6 +221,27 @@ successfully reproduce bugs.}
 %so that relevant internal state transitions are captured and visible to our
 %tool.
 
+\begin{table}[tb]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+Internal message & Masked values \\
+\hline
+\hline
+OpenFlow messages & xac id, cookie, buffer id, stats \\
+% port numbers?
+\hline
+packet\_out/in payload & all values except src, dst, data \\
+\hline
+Log statements & varargs parameters to printf \\
+\hline
+\end{tabular}
+\caption{Internal messages and their masked values. The masks serve to
+define equivalence classes.}
+\label{tab:fingerprints}
+\end{table}
+
+
 {\bf Functional Equivalence. } Internal events may differ syntactically (\eg~sequence numbers
 of control packets may all differ) when replaying a subsequence of the original log.
 We observe that many internal events are {\em functionally
@@ -244,7 +265,7 @@ event $i$ from the original log if and only if all unmasked fields have the same
 and $i$ occurs between $i'$'s preceding and succeeding inputs in the
 happens-before relation.
 
-\begin{table}
+\begin{table}[tb]
 \centering
 \begin{tabular}{|l|l|}
 \hline
@@ -285,25 +306,6 @@ Non-deterministic TCAMs & Modified switches \\
     represent presence of the blackhole.}
 \end{figure}
 }
-\begin{table}
-\centering
-\begin{tabular}{|l|l|}
-\hline
-Internal message & Masked values \\
-\hline
-\hline
-OpenFlow messages & xac id, cookie, buffer id, stats \\
-% port numbers?
-\hline
-packet\_out/in payload & all values except src, dst, data \\
-\hline
-Log statements & varargs parameters to printf \\
-\hline
-\end{tabular}
-\caption{Internal messages and their masked values. The masks serve to
-define equivalence classes.}
-\label{tab:fingerprints}
-\end{table}
 
 {\bf Handling Absent Internal Events. } Some internal events from the original
 log which causally ``happen before'' some external input
