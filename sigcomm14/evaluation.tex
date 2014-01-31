@@ -482,7 +482,12 @@ conditions that are difficult to guarantee. Still, \projectname was instrumental
 in pointing out a previously unknown bug, and reducing the input size.
 } % ----------------------
 
-\subsection{Known Bugs}
+\subsection{Known \& Synthetic bugs}
+
+In addition to our troubleshooting case studies, we strive to show that
+\projectname~is able to successfully minimize traces for a range of bugs. We
+show this on a range of bug types, both known and synthetically injected by
+us.
 
 \noindent{\bf Floodlight example failover bug.}  We were able to reproduce a
 known problem in Floodlight's distributed controller failover logic~\cite{floodlight_bug} with
@@ -556,9 +561,6 @@ believe that they are not responsible for tracking the liveness of the link,
 and not routes will traverse it. We managed to reproduce this situation with
 \projectname~and minimize the MCS for it: \num{TBD.}
 
-\subsection{Synthetic Bugs}
-
-\url{https://docs.google.com/document/d/1l4sbpLhd7wOMhL-u6Q-zlPS5YQMLqk5ILqU7RhUxdgA/edit}.
 
 \tbd{Explain in rough terms what the categories are, and explain for the cases that
 didn't work so well why we didn't expect them to work so well.}
@@ -594,17 +596,17 @@ which took more than $8.5$ hours.
 %Include how many lines it took to interpose on the logging library, and how
 %many lines it took to answer snapshot requests.
 
-%\subsection{New Internal Events}
-%
-%How often do unexpected internal events occur in practice?
-% The logging statements must also contain enough context[d] to allow for
-% unambiguous fingerprinting. -> what exactly this means
-
 %\subsection{Peek effectiveness}
 % How well does peek() work vs. only the heuristics?
 
 %\subsection{Replaying multiple times to mitigate non-determinsm}
 % How well does it work? -> Andrew
+
+%\subsection{New Internal Events}
+%
+%How often do unexpected internal events occur in practice?
+% The logging statements must also contain enough context[d] to allow for
+% unambiguous fingerprinting. -> what exactly this means
 
 \subsection{Instrumentation Complexity}
 
@@ -632,8 +634,7 @@ indirection, and for POX we needed 415 line of Python.
 %      15 __init__.py
 %     215 base.py
 %     205 pox_syncer.py
-%     147 sts_syncer.py
-%     582 total
+%     430 total
 
 \subsection{Scalability}
 
