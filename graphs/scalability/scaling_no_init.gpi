@@ -1,6 +1,6 @@
 # Note you need gnuplot 4.4 for the pdfcairo terminal.
 
-set terminal pdfcairo font "Helvetica, 18" linewidth 4 rounded
+set terminal pdfcairo font "Gill Sans,9" linewidth 4 rounded
 
 # Line style for axes
 set style line 80 lt rgb "#808080"
@@ -26,16 +26,18 @@ set ytics nomirror
 # so they're easy to see in small plots in papers.
 set style line 3 lt rgb "#00A000" lw 2 pt 6
 set style line 2 lt rgb "#A00000" lw 2 pt 1
-set style line 1 lt rgb "#5060D0" lw 2 pt 2 ps 1.5
+set style line 1 lt rgb "#5060D0" lw 2 pt 2
 set style line 4 lt rgb "#F25900" lw 2 pt 9
 
 set key top left
 
-set xlabel "Number of Replays per Subsequence"
-set ylabel "Size of Final MCS"
+set ylabel "Time in Milliseconds"
+set xlabel "Number of Switches"
 
 set yrange [0:]
 
 # Note that we're leaving out output, title, and plot
-set output "replays.pdf"
-plot 'replays.dat' index 0:1 title "" w points ls 1
+set output "scaling_no_init.pdf"
+set title "STS Scaling on FatTree Networks"
+plot 'scaling.dat' using 1:2 title "OpenFlow Handshakes" w lp ls 1, \
+     'scaling.dat' using 1:3 title "+ 5% Link Failures" w lp ls 2
