@@ -50,6 +50,23 @@ speeds adjusted accordingly).  Additional experience with production systems wil
 us determine how to best trade off improved simulation fidelity against degraded performance.
 }
 
+\noindent{\bf How does this help in real debugging?} Decades of research in cognitive
+psychology has found that there is a low (usually single digit) limit on the
+number of distinct things a person can keep in working memory, beginning with
+Miller's classic finding seven plus or minus two as the limit~\cite{miller56seven}.  We can
+personally attest to the challenge of mentally juggling more than a
+handful of complex input events while troubleshooting SDN controllers,
+as can a number of the engineers who we spoke with who do this work on a daily
+basis.
+
+Stepping back, the goal of \projectname~is simply to accelerate the engineer's
+troubleshooting.  Indeed if one were to consider the task of debugging a large
+input trace, a common approach taken by engineers is in fact similar to the
+divide and conquer approach taken by delta debugging which in worst case is
+$O(n^2)$ for $n$ inputs.  Thus \projectname~yields a quadratic speedup for the
+engineer, whose time and effort is far more valuable than that of the automated
+system.
+
 \noindent{\bf Will this approach work on all controllers?} We make limited
 assumptions about the controller software in use. Three of the five platforms
 we investigated were exercised with \projectname~without any modifications.
