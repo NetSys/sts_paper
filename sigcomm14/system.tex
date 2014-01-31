@@ -74,13 +74,13 @@ Controller partition & \verb=iptables= \\
 \hline
 Dataplane packet injection & Network namespaces \\
 \hline
-Dataplane packet drop & Data-plane interposition \\
+Dataplane packet drop & Dataplane interposition \\
 \hline
-Dataplane packet delay & Data-plane interposition \\
+Dataplane packet delay & Dataplane interposition \\
 \hline
 Host migration & \verb=ofp_port_status= \\
 \hline
-Control message delay & Control-plane interposition \\
+Control message delay & Controlplane interposition \\
 \hline
 Non-deterministic TCAMs & Modified switches \\
 \hline
@@ -232,7 +232,7 @@ by multiplexing all sockets
 onto a single true socket. On the controller side \projectname~currently
 overrides socket functionality by modifying the controller control
 software\footnote{Only supported for POX at the moment.} although this
-could also be achieved with a libc shim layer~\cite{Geels:2006:RDD:1267359.1267386}.
+could also be achieved transparently with a libc shim layer~\cite{Geels:2006:RDD:1267359.1267386}.
 %In the future we plan to implement deterministic message ordering without code modifications by
 %loading a shim layer on top of
 %libc (similar to liblog~\cite{Geels:2006:RDD:1267359.1267386}).
@@ -304,7 +304,7 @@ the internal state transitions of control software, we would be able to replay i
 the happens-before relation. Unfortunately this is impractical.
 
 We find that ensuring that the wall-clock spacing between replay events
-is close to the recorded timing helps (but does not suffice) to
+is close to the recorded timing helps (but does not alone suffice) to
 ensure that invariant violations are reliably
 reproduced. When replaying events, we \verb=sleep()= between each
 event for the same duration that was recorded in the original trace,
@@ -319,7 +319,7 @@ Upon further examination we found in these cases that LLDP and OpenFlow echo
 packets periodically sent by the control software were
 staying in \projectname's buffers too long during replay, such that the
 control software would time out on them. We therefore added an option to always pass through
-keepalive messages which has mitigated the problem. The limitation of this
+keepalive messages that has mitigated the problem. The limitation of this
 heuristic is that it cannot be used on bugs involving keepalive messages.
 
 %We also tried another algorithm: let new
@@ -353,7 +353,7 @@ skew between the wall-clock timing of the original vs.\ replayed trace.
 \label{subsec:root_causing}
 
 Throughout our experimentation with \projectname, we often found that
-even minimized event traces were insufficient to
+minimized event traces alone were insufficient to
 pinpoint the root causes of bugs. We therefore implemented a number of
 complementary root
 causing tools within \projectname,
@@ -384,7 +384,7 @@ entries, allow them to expire, or periodically flush the
 contents of flow tables and later repopulate them. \projectname~includes a
 tool for filtering out such redundant messages,
 leaving only those commands that are directly relevant for invalid network
-configurations such as loops or blackholes.
+configurations.
 
 \noindent{\bf Event Visualization}. Understanding the timing of messages and internal
 state transitions is a crucial part of troubleshooting distributed systems.
@@ -417,7 +417,7 @@ Having detailed the specifics of our approach we now
 clarify the scope of our technique's use.
 
 \noindent{\bf Partial Visibility.} Our event scheduling algorithm assumes that
-it has visibility into the occurrence of all relevant internal events. For
+it has visibility into the occurrence of relevant internal events. For
 some controllers this may involve substantial instrumentation effort beyond
 pre-existing log statements, though as we show in our evaluation, most bugs
 we encoutered can be minimized without perfect visibility.
