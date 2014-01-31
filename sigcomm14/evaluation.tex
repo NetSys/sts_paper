@@ -609,8 +609,9 @@ which took more than $8.5$ hours.
 \subsection{Instrumentation Complexity}
 
 For POX and Floodlight, we added shim layers to the controller software to
-allow \projectname~to redirect {\tt gettimeofday()} and interpose on logging
-statements.
+to redirect {\tt gettimeofday()} to \projectname~and interpose on logging
+statements. For Floodlight we needed 722 lines of Java to obtain this
+indirection, and for POX we needed 415 line of Python.
 
 %andi@aquil-vm:~/entw/openflow/floodlight-sts$ git diff --stat f37046a..HEAD | grep '|' | grep -v 'slf4j' | grep .java | grep sts | perl -pai -e '$sum += $F[2]; END { print $sum, "\n"; }'
 % .../aspects/sts/HorribleMicroSecondTimeSource.java |   92 +++
