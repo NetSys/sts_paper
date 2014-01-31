@@ -4,22 +4,27 @@
 \centering
 \begin{tabular}{|l||l|l|l|l|l|}
   \cline{2-6}
-  \multicolumn{1}{c|}{~} & \textbf{Bug Name} & \textbf{Topology} & \textbf{Replay Success Rate} &
+  \multicolumn{1}{c|}{~} & \textbf{Bug Name} & \textbf{Topology} &
+  \textbf{Input Size} &
   \textbf{MCS Size} & \textbf{Final MCS replayable?}  \\\cline{2-6} \hline
   \multirow{8}{*}{\rotatebox[origin=c]{90}{\bf Newly Found}}
-& Pyretic loop & 3 switch mesh & 20/20 & 2 & Yes \\
+& Pyretic loop & 3 switch mesh & 36 & 2 & Yes \\
+% 20/20
 % experiments/new_pyretic_loop_mcs/
 % Total original inputs: 36
-& POX premature packetin & 4 switch mesh & 20/20 & 2 & Yes \\
+& POX premature packetin & 4 switch mesh & 102 & 2 & Yes \\
+% 20/20
 % Andi: experiments/pox_early_packetin_mcs
 % Total inputs: 102
-& POX in-flight blackhole & 2 switch mesh & 15/20 [20/20*] & 7 & Yes \\
+& POX in-flight blackhole & 2 switch mesh & 46 & 7 & Yes \\
+% \colin{15/20 [20/20*]}
 % Total inputs: 46
 % With DP events: 68/25
 % Original: 7ba95ed82ca4e32f12ab511d9c4301dbac2c59d5
 % MCS: 399cf861db87a65e600283d9ae7760400c4676e2
 % Updated: updated_debug_branch_loop_v3_mcs/
-& POX migration blackhole & 4 switch mesh & 20/20 & 3 & Yes \\
+& POX migration blackhole & 4 switch mesh & 29 & 3 & Yes \\
+% 20/20
 % Total inputs: 29
 % With DP events: 117/3
 % fuzz_pox_4mesh_blackhole_mcs, pox_blackhole branch of experiments repo
@@ -28,13 +33,15 @@
 %% With DP events: 72/2
 %% Original: config/eugene_epsilon_replay.py
 %% MCS: config/eugene_epsilon_mcs.py
-& NOX discovery loop & 4 switch mesh & 18/20 & 18 & No \\
+& NOX discovery loop & 4 switch mesh & 150 & 18 & No \\
+% 18/20
 % Total inputs: 150
 % With DP events: 358/58
 % Original: ce547fc1df3bde279b6f3dd589c909663e295f1e
 % MCS: 5f49e791b0c1a611454cf0930f54aa609dd635d3
 % Updated to new format: nox_mesh_4_loop_repro_verbose
-& Floodlight loop & 3 switch mesh & 15/50 & 36 & Yes \\
+& Floodlight loop & 3 switch mesh & 284 & 36 & Yes \\
+% 15/50
 % Total inputs: 284
 % zeta_final/, on floodlight branch of experiments repo
 & ONOS distributed database locking & 2 switch mesh & TBD & 3 & Yes \\
@@ -42,42 +49,43 @@
 \hline
 \hline
 \multirow{3}{*}{\rotatebox[origin=c]{90}{\bf Known}}
-& Floodlight failover bug & 2 switch mesh & - & 2 & Yes \\
+& Floodlight failover bug & 2 switch mesh & 202 & 2 & Yes \\
 % Predates the experiment directory
 & ONOS master election & TBD & - & TBD & TBD \\
 % Ahmed
-& Load balancer flow table space & 3 switch mesh & - & 24 (N+1) & Yes \\
+& Load balancer flow table space & 3 switch mesh & 106 & 24 (N+1) & Yes \\
 % load_balancer_fuzzer_mcs/
 % Total original inputs: 106
 % --------
 %ONOS forgotten flows & TBD & TBD & TBD \\
 \hline
 \hline
-\multirow{7}{*}{\rotatebox[origin=c]{90}{\bf Synthetic}} & Null pointer on rarely used codepath & 20 switch FatTree & - & 2 & Yes \\
+\multirow{7}{*}{\rotatebox[origin=c]{90}{\bf Synthetic}} & Null pointer on
+rarely used codepath & 20 switch FatTree & 365 & 2 & Yes \\
 % experiments/experiments/pox_null_pointer_mcs
 % total original inputs: 365
-& Overlapping flow entries & 2 switch mesh & - & 2 & Yes \\
+& Overlapping flow entries & 2 switch mesh & 27 & 2 & Yes \\
 % experiments/trigger_priority_mismatch_small_mcs
 % total original inputs: 27
-& Delicate timer interleaving & 3 switch mesh & - & 39 & No \\
+& Delicate timer interleaving & 3 switch mesh & 39 & 39 & No \\
 % experiments/snapshot_demo_synthetic_link_failure
 % total original inputs: 39
-& Algorithm misimplementation & 3 switch mesh & - & 7 & No \\
+& Algorithm misimplementation & 3 switch mesh & 40 & 7 & No \\
 % experiments/experiments/pox_broken_floyd_mcs
 % total original inputs: 40
 % MCS is inflated! link failure / recovery in MCS not related to triggering events.
-& Multithreaded race condition & 10 switch mesh & - & 2\footnote{The race
+& Multithreaded race condition & 10 switch mesh & 2 & 2\footnote{The race
 condition triggered by any I/O events, so the final MCS was essentially
 random} & Yes\footnote{With multiple replays per subsequence} \\
 % experiments/trigger_multithreading_bug_mcs
 % total original inputs: 1596
-& Memory Leak & 2 switch mesh & - & 30 (M) & No \\
+& Memory Leak & 2 switch mesh & 719 & 30 (M) & No \\
 % experiments/trigger_memory_leak3_mcs/
 % total original inputs: 719
 %Execution-speed race condition & 3 switch mesh & - & 9 & Yes \\
 %% "floodlight" branch: experiments/floodlight_loop_2014_mcs_*
 %% Total original inputs: 157
-& Memory Corruption & 4 switch mesh & - & 2 & Yes \\
+& Memory Corruption & 4 switch mesh & 341 & 2 & Yes \\
 % syn_mem_corruption_3switch_fuzzer_mcs
 % Total original inputs: 341
 % ----
@@ -247,6 +255,7 @@ We noticed a persistent blackhole while POX was bootstrapping its
 discovery of link and host locations. There were $46$ inputs in the initial
 trace, and \projectname~returned a $7$ input
 MCS (runtime shown in Figure~\ref{fig:pox_discovery}).
+
 
 \begin{figure}[t]
     %\hspace{-10pt}
