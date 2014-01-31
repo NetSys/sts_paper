@@ -182,8 +182,35 @@ trace it produced made for a simple integration test.
 %We illustrate type errors to show how STS is a useful framework for exploring
 %code paths that you forget to unit tests.
 
-\noindent{\bf POX Premature Handshake.} Andi, TBD.
-Runtime in Figure~\ref{fig:pox_handshake}.
+\noindent{\bf POX Premature Packet-In.} We discovered this bug accidentally
+while working on a synthetic test case. During a particular fuzzing run, the
+\emph{l2\_multi} module failed unexpectedly with a KeyError. The initial trace
+had $102$ input events. Within 6 iterations and 249 seconds,
+\projectname~reduced it to an MCS of $2$ input events, as shown in
+Figure~\ref{fig:pox_handshake}.
+
+To analyze the root cause, we repeatedly replayed the MCS trace, while adding
+instrumentation to the POX code. The root cause turned out to be a race
+condition in POX's handshake state machine. Note that the OpenFlow standard
+requires a 2-message handshake \footnote{\texttt{ofp\_hello} and
+\texttt{ofp\_feature\_(request|reply)}}. Afterwards, the switch is free to send
+arbitrary messages. POX, however, requires an additional series of message
+exchanges before considering the switch fully connected and notify the
+application modules of its presence via a \emph{SwitchUp} event. Until then, it
+already forwards events triggered by switch messages. 
+
+In this case, the switch was simulated to be slow in completing the second part
+of the handshake, causing the \emph{SwitchUp} to be delayed. During this window,
+a\emph{PacketIn} event related to an LLDP packet was forwarded to POX's
+\emph{discovery} module, which in turned raised a \emph{LinkEvent} to
+\emph{l2\_multi}. \emph{l2\_multi} would then fail because it relied on the
+invariant that \emph{SwitchUp} would occur first. This case study demonstrates
+how even the simple handshake state machine can behave unexpectedly in a
+non-trivial way that is hard to understand without being able to repeat the
+experiment with a minimal trace. Making heavy use of the MCS replay, a developer
+unfamiliar with the two subsystems involved was able to root-cause the bug in
+about 30 minutes.
+
 
 \begin{figure}[t]
     %\hspace{-10pt}
