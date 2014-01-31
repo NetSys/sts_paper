@@ -170,28 +170,6 @@ triggered in only 20\% of replays, the probability that we will not trigger
 it during an intermediate replay is approximately
 1\% if we replay 20 times per subsequence.\colin{Mention optimizing for reproducibility?}
 
-\begin{figure}
-  \begin{pseudocode}[framebox]{Peek}{events}
-    \PROCEDURE{Peek}{input\ subsequence}
-    inferred \GETS [\ ] \\
-    \FOR e\textsubscript{i}\ in\ subsequence \\
-    \BEGIN
-      snapshot\ system \\
-      inject\ e\textsubscript{i} \\
-      \Delta \GETS |e\textsubscript{i}.time - e\textsubscript{i-1}.time| + \epsilon \\
-      record\ events\ for\ \Delta\ seconds \\
-      matched \GETS original\ events\ \&\ recorded\ events \\
-      inferred << e\textsubscript{i} << matched \\
-      restore\ snapshot \\
-    \END \\
-    \RETURN{inferred}
-    \ENDPROCEDURE
-  \end{pseudocode}
-  \caption{{\sc Peek} is responsible for determining which internal events
-  from the original sequence are going to occur for a given subsequence.
-  \label{fig:peek}}
-\end{figure}
-
 \subsection{Mitigating Non-Determinism}
 \label{subsec:mitigating}
 

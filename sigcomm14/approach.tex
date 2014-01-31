@@ -353,6 +353,28 @@ in Figure~\ref{fig:replay}.
 \end{figure}
 }
 
+\begin{figure}
+  \begin{pseudocode}[framebox]{Peek}{events}
+    \PROCEDURE{Peek}{input\ subsequence}
+    inferred \GETS [\ ] \\
+    \FOR e\textsubscript{i}\ in\ subsequence \\
+    \BEGIN
+      snapshot\ system \\
+      inject\ e\textsubscript{i} \\
+      \Delta \GETS |e\textsubscript{i}.time - e\textsubscript{i-1}.time| + \epsilon \\
+      record\ events\ for\ \Delta\ seconds \\
+      matched \GETS original\ events\ \&\ recorded\ events \\
+      inferred << e\textsubscript{i} << matched \\
+      restore\ snapshot \\
+    \END \\
+    \RETURN{inferred}
+    \ENDPROCEDURE
+  \end{pseudocode}
+  \caption{{\sc Peek} is responsible for determining which internal events
+  from the original sequence are going to occur for a given subsequence.
+  \label{fig:peek}}
+\end{figure}
+
 {\bf Handling New Internal Events.} The last possible change induced by pruning is the occurrence of new
 internal events that were not observed in the original log.
 New events present multiple possibilities for where
@@ -412,7 +434,7 @@ the controllers quickly converge to a single state (either ``Master'' or
 \label{subsec:complexity}
 
 The delta debugging algorithm terminates after $\Omega(\log n)$
-invocations of $replay$ in the best case, and $O(n)$ in the worst case. where $n$ is the number of inputs in the original
+invocations of $replay$ in the best case, and $O(n)$ in the worst case, where $n$ is the number of inputs in the original
 trace~\cite{Zeller:1999:YMP:318773.318946}.
 Each invocation of $replay$ takes $O(n)$ time
 (one iteration for {\sc Peek()} and one iteration for the replay itself),
