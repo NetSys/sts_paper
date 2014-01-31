@@ -636,6 +636,33 @@ indirection, and for POX we needed 415 line of Python.
 %     205 pox_syncer.py
 %     430 total
 
+\subsection{Coping with Non-determinism}
+
+The most elusive class of bugs comprises of those that are not always reproducible. These bugs are
+usually highly dependent on the specific timings of the sequence of relevant events, either
+across threads or across nodes. This limits the effectiveness of \projectname{} to minimize the
+size of the MCS, as the underlying algorithm relies on the ability to successfully replay
+invariant violations.
+
+To mitigate the effects of non-determinism, we replay the given sequence of events multiple times
+during MCS computation. This approach is motivated by the following observation: the probability
+of failure in reproducing an invariant violation diminishes at a rate of $(1 - x)^n$, where $x$ is
+the probability of success, and $n$ the number of replays. As an example, after 10 replays, a
+sequence that triggers a violation with a probability of $0.5$ now has a probability of less than
+$0.001$ of failure in reproducing the violation.
+
+We evaluate the effectiveness of this approach on the MCS computation of a non-deterministic Floodlight
+loop. Figure~\ref{fig:non-determinism} demonstrates that the size of the resulting MCS decreases
+exponentially with the number of replays. This is because the algorithm narrows its search every time
+the expected violation is triggered; replaying a subsequence multiple times significantly improves its
+likelihood of successfully reproducing the violation.
+
+\begin{figure}[t]
+    \includegraphics[trim=0 0.5cm 0 0, width=3.25in]{../graphs/non-determinism/replays.pdf}
+    \caption[]{\label{fig:non-determinism} Effect of replaying a sequence multiple times on
+non-determinism during MCS computation.}
+\end{figure}
+
 \subsection{Scalability}
 
 Mocking the network in a single process potentially prevents \projectname~from
