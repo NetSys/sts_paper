@@ -3,11 +3,11 @@ providing a simple logically-centralized API upon which network management
 programs can be written. However, the software used to support this API is
 anything but simple: the SDN control plane (consisting of the network
 operating system and higher layers) is a complicated distributed system that
-must react quickly and correctly to controller/switch/link failures, host migrations,
+must react quickly and correctly to failures, host migrations,
 policy-configuration changes and other events.
 All complicated distributed systems are prone to bugs, and from our first-hand
 familiarity with five open source controllers and three major commercial
-controllers we can attest that SDN control software is no exception.
+controllers we can attest that SDN is no exception.
 % All complicated distributed systems are prone to bugs and from our first-hand familiarity with several important open-source (NOX, POX, Floodlight, Frenetic, ONOS) and closed-source controllers (Google, VMware, BigSwitch), we can attest that SDN control platforms are no exception. 
 
 %When faced with a bug, it is difficult to identify which events are triggering
@@ -53,17 +53,18 @@ challenges (though we discuss the vast amount of related work in \S\ref{sec:rela
 Our troubleshooting system, which we call {\projectname} ({\projectmeaning}),
 consists of 21,000 lines of Python, and is designed so that organizations can
 implement the technology within their existing QA test infrastructure (discussed in
-\S\ref{sec:architecture}). We evaluate the effectiveness of {\projectname} in
+\S\ref{sec:architecture}); over the last year we have worked with a
+commercial SDN company to integrate \projectname~with their propietary control
+software. We evaluate the effectiveness of {\projectname} in
 two ways. First and most significantly, we use {\projectname} to troubleshoot
-\num{eight} previously unknown bugs---involving concurrent events during topology discovery,
-failure-induced blackholes, internal-state errors triggered by unexpected
-input sequences, and livelock in a distributed database---that we found
-by fuzz testing \num{five} controllers (Floodlight~\cite{floodlight}, NOX~\cite{nox},
+seven previously unknown bugs---involving concurrent events during
+bootstrapping, failure-induced blackholes, internal-state errors, and lock acquisition in a distributed database---that we found
+by fuzz testing five controllers (Floodlight~\cite{floodlight}, NOX~\cite{nox},
 POX~\cite{pox}, Pyretic~\cite{frenetic}, ONOS~\cite{ONOS})
 written in three different languages (Java, C++, Python).
 Second, we demonstrate the
-boundaries of where \projectname~works well and where it does not by
-finding MCSes for previously known and synthetic bugs that span a range of bug types encountered in
-practice. In our evaluation, we quantitatively show that \projectname~is able to minimize traces
-by up to \num{X\%}, and we anecdotally found that reducing
+boundaries of where \projectname~works well by
+finding MCSes for previously known and synthetic bugs that span a range of bug
+types. In our evaluation, we quantitatively show that \projectname~is able to
+minimize traces for the new bugs by up to 98\%, and we anecdotally found that reducing
 traces to MCSes made it easy to understand the root causes of the bugs.
