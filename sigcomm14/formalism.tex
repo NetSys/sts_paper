@@ -46,7 +46,8 @@ sequences that reproduce this violation, but are not a subsequence of this MCS.
 \colin{Problem with this definition: our approach does not provably find
 MCSes, since we don't explore all timings!}
 
-Given a log $(E_L, T_L, C_L)$ exhibiting an invariant violation,
+Given a log $(E_L, T_L, C_L)$ exhibiting an invariant violation,\footnote{We
+discuss how these logs are generated in \S\ref{sec:systems_challenges}.}
 our goal is to identify its MCS. We could do this through brute force, trying
 all subsequence and timings, but this is clearly impractical given the large size of logs and the
 infinitely large set of possible timings. Thus, we must approximate MCSes by finding heuristics
