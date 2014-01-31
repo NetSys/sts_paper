@@ -22,8 +22,7 @@
 & POX migration blackhole & 4 switch mesh & 20/20 & 3 & Yes \\
 % Total inputs: 29
 % With DP events: 117/3
-% fuzz_pox_4mesh_blackhole
-% Updated (fat tree): pox_fattree_migration_mcs
+% fuzz_pox_4mesh_blackhole_mcs, pox_blackhole branch of experiments repo
 %& POX list removal & 2 switch mesh & 20/20 & 2 & Yes \\
 %% Total inputs: 69
 %% With DP events: 72/2
@@ -143,7 +142,8 @@ Pyretic periodically flushed all flow entries.
 \begin{figure}[t]
     %\hspace{-10pt}
     \includegraphics[width=3.25in]{../graphs/runtime/pyretic_loop.pdf}
-    \caption[]{\label{fig:pyretic_loop} Minimizing the Pyretic loop.}
+    \caption[]{\label{fig:pyretic_loop} Minimizing the Pyretic loop. (total
+    runtime: 266.2, original runtime: 5.8s)}
 \end{figure}
 
 We proceeded to file a bug report along with a replayable trace of the
@@ -238,7 +238,8 @@ about 30 minutes.
 \begin{figure}[t]
     %\hspace{-10pt}
     \includegraphics[width=3.25in]{../graphs/runtime/pox_early_packetin.pdf}
-    \caption[]{\label{fig:pox_handshake} Minimizing the POX Premature Packet-In Failure}
+    \caption[]{\label{fig:pox_handshake} Minimizing the POX Premature
+    Packet-In Failure. (total runtime: 249.1s, original runtime: 2.7s)}
 \end{figure}
 \noindent{\bf POX In-flight Blackhole.} We
 discovered the next bug after roughly 20 runs of randomly generated inputs.
@@ -250,7 +251,8 @@ MCS (runtime shown in Figure~\ref{fig:pox_discovery}).
 \begin{figure}[t]
     %\hspace{-10pt}
     \includegraphics[width=3.25in]{../graphs/runtime/pox_blackhole.pdf}
-    \caption[]{\label{fig:pox_discovery} Minimizing the POX in-flight blackhole.}
+    \caption[]{\label{fig:pox_discovery} Minimizing the POX in-flight
+    blackhole. (total runtime: 641.1, original runtime: 4.9s)}
 \end{figure}
 
 We provided the MCS to the lead developer of POX. Primarily using the
@@ -354,7 +356,7 @@ examined the POX code in some depth, we noticed that there might be
 some interesting corner cases related to host migrations.
 We set up randomly generated inputs, included host
 migrations this time, and checked for blackholes. Our initial input size was
-$29$ inputs.
+$115$ inputs.
 \projectname produced a $3$ input MCS (shown
 in Figure~\ref{fig:pox_migration}): a packet injection from a
 host (`A'), followed
@@ -370,7 +372,7 @@ entries expired.\\[0.5ex]
     %\hspace{-10pt}
     \includegraphics[width=3.25in]{../graphs/runtime/pox_migration_blackhole.pdf}
     \caption[]{\label{fig:pox_migration} Minimizing the POX migration
-    blackhole.}
+    blackhole. (total runtime: 1796.0s, original runtime: 10.3s}
 \end{figure}
 \noindent{\bf NOX Discovery Loop.} Next we tested NOX on a four-node mesh, and discovered a
 routing loop between three switches within
@@ -379,7 +381,8 @@ roughly 20 runs of randomly generated inputs.
 \begin{figure}[t]
     %\hspace{-10pt}
     \includegraphics[width=3.25in]{../graphs/runtime/nox_loop.pdf}
-    \caption[]{\label{fig:nox_discovery} Minimizing the NOX discovery loop.}
+    \caption[]{\label{fig:nox_discovery} Minimizing the NOX discovery loop.
+    (total runtime: 4990.9s, original runtime: 4.0s)}
 \end{figure}
 
 Our initial input size was 68 inputs, and
@@ -454,7 +457,8 @@ hours (runtime shown in Figure~\ref{fig:fl_loop}).
 \begin{figure}[t]
     %\hspace{-10pt}
     \includegraphics[width=3.25in]{../graphs/runtime/floodlight_loop.pdf}
-    \caption[]{\label{fig:fl_loop} Minimizing the Floodlight loop.}
+    \caption[]{\label{fig:fl_loop} Minimizing the Floodlight loop. (total
+    runtime: 27930.6s, original runtime: 194.0s)}
 \end{figure}
 
 We repeatedly replayed the 13 event MCS while successively adding
