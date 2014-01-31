@@ -223,6 +223,7 @@ successfully reproduce bugs.}
 
 \begin{table}[tb]
 \centering
+\footnotesize
 \begin{tabular}{|l|l|}
 \hline
 Internal message & Masked values \\
@@ -236,9 +237,11 @@ packet\_out/in payload & all values except src, dst, data \\
 Log statements & varargs parameters to printf \\
 \hline
 \end{tabular}
-\caption{Internal messages and their masked values. The masks serve to
-define equivalence classes.}
+\caption{Internal messages and their masked values. %The masks serve to
+%define equivalence classes.
+}
 \label{tab:fingerprints}
+\vspace{-0.5cm}
 \end{table}
 
 
@@ -247,9 +250,9 @@ of control packets may all differ) when replaying a subsequence of the original 
 We observe that many internal events are {\em functionally
 equivalent}, in the sense that they
 have the same effect on the state of the system with respect to triggering the
-invariant violation (despite syntactic differences). For example, flow
-modification messages may cause switches to make the same change to their forwarding behavior
-even if the transaction identifier of the messages differ.
+invariant violation (despite syntactic differences). For example, \emph{flow\_mod}
+messages may cause switches to make the same change to their forwarding behavior
+even if the transaction ids differ.
 
 We leverage this observation by defining
 masks over semantically extraneous fields of
@@ -267,6 +270,7 @@ happens-before relation.
 
 \begin{table}[tb]
 \centering
+\footnotesize
 \begin{tabular}{|l|l|}
 \hline
 \textbf{Input Type} & \textbf{Implementation} \\
@@ -389,6 +393,7 @@ in Figure~\ref{fig:replay}.
 
 \begin{figure}
   \begin{pseudocode}[framebox]{Peek}{events}
+    \footnotesize
     \PROCEDURE{Peek}{input\ subsequence}
     inferred \GETS [\ ] \\
     \FOR e\textsubscript{i}\ in\ subsequence \\
