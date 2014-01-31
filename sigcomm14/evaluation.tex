@@ -191,9 +191,7 @@ requires a 2-message handshake \footnote{\texttt{ofp\_hello} and
 \texttt{ofp\_feature\_(request|reply)}}. Afterwards, the switch is free to send
 arbitrary messages. POX, however, requires an additional series of message
 exchanges before considering the switch fully connected and notifying the
-application modules of its presence via a \emph{SwitchUp} event. \barath{I don't
-understand this sentence:} Until then, it
-already forwards events triggered by switch messages. 
+application modules of its presence via a \emph{SwitchUp} event.
 
 In this case, the switch was simulated to be slow in completing the second part
 of the handshake, causing the \emph{SwitchUp} to be delayed. During this window,
@@ -207,7 +205,6 @@ non-trivial manner that is hard to understand without being able to repeat the
 experiment with a minimal trace. Making heavy use of the MCS replay, a developer
 unfamiliar with the two subsystems involved was able to root-cause the bug in
 about 30 minutes.
-
 
 \begin{figure}[t]
     %\hspace{-10pt}
@@ -394,8 +391,9 @@ how NOX actually installed routes.
 
 The order in which NOX discovered links was crucial: at the point NOX
 installed the 3-loop, it had only discovered one link towards the destination.
-Therefore all other switches routed through the one known neighbor switch.
-\barath{I don't understand this:} This comprised 2 of the 3 links involved in the link.
+Therefore all other switches routed through the one known neighbor switch. The
+links adjacent to the neihbor switch formed 2 of the 3 links in the loop.
+%\barath{I don't understand this:} This comprised 2 of the 3 links involved in the link.
 
 The destination host only sent one packet, which caused NOX to initially learn
 its correct location. After NOX flooded the packet though, it became confused
@@ -512,7 +510,7 @@ several cold connections to replica controllers. The \emph{master} holds the
 authority to modify the configuration of switches, while the other
 controllers are in \emph{backup} mode and do not change the
 switch configurations. % unless they detect that the master has crashed.
-\barath{I don't understand this sentence:} If a link fails tries to connect shortly after the master
+If a link fails shortly after the master
 controller has died, all live controllers are in
 the backup role and will not take responsibility for updating the switch
 flow table. At some point when a backup notices the master failure and
