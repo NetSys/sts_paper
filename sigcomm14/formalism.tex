@@ -1,4 +1,3 @@
-
 We represent the forwarding state of the network
 at a particular time as a configuration $c$, which contains all the forwarding
 entries in the network
@@ -19,6 +18,8 @@ configurations $C_L$.
 A replay of log $L$ involves replaying the external events along with a
 particular timing $T$,
 which need not be identical to the original timings $T_L$ captured in the log.
+We need to account for timings $T$ because as we prune events, we
+are not be able to use the original timings $T_L$.
 We denote a replay attempt by $replay(E_L,T)$.
 The output of $replay$ is a sequence of forwarding state configurations
 $C_R = \hat{c}_1,\hat{c}_2,\dots,\hat{c}_n$. In the ideal case $replay(E_L,T_L)$ reproduces the same
@@ -51,7 +52,8 @@ all subsequence and timings, but this is clearly impractical given the large siz
 infinitely large set of possible timings. Thus, we must approximate MCSes by finding heuristics
 for which events to eliminate and, more importantly, which timings to test.
 
-In the next section we describe our heuristics for finding (approximate) MCSes, and then
+In the next section we describe our heuristics for finding (approximate) MCSes
+for use in troubleshooting, and then
 describe the system we built in \S\ref{sec:systems_challenges} to implement these heuristics.
 The key component of this system is a \tester~that can execute $replay()$.
 %Because we do not have access to operational QA or production logs, our focus is on

@@ -39,8 +39,7 @@ is the conjunction of the two external inputs (E1,E3).
 \label{subsec:delta_debugging}
 
 Checking random subsequences of $E_L$ would be one viable but inefficient
-approach to achieving our first task. We can do better by leveraging
-%a
+approach to achieving our first task. We do better by leveraging
 %divide-and-conquer search technique from the software engineering community:
 the delta debugging algorithm~\cite{Zeller:1999:YMP:318773.318946}, a
 divide-and-conquer algorithm for
@@ -48,7 +47,7 @@ isolating fault-inducing inputs. In our case, we use delta
 debugging to iteratively select subsequences of $E_L$ and replay each
 subsequence with some timing $T$. If the bug persists for a given subsequence, delta debugging ignores the
 other inputs, and proceeds with the search for an MCS within this subsequence.
-In what follows, we use the term {\em delta debugging} to refer to our algorithm for finding relevant subsequences.
+%In what follows, we use the term {\em delta debugging} to refer to our algorithm for finding relevant subsequences.
 The delta debugging algorithm is shown in Figure~\ref{fig:ddmin}.
 %(with `$test$' replaced by `$replay$').
 
@@ -109,8 +108,8 @@ $\done \subset \dfail$, $\dtwo \subset \dfail$, $\done \cup \dtwo = \dfail$, $\d
 hold.
 \end{center}
 \end{boxedminipage}
-\label{fig:ddmin}
 \caption{\colin{Cut if we need space} Automated Delta Debugging Algorithm From~\cite{Zeller:1999:YMP:318773.318946}}
+\label{fig:ddmin}
 \end{figure*}
 
 \eat{ % Original O(n^2) algorithm
@@ -262,6 +261,7 @@ Internal message & Masked values \\
 \hline
 \hline
 OpenFlow messages & xac id, cookie, buffer id, stats \\
+% port numbers?
 \hline
 packet\_out/in payload & all values except src, dst, data \\
 \hline

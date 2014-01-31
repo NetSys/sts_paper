@@ -26,13 +26,12 @@ that 70\% of the reported concurrency bugs take days to months to fix).}
 % Bugs are a fact of life;
 Our aim is to reduce effort spent on troubleshooting SDN control software.
 
-
 To that end, we have built a troubleshooting system that,
 given an execution trace, attempts to automatically eliminate
 trace events that are not causally related to the bug, producing a ``minimal
 causal sequence'' (MCS) of triggering events. Once the original trace has
 been reduced to an MCS (or an approximation thereof), the developer embarks
-on the debugging process. Our claim is that the greatly reduced size of the
+on the debugging process. We claim that the greatly reduced size of the
 trace makes it easier for the developer to figure out which code path contains
 the underlying bug, allowing them to focus their effort on
 the task of fixing the problematic code itself. After the bug has been fixed, the MCS
@@ -45,7 +44,7 @@ problem is harder in two dimensions: SDN control software is distributed
 across multiple machines, and the input is distributed in time (\ie, the
 input is not a single file, but an ongoing sequence of events).
 We are therefore forced to cope with asynchrony and non-determinism while
-we speculatively eliminate input events,
+we speculatively perturb the original execution,
 without making assumptions about the language
 or instrumentation of the control software under test.
 We are not aware of any other system that tackles these
