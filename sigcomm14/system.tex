@@ -450,6 +450,7 @@ how the distributed system as a whole reacts to the occurrence of such inputs.
 %If there is a bug in your switch, you will need to contact your hardware vendor;
 %if you have a bug in your policy specification, you will need to take a closer look at what you specified.
 
+\eat{
 \noindent{\bf Globally vs.\ Locally Minimal Input Sequences.}
 Our approach is not guaranteed to find the globally minimal
 causal sequence from an input trace, since this involves enumerating the powerset of
@@ -458,6 +459,7 @@ The delta debugging algorithm we employ does provably find a
 locally minimal causal sequence~\cite{Zeller:1999:YMP:318773.318946},
 meaning that if any input from the sequence is pruned, no invariant violation
 occurs.
+}
 
 \noindent{\bf Correctness vs.\ Performance.}
 We are primarily focused on correctness bugs, not performance bugs.
