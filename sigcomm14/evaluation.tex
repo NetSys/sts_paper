@@ -20,7 +20,7 @@ POX in-flight blackhole & 2 switch mesh & 15/20 [20/20*] & 11 & Yes \\
 POX premature handshake & 4 switch mesh & 20/20 & 2 & Yes \\
 % Andi: experiments/pox_early_packetin
 % Total inputs: 102
-POX migration blackhole & 4 switch mesh & 20/20* & 3 & Yes \\
+POX migration blackhole & 4 switch mesh & 20/20 & 3 & Yes \\
 % Total inputs: 29
 % With DP events: 117/3
 % fuzz_pox_4mesh_blackhole
@@ -48,6 +48,9 @@ Floodlight example failover bug & 2 switch mesh & - & 2 & Yes \\
 % Predates the experiment directory
 ONOS master election & TBD & - & TBD & TBD \\
 % Ahmed
+Load Balancer Flow Table Space & 3 switch mesh & - & 24 (N+1) & Yes \\
+% load_balancer_fuzzer_mcs/
+% Total original inputs: 106
 % --------
 %ONOS forgotten flows & TBD & TBD & TBD \\
 \hline
@@ -74,16 +77,12 @@ random} & Yes\footnote{With multiple replays per subsequence} \\
 Memory Leak & 2 switch mesh & - & 30 (M) & No \\
 % experiments/trigger_memory_leak3_mcs/
 % total original inputs: 719
-Execution-speed race condition & 3 switch mesh & - & 9 & Yes \\
-% "floodlight" branch: experiments/floodlight_loop_2014_mcs_*
-% Total original inputs: 157
+%Execution-speed race condition & 3 switch mesh & - & 9 & Yes \\
+%% "floodlight" branch: experiments/floodlight_loop_2014_mcs_*
+%% Total original inputs: 157
 Memory Corruption & 4 switch mesh & - & 2 & Yes \\
 % syn_mem_corruption_3switch_fuzzer_mcs
 % Total original inputs: 341
-Load Balancer Flow Table Space & 3 switch mesh & - & 24 (N+1) & Yes \\
-% load_balancer_fuzzer_mcs/
-% Total original inputs: 106
-
 % ----
 %Ignored Bad OpenFlow args & TBD & TBD & TBD \\
 %Latency spike & TBD & TBD & TBD \\
@@ -486,10 +485,9 @@ in pointing out a previously unknown bug, and reducing the input size.
 
 \subsection{Known \& Synthetic bugs}
 
-In addition to our troubleshooting case studies, we strive to show that
-\projectname~is able to successfully minimize traces for a range of bugs. We
-show this on a range of bug types, both known and synthetically injected by
-us.
+In addition to our troubleshooting case studies, we evaluate
+\projectname's ability to minimize traces on a range of bug types,
+both known and synthetically injected by us.
 
 \noindent{\bf Floodlight example failover bug.}  We were able to reproduce a
 known problem in Floodlight's distributed controller failover logic~\cite{floodlight_bug} with
@@ -563,8 +561,89 @@ believe that they are not responsible for tracking the liveness of the link,
 and not routes will traverse it. We managed to reproduce this situation with
 \projectname~and minimize the MCS for it: \num{TBD.}
 
-\tbd{Explain in rough terms what the categories are, and explain for the cases that
-didn't work so well why we didn't expect them to work so well.}
+\noindent{\bf POX Load Balancer Error Checking.} We are aware that POX
+applications do not always check error messages sent by switches
+rejecting invalid packet forwarding commands. We used this to trigger a bug in
+POX's load balancer application: we created a network where switches had only
+25 entries in their flow table, and proceeded to continue injecting TCP flows
+into the network. The load balancer application proceeded to install entries
+for each of these flows.At a certain point the switches ran out of flow entry
+space, and responded with error messages. As a result, POX began randomly load
+balancing each subsequent packet for a given flow over the servers, causing
+session state to be lost. We were able to able to minimize the MCS for this
+bug to 24 elements (two auxiliary flow entries, plus 22 flow needed to
+overflow the routing tables). An interesting aspect of this MCS is that its
+sisze is directly proportional to the flow table space, and developers would
+find across across many fuzz runs triggering that the MCS was always 24
+elements.
+
+\noindent{\bf Synthetic bugs}
+
+Lastly, we injected synthetic bugs across of bug types into POX. For space
+reasons we only briefly describe these bugs.
+
+\noindent{\bf Delicate timer interleaving}
+We injected a crash into a code path that was highly dependent on the
+interleaving of internal timers going off within POX. This is a particularly
+hard case for \projectname, since we have little control of internal timers.
+We were able to trigger the code path during fuzzing, but were unable to
+reproduce the bug during replay after five attempts, and were left with the
+original 39 input trace. This is the only bug we encountered that we were
+unable to replay.
+
+\noindent{\bf Algorithm misimplementation}
+We modified POX's implementation of Floyd-Warshall to create loops.
+We noticed that the MCS was inflated by at least two events: a link failure
+and a link recovery that we did not belive were relevant to trigger the bug we
+induced. Moreover, the final MCS was not replayable on the first try.
+We suspect that these problems may have been introduced by the fact that the
+routing implementation depended on the discovery module to find links in the
+network, and the order in which these links are discovered is
+non-deterministic.
+
+\noindent{\bf Overlapping flow entries}
+We ran two modules in POX: a capability manager in charge of providing
+upstream DoS protection for servers, and a forwarding application. The
+capabilities manager installed drop rules upstream for servers that requested
+it, but these rules had lower priority than the default forwarding rules in
+the switch. We were able to minimize 27 inputs to the two traffic injection
+inputs necessary to trigger the routing entry overlap.
+
+\noindent{\bf Null pointer on rarely used codepath.}
+On a rarely used-code path, we injected a null pointer exception,
+and were able to successfully minimize a fuzz trace of 365 events to the
+expected conditions that triggered that code path: a switch failure followed
+by a switch recovery.
+
+\noindent{\bf Multithreaded race condition}
+We created a race condition between multiple threads in POX that was
+triggered by any packet I/O, not any particular input. With 5 replays per
+subsequence, we were able to minimize 1596 input in 10 hours 15 minutes to a
+replayable 2 element failure/recovery pair as an MCS.
+The MCS itself may have been misleading to a developer, as the race condition
+was triggered randomly by any I/O, yet the bug was still tickled by these two
+inputs events.
+
+\noindent{\bf Memory Leak}
+We created a case that would take \projectname~very long to minimize: a
+memory leak that eventually caused a crash in POX. We artificially set the
+memory leak to happen quickly after allocating 30 objects created upon switch
+handshakes, and interpersed 691 other input events throughout switch reconnect
+events. The final MCS found after 4 hours 15 minutes was exactly 30 events, but it
+was not replayable. We suspect this was because \projectname~was timing out on
+some expected internal events, which caused POX to reject later switch
+connection attempts.
+
+\noindent{Memory Corruption}
+We simulated a case where the receipt of
+link failure notification on a particular port causes corruption to an internal data
+structure. This corruption then causes a crash when the data structure is
+accessed during the during corresponding port up. These bugs
+are often hard to debug, because considerable time can pass between the event
+corrupting the data structure and the event triggering the crash, making
+manual log inspection or source level debugging ineffective.
+\projectname~proved effective in this case, reducing a larger trace to
+exactly the 2 events responsible for the crash.
 
 \subsection{Overall Results}
 
