@@ -55,10 +55,10 @@ Our troubleshooting system, which we call {\projectname} ({\projectmeaning}),
 consists of 21,000 lines of Python, and is designed so that organizations can
 implement the technology within their existing QA test infrastructure (discussed in
 \S\ref{sec:architecture}). We evaluate the effectiveness of {\projectname} in
-two ways. First, and most significantly, we use {\projectname} to troubleshoot
-\num{eight} previously unknown bugs---involving event concurrency during topology discovery,
+two ways. First and most significantly, we use {\projectname} to troubleshoot
+\num{eight} previously unknown bugs---involving concurrent events during topology discovery,
 failure-induced blackholes, internal-state errors triggered by unexpected
-input sequences, and deadlocks in distributed databases---that we found
+input sequences, and livelock in a distributed database---that we found
 by fuzz testing \num{five} controllers (Floodlight~\cite{floodlight}, NOX~\cite{nox},
 POX~\cite{pox}, Pyretic~\cite{frenetic}, ONOS~\cite{ONOS})
 written in three different languages (Java, C++, Python).
@@ -67,4 +67,4 @@ boundaries of where \projectname~works well and where it does not by
 finding MCSes for previously known and synthetic bugs that span a range of bug types encountered in
 practice. In our evaluation, we quantitatively show that \projectname~is able to minimize traces
 by up to \num{X\%}, and we anecdotally found that reducing
-the input trace to an MCS made it easy to understand the root cause of the bug.
+traces to MCSes made it easy to understand the root causes of the bugs.

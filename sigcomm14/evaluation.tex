@@ -44,43 +44,43 @@ ONOS distributed database locking & 2 switch mesh & TBD & 3 & Yes \\
 \hline
 Known Bugs & - & - & - & - \\
 \hline
-Floodlight example failover bug & 2 switch mesh & TBD & 2 & Yes \\
+Floodlight example failover bug & 2 switch mesh & - & 2 & Yes \\
 % Predates the experiment directory
-ONOS master election & TBD & TBD & TBD & TBD \\
+ONOS master election & TBD & - & TBD & TBD \\
 % Ahmed
 % --------
 %ONOS forgotten flows & TBD & TBD & TBD \\
 \hline
 Synthetic Bugs & - & - & - & - \\
 \hline
-Null pointer on rarely used codepath & 20 switch FatTree & TBD & 2 & Yes \\
+Null pointer on rarely used codepath & 20 switch FatTree & - & 2 & Yes \\
 % experiments/experiments/pox_null_pointer_mcs
 % total original inputs: 365
-Overlapping flow entries & 2 switch mesh & TBD & 2 & Yes \\
+Overlapping flow entries & 2 switch mesh & - & 2 & Yes \\
 % experiments/trigger_priority_mismatch_small_mcs
 % total original inputs: 27
-Delicate timer interleaving & 3 switch mesh & TBD & 39 & No \\
+Delicate timer interleaving & 3 switch mesh & - & 39 & No \\
 % experiments/snapshot_demo_synthetic_link_failure
 % total original inputs: 39
-Algorithm misimplementation & 3 switch mesh & TBD & 7 & No \\
+Algorithm misimplementation & 3 switch mesh & - & 7 & No \\
 % experiments/experiments/pox_broken_floyd_mcs
 % total original inputs: 40
 % MCS is inflated! link failure / recovery in MCS not related to triggering events.
-Multithreaded race condition & 10 switch mesh & TBD & 2\footnote{The race
+Multithreaded race condition & 10 switch mesh & - & 2\footnote{The race
 condition triggered by any I/O events, so the final MCS was essentially
 random} & Yes\footnote{With multiple replays per subsequence} \\
 % experiments/trigger_multithreading_bug_mcs
 % total original inputs: 1596
-Memory Leak & 2 switch mesh & TBD & TBD & No \\
+Memory Leak & 2 switch mesh & - & 30 (M) & No \\
 % experiments/trigger_memory_leak3_mcs/
 % total original inputs: 719
-Execution-speed race condition & 3 switch mesh & TBD & 9 & Yes \\
+Execution-speed race condition & 3 switch mesh & - & 9 & Yes \\
 % "floodlight" branch: experiments/floodlight_loop_2014_mcs_*
 % Total original inputs: 157
-Memory Corruption & 4 switch mesh & TBD & 2 & Yes \\
+Memory Corruption & 4 switch mesh & - & 2 & Yes \\
 % syn_mem_corruption_3switch_fuzzer_mcs
 % Total original inputs: 341
-Load Balancer Flow Table Space & TBD & TBD & TBD & TBD \\
+Load Balancer Flow Table Space & 3 switch mesh & - & 51 (N+1) & Yes \\
 % Jefferson
 % ----
 %Ignored Bad OpenFlow args & TBD & TBD & TBD \\
@@ -94,7 +94,6 @@ Load Balancer Flow Table Space & TBD & TBD & TBD & TBD \\
 logging interposition enabled.}}
 \label{tab:case_studies}
 \end{table*}
-\tbd{Align order with intro}
 
 Our goal in this section is to show that \projectname~successfully produces
 MCSes that are useful for troubleshooting. The
@@ -107,7 +106,7 @@ need hundreds of developers to spend substantial time on each bug we find.
 %used to test production controller software.
 
 We instead take two approaches to evaluating \projectname.
-First, we need to demonstrate \projectname's viability in
+First, we demonstrate \projectname's viability in
 troubleshooting real bugs. We found \num{eight} new bugs by fuzz testing open source
 SDN control platforms:
 ONOS~\cite{ONOS} (Java), POX~\cite{pox} (Python), NOX~\cite{nox} (C++),
@@ -141,7 +140,7 @@ hosts, after discovering links in the network. %, and a spanning tree module,
 
 We start with a simple bug. %to illustrate that
 %\projectname~is useful for early stage development and testing.
-We employed \projectname~to generate random sequences of
+We generated random sequences of
 inputs, and found after some time that POX threw an exception due to
 attempting to remove an element from a list where the element was not present.
 
@@ -192,7 +191,7 @@ Runtime in Figure~\ref{fig:pox_handshake}.
 
 \noindent{\bf POX In-flight Blackhole.} We
 discovered the next bug after roughly 20 runs of randomly generated inputs.
-We noticed that \projectname~reported a persistent blackhole while POX was bootstrapping its
+We noticed a persistent blackhole while POX was bootstrapping its
 discovery of link and host locations. There were $29$ inputs in the initial trace, and \projectname~returned a $11$ input
 MCS (runtime shown in Figure~\ref{fig:pox_discovery}).
 
@@ -306,8 +305,7 @@ some interesting corner cases related to host migrations.
 We set up randomly generated inputs, included host
 migrations this time, and checked for blackholes. Our initial input size was
 $29$ inputs.
-Before investigating the bug we
-ran \projectname, and ended up with a $3$ input MCS (shown
+\projectname produced a $3$ input MCS (shown
 in Figure~\ref{fig:pox_migration}): a packet injection from a
 host (`A'), followed
 by a packet injection by another host (`B') towards A, followed by a host migration of A. This made it immediately
@@ -334,7 +332,7 @@ the recovery of that link. After roughly 9 hours over two days of examining
 Pyretic's (unfamiliar to us) code, we found what we believed to be the problem
 in its logic for computing minimum spanning trees: it appeared that down links
 weren't properly being accounted for, such that flow entries were installed
-along that link even when it was down. When the link recovered, a loop was
+along that link even though it was down. When the link recovered, a loop was
 created, as the flow entries were still in place. The loop seemed to persist until
 Pyretic periodically flushed all flow entries.
 
@@ -344,9 +342,9 @@ Pyretic periodically flushed all flow entries.
     \caption[]{\label{fig:pyretic_loop} Minimizing the Pyretic loop.}
 \end{figure}
 
-We proceeded to file a bug report, along with a replayable trace of the
+We proceeded to file a bug report along with a replayable trace of the
 minimized execution to the developers of Pyretic. They found after roughly
-five hours of replaying the trace with \projectname~and examining openflow exchanges that Pyretic told switches to
+five hours of replaying the trace with \projectname~that Pyretic told switches to
 flood out all links before the entire
 network topology had been learned (including the down link). By adding a timer before installing
 entries to allow for links to be discovered, the developers were able to verify
@@ -364,10 +362,11 @@ roughly 20 runs of randomly generated inputs.
 \end{figure}
 
 Our initial input size was 68 inputs, and
-\projectname~returned an 18 input MCS.\footnote{\num{We had difficulty
-replaying} the final MCS. The reason seems clear: this bug depends on the
-order NOX discovers links, which in turns depends on hashes computed from random memory
-addresses its discovery modules LLDP selection algorithm}
+\projectname~returned an 18 input MCS.
+%\footnote{\num{We had difficulty
+%replaying} the final MCS. The reason seems clear: this bug depends on the
+%order NOX discovers links, which in turns depends on hashes computed from random memory
+%addresses its discovery modules LLDP selection algorithm}
 Our approach to debugging was to
 reconstruct from the MCS how NOX should have installed routes, then compare
 how NOX actually installed routes.
@@ -421,12 +420,13 @@ We minimized the (already small) sequence of startup events to 3 inputs.
 When examining the ONOS logs, we found that the particular timing between the 3
 input events caused both ONOS controllers to encounter a "failed to obtain
 lock" error from their distributed graph database (Titan). We suspect that the ONOS controllers
-were attempting to concurrently insert the same key, a known problem in Titan \num{cite}.
+were attempting to concurrently insert the same key, which causes a known
+error in Titan \num{cite}.
 We modified ONOS' initialization logic to retry when inserting switches,
-and found the problem went away.
+and found that the problem went away.
 
-\noindent{\bf Floodlight discovery loop.} We
-applied \projectname~to Floodlight's routing application.
+\noindent{\bf Floodlight discovery loop.} We next
+tested Floodlight's routing application.
 In about 30 minutes, our fuzzing uncovered a
 117 input sequence that caused a persistent 3-node forwarding loop.
 \projectname~reduced the sequence to 13 input events in 324 replays and 8.5
@@ -484,7 +484,8 @@ in pointing out a previously unknown bug, and reducing the input size.
 
 \subsection{Known Bugs}
 
-\noindent{\bf Floodlight example failover bug.}  We were able to reproduce the problem shown in Figure~\ref{fig:example} with
+\noindent{\bf Floodlight example failover bug.}  We were able to reproduce a
+known problem in Floodlight's failover logic with
 \projectname. We ran two Floodlight controller
 instances (a version before the bug was fixed), connected to two switches, and injected 200 extraneous link
 and switch failures, with the controller crash and switch connect event\footnote{We used a switch connect
@@ -495,6 +496,38 @@ We were able to successfully isolate the two event MCS.
 %inputs despite non-determinism in the Floodlight internal events. With full determinism and
 %interposition, we expect that the algorithm should work well for less
 %fabricated cases.
+
+\eat{
+We introduce our approach using an example bug in the Floodlight open-source control
+platform~\cite{floodlight_bug}. Floodlight is distributed across
+multiple controllers for high availability, and provides support for
+virtualization. Switches maintain one hot connection to a master controller and
+several cold connections to replica controllers. The \emph{master} holds the
+authority to modify the configuration of switches, while the other
+controllers are in \emph{backup} mode and do not change the
+switch configurations unless they detect that the master has crashed.
+
+\begin{figure}[t]
+  %\hspace{-10pt}
+  \includegraphics[width=3.25in]{../diagrams/case_study/example_bug.pdf}
+  \caption[]{\label{fig:example} Floodlight failover bug. External inputs
+             are depicted as red dots, internal events are depicted as black
+             dots, and the dotted message line depicts a timeout.}
+\end{figure}
+
+The failover logic in Floodlight is incorrect, leading to the
+following race condition\footnote{Note that this issue was
+originally documented by the developers of Floodlight~\cite{floodlight_bug}.} depicted in
+Figure~\ref{fig:example}:
+a link fails (E1), and the switch attempts to notify the controllers (E2,E4) shortly after the master
+controller has died (E3), but before a new master has been selected (E6). In this case, all live controllers are in
+the backup role and will not take responsibility for updating the switch
+flow table (E5). At some point, a backup notices the master failure and
+elevates itself to the master role (E6). The new master will proceed to manage
+the switch, but without ever clearing the routing entries for
+the failed link, resulting in a persistent blackhole. In this example, the MCS
+is the conjunction of the two external inputs (E1,E3).
+}
 
 \noindent{\bf ONOS master election bug.} We reproduced another bug,
 previously reported in earlier versions and later fixed, in
