@@ -485,13 +485,27 @@ in pointing out a previously unknown bug, and reducing the input size.
 \subsection{Known Bugs}
 
 \noindent{\bf Floodlight example failover bug.}  We were able to reproduce a
-known problem in Floodlight's failover logic with
-\projectname. We ran two Floodlight controller
-instances (a version before the bug was fixed), connected to two switches, and injected 200 extraneous link
+known problem in Floodlight's distributed controller failover logic~\cite{floodlight_bug} with
+\projectname. In Floodlight switches maintain one hot connection to a master controller and
+several cold connections to replica controllers. The \emph{master} holds the
+authority to modify the configuration of switches, while the other
+controllers are in \emph{backup} mode and do not change the
+switch configurations. % unless they detect that the master has crashed.
+If a link fails tries to connect shortly after the master
+controller has died, all live controllers are in
+the backup role and will not take responsibility for updating the switch
+flow table. At some point when a backup notices the master failure and
+elevates itself to the master role it will proceed to manage
+the switch, but without ever clearing the routing entries for
+the failed link, resulting in a persistent blackhole.
+
+We ran two Floodlight controller
+instances connected to two switches, and injected 200 extraneous link
 and switch failures, with the controller crash and switch connect event\footnote{We used a switch connect
 event rather than a link failure event for logistical reasons, but both
 can trigger the race condition} that triggered the blackhole interleaved among them.
-We were able to successfully isolate the two event MCS.
+We were able to successfully isolate the two event MCS: the controller crash
+and the link failure.
 %On ten repeated runs, the algorithm successfully pruned all extraneous
 %inputs despite non-determinism in the Floodlight internal events. With full determinism and
 %interposition, we expect that the algorithm should work well for less
@@ -530,13 +544,14 @@ is the conjunction of the two external inputs (E1,E3).
 }
 
 \noindent{\bf ONOS master election bug.} We reproduced another bug,
-previously reported in earlier versions and later fixed, in
+previously reported in earlier versions later fixed, in
 ONOS' master election protocol. If two adjacent switches are connected to two
 separate controllers, the controllers must decide between themselves who will
 be responsible for tracking the liveness of the link. They make this decision
 by electing the controller with the lower ID as the master for that link.
 When the master dies, and later reboots, it is assigned a new ID. If
-its new ID is higher than the other controllers', both will incorrectly
+its new ID is higher than the other controllers', a transient problem will
+occur where both will incorrectly
 believe that they are not responsible for tracking the liveness of the link,
 and not routes will traverse it. We managed to reproduce this situation with
 \projectname~and minimize the MCS for it: \num{TBD.}
@@ -593,6 +608,10 @@ which took more than $8.5$ hours.
 
 \subsection{Instrumentation Complexity}
 
+For POX and Floodlight, we added shim layers to the controller software to
+allow \projectname~to redirect {\tt gettimeofday()} and interpose on logging
+statements.
+
 %andi@aquil-vm:~/entw/openflow/floodlight-sts$ git diff --stat f37046a..HEAD | grep '|' | grep -v 'slf4j' | grep .java | grep sts | perl -pai -e '$sum += $F[2]; END { print $sum, "\n"; }'
 % .../aspects/sts/HorribleMicroSecondTimeSource.java |   92 +++
 % src/main/aspects/sts/MicroSecondTime.java          |   54 ++
@@ -614,8 +633,6 @@ which took more than $8.5$ hours.
 %     205 pox_syncer.py
 %     147 sts_syncer.py
 %     582 total
-
-Here we show how much effort it took us to interpose on logging, gettimeofday.
 
 \subsection{Scalability}
 
@@ -677,7 +694,13 @@ We found for both cases that the number of events we timed out on while isolatin
 For smaller values, the number of timed out events increased rapidly. We
 currently set \textepsilon~to $100$ milliseconds.
 
-\colin{Make me work}
+In general, larger values of \textepsilon~are preferable to
+smaller values (disregarding runtime considerations), since we can always
+detect when we have waited too long (\viz~when a successor of the next input
+has occurred), but we cannot detect when we have timed out
+early on an internal event that is in fact going to occur shortly after.
+
+%\colin{Make me work}
 %\begin{table*}
 %\centering
 %\begin{tabular}{l|l|l|l|l|l}
@@ -693,11 +716,6 @@ currently set \textepsilon~to $100$ milliseconds.
 %\label{tab:epsilon}
 %\end{table*}
 
-In general, larger values of \textepsilon~are preferable to
-smaller values (disregarding runtime considerations), since we can always
-detect when we have waited too long (\viz~when a successor of the next input
-has occurred), but we cannot detect when we have timed out
-early on an internal event that is in fact going to occur shortly after.
 %Analyzing event frequencies for particular bugs could provide more ideal
 %\textepsilon~values.
 
