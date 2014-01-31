@@ -102,29 +102,30 @@ logging interposition enabled.}}
 \label{tab:case_studies}
 \end{table*}
 
-Our goal in this section is to show that \projectname~successfully produces
-MCSes that are useful for troubleshooting. The
-gold standard for evaluating \projectname~would be a large scale A/B test~\cite{neyman}
-showing how much time it takes for developers to troubleshoot bugs found in
-QA clusters with and without minimized event traces. Unfortunately
-expert developers are scarce, and their skills and familiarity
-with code bases vary widely; to achieve statistical significance we would
-need hundreds of developers to spend substantial time on each bug we find.
-%We also lack access to bugs found by QA testbeds of the scale and complexity
-%used to test production controller software.
-
-We instead take two approaches to evaluating \projectname.
-First, we demonstrate \projectname's viability in
-troubleshooting real bugs. We found \num{seven} new bugs by fuzz testing five open source
-SDN control platforms:
+We now investigate the utility of \projectname~using multiple case studies. The
+ultimate goal of \projectname~is to reduce developer effort for trouble-shooting
+and debugging. As this metric is difficult to quantify directly, we
+quantitatively compare the minimized and non-minimized event log sizes as a
+proxy, and qualitatively relay our experience in handling the found bug. First,
+we demonstrate \projectname's viability in troubleshooting real bugs. We found
+\num{seven} new bugs by fuzz testing five open source SDN control platforms:
 ONOS~\cite{ONOS} (Java), POX~\cite{pox} (Python), NOX~\cite{nox} (C++),
 Pyretic~\cite{frenetic} (Python), and Floodlight~\cite{bigswitch} (Java), and
 debugged these with the help of \projectname. Second, we demonstrate the
 boundaries of where \projectname~works well and where it does not by finding
-MCSes for previously known and synthetic bugs that span a range of bug types encountered in
-practice. Throughout our evaluation
-we quantitatively show \projectname's ability to minimize traces, and we
-qualitatively demonstrate the use of MCSes for troubleshooting.
+MCSes for previously known and synthetic bugs that span a range of bug types
+encountered in practice.
+
+%Our goal in this section is to show that \projectname~successfully produces
+%MCSes that are useful for troubleshooting. The
+%gold standard for evaluating \projectname~would be a large scale A/B test~\cite{neyman}
+%showing how much time it takes for developers to troubleshoot bugs found in
+%QA clusters with and without minimized event traces. Unfortunately
+%expert developers are scarce, and their skills and familiarity
+%with code bases vary widely; to achieve statistical significance we would
+%need hundreds of developers to spend substantial time on each bug we find.
+%We also lack access to bugs found by QA testbeds of the scale and complexity
+%used to test production controller software.
 
 We show a high-level overview
 of our results in Table~\ref{tab:case_studies}, and
@@ -237,25 +238,25 @@ a \emph{PacketIn} event related to an LLDP packet was forwarded to POX's
 \verb=l2_multi=, which would then fail because it expected that \emph{SwitchUp} occur first.
 We verified with the lead developer of POX that this was indeed a bug.
 
-This case study demonstrates
-how even the simple handshake state machine can behave unexpectedly and in a
-non-trivial manner that is hard to understand without being able to repeat the
-experiment with a minimal trace. Making heavy use of the MCS replay, a developer
-unfamiliar with the two subsystems involved was able to root-cause the bug in
-about 30 minutes.
+This case study demonstrates how even the simple handshake state machine can
+behave unexpectedly and in a non-trivial manner that is hard to understand
+without being able to repeat the experiment with a minimal trace. Making heavy
+use of the MCS replay, a developer unfamiliar with the two subsystems involved
+was able to root-cause the bug in about 30 minutes.
 \begin{figure}[t]
     %\hspace{-10pt}
     \includegraphics[width=3.25in]{../graphs/runtime/pox_early_packetin.pdf}
     \caption[]{\label{fig:pox_handshake} Minimizing the POX Premature
     Packet-In Failure. (total runtime: 249.1s, original runtime: 2.7s)}
 \end{figure}
-\noindent{\bf POX In-flight Blackhole.} We
-discovered the next bug after roughly 20 runs of randomly generated inputs.
-We noticed a persistent blackhole while POX was bootstrapping its
-discovery of link and host locations. There were $46$ inputs in the initial
-trace, and \projectname~returned a $7$ input
-MCS (runtime shown in Figure~\ref{fig:pox_discovery}).
-
+\noindent{\bf POX In-flight Blackhole.} Another bug was discovered using Fuzzing
+after roughly 20 runs of randomly generated inputs. We noticed a persistent
+blackhole while POX was bootstrapping its discovery of link and host locations.
+There were $46$ inputs in the initial trace. While the trace provide difficult
+to replay and minimize due to non-determinism in the system, we were able to
+eliminate it by employing multiplexed sockets, overriding {\tt gettimeofday()},
+and waiting on POX's logging messages. \projectname~returned a $7$ input MCS
+(runtime shown in Figure~\ref{fig:pox_discovery}).
 
 \begin{figure}[t]
     %\hspace{-10pt}
@@ -440,28 +441,31 @@ routing loop between two switches (involving routes for two hosts) within
 roughly $20$ runs of randomly generated inputs.
 
 Our initial input size was $150$ inputs, a minute's worth of execution.
-\projectname~returned a $18$ input MCS. The most salient inputs in the
-MCS were $3$ dataplane packet drops mid-way through the execution, interspersed
-with $14$ traffic injections. We are in the process of pinpointing the
-exact root cause with NOX developers, based on the $18$ input MCS.
-} % -----------------------------------
-\noindent{\bf ONOS distributed database locking.} When testing ONOS, a
-distributed open-source controller, we noticed that ONOS controllers would
-occasionally reject switch attempts to connect upon initialization.
-We minimized the (already small) sequence of startup events to 3 inputs.
-When examining the ONOS logs, we found that the particular timing between the 3
-input events caused both ONOS controllers to encounter a ``failed to obtain
-lock'' error from their distributed graph database (Titan). We suspect that the ONOS controllers
-were attempting to concurrently insert the same key, which causes a known
-error in Titan~\num{cite}.
-We modified ONOS's initialization logic to retry when inserting switches,
-and found that this eliminated the bug.\\[0.5ex]
-\noindent{\bf Floodlight discovery loop.} Next we
-tested Floodlight's routing application.
-In about 30 minutes, our fuzzing uncovered a
-117 input sequence that caused a persistent 3-node forwarding loop.
-\projectname~reduced the sequence to 13 input events in 324 replays and 8.5
-hours (runtime shown in Figure~\ref{fig:fl_loop}).
+\projectname~returned a $18$ input MCS. The most salient inputs in the MCS were
+$3$ dataplane packet drops mid-way through the execution, interspersed with $14$
+traffic injections. We are in the process of pinpointing the exact root cause
+with NOX developers, based on the $18$ input MCS. } %
+----------------------------------- \noindent{\bf ONOS distributed database
+locking.} When testing ONOS, a distributed open-source controller, we noticed
+that ONOS controllers would occasionally reject switch attempts to connect upon
+initialization. We minimized the (already small) sequence of startup events to 3
+inputs. When examining the ONOS logs, we found that the particular timing
+between the 3 input events caused both ONOS controllers to encounter a ``failed
+to obtain lock'' error from their distributed graph database (Titan). We suspect
+that the ONOS controllers were attempting to concurrently insert the same key,
+which causes a known error in Titan~\num{cite}. We modified ONOS's
+initialization logic to retry when inserting switches, and found that this
+eliminated the bug.\\[0.5ex] \noindent{\bf Floodlight discovery loop.} Next we
+tested Floodlight's routing application. In about 30 minutes, our fuzzing
+uncovered a 117 input sequence that caused a persistent 3-node forwarding loop.
+In this case, the controller exhibited significant non-determinism, which initially
+precluded \projectname{} from efficiently reducing the input size.
+We worked around this by increasing $num_{Replay}$ to $10$
+\footnote{The advanced mitigation strategies
+(Section~\ref{subsec:mitigating}) employed in POX were not available for
+floodlight at the time).} With this, \projectname~reduced the sequence to 13
+input events in 324 replays and 8.5 hours (runtime shown in
+Figure~\ref{fig:fl_loop}).
 
 \begin{figure}[t]
     %\hspace{-10pt}
@@ -672,27 +676,40 @@ manual log inspection or source level debugging ineffective.
 \projectname~proved effective in this case, reducing a larger trace to
 exactly the 2 events responsible for the crash.
 
-\subsection{Overall Results}
+\subsection{Overall Results and Discussion}
 
-The overall results of our case studies are
-shown in Table~\ref{tab:case_studies}.
-\num{We show the initial input size and MCS input size in the last two
-columns.}
-For the Replay Success Rate column we
-repeatedly replayed the original unpruned event trace, and measured how often we
-were able to reproduce the policy violation. There was indeed non-determinism
-in some cases, especially with Floodlight. For the specific case of
-the POX in-flight blackhole, we were able to eliminate the relevant
-non-determinism by employing multiplexed sockets, overriding {\tt
-gettimeofday()}, and waiting on
-POX's logging messages. \num{We expect that we would see similar improvements if we
-applied these techniques to Floodlight.}
+The overall results of our case studies are shown in
+Table~\ref{tab:case_studies}. We note that with the exception of the Timer
+Interleaving, \projectname~was able to significantly reduce the size of the
+input trace. As described in the case studies, we were able to successfully
+counter the inherent non-determinism by applying the strategies described in
+Sections \ref{subsec:mitigating} (for POX) and, as a fall-back \ref{subsec:coping}.
+The final MCS were reliably replayable in 13 of 17 times. 
+
+What do these numbers tell us about whether \projectname~is really useful for
+troubleshooting real-world problems? Our anecdotal experience in root-causing
+the described problems suggests it is. The exact reduction ration ratios are
+less important in this context than the fact that in most cases, \projectname
+brought the input trace down from an humanly intractable size (hundreds of
+events) to a tractable size ($<=7$)\footnote{Humans have been show to be able to
+keep in mind ~$7 +/- 2$ aspects\cite{TODO_CITE_STUDY}}. Human debugging on large
+input traces using standard debugging tools (log files, source level debuggers)
+is tedious at best. Often, we tend to start working backwards from the crash. If
+the actual root cause is many events in the past (e.g., in the Memory Corruption
+example), this may require many re-iterations through the code and logs and
+becomes intractable on human timescales. In contrast, it very easy to step
+through a 2 to 7 event trace and manually identify the code paths responsible
+for a failure.
+
+Bugs that depend on fine-grained thread-interleaving or high-precision timed
+events inside of the controller are the worst-case for \projectname{}. This 
+is not surprising, as they do not directly depend on the input events of the
+networking, and we do not directly control the internal scheduling and timing
+of the controllers.
 
 We measured the runtime of \projectname~for these case studies in Figures
-\num{$6\;\&\;8-11$}.
-While some instances ran in logarithmic time, the worst case was minimizing
-the Floodlight loop,
-which took more than $8.5$ hours.
+\num{$6\;\&\;8-11$}. While some instances ran in logarithmic time, the worst
+case was minimizing the Floodlight loop, which took more than $8.5$ hours.
 %Nonetheless, we believe that even long minimization runtime
 %is preferable to spending software developer's time on manual
 %diagnosis.

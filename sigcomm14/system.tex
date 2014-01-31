@@ -109,6 +109,7 @@ the use cases speak for themselves?}
 %memory communication.}
 
 \subsection{Coping with Non-Determinism}
+\label{subsec:coping}
 
 Non-determinism in the execution of concurrent processes stems from
 differences in system call return values, process scheduling decisions (which can
@@ -130,8 +131,8 @@ is to replay each subsequence chosen
 by delta debugging multiple times. If observing the bug
 is an independent and identically distributed random variable (an optimistic
 but not completely unreasonable assumption) with some
-underlying probability $p$, then $n$
-replays will observe the bug with probability $1-(1-p)^{n}$. This exponential
+underlying probability $p$, then $num_{Replay}$
+replays will observe the bug with probability $1-(1-p)^{num_{Replay}}$. This exponential
 works strongly in our favor; for example, even if the original bug is
 triggered in only 20\% of replays, the probability that we will not trigger
 it during an intermediate replay is approximately
