@@ -4,10 +4,10 @@ programs can be written. However, the software used to support this API is
 anything but simple: the SDN control plane (consisting of the network
 operating system and higher layers) is a complicated distributed system that
 must react quickly and correctly to controller/switch/link failures, host migrations,
-policy-configuration changes, and other events.
+policy-configuration changes and other events.
 All complicated distributed systems are prone to bugs, and from our first-hand
 familiarity with five open source controllers and three major commercial
-controllers, we can attest that SDN control software is no exception.
+controllers we can attest that SDN control software is no exception.
 % All complicated distributed systems are prone to bugs and from our first-hand familiarity with several important open-source (NOX, POX, Floodlight, Frenetic, ONOS) and closed-source controllers (Google, VMware, BigSwitch), we can attest that SDN control platforms are no exception. 
 
 %When faced with a bug, it is difficult to identify which events are triggering
@@ -15,7 +15,7 @@ controllers, we can attest that SDN control software is no exception.
 %underlying code) is extremely time-consuming,
 When faced with symptoms of a network problem (\eg~a persistent loop)
 that suggest the presence of a bug in the control plane software,
-software developers must first identify which events are triggering
+software developers need to identify which events are triggering
 this apparent bug before they can begin to isolate and fix it.
 This act of ``troubleshooting'' (which precedes the act of debugging the
 underlying code) is extremely time-consuming, as developers spend hours poring
@@ -26,13 +26,12 @@ that 70\% of the reported concurrency bugs take days to months to fix).}
 % Bugs are a fact of life;
 Our aim is to reduce effort spent on troubleshooting SDN control software.
 
-
 To that end, we have built a troubleshooting system that,
 given an execution trace, attempts to automatically eliminate
 trace events that are not causally related to the bug, producing a ``minimal
 causal sequence'' (MCS) of triggering events. Once the original trace has
 been reduced to an MCS (or an approximation thereof), the developer embarks
-on the debugging process. Our claim is that the greatly reduced size of the
+on the debugging process. We claim that the greatly reduced size of the
 trace makes it easier for the developer to figure out which code path contains
 the underlying bug, allowing them to focus their effort on
 the task of fixing the problematic code itself. After the bug has been fixed, the MCS
@@ -42,10 +41,10 @@ and can help identify redundant bug reports where the MCSes are the same.
 Our goal of minimizing test cases is in the spirit of
 delta debugging~\cite{Zeller:1999:YMP:318773.318946}, but our
 problem is harder in two dimensions: SDN control software is distributed
-across many machines, and the input is distributed in time (\ie, the
+across multiple machines, and the input is distributed in time (\ie, the
 input is not a single file, but an ongoing sequence of events).
 We are therefore forced to cope with asynchrony and non-determinism while
-we speculatively eliminate various input events,
+we speculatively perturb the original execution,
 without making assumptions about the language
 or instrumentation of the control software under test.
 We are not aware of any other system that tackles these

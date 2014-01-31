@@ -1,7 +1,7 @@
 Given a log $(E_L, T_L, C_L)$ exhibiting an invariant violation,
 our goal is to identify its MCS. This involves two tasks:
 searching through subsequences of $E_L$, and searching for replay timings for those
-subsequences that if possible trigger the original invariant violation.
+subsequences that, if possible, trigger the original invariant violation.
 
 \eat{
 We introduce our approach using an example bug in the Floodlight open-source control
@@ -39,16 +39,15 @@ is the conjunction of the two external inputs (E1,E3).
 \label{subsec:delta_debugging}
 
 Checking random subsequences of $E_L$ would be one viable but inefficient
-approach to achieving our first task. We can do better by leveraging
-%a
+approach to achieving our first task. We do better by leveraging
 %divide-and-conquer search technique from the software engineering community:
 the delta debugging algorithm~\cite{Zeller:1999:YMP:318773.318946}, a
 divide-and-conquer algorithm for
 isolating fault-inducing inputs. In our case, we use delta
 debugging to iteratively select subsequences of $E_L$ and replay each
-subsequence with some timing $T$. If the bug persists, delta debugging ignores the
+subsequence with some timing $T$. If the bug persists for a given subsequence, delta debugging ignores the
 other inputs, and proceeds with the search for an MCS within this subsequence.
-In what follows, we use the term {\em delta debugging} to refer to our algorithm for finding relevant subsequences.
+%In what follows, we use the term {\em delta debugging} to refer to our algorithm for finding relevant subsequences.
 The delta debugging algorithm is shown in Figure~\ref{fig:ddmin}.
 %(with `$test$' replaced by `$replay$').
 
@@ -109,8 +108,8 @@ $\done \subset \dfail$, $\dtwo \subset \dfail$, $\done \cup \dtwo = \dfail$, $\d
 hold.
 \end{center}
 \end{boxedminipage}
-\label{fig:ddmin}
 \caption{\colin{Cut if we need space} Automated Delta Debugging Algorithm From~\cite{Zeller:1999:YMP:318773.318946}}
+\label{fig:ddmin}
 \end{figure*}
 
 \eat{ % Original O(n^2) algorithm
@@ -148,7 +147,7 @@ Simply exploring subsequences of $E_L$ is insufficient for finding MCSes: the
 timing of those subsequences throughout invocations of $replay()$ is crucial for reliably
 reproducing the
 invariant violation. The most natural approach would be to maintain the original
-timings.
+timings between inputs.
 \eat{\ie~if we
 define $t_i$ as the timestamp of the $i^{th}$ input from the original run and $t'_i$ as the
 replay clock value when it injects that same input
@@ -245,6 +244,38 @@ event $i$ from the original log if and only if all unmasked fields have the same
 and $i$ occurs between $i'$'s preceding and succeeding inputs in the
 happens-before relation.
 
+\begin{table}
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Input Type} & \textbf{Implementation} \\
+\hline
+\hline
+Switch failure/recovery & TCP teardown \\
+\hline
+Controller failure/recovery & \verb=SIGKILL= \\
+\hline
+Link failure/recovery & \verb=ofp_port_status= \\
+\hline
+Controller partition & \verb=iptables= \\
+\hline
+Dataplane packet injection & Network namespaces \\
+\hline
+Dataplane packet drop & Dataplane interposition \\
+\hline
+Dataplane packet delay & Dataplane interposition \\
+\hline
+Host migration & \verb=ofp_port_status= \\
+\hline
+Control message delay & Controlplane interposition \\
+\hline
+Non-deterministic TCAMs & Modified switches \\
+\hline
+\end{tabular}
+\caption{Input types currently supported by \projectname}
+\label{tab:inputs}
+\end{table}
+
 \eat{
 \begin{figure}[t]
     %\hspace{-10pt}
@@ -262,6 +293,7 @@ Internal message & Masked values \\
 \hline
 \hline
 OpenFlow messages & xac id, cookie, buffer id, stats \\
+% port numbers?
 \hline
 packet\_out/in payload & all values except src, dst, data \\
 \hline
@@ -353,6 +385,28 @@ in Figure~\ref{fig:replay}.
 \end{figure}
 }
 
+\begin{figure}
+  \begin{pseudocode}[framebox]{Peek}{events}
+    \PROCEDURE{Peek}{input\ subsequence}
+    inferred \GETS [\ ] \\
+    \FOR e\textsubscript{i}\ in\ subsequence \\
+    \BEGIN
+      snapshot\ system \\
+      inject\ e\textsubscript{i} \\
+      \Delta \GETS |e\textsubscript{i}.time - e\textsubscript{i-1}.time| + \epsilon \\
+      record\ events\ for\ \Delta\ seconds \\
+      matched \GETS original\ events\ \&\ recorded\ events \\
+      inferred << e\textsubscript{i} << matched \\
+      restore\ snapshot \\
+    \END \\
+    \RETURN{inferred}
+    \ENDPROCEDURE
+  \end{pseudocode}
+  \caption{{\sc Peek} is responsible for determining which internal events
+  from the original sequence are going to occur for a given subsequence.
+  \label{fig:peek}}
+\end{figure}
+
 {\bf Handling New Internal Events.} The last possible change induced by pruning is the occurrence of new
 internal events that were not observed in the original log.
 New events present multiple possibilities for where
@@ -412,15 +466,15 @@ the controllers quickly converge to a single state (either ``Master'' or
 \label{subsec:complexity}
 
 The delta debugging algorithm terminates after $\Omega(\log n)$
-invocations of $replay$ in the best case, and $O(n)$ in the worst case. where $n$ is the number of inputs in the original
+invocations of $replay$ in the best case, and $O(n)$ in the worst case, where $n$ is the number of inputs in the original
 trace~\cite{Zeller:1999:YMP:318773.318946}.
 Each invocation of $replay$ takes $O(n)$ time
 (one iteration for {\sc Peek()} and one iteration for the replay itself),
 for an overall runtime of $\Omega(n \log n)$ best case and $O(n^2)$ worst case replayed inputs.
 The runtime can be decreased by parallelizing delta debugging:
 speculatively replaying subsequences in parallel, and joining the results.
-Storing periodic snapshots throughout testing can also reduce runtime, as it
-allows us to replay starting from a recent snapshot rather than the beginning of the
+Storing periodic checkpoints of the system state throughout testing can also reduce runtime, as it
+allows us to replay starting from a recent checkpoint rather than the beginning of the
 trace. \barath{But doesn't this approach break due to non-determinism?  Sometimes we want
 a replay run to be different from a previous replay run...} 
 
