@@ -736,13 +736,13 @@ across threads or across nodes. This limits the effectiveness of \projectname{} 
 size of the MCS, as the underlying algorithm relies on the ability to successfully replay
 invariant violations.}
 
-Recall that \projectname~optionally replays subsequences multiple times
+Recall that \projectname~optionally replays each subsequence multiple times
 throughout delta debugging to
 mitigate the effects of non-determinism. We evaluate the effectiveness of this
-approach on the minimization a non-deterministic loop created by Floodlight.
-Figure~\ref{fig:non-determinism} demonstrates that the size of the resulting MCS decreases
-with the number of replays per subsequence. This shows that replaying multiple times is
-effective at coping with non-determinism, at the cost of increased runtime.
+approach on the minimization of a non-deterministic loop created by Floodlight in a 95-hour long
+experiment. Figure~\ref{fig:non-determinism} demonstrates that the size of the resulting MCS decreases
+with the number of replays per subsequence. This suggests that replaying each subsequence multiple
+times is effective in coping with non-determinism, at the cost of increased runtime.
 
 \eat{
 This is because the algorithm narrows its search every time
