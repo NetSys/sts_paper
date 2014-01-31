@@ -80,8 +80,10 @@ Execution-speed race condition & 3 switch mesh & - & 9 & Yes \\
 Memory Corruption & 4 switch mesh & - & 2 & Yes \\
 % syn_mem_corruption_3switch_fuzzer_mcs
 % Total original inputs: 341
-Load Balancer Flow Table Space & 3 switch mesh & - & 51 (N+1) & Yes \\
-% Jefferson
+Load Balancer Flow Table Space & 3 switch mesh & - & 24 (N+1) & Yes \\
+% load_balancer_fuzzer_mcs/
+% Total original inputs: 106
+
 % ----
 %Ignored Bad OpenFlow args & TBD & TBD & TBD \\
 %Latency spike & TBD & TBD & TBD \\
@@ -560,7 +562,6 @@ occur where both will incorrectly
 believe that they are not responsible for tracking the liveness of the link,
 and not routes will traverse it. We managed to reproduce this situation with
 \projectname~and minimize the MCS for it: \num{TBD.}
-
 
 \tbd{Explain in rough terms what the categories are, and explain for the cases that
 didn't work so well why we didn't expect them to work so well.}
