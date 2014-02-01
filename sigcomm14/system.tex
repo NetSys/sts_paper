@@ -38,9 +38,10 @@ perform replay. Our framework mocks out the control plane
 behavior of network devices in lightweight software switches and hosts (with
 support for minimal data plane forwarding).
 We then run the control software on
-top of this \tester~and connect the software switches to the controllers as if they were true
-network devices, such that the controllers believe they are configuring a true
-network. The \tester~interposes and buffers messages on all communication
+top of this \tester~and connect the emulated software switches to the controllers. % as if they were true
+network devices. %, such that the controllers believe they are configuring a true
+%network. 
+The \tester~interposes and buffers messages on all communication
 channels, allowing it to delay, drop, or reorder
 messages as needed to induce failure modes during testing. This interposition
 allows us to replicate many of the failure modes caused by asynchrony in real
