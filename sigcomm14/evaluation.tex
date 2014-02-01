@@ -8,7 +8,7 @@
   \multicolumn{1}{c|}{~} & \textbf{Bug Name} & \textbf{Topology} &
   \textbf{Runtime (s)} & \textbf{Input Size} & \textbf{MCS Size} & \textbf{MCS
   helpful?}  \\\cline{2-6} \hline
-  \multirow{8}{*}{\rotatebox[origin=c]{90}{\bf Newly Found}}
+  \multirow{7}{*}{\rotatebox[origin=c]{90}{\bf Newly Found}}
 & Pyretic loop & 3 switch mesh & 266.2 & 36 & 2 & Yes \\
 % 20/20
 % experiments/new_pyretic_loop_mcs/
@@ -543,8 +543,8 @@ in pointing out a previously unknown bug, and reducing the input size.
 
 In addition to our troubleshooting case studies, we evaluate
 \projectname's ability to minimize traces on a range of bug types,
-both known and synthetically injected by us.
-
+both known and synthetically injected by us.\\[0.5ex]
+%
 \noindent{\bf Floodlight failover bug.} We were able to reproduce a
 known problem in Floodlight's distributed controller failover logic~\cite{floodlight_bug} with
 \projectname. In Floodlight switches maintain one hot connection to a master controller and
@@ -776,9 +776,9 @@ times is effective in coping with non-determinism, at the cost of increased runt
 
 \begin{table}[tb]
 \centering
-\begin{tabular}{| >{\centering\arraybackslash}p{0.9in} | >{\centering\arraybackslash}p{0.7in} | >{\centering\arraybackslash}p{1.25in} |}
+\begin{tabular}{| >{\centering\arraybackslash}p{1in} | >{\centering\arraybackslash}p{0.7in} | >{\centering\arraybackslash}p{1.15in} |}
 \hline
-Max replays per subsequence & Size of final MCS & Total hours\\\hline\hline
+{\bf Max replays per subsequence} & {\bf Size of final MCS} & {\bf Total hours}\\\hline\hline
 1 & 65 & 6.10 \\\hline
 2 & 20 & 6.37 \\\hline
 3 & 15 & 7.78 \\\hline
@@ -792,6 +792,7 @@ Max replays per subsequence & Size of final MCS & Total hours\\\hline\hline
 \end{tabular}
 \caption[]{\label{tab:non-determinism} Effectiveness of replaying
 subsequences multiple times in mitigating non-determinism.}
+\vskip -1em
 \end{table}
 
 \eat{
