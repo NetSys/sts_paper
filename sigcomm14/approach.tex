@@ -227,7 +227,7 @@ successfully reproduce bugs.}
 \footnotesize
 \begin{tabular}{|l|l|}
 \hline
-Internal message & Masked values \\
+{\bf Internal message} & {\bf Masked values} \\
 \hline
 \hline
 OpenFlow messages & xac id, cookie, buffer id, stats \\
@@ -246,7 +246,7 @@ Log statements & varargs parameters to printf \\
 \end{table}
 
 
-{\bf Functional Equivalence. } Internal events may differ syntactically (\eg~sequence numbers
+\noindent {\bf Functional Equivalence. } Internal events may differ syntactically (\eg~sequence numbers
 of control packets may all differ) when replaying a subsequence of the original log.
 We observe that many internal events are {\em functionally
 equivalent}, in the sense that they
@@ -313,7 +313,7 @@ Non-deterministic TCAMs & Modified switches \\
 \end{figure}
 }
 
-{\bf Handling Absent Internal Events. } Some internal events from the original
+\noindent {\bf Handling Absent Internal Events. } Some internal events from the original
 log which causally ``happen before'' some external input
 may be absent when replaying a subsequence of that log.
 For instance, if we prune a link failure event, then
@@ -415,9 +415,10 @@ in Figure~\ref{fig:replay}.
   \caption{{\sc Peek} is responsible for determining which internal events
   from the original sequence are going to occur for a given subsequence.
   \label{fig:peek}}
+  \vskip -1em
 \end{figure}
 
-{\bf Handling New Internal Events.} The last possible change induced by pruning is the occurrence of new
+\noindent {\bf Handling New Internal Events.} The last possible change induced by pruning is the occurrence of new
 internal events that were not observed in the original log.
 New events present multiple possibilities for where
 we should inject the next input. Consider the following case:
