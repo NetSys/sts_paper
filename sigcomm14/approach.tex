@@ -83,6 +83,7 @@ expensive version of delta debugging to account for
 inconsistency~\cite{Zeller:2002:SIF:506201.506206}.}
 
 \begin{figure*}[t]
+\footnotesize
 \begin{boxedminipage}{\textwidth}
 Input: $\cfail$ s.t. $\cfail$ is a trace and $\test(\cfail) = \DFAIL$. Output: $\dfail
 = \ddmin(\cfail)$ s.t. $\dfail \subseteq
@@ -299,6 +300,7 @@ Non-deterministic TCAMs & Modified switches \\
 \end{tabular}
 \caption{Input types currently supported by \projectname}
 \label{tab:inputs}
+\vspace{-0.3cm}
 \end{table}
 
 \eat{
@@ -357,6 +359,7 @@ in Figure~\ref{fig:replay}.
 
 \eat{ % Somewhat redundant with peek()
 \begin{figure}
+  \footnotesize
   \begin{pseudocode}[framebox]{CausalInference}{events}
     \PROCEDURE{Replay}{subsequence}
     subsequence \GETS \CALL{Peek}{subsequence} \\
@@ -392,8 +395,8 @@ in Figure~\ref{fig:replay}.
 }
 
 \begin{figure}
+  \footnotesize
   \begin{pseudocode}[framebox]{Peek}{events}
-    \footnotesize
     \PROCEDURE{Peek}{input\ subsequence}
     inferred \GETS [\ ] \\
     \FOR e\textsubscript{i}\ in\ subsequence \\
