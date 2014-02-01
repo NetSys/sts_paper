@@ -735,8 +735,8 @@ for a failure.
 
 Bugs that depend on fine-grained thread-interleaving or high-precision timed
 events inside of the controller are the worst-case for \projectname. This
-is not surprising, as they do not directly depend on the input events of the
-networking, and we do not directly control the internal scheduling and timing
+is not surprising, as they do not directly depend on the input events form the
+network, and we do not directly control the internal scheduling and timing
 of the controllers. The fact that \projectname~has a difficult time reducing
 these traces is itself indication to the developer that fine-grained non-determinism is at
 play.
