@@ -17,7 +17,7 @@ as (i) program flow analysis (ii) instrumentation (tracing),
 \vspace{0.05in}
 \noindent{\bf Program Flow Analysis.} Other than delta debugging,
 the closest work to ours involves reasoning about
-control- and data-flow dependencies
+control- and dataflow dependencies
 (which may be recorded at runtime~\cite{Lee:2011:TGR:1993498.1993528},
 or dynamically inferred~\cite{huang2012lean, tallam2007enabling})
 in order to reduce the length of deterministic replay executions. These
@@ -29,7 +29,7 @@ the language or instrumentation of the controller software.
 Moreover, our application of functional equivalence to the space of
 possible inputs allows us to minimize
 inputs more aggressively, whereas they are forced to consider all control-flow
-and data-flow dependencies in the control software.
+and dataflow dependencies in the control software.
 
 \vspace{0.05in}
 \noindent{\bf Instrumentation.} Unstructured
@@ -48,7 +48,7 @@ misconfigured the network. %in the first place.
 \noindent{\bf Bug Detection.} With instrumentation available, it becomes possible
 to check expectations about the
 system's state (either offline~\cite{Liu07widschecker} or online~\cite{d3s,dao2009live}), or about the paths requests take through
-the system~\cite{pip}. Within the field of networking, this research is
+the system~\cite{pip}. Within the networking community, this research is
 primarily focused on verifying routing tables~\cite{hsa,hsa_realtime,anteater,khurshid2012veriflow}
 or forwarding behavior~\cite{Zeng:2012:ATP:2413176.2413205,libra}.
 We use bug detection techniques (invariant checking) to guide delta debugging's minimization
@@ -69,10 +69,11 @@ state explosion when run on large systems. For example, NICE~\cite{nice} took 30
 model check a network with two switches, two hosts, the NOX MAC-learning
 control program (98 LoC), and five concurrent
 messages between the hosts. Rather than exploring all
-possibilities, we discover bugs through testing of selected scenarios,
-which we believe fits more naturally into software engineers' chosen
-way of developing and testing distributed systems.
-\colin{TODO: discuss how finding the critical transition is related to finding the MCS}
+possibilities, we discover bugs through testing of selected scenarios, which
+makes our problem tractable.
+%which we believe fits more naturally into software engineers' chosen
+%way of developing and testing distributed systems.
+%\colin{TODO: discuss how finding the critical transition is related to finding the MCS}
 
 \vspace{0.05in}
 \noindent{\bf Replay.} Crucial diagnostic information is often missing from traces.
