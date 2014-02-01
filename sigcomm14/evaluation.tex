@@ -632,7 +632,7 @@ session state to be lost. We were able to able to minimize the MCS for this
 bug to 24 elements (two auxiliary flow entries, plus 22 flows needed to
 overflow the routing tables). An interesting aspect of this MCS is that its
 size is directly proportional to the flow table space, and developers would
-find across across multple fuzz runs that the MCS was always 24
+find across across multiple fuzz runs that the MCS was always 24
 elements.
 
 \noindent{\bf Synthetic bugs.} Lastly, we injected synthetic bugs across of bug types into POX. For space
@@ -709,7 +709,7 @@ The overall results of our case studies are shown in
 Table~\ref{tab:case_studies}. We note that with the exception of the Timer
 Interleaving and ONOS master election bugs, \projectname~was able to significantly reduce the size of the
 input trace. As described in the case studies, we were able to
-counter some sources of non-determinism by applying the software techniques,
+counter some sources of non-determinism by applying software techniques,
 and by replaying multiple times (described in \S\ref{subsec:coping}).
 %The final MCS were reliably replayable in 13 of 17 times.
 
@@ -723,14 +723,14 @@ events) to a tractable size ($<=7$)\footnote{Humans have been show to be able to
 keep in mind ~$7 +/- 2$ aspects\cite{TODO_CITE_STUDY}}.
 }
 
-The cases where \projectname~was most useful were those were a developer would
+The cases where \projectname~was most useful were those where a developer would
 have started from
 the end of the trace and worked backwards, but
 the actual root cause lies many events in the past (\eg~the Memory Corruption
 example). This requires many re-iterations through the code and logs using standard
 debugging tools (\eg~source level debuggers), and
 is highly tedious on human timescales. In contrast, it was easy to step
-through a 2 to 7 event trace and manually identify the code paths responsible
+through a small event trace and manually identify the code paths responsible
 for a failure.
 
 Bugs that depend on fine-grained thread-interleaving or high-precision timed
