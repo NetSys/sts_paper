@@ -116,7 +116,7 @@ the use cases speak for themselves?}
 Non-determinism in the execution of concurrent processes stems from
 differences in system call return values, process scheduling decisions (which can
 even affect the result of individual instructions, such as x86's
-interruptable block memory instructions~\cite{Dunlap:2002:REI:844128.844148}),
+interruptible block memory instructions~\cite{Dunlap:2002:REI:844128.844148}),
 and asynchronous signal
 delivery. These sources of non-determinism can affect whether \projectname~is
 able to reproduce the original bug during replay.
@@ -367,7 +367,7 @@ clarify the scope of our technique's use.
 it has visibility into the occurrence of relevant internal events. For
 some controllers this may involve substantial instrumentation effort beyond
 pre-existing log statements, though as we show in our evaluation, most bugs
-we encoutered can be minimized without perfect visibility.
+we encountered can be minimized without perfect visibility.
 
 \noindent{\bf Non-determinism.} Non-determinism
 is fundamental in networks. When non-determinism is present
