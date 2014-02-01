@@ -13,7 +13,7 @@
 % 20/20
 % experiments/new_pyretic_loop_mcs/
 % Total original inputs: 36
-& POX premature packetin & 4 switch mesh & 249.1 & 102 & 2 & Yes \\
+& POX premature PacketIn & 4 switch mesh & 249.1 & 102 & 2 & Yes \\
 % 20/20
 % Andi: experiments/pox_early_packetin_mcs
 % Total inputs: 102
@@ -45,16 +45,16 @@
 % 15/50
 % Total inputs: 284
 % zeta_final/, on floodlight branch of experiments repo
-& ONOS distributed database locking & 2 switch mesh & - & 1 & 1 & N/A \\
+& ONOS distributed database locking & 2 switch mesh & N/A & 1 & 1 & N/A \\
 % Ahmed
 \hline
 \hline
 \multirow{3}{*}{\rotatebox[origin=c]{90}{\bf Known}}
-& Floodlight failover bug & 2 switch mesh & & 202 & 2 & Yes \\
+& Floodlight failover bug & 2 switch mesh & - & 202 & 2 & Yes \\
 % Predates the experiment directory
-& ONOS master election & 2 switch mesh & & 30 & 30 & No \\
+& ONOS master election & 2 switch mesh & - & 30 & 30 & No \\
 % Ahmed
-& Load balancer flow table space & 3 switch mesh & & 106 & 24 (N+1) & Yes \\
+& Load balancer flow table space & 3 switch mesh & 2396.7 & 106 & 24 (N+1) & Yes \\
 % load_balancer_fuzzer_mcs/
 % Total original inputs: 106
 % --------
@@ -62,29 +62,29 @@
 \hline
 \hline
 \multirow{7}{*}{\rotatebox[origin=c]{90}{\bf Synthetic}} & Null pointer on
-rarely used codepath & 20 switch FatTree & & 365 & 2 & Yes \\
+rarely used codepath & 20 switch FatTree & 2396.7 & 365 & 2 & Yes \\
 % experiments/experiments/pox_null_pointer_mcs
 % total original inputs: 365
-& Overlapping flow entries & 2 switch mesh & & 27 & 2 & Yes \\
+& Overlapping flow entries & 2 switch mesh & 115.4  & 27 & 2 & Yes \\
 % experiments/trigger_priority_mismatch_small_mcs
 % total original inputs: 27
-& Delicate timer interleaving & 3 switch mesh & & 39 & 39 & No \\
+& Delicate timer interleaving & 3 switch mesh & N/A & 39 & 39 & No \\
 % experiments/snapshot_demo_synthetic_link_failure
 % total original inputs: 39
-& Algorithm misimplementation & 3 switch mesh & & 40 & 7 & Indirectly \\
+& Algorithm misimplementation & 3 switch mesh & 525.2 & 40 & 7 & Indirectly \\
 % experiments/experiments/pox_broken_floyd_mcs
 % total original inputs: 40
 % MCS is inflated! link failure / recovery in MCS not related to triggering events.
-& Multithreaded race condition & 10 switch mesh & & 1596 & 2 & Indirectly \\
+& Multithreaded race condition & 10 switch mesh & 36967.5 & 1596 & 2 & Indirectly \\
 % experiments/trigger_multithreading_bug_mcs
 % total original inputs: 1596
-& Memory Leak & 2 switch mesh & & 719 & 30 (M) & Indirectly \\
+& Memory Leak & 2 switch mesh & 15022.6 & 719 & 30 (M) & Indirectly \\
 % experiments/trigger_memory_leak3_mcs/
 % total original inputs: 719
 %Execution-speed race condition & 3 switch mesh & - & 9 & Yes \\
 %% "floodlight" branch: experiments/floodlight_loop_2014_mcs_*
 %% Total original inputs: 157
-& Memory Corruption & 4 switch mesh & & 341 & 2 & Yes \\
+& Memory Corruption & 4 switch mesh & 145.7 & 341 & 2 & Yes \\
 % syn_mem_corruption_3switch_fuzzer_mcs
 % Total original inputs: 341
 % ----
@@ -682,7 +682,7 @@ inputs events.\\[0.5ex]
 \noindent{\bf Memory Leak.}
 We created a case that would take \projectname~very long to minimize: a
 memory leak that eventually caused a crash in POX. We artificially set the
-memory leak to happen quickly after allocating 30 objects created upon switch
+memory leak to happen quickly after allocating 30 (M) objects created upon switch
 handshakes, and interpersed 691 other input events throughout switch reconnect
 events. The final MCS found after 4 hours 15 minutes was exactly 30 events, but it
 was not replayable. We suspect this was because \projectname~was timing out on
