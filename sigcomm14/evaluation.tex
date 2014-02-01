@@ -6,7 +6,8 @@
 \begin{tabular}{|l||l|l|r|r|r|l|}
   \cline{2-7}
   \multicolumn{1}{c|}{~} & \textbf{Bug Name} & \textbf{Topology} &
-  \textbf{Runtime (s)} & \textbf{MCS Size} & \textbf{Final MCS replayable?}  \\\cline{2-6} \hline
+  \textbf{Runtime (s)} & \textbf{Input Size} & \textbf{MCS Size} & \textbf{MCS
+  helpful?}  \\\cline{2-6} \hline
   \multirow{8}{*}{\rotatebox[origin=c]{90}{\bf Newly Found}}
 & Pyretic loop & 3 switch mesh & 266.2 & 36 & 2 & Yes \\
 % 20/20
@@ -98,12 +99,7 @@ rarely used codepath & 20 switch FatTree & & 365 & 2 & Yes \\
 \label{tab:case_studies}
 \end{table*}
 
-Our ultimate goal is to reduce developer effort spent on troubleshooting bugs.
-As this metric is difficult to quantify, since developer skills and
-familiarity with code bases differs widely, we instead
-quantitatively show how well \projectname~minimizes logs,
-and qualitatively relay our experience using MCSes to debug. First,
-we demonstrate \projectname's viability in troubleshooting real bugs. We found
+We first demonstrate \projectname's viability in troubleshooting real bugs. We found
 seven new bugs by fuzz testing five open source SDN control platforms:
 ONOS~\cite{ONOS} (Java), POX~\cite{pox} (Python), NOX~\cite{nox} (C++),
 Pyretic~\cite{frenetic} (Python), and Floodlight~\cite{bigswitch} (Java), and
@@ -111,6 +107,12 @@ debugged these with the help of \projectname. Second, we demonstrate the
 boundaries of where \projectname~works well and where it does not by finding
 MCSes for previously known and synthetic bugs that span a range of bug types
 encountered in practice.
+
+Our ultimate goal is to reduce developer effort spent on troubleshooting bugs.
+As this metric is difficult to quantify, since developer skills and
+familiarity with code bases differs widely, we instead
+quantitatively show how well \projectname~minimizes logs,
+and qualitatively relay our experience using MCSes to debug the newly found bugs.
 
 %Our goal in this section is to show that \projectname~successfully produces
 %MCSes that are useful for troubleshooting. The
@@ -406,7 +408,6 @@ entries expired.\\[0.5ex]
 %    \caption[]{\label{fig:pox_migration} Minimizing the POX migration
 %    blackhole. (total runtime: 1796.0s, original runtime: 10.3s}
 %\end{figure}
-
 \noindent{\bf NOX Discovery Loop.} Next we tested NOX on a four-node mesh, and discovered a
 routing loop between three switches within
 roughly 20 runs of randomly generated inputs.
@@ -446,7 +447,6 @@ incorrectly concluded that the host had migrated. Other flooded packets were
 dropped as a result of link failures in the network and randomly generated
 network loss. The loop was then installed when the source injected another
 packet.\\[0.5ex]
-
 \eat{ % -----------------------------------
 The next SDN control platform we examined
 was NOX, the original OpenFlow controller.
@@ -619,7 +619,6 @@ unusable such that no routes will traverse it. We managed to reproduce this situ
 \projectname, but were not able to replay it. We believe this is because IDs
 are chosen at random, and we were not able to reproduce the original situation
 within 5 tries.\\[0.5ex]
-
 \noindent{\bf POX load balancer error checking.} We are aware that POX
 applications do not always check error messages sent by switches
 rejecting invalid packet forwarding commands. We used this to trigger a bug in
@@ -636,9 +635,7 @@ size is directly proportional to the flow table space, and developers would
 find across across multple fuzz runs that the MCS was always 24
 elements.
 
-\noindent{\bf Synthetic bugs}
-
-Lastly, we injected synthetic bugs across of bug types into POX. For space
+\noindent{\bf Synthetic bugs.} Lastly, we injected synthetic bugs across of bug types into POX. For space
 reasons we only briefly describe these bugs.
 
 \noindent{\bf Delicate timer interleaving}
@@ -694,7 +691,7 @@ was not replayable. We suspect this was because \projectname~was timing out on
 some expected internal events, which caused POX to reject later switch
 connection attempts.\\[0.5ex]
 %
-\noindent{Memory Corruption}
+\noindent{\bf Memory Corruption}
 We simulated a case where the receipt of
 link failure notification on a particular port causes corruption to one of
 POX's internal data
