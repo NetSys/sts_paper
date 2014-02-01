@@ -271,10 +271,6 @@ was able to root-cause the bug in about 30 minutes.
 \caption{Minimization results}
 \end{figure*}
 
-
-\begin{figure}[t]
-    %\hspace{-10pt}
-\end{figure}
 \noindent{\bf POX In-flight Blackhole.} We discovered another bug
 after roughly 20 runs of randomly generated inputs. We noticed a persistent
 blackhole while POX was bootstrapping its discovery of link and host locations.
@@ -543,7 +539,7 @@ conditions that are difficult to guarantee. Still, \projectname was instrumental
 in pointing out a previously unknown bug, and reducing the input size.
 } % ----------------------
 
-\subsection{Known \& Synthetic bugs}
+\subsection{Known bugs}
 
 In addition to our troubleshooting case studies, we evaluate
 \projectname's ability to minimize traces on a range of bug types,
@@ -636,7 +632,8 @@ size is directly proportional to the flow table space, and developers would
 find across across multiple fuzz runs that the MCS was always 24
 elements.
 
-\subsubsection{Synthetic bugs} Lastly, we injected synthetic bugs across of bug types into POX. For space
+\subsection{Synthetic bugs}
+Lastly, we injected synthetic bugs across of bug types into POX. For space
 reasons we only briefly describe these bugs.\\[0.5ex]
 %
 \noindent{\bf Delicate timer interleaving.}
