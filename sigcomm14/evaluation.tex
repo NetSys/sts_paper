@@ -607,14 +607,17 @@ previously reported in earlier versions and later fixed, in
 ONOS's master election protocol. If two adjacent switches are connected to two
 separate controllers, the controllers must decide between themselves who will
 be responsible for tracking the liveness of the link. They make this decision
-by electing the controller with the lower ID as the master for that link.
+by electing the controller with the higher ID as the master for that link.
 When the master dies, and later reboots, it is assigned a new ID. If
-its new ID is higher than the other controllers', a both will incorrectly
+its new ID is lower than the other controllers', both will incorrectly
 believe that they are not responsible for tracking the liveness of the link,
-and the controller with the prior lower ID will incorrectly mark the link as
-unusable such that no routes will traverse it. We managed to minimize this
-trace with \projectname, by replaying subsequences 5 times each, since IDs
-are chosen at random.\\[0.5ex]
+and the controller with the prior higher ID will incorrectly mark the link as
+unusable such that no routes will traverse it. This bug depends on
+initial IDs chosen at random, and ONOS is not instrumented to
+support deterministic replay of random values. We mitigated this
+inherent non-determinism by setting $num_{Replay}$ to $5$. With this setting,
+\projectname{} was able to minimize the trace to $3$ elements, including 
+the controller crash.\\[0.5ex]
 \noindent{\bf POX load balancer error checking.} We are aware that POX
 applications do not always check error messages sent by switches
 rejecting invalid packet forwarding commands. We used this to trigger a bug in
