@@ -275,7 +275,7 @@ was able to root-cause the bug in about 30 minutes.
 after roughly 20 runs of randomly generated inputs. We noticed a persistent
 blackhole while POX was bootstrapping its discovery of link and host locations.
 There were $46$ inputs in the initial trace. The initial trace was affected by
-non-determism and only replayed successfully 15/20 times.
+non-determinism and only replayed successfully 15/20 times.
 We were able to reliably replay it by employing multiplexed sockets, overriding {\tt gettimeofday()},
 and waiting on POX's logging messages. \projectname~returned a $7$ input MCS
 (runtime shown in Figure~\ref{fig:pox_discovery}).
