@@ -51,10 +51,9 @@
 \hline
 \multirow{3}{*}{\rotatebox[origin=c]{90}{\bf Known}}
 & Floodlight failover bug & 2 switch mesh & - & 202 & 2 & Yes \\
+& ONOS master election & 2 switch mesh & 6325.2 & 30 & 3 & Yes \\
 & Load balancer flow table space & 3 switch mesh & 2396.7 & 106 & 24 (N+1) & Yes \\
 % Predates the experiment directory
-& & & &  &  & \\
-%& ONOS master election & 2 switch mesh & - & 30 & 30 & No \\
 % Ahmed
 % load_balancer_fuzzer_mcs/
 % Total original inputs: 106
@@ -603,20 +602,19 @@ the switch, but without ever clearing the routing entries for
 the failed link, resulting in a persistent blackhole. In this example, the MCS
 is the conjunction of the two external inputs (E1,E3).
 }
-% \noindent{\bf ONOS master election bug.} We reproduced another bug,
-% previously reported in earlier versions and later fixed, in
-% ONOS's master election protocol. If two adjacent switches are connected to two
-% separate controllers, the controllers must decide between themselves who will
-% be responsible for tracking the liveness of the link. They make this decision
-% by electing the controller with the lower ID as the master for that link.
-% When the master dies, and later reboots, it is assigned a new ID. If
-% its new ID is higher than the other controllers', a both will incorrectly
-% believe that they are not responsible for tracking the liveness of the link,
-% and the controller with the prior lower ID will incorrectly mark the link as
-% unusable such that no routes will traverse it. We managed to reproduce this situation with
-% \projectname, but were not able to replay it. We believe this is because IDs
-% are chosen at random, and we were not able to reproduce the original situation
-% within 5 tries.\\[0.5ex]
+\noindent{\bf ONOS master election bug.} We reproduced another bug,
+previously reported in earlier versions and later fixed, in
+ONOS's master election protocol. If two adjacent switches are connected to two
+separate controllers, the controllers must decide between themselves who will
+be responsible for tracking the liveness of the link. They make this decision
+by electing the controller with the lower ID as the master for that link.
+When the master dies, and later reboots, it is assigned a new ID. If
+its new ID is higher than the other controllers', a both will incorrectly
+believe that they are not responsible for tracking the liveness of the link,
+and the controller with the prior lower ID will incorrectly mark the link as
+unusable such that no routes will traverse it. We managed to minimize this
+trace with \projectname, by replaying subsequences 5 times each, since IDs
+are chosen at random.\\[0.5ex]
 \noindent{\bf POX load balancer error checking.} We are aware that POX
 applications do not always check error messages sent by switches
 rejecting invalid packet forwarding commands. We used this to trigger a bug in
