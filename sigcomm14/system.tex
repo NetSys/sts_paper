@@ -56,6 +56,7 @@ Figure~\ref{fig:architecture}.
     \caption[]{\label{fig:architecture} \projectname~runs mock
     network devices, and interposes on all communication
     channels. \colin{Bad figure}}
+    \vskip -1em
 \end{figure}
 
 % \begin{table}
@@ -94,14 +95,13 @@ the system replays link failures
 by disconnecting the edge in the \tester, and sending an
 \verb=ofp_port_status=~\cite{openflow} message from the adjacent switches to their parent controller(s).
 
-\projectname~(\projectmeaning) is our realization of this system.
-\projectname~is implemented in more than 21,000 lines of Python in
+\projectname~is our realization of this system and is implemented in more than 21,000 lines of Python in
 addition to the Hassel network invariant checking library~\cite{hsa}.
 \projectname~also optionally makes use of Open vSwitch~\cite{pfaff2009extending} as an interposition point for
 messages sent between distributed controllers. We have
 made the code
-for \projectname~publicly available (anonymized), % at \href{http://ucb-sts.github.com/sts}{ucb-sts.github.com/sts},
-and have discussed the logistics of deploying it with several SDN companies.
+for \projectname~publicly available (anonymized). % at \href{http://ucb-sts.github.com/sts}{ucb-sts.github.com/sts},
+% and have discussed the logistics of deploying it with several SDN companies.
 
 \colin{TODO: Discuss the value of replay for root causing here? Or just let
 the use cases speak for themselves?}
@@ -132,8 +132,8 @@ is to replay each subsequence chosen
 by delta debugging multiple times. If observing the bug
 is an independent and identically distributed random variable (an optimistic
 but not completely unreasonable assumption) with some
-underlying probability $p$, then $num_{Replay}$
-replays will observe the bug with probability $1-(1-p)^{num_{Replay}}$. This exponential
+underlying probability $p$, then $r$
+replays will observe the bug with probability $1-(1-p)^{r}$. This exponential
 works strongly in our favor; for example, even if the original bug is
 triggered in only 20\% of replays, the probability that we will not trigger
 it during an intermediate replay is approximately
@@ -158,11 +158,10 @@ distributed system.
 %replay in all cases without full visibility into internal events--a daunting
 %instrumentation task.
 
-We therefore designed \projectname~to be as resilient to non-determinism as is
-practically feasible, while avoiding modifications to control software whenever possible.
-We began by designing \projectname~to be in a position to
-record and replay all network events in serial order. We also ensured that all
-data structures within \projectname~were unaffected by randomness; for example,
+We therefore struck a balance between resilience to non-determinism and the need
+to modify control software.  We placed \projectname~in a position to
+record and replay all network events in serial order, and ensured that all
+data structures within \projectname~were unaffected by randomness. For example,
 we avoid using hashmaps that hash keys according to their memory address,
 and sort all list return values.
 
