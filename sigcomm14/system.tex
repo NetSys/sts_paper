@@ -38,9 +38,10 @@ perform replay. Our framework mocks out the control plane
 behavior of network devices in lightweight software switches and hosts (with
 support for minimal data plane forwarding).
 We then run the control software on
-top of this \tester~and connect the emulated software switches to the controllers. % as if they were true
-network devices. %, such that the controllers believe they are configuring a true
-%network. 
+top of this \tester~and connect the emulated software switches to the
+controllers. % as if they were true network devices
+%, such that the controllers believe they are configuring a true 
+%network.
 The \tester~interposes and buffers messages on all communication
 channels, allowing it to delay, drop, or reorder
 messages as needed to induce failure modes during testing. This interposition
@@ -147,11 +148,12 @@ Deterministic replay techniques~\cite{Dunlap:2002:REI:844128.844148,Geels:2006:R
 which precisely record and replay system call return values and process
 scheduling decisions,
 may be deployed to reliably produce bugs in exchange for a loss in performance.
-Unfortunately these techniques do not allow the user to make any modifications to the inputs fed to the
+Unfortunately these techniques do not easily allow any modifications to the inputs fed to the
 processes during replay, since changes may cause the remaining execution to
-subtly differ (\eg~the sequence numbers of packets may all differ).
-This precludes the possibility of employing (fully) deterministic replay techniques in
-\projectname, since our goal is precisely to modify (and eliminate) the inputs fed to the
+subtly differ (\eg~the sequence numbers of packets may all differ), and our
+%This precludes the possibility of employing (fully) deterministic replay techniques in
+%\projectname,
+goal is precisely to modify (eliminate) the inputs fed to the
 distributed system.
 %And even if these sources were
 %eliminated, it would not be possible to achieve perfectly deterministic
@@ -205,7 +207,7 @@ until \projectname~explicitly tells the process that it may proceed.
 \label{subsec:snapshotting}
 
 To efficiently implement the {\sc Peek()} algorithm depicted in
-Figure~\ref{fig:peek} we assume the ability to record snapshots of the state of the
+Figure~\ref{fig:peek} we assume the ability to record checkpoints of the state of the
 system under test. We currently implement checkpointing for the POX
 controller by telling it to \verb=fork()= itself and suspend its child,
 cloning the sockets of the parent

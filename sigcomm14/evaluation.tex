@@ -387,8 +387,8 @@ delayed arbitrarily as it was in \projectname.
 that that there might be some interesting corner cases related to host migrations.
 We set up randomly generated inputs, included host
 migrations this time, and checked for blackholes. Our initial input size was
-$115$ inputs.
-\projectname produced a $3$ input MCS (shown
+115 inputs.
+\projectname~produced a 3 input MCS (shown
 in Figure~\ref{fig:pox_migration}): a packet injection from a
 host (`A'), followed
 by a packet injection by another host (`B') towards A, followed by a host migration of A. This made it immediately
@@ -458,34 +458,32 @@ hosts on a per-flow basis, and is designed to be resilient to looped topologies.
 We initially tested NOX on a two node topology, but did not find any immediate
 problems. We then extended the topology to a four-node mesh, and discovered a
 routing loop between two switches (involving routes for two hosts) within
-roughly $20$ runs of randomly generated inputs.
+roughly 20 runs of randomly generated inputs.
 
-Our initial input size was $150$ inputs, a minute's worth of execution.
-\projectname~returned a $18$ input MCS. The most salient inputs in the MCS were
-$3$ dataplane packet drops mid-way through the execution, interspersed with $14$
+Our initial input size was 150 inputs, a minute's worth of execution.
+\projectname~returned a 18 input MCS. The most salient inputs in the MCS were
+3 dataplane packet drops mid-way through the execution, interspersed with 14
 traffic injections. We are in the process of pinpointing the exact root cause
-with NOX developers, based on the $18$ input MCS. }
+with NOX developers, based on the 18 input MCS. }
 % -----------------------------------
 \noindent{\bf ONOS distributed database locking.} When testing ONOS, a distributed open-source controller, we noticed
 that ONOS controllers would occasionally reject switch attempts to connect upon
 initialization. The initial trace was already minimized, as the initial input
 was the single event of the switches connecting to the controllers with a
 particular timing. When examining the logs, we found that the particular timing
-between the input events caused both ONOS controllers to encounter a ``failed
+between the switch connects caused both ONOS controllers to encounter a ``failed
 to obtain lock'' error from their distributed graph database. We suspect
 that the ONOS controllers were attempting to concurrently insert the same key,
 which causes a known error. We modified ONOS's
 initialization logic to retry when inserting switches, and found that this
 eliminated the bug.\\[0.5ex]
-\noindent{\bf Floodlight discovery loop.} Next we
+\noindent{\bf Floodlight loop.} Next we
 tested Floodlight's routing application. In about 30 minutes, our fuzzing
 uncovered a 117 input sequence that caused a persistent 3-node forwarding loop.
 In this case, the controller exhibited significant non-determinism, which initially
-precluded \projectname{} from efficiently reducing the input size.
-We worked around this by increasing the number of replays to $10$
-\footnote{The advanced mitigation strategies
-(Section~\ref{subsec:mitigating}) employed in POX were not available for
-floodlight at the time).} With this, \projectname~reduced the sequence to 13
+precluded \projectname~from efficiently reducing the input size.
+We worked around this by increasing the number of replays per subsequence to 10.
+With this, \projectname~reduced the sequence to 13
 input events in 324 replays and 8.5 hours (runtime shown in
 Figure~\ref{fig:fl_loop}).
 
@@ -513,7 +511,7 @@ modules.
 We subjected the current (unmodified) open
 source version of Floodlight (git commit f37046a) to fuzz testing with a three
 node fully meshed topology and high failure event rates. In an hour-long experiment,
-the fuzzer found an event sequence with $284$ total events
+the fuzzer found an event sequence with 284 total events
 that results in a 3-node forwarding loop.
 
 Floodlight makes use of multiple kernel level
@@ -525,7 +523,7 @@ execution up to 13 replays for each subsequence chosen by delta debugging. Stati
 STS to correctly diagnose violations in >99\% of cases.\footnote{$ln( 1 -
 0.99) / ln( 1 - 0.30) \approx 13$}
 
-\projectname~was able to reduce the number of input events to $36$ input events.
+\projectname~was able to reduce the number of input events to 36 input events.
 Comparing output traces of successful and
 unsuccessful runs, we noticed that the bug seems to correlate with specific
 thread level race conditions between state updates in the \emph{LinkDiscovery} module and
@@ -615,8 +613,8 @@ and the controller with the prior higher ID will incorrectly mark the link as
 unusable such that no routes will traverse it. This bug depends on
 initial IDs chosen at random, and ONOS is not instrumented to
 support deterministic replay of random values. We mitigated this
-inherent non-determinism by setting $num_{Replay}$ to $5$. With this setting,
-\projectname{} was able to minimize the trace to $3$ elements, including 
+inherent non-determinism by replaying each subsequence 5 times. With this setting,
+\projectname{} was able to minimize the trace to 3 elements, including
 the controller crash.\\[0.5ex]
 \noindent{\bf POX load balancer error checking.} We are aware that POX
 applications do not always check error messages sent by switches
@@ -627,7 +625,7 @@ into the network. The load balancer application proceeded to install entries
 for each of these flows. Eventually the switches ran out of flow entry
 space and responded with error messages. As a result, POX began randomly load
 balancing each subsequent packet for a given flow over the servers, causing
-session state to be lost. We were able to able to minimize the MCS for this
+session state to be lost. We were able to minimize the MCS for this
 bug to 24 elements (two auxiliary flow entries, plus 22 flows needed to
 overflow the routing tables). An interesting aspect of this MCS is that its
 size is directly proportional to the flow table space, and developers would
@@ -635,7 +633,7 @@ find across across multiple fuzz runs that the MCS was always 24
 elements.
 
 \subsection{Synthetic bugs}
-Lastly, we injected synthetic bugs across of bug types into POX. For space
+Lastly, we injected synthetic bugs across a range of bug types into POX. For space
 reasons we only briefly describe these bugs.\\[0.5ex]
 %
 \noindent{\bf Delicate timer interleaving.}
@@ -644,7 +642,7 @@ interleaving of internal timers triggered within POX. This is a particularly
 hard case for \projectname, since we have little control of internal timers.
 We were able to trigger the code path during fuzzing, but were unable to
 reproduce the bug during replay after five attempts, and were left with the
-original 39 input trace. This is one of two bugs where we were
+original 39 input trace. This is the only where we were
 unable to replay the unmodified trace.\\[0.5ex]
 %
 \noindent{\bf Algorithm misimplementation.}
@@ -735,7 +733,7 @@ for a failure.
 
 Bugs that depend on fine-grained thread-interleaving or high-precision timed
 events inside of the controller are the worst-case for \projectname. This
-is not surprising, as they do not directly depend on the input events form the
+is not surprising, as they do not directly depend on the input events from the
 network, and we do not directly control the internal scheduling and timing
 of the controllers. The fact that \projectname~has a difficult time reducing
 these traces is itself indication to the developer that fine-grained non-determinism is at
@@ -842,7 +840,7 @@ time to create successively larger FatTree
 topologies, complete the OpenFlow handshakes for each switch,
 cut $5\%$ of links, and process POX's response to the link failures. As shown in
 Figure~\ref{fig:scaling}, \projectname's processing time scales roughly
-linearly up to $2464$ switches (a 45-pod FatTree). At that point, the machine
+linearly up to 2464 switches (a 45-pod FatTree). At that point, the machine
 started thrashing, but this limitation could easily be removed by running on a
 machine with >6GB of memory.
 
@@ -887,10 +885,10 @@ interest.\\[0.5ex]
 %
 \noindent{\bf Setting \textepsilon.} Our algorithm leaves an open question as to what value
 \textepsilon~should be set to. We experimentally varied \textepsilon~on the
-POX in-flight blackhole and the POX list removal bugs.
-We found for both cases that the number of events we timed out on while isolating the MCS became stable for values above $25$ milliseconds.
+POX in-flight blackhole bug.
+We found for both cases that the number of events we timed out on while isolating the MCS became stable for values above 25 milliseconds.
 For smaller values, the number of timed out events increased rapidly. We
-currently set \textepsilon~to $100$ milliseconds.
+currently set \textepsilon~to 100 milliseconds.
 
 \eat{
 In general, larger values of \textepsilon~are preferable to
