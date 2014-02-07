@@ -384,7 +384,7 @@ delayed arbitrarily as it was in \projectname.
 % Discussion of how our gizmos helped.
 } % \eat % -----------------------------------
 \noindent{\bf POX Migration Blackhole.} We noticed after examining POX's code
-that that there might be some interesting corner cases related to host migrations.
+that there might be some corner cases related to host migrations.
 We set up randomly generated inputs, included host
 migrations this time, and checked for blackholes. Our initial input size was
 115 inputs.
@@ -627,9 +627,9 @@ space and responded with error messages. As a result, POX began randomly load
 balancing each subsequent packet for a given flow over the servers, causing
 session state to be lost. We were able to minimize the MCS for this
 bug to 24 elements (two auxiliary flow entries, plus 22 flows needed to
-overflow the routing tables). An interesting aspect of this MCS is that its
+overflow the routing tables). A notable aspect of this MCS is that its
 size is directly proportional to the flow table space, and developers would
-find across across multiple fuzz runs that the MCS was always 24
+find across multiple fuzz runs that the MCS was always 24
 elements.
 
 \subsection{Synthetic bugs}
@@ -805,7 +805,7 @@ subsequences multiple times in mitigating non-determinism.}
 
 \subsection{Instrumentation Complexity}
 
-For POX and Floodlight, we added shim layers to the controller software to
+For POX and Floodlight, we added shim layers to the controller software
 to redirect {\tt gettimeofday()}, interpose on logging
 statements, and demultiplex sockets. For Floodlight we needed 722 lines of Java to obtain this
 indirection, and for POX we needed 415 lines of Python.

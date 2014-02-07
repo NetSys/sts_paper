@@ -26,7 +26,9 @@ violated because the system was improperly configured
 %configuration management system, \eg~OpenStack~\cite{quantum}
 (\eg, the management system \cite{quantum} or a human improperly specified their goals to the SDN control plane), or
 because there is a bug within the SDN control plane itself. In this paper we focus on troubleshooting bugs in the
-SDN control plane after it has been given a configuration.
+SDN control plane after it has been given a configuration.\footnote{This does
+not preclude \projectname~from troubleshooting misspecified policies so long as
+invariants~\cite{hsa} are specified separately.}
 % after it has been given a configuration,
 %largely because the goal of SDN is to push complexity out of network management
 %and into the control plane.
