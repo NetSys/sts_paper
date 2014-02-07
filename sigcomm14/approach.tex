@@ -146,7 +146,7 @@ holds.
 \label{subsec:algorithm}
 
 Simply exploring subsequences of $E_L$ is insufficient for finding MCSes: the
-timing of those subsequences in each invocation of $replay()$ is crucial for reliably
+timing of the inputs within those subsequences during $replay()$ is crucial for reliably
 reproducing the
 invariant violation. The most natural approach would be to maintain the original
 timings between the remaining original inputs for each subsequence.
@@ -164,7 +164,7 @@ t'_i = t'_{i-1} + |t_{i} - t_{i-1}|
 }
 Unfortunately, this approach does not work in practice because it can violate
 causal dependencies from the original execution, due to changes in the behavior
-of the control software induced by pruning inputs. %\eat{: when we replay only a
+of the control software induced by the modified inputs. %\eat{: when we replay only a
 %subsequence of the original inputs, the reaction of the control software
 %can change, such that it behaves differently or takes a different amount of
 %time to respond to the remaining inputs events.
@@ -183,8 +183,8 @@ Internal events include
 synchronization messages) or
 between controllers and switches (\eg~OpenFlow commands), and (b) state transitions
 within controllers (\eg~a backup node deciding to become master).
-We obtain visibility into (a) by having our
-\tester~(to be described in \S\ref{sec:systems_challenges}) interpose on all message channels.
+We obtain visibility into (a) by interposing on all messages within the test
+environment (to be described in \S\ref{sec:systems_challenges}).
 We optionally obtain visibility into (b) by instrumenting controller
 software with a simple interposition layer (to be described in \S\ref{subsec:mitigating}).
 With visibility into internal events and control over input events, the

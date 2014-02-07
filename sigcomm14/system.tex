@@ -42,7 +42,7 @@ top of this \tester~and connect the emulated software switches to the
 controllers. % as if they were true network devices
 %, such that the controllers believe they are configuring a true 
 %network.
-The \tester~interposes and buffers messages on all communication
+Beyond implementing delta debugging, the \tester~interposes and buffers messages on all communication
 channels, allowing it to delay, drop, or reorder
 messages as needed to induce failure modes during testing. This interposition
 allows us to replicate many of the failure modes caused by asynchrony in real
@@ -209,7 +209,8 @@ until \projectname~explicitly tells the process that it may proceed.
 To efficiently implement the {\sc Peek()} algorithm depicted in
 Figure~\ref{fig:peek} we assume the ability to record checkpoints of the state of the
 system under test. We currently implement checkpointing for the POX
-controller by telling it to \verb=fork()= itself and suspend its child,
+controller\footnote{We only use the event scheduling heuristics described in
+\S\ref{subsec:timing_heuristics} for the other controllers.} by telling it to \verb=fork()= itself and suspend its child,
 cloning the sockets of the parent
 (which constitute shared state between the parent and child processes,
 since the socket state is managed by the kernel),
