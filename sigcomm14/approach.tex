@@ -402,13 +402,13 @@ in Figure~\ref{fig:replay}.
     inferred \GETS [\ ] \\
     \FOR e\textsubscript{i}\ in\ subsequence \\
     \BEGIN
-      snapshot\ system \\
+      checkpoint\ system \\
       inject\ e\textsubscript{i} \\
       \Delta \GETS |e\textsubscript{i}.time - e\textsubscript{i-1}.time| + \epsilon \\
       record\ events\ for\ \Delta\ seconds \\
       matched \GETS original\ events\ \&\ recorded\ events \\
       inferred << e\textsubscript{i} << matched \\
-      restore\ snapshot \\
+      restore\ checkpoint\\
     \END \\
     \RETURN{inferred}
     \ENDPROCEDURE
