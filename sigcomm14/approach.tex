@@ -404,7 +404,7 @@ in Figure~\ref{fig:replay}.
     \BEGIN
       checkpoint\ system \\
       inject\ e\textsubscript{i} \\
-      \Delta \GETS |e\textsubscript{i}.time - e\textsubscript{i-1}.time| + \epsilon \\
+      \Delta \GETS |e\textsubscript{i+1}.time - e\textsubscript{i}.time| + \epsilon \\
       record\ events\ for\ \Delta\ seconds \\
       matched \GETS original\ events\ \&\ recorded\ events \\
       inferred << e\textsubscript{i} << matched \\
