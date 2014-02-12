@@ -32,7 +32,7 @@ In this way they can continue simulating large scale networks with
 the switches, middleboxes, hosts, and routing protocols they had already
 chosen to include in their QA testbed.
 
-In this project we do not have access to such a QA testbed, and instead built our own
+We do not have access to such a QA testbed, and instead built our own
 integration testing framework to discover bugs and
 perform replay. Our framework mocks out the control plane
 behavior of network devices in lightweight software switches and hosts (with
@@ -40,7 +40,7 @@ support for minimal data plane forwarding).
 We then run the control software on
 top of this \tester~and connect the emulated software switches to the
 controllers. % as if they were true network devices
-%, such that the controllers believe they are configuring a true 
+%, such that the controllers believe they are configuring a true
 %network.
 Beyond implementing delta debugging, the \tester~interposes and buffers messages on all communication
 channels, allowing it to delay, drop, or reorder
@@ -160,8 +160,8 @@ distributed system.
 %replay in all cases without full visibility into internal events--a daunting
 %instrumentation task.
 
-We therefore struck a balance between resilience to non-determinism and the need
-to modify control software.  We placed \projectname~in a position to
+We therefore aimed to balance resilience to non-determinism and the need
+to modify control software. We placed \projectname~in a position to
 record and replay all network events in serial order, and ensured that all
 data structures within \projectname~were unaffected by randomness. For example,
 we avoid using hashmaps that hash keys according to their memory address,
@@ -243,7 +243,7 @@ execution share common input prefixes.
 
 We have found a number of
 heuristics useful for ensuring that invariant violations are reliably reproduced during replay.
-These heuristics may be used alongside or instead of {\sc Peek()}. We have evaluated the effectiveness
+These heuristics may be used alongside or instead of {\sc Peek()}. We evaluated the effectiveness
 of these heuristics using visualization tools
 (described in \S\ref{subsec:root_causing}) to compare replay executions with and
 without the heuristics enabled.
@@ -268,7 +268,7 @@ Upon further examination we found in these cases that LLDP and OpenFlow echo
 packets periodically sent by the control software were
 staying in \projectname's buffers too long during replay, such that the
 control software would time out on them. We therefore added an option to always pass through
-keepalive messages that has mitigated the problem. The limitation of this
+keepalive messages that mitigates the issue. The limitation of this
 heuristic is that it cannot be used on bugs involving keepalive messages.
 
 %We also tried another algorithm: let new

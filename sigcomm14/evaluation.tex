@@ -110,7 +110,7 @@ MCSes for previously known and synthetic bugs that span a range of bug types
 encountered in practice.
 
 Our ultimate goal is to reduce developer effort spent on troubleshooting bugs.
-As this is difficult to quantify, since developer skills and
+As this is difficult to measure, since developer skills and
 familiarity with code bases differs widely, we instead
 quantitatively show how well \projectname~minimizes logs,
 and qualitatively relay our experience using MCSes to debug the newly found bugs.
@@ -268,7 +268,7 @@ was able to root-cause the bug in about 30 minutes.
     \includegraphics[width=\textwidth]{../graphs/runtime/floodlight_loop.pdf}
     \caption[]{\label{fig:fl_loop} Floodlight loop. }
 \end{subfigure}
-\caption{Minimization results}
+\caption{Minimization results.}
 \end{figure*}
 
 \noindent{\bf POX In-flight Blackhole.} We discovered another bug
@@ -679,7 +679,7 @@ we expected), as the race condition
 was triggered randomly by any I/O, not just these two
 inputs events.\\[0.5ex]
 %
-\noindent{\bf Memory Leak.}
+\noindent{\bf Memory leak.}
 We created a case that would take \projectname~very long to minimize: a
 memory leak that eventually caused a crash in POX. We artificially set the
 memory leak to happen quickly after allocating 30 (M) objects created upon switch
@@ -689,7 +689,7 @@ was not replayable. We suspect this was because \projectname~was timing out on
 some expected internal events, which caused POX to reject later switch
 connection attempts.\\[0.5ex]
 %
-\noindent{\bf Memory Corruption.}
+\noindent{\bf Memory corruption.}
 We simulated a case where the receipt of
 link failure notification on a particular port causes corruption to one of
 POX's internal data
@@ -704,11 +704,11 @@ exactly the 2 events responsible for the crash.
 \subsection{Overall Results and Discussion}
 
 The overall results of our case studies are shown in
-Table~\ref{tab:case_studies}. We note that with the exception of the Timer
-Interleaving, \projectname~was able to significantly reduce the size of the
-input trace. As described in the case studies, we were able to
-counter some sources of non-determinism by applying software techniques,
-and by replaying multiple times (described in \S\ref{subsec:coping}).
+Table~\ref{tab:case_studies}. We note that with the exception of `Delicate timer
+interleaving', \projectname~was able to significantly reduce the size of the
+input traces. As described in the case studies, we were able to
+counter some sources of non-determinism
+by replaying multiple times per subsequence and applying software techniques.
 %The final MCS were reliably replayable in 13 of 17 times.
 
 \eat{
@@ -724,15 +724,15 @@ keep in mind ~$7 +/- 2$ aspects\cite{TODO_CITE_STUDY}}.
 The cases where \projectname~was most useful were those where a developer would
 have started from
 the end of the trace and worked backwards, but
-the actual root cause lies many events in the past (\eg~the Memory Corruption
+the actual root cause lies many events in the past (\eg~the Memory corruption
 example). This requires many re-iterations through the code and logs using standard
 debugging tools (\eg~source level debuggers), and
 is highly tedious on human timescales. In contrast, it was easy to step
 through a small event trace and manually identify the code paths responsible
 for a failure.
 
-Bugs that depend on fine-grained thread-interleaving or high-precision timed
-events inside of the controller are the worst-case for \projectname. This
+Bugs that depend on fine-grained thread-interleaving or timers
+inside of the controller are the worst-case for \projectname. This
 is not surprising, as they do not directly depend on the input events from the
 network, and we do not directly control the internal scheduling and timing
 of the controllers. The fact that \projectname~has a difficult time reducing
@@ -882,7 +882,7 @@ how long a invariant violation should persist before
 \projectname~reports it as a problem. In general, setting this
 threshold will depend on the parameters of the network and the invariants of
 interest.\\[0.5ex]
-%
+% \colin{Cut if need space (this is more-or-less superceded by peek():}
 \noindent{\bf Setting \textepsilon.} Our algorithm leaves an open question as to what value
 \textepsilon~should be set to. We experimentally varied \textepsilon~on the
 POX in-flight blackhole bug.
