@@ -5,7 +5,7 @@
 %including controllers, switches, and end-hosts, where asynchrony
 %makes it difficult to reliably replay inputs.
 
-Our technique depends on infrastucture for testing SDN control software.
+Our technique depends on infrastructure for testing SDN control software.
 All three of the major commercial SDN controller teams that we have first-hand knowledge of employ a team of QA
 engineers to fuzz test their controller software on testbeds of switches and hosts.
 %As depicted in Figure~\ref{fig:qa_cluster}, 
@@ -49,7 +49,7 @@ allows us to replicate many of the failure modes caused by asynchrony in real
 networks in a more deterministic manner. During
 replay, we use these buffers to enforce event orderings by
 matching messages in the buffers by their fingerprints and managing
-the order in which messages are let through. The overall architecure is depicted in
+the order in which messages are let through. The overall architecture is depicted in
 Figure~\ref{fig:architecture}.
 
 \begin{figure}[tb]
