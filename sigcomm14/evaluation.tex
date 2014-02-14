@@ -154,8 +154,8 @@ Pyretic periodically flushed all flow entries.
 %    runtime: 266.2, original runtime: 5.8s)}
 %\end{figure}
 
-We filed a bug report along with a replayable trace of the
-minimized execution to the developers of Pyretic. They found after roughly
+We filed a bug report along with a replayable MCS
+to the developers of Pyretic. They found after roughly
 five hours of replaying the trace with \projectname~that Pyretic told switches to
 flood out all links before the entire
 network topology had been learned (including the down link). By adding a timer before installing
@@ -237,11 +237,11 @@ a \emph{PacketIn} event related to an LLDP packet was forwarded to POX's
 \verb=l2_multi=, which would then fail because it expected \emph{SwitchUp} to occur first.
 We verified with the lead developer of POX that this was indeed a bug.
 
-This case study demonstrates how even the simple handshake state machine can
+This case study demonstrates how even a simple handshake state machine can
 behave unexpectedly and in a non-trivial manner that is hard to understand
 without being able to repeat the experiment with a minimal trace. Making heavy
-use of the MCS replay, a developer unfamiliar with the two subsystems involved
-was able to root-cause the bug in about 30 minutes.
+use of the MCS replay, a developer unfamiliar with the two subsystems
+was able to root-cause the bug in \textasciitilde30 minutes.
 \begin{figure*}[!htb]
 \begin{subfigure}{0.33\textwidth}
     \includegraphics[width=\textwidth]{../graphs/runtime/pyretic_loop.pdf}
@@ -503,8 +503,8 @@ end-host to flap between perceived attachment points.
 
 While this behavior cannot strictly be considered a bug in Floodlight,
 the case-study nevertheless highlights the benefit of
-\projectname~over traditional fuzzing techniques: by leveraging repeated replays
-of a significantly reduced MCS, we were able to diagnose the root cause--a
+\projectname~over traditional techniques: by repeatedly replaying
+a significantly minimized MCS, we were able to diagnose the root cause---a
 complex interaction between the LinkDiscovery, Forwarding, and DeviceManager
 modules.
 \eat{ % ------------------
@@ -614,8 +614,7 @@ unusable such that no routes will traverse it. This bug depends on
 initial IDs chosen at random, and ONOS is not instrumented to
 support deterministic replay of random values. We mitigated this
 inherent non-determinism by replaying each subsequence 5 times. With this setting,
-\projectname{} was able to minimize the trace to 3 elements, including
-the controller crash.\\[0.5ex]
+\projectname{} was able to minimize the trace to 3 elements.\\[0.5ex]
 \noindent{\bf POX load balancer error checking.} We are aware that POX
 applications do not always check error messages sent by switches
 rejecting invalid packet forwarding commands. We used this to trigger a bug in
@@ -637,13 +636,13 @@ Lastly, we injected synthetic bugs across a range of bug types into POX. For spa
 reasons we only briefly describe these bugs.\\[0.5ex]
 %
 \noindent{\bf Delicate timer interleaving.}
-We injected a crash into a code path that was highly dependent on the
+We injected a crash on a code path that was highly dependent on the
 interleaving of internal timers triggered within POX. This is a particularly
 hard case for \projectname, since we have little control of internal timers.
 We were able to trigger the code path during fuzzing, but were unable to
 reproduce the bug during replay after five attempts, and were left with the
-original 39 input trace. This is the only where we were
-unable to replay the unmodified trace.\\[0.5ex]
+original 39 input trace. This is the only case where we were
+unable to replay trace.\\[0.5ex]
 %
 \noindent{\bf Algorithm misimplementation.}
 We modified POX's implementation of Floyd-Warshall to create loops.
@@ -670,12 +669,12 @@ expected conditions that triggered that code path: a switch failure followed
 by a switch recovery.\\[0.5ex]
 %
 \noindent{\bf Multithreaded race condition.}
-We created a race condition between multiple threads in POX that was
-triggered by any packet I/O, not any particular input. With 5 replays per
+We created a race condition between multiple threads that was
+triggered by any packet I/O, regardless of input. With 5 replays per
 subsequence, we were able to minimize a 1596 input in 10 hours 15 minutes to a
 replayable 2 element failure/recovery pair as an MCS.
 The MCS itself though may have been somewhat misleading to a developer (as
-we expected), as the race condition
+expected), as the race condition
 was triggered randomly by any I/O, not just these two
 inputs events.\\[0.5ex]
 %
@@ -703,12 +702,13 @@ exactly the 2 events responsible for the crash.
 
 \subsection{Overall Results and Discussion}
 
-The overall results of our case studies are shown in
+We show our overall results in
 Table~\ref{tab:case_studies}. We note that with the exception of `Delicate timer
 interleaving', \projectname~was able to significantly reduce the size of the
 input traces. As described in the case studies, we were able to
 counter some sources of non-determinism
-by replaying multiple times per subsequence and applying software techniques.
+by replaying multiple times per subsequence and adding instrumentation to
+controllers.
 %The final MCS were reliably replayable in 13 of 17 times.
 
 \eat{
@@ -863,12 +863,12 @@ We found throughout our experimentation that \projectname~leaves open several
 parameters that need to be set properly in order to effectively find and troubleshoot bugs.
 
 \noindent{\bf Setting fuzzing parameters.} \projectname's fuzzer allows the
-user to set the rates at which different event types are triggered. In our experiments with
+user to set the rates different event types are triggered at. In our experiments with
 \projectname~we found several times that we needed to set these parameters
 such that we avoided bugs that were not of interest to developers.
 For example, in one case we discovered that a high dataplane
-packet drop rate dropped too many LLDP packets, preventing the controller from ever successfully discovering the topology.
-Tweaking fuzzing parameters remains an important
+packet drop rate dropped too many LLDP packets, preventing the controller from successfully discovering the topology.
+Setting fuzzing parameters remains an important
 part of experiment setup.\\[0.5ex]
 %
 \noindent{\bf Differentiating persistent and transient violations.} In
@@ -880,7 +880,7 @@ many cases such transient invariant violations are not of interest to
 developers. We therefore provide a threshold parameter in \projectname~for
 how long a invariant violation should persist before
 \projectname~reports it as a problem. In general, setting this
-threshold will depend on the parameters of the network and the invariants of
+threshold depends on the network and the invariants of
 interest.\\[0.5ex]
 % \colin{Cut if need space (this is more-or-less superceded by peek():}
 \noindent{\bf Setting \textepsilon.} Our algorithm leaves an open question as to what value

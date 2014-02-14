@@ -171,7 +171,7 @@ of the control software induced by the modified inputs. %\eat{: when we replay o
 %time to respond to the remaining inputs events.
 %In practice we have observed that simply maintaining relative timings can
 %result in injecting the remaining inputs too early or late.}
-To reliably reproduce the invariant violation
+To reproduce the invariant violation
 we need to inject an input event $e$ only after all other
 events, including internal events triggered by the control software itself,
 that precede it in the
@@ -319,7 +319,7 @@ Non-deterministic TCAMs & Modified switches \\
 log which causally ``happen before'' some external input
 may be absent when replaying a subsequence of that log.
 For instance, if we prune a link failure event, then
-the corresponding link failure notification will never arise as an internal event.
+the corresponding link failure notification will never arise.
 \eat{
 The control software's state machine (which we do not assume to know) determines whether
 internal events cease to appear. Consider the simplified state machines for the switch and

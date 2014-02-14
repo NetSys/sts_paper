@@ -78,7 +78,7 @@ makes our problem tractable.
 \vspace{0.05in}
 \noindent{\bf Replay.} Crucial diagnostic information is often missing from traces.
 Record and replay techniques~\cite{Geels:2006:RDD:1267359.1267386,lin2013defined}
-instead allow users to step through executions and interactively examine the
+instead allow users to step through (deterministic) executions and interactively examine the
 state of the system in exchange for runtime recording overhead.
 %Static analysis and symbolic execution can also be applied post-hoc %, without incurring runtime performance overhead,
 %to find code paths that lead up to software
@@ -104,22 +104,20 @@ network components have failed) in a
 distributed system. Root cause analysis~\cite{yemini1996,Kandula:2009:DDE:1592568.1592597}
 seeks to reconstruct those unknown events from limited monitoring data.
 Here we know exactly which events occurred, but
-seek to identify the minimal set of events that could trigger a particular bug.
+seek to identify the minimal sequence of events that trigger a particular bug.
 
 \colin{Cut if we need space:}
 \vspace{0.05in}
 It is worth mentioning another goal outside the purview of distributed systems, but
 closely in line with ours: program slicing~\cite{weiser1981program} is a
 technique for finding the
-minimal subset of a program that could possibly affect (either through control flow or data
-flow) the result of a particular line of code.
+minimal subset of a program that could possibly affect the result of a particular line of code.
 Our goal is to slice the temporal dimension of an execution rather than the
 code dimension.
 %Our technique can be viewed as a form of program slicing,
 %except that our `program' is a distributed event schedule,
 %and the result we are interested in is the network misconfiguration at
 %the end of the execution.
-
 \eat{ % Most recent version 
 Our work spans three fields: software engineering, programming languages, and
 systems and networking.

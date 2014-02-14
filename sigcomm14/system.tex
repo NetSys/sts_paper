@@ -8,8 +8,8 @@
 Our technique depends on infrastructure for testing SDN control software.
 All three of the major commercial SDN controller teams that we have first-hand knowledge of employ a team of QA
 engineers to fuzz test their controller software on testbeds of switches and hosts.
-%As depicted in Figure~\ref{fig:qa_cluster}, 
-This fuzz testing infrastructure
+As depicted in Figure~\ref{fig:qa_cluster},
+this fuzz testing infrastructure
 consists of the controller software under test, the network testbed (which may
 be software or hardware), and a centralized
 test orchestrator
@@ -17,12 +17,13 @@ that chooses random input sequences, drives the behavior of the testbed,
 periodically checks invariants, and manages log files. When a bug is discovered, an
 engineer triages it and then sends logs to a developer for further troubleshooting.
 
-%\begin{figure}[tb]
-%   %\hspace{-10pt}
-%    \includegraphics[width=3.25in]{../diagrams/architecture/qa_cluster.png}
-%    \caption[]{\label{fig:qa_cluster} Typical QA testbed. A centralized test
-%    orchestrator injects inputs and checks invariants}
-%\end{figure}
+\begin{figure}[tb]
+    \hspace{-10pt}
+    \includegraphics[width=3.25in]{../diagrams/architecture/qa_cluster.pdf}
+    \caption[]{\label{fig:qa_cluster} Typical QA testbed. A centralized test
+    orchestrator injects inputs and checks invariants}
+    \vspace{-1em}
+\end{figure}
 
 Engineering organizations with existing
 QA testbeds can add delta debugging to their test
@@ -33,16 +34,15 @@ the switches, middleboxes, hosts, and routing protocols they had already
 chosen to include in their QA testbed.
 
 We do not have access to such a QA testbed, and instead built our own
-integration testing framework to discover bugs and
+testing framework to discover bugs and
 perform replay. Our framework mocks out the control plane
 behavior of network devices in lightweight software switches and hosts (with
 support for minimal data plane forwarding).
 We then run the control software on
-top of this \tester~and connect the emulated software switches to the
-controllers. % as if they were true network devices
-%, such that the controllers believe they are configuring a true
-%network.
-Beyond implementing delta debugging, the \tester~interposes and buffers messages on all communication
+top of this \tester~and connect the software switches to the
+controllers. This design is similar to commercial software QA testbeds. % as if they were true network devices
+%, such that the controllers believe they are configuring a true %network.
+Our \tester~also implements delta debugging and interposes and buffers messages on all communication
 channels, allowing it to delay, drop, or reorder
 messages as needed to induce failure modes during testing. This interposition
 allows us to replicate many of the failure modes caused by asynchrony in real
@@ -57,7 +57,8 @@ Figure~\ref{fig:architecture}.
     \includegraphics[width=3.25in]{../diagrams/architecture/Debugger_Architecture.png}
     \caption[]{\label{fig:architecture} \projectname~runs mock
     network devices, and interposes on all communication
-    channels. \colin{Bad figure}}
+    channels.}
+    \vspace{-1em}
 \end{figure}
 
 % \begin{table}
@@ -167,7 +168,7 @@ data structures within \projectname~were unaffected by randomness. For example,
 we avoid using hashmaps that hash keys according to their memory address,
 and sort all list return values.
 
-We also optionally interpose on or modify the controller software itself.
+We also optionally interpose on the controller software itself.
 Routing the {\tt gettimeofday()} syscall through \projectname~helps ensure timer accuracy.\footnote{When the pruned trace differs from the original, we make a
 best-effort guess at what the return values of these calls should be. For example,
 if the altered execution invokes {\tt gettimeofday()} more times than we recorded
@@ -178,9 +179,9 @@ non-determinism in the order it schedules I/O operations.
 \projectname~optionally ensures a deterministic order of messages
 by multiplexing all sockets
 onto a single true socket. On the controller side \projectname~currently
-overrides socket functionality by modifying the controller control
-software\footnote{Only supported for POX at the moment.} although this
-could also be achieved transparently with a libc shim layer~\cite{Geels:2006:RDD:1267359.1267386}.
+adds a shim layer atop the control
+software's socket library,\footnote{Only supported for POX at the moment.} although this
+could be achieved transparently with a libc shim layer~\cite{Geels:2006:RDD:1267359.1267386}.
 %In the future we plan to implement deterministic message ordering without code modifications by
 %loading a shim layer on top of
 %libc (similar to liblog~\cite{Geels:2006:RDD:1267359.1267386}).
