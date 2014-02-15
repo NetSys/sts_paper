@@ -1,0 +1,78 @@
+\documentclass{article}
+
+%\usepackage{times}
+\usepackage{xcolor}
+\usepackage{xspace}
+\usepackage{pifont}
+\usepackage{pseudocode}
+
+\definecolor{MyDarkBlue}{rgb}{0,0.08,0.45}
+\usepackage[pdftex]{hyperref}
+\hypersetup{
+  colorlinks,%
+  citecolor=MyDarkBlue,%
+  filecolor=MyDarkBlue,%
+  linkcolor=MyDarkBlue,%
+  urlcolor=MyDarkBlue
+}
+\usepackage[sort]{cite}
+
+\newcommand{\tbd}[1]{{\bf [[TBD: {#1}]]}}
+\newcommand{\ie}{{\it i.e.}}
+\newcommand{\eg}{{\it e.g.}}
+\newcommand{\cf}{{\it cf.}}
+\newcommand{\etc}{{\it etc.}}
+\newcommand{\viz}{{\it viz.}}
+\newcommand{\apriori}{{\it a priori}}
+\newcommand{\eat}[1]{}
+
+% Notes:
+\newcommand{\num}[1]{{\color{red}\bf {#1}}}
+%\newcommand{\teemu}[1]{{\color{ForestGreen}\bf TK: {#1}}}
+%\newcommand{\andi}[1]{{\color{blue}\bf AW: {#1}}}
+%\newcommand{\sam}[1]{{\color{orange}\bf SW: {#1}}}
+%\newcommand{\colin}[1]{{\color{red}\bf CS: {#1}}}
+%\newcommand{\scott}[1]{{\color{purple}\bf SS: {#1}}}
+%\newcommand{\barath}[1]{{\color{red}\bf BR: {#1}}}
+
+\newcommand{\teemu}[1]{}
+\newcommand{\andi}[1]{}
+\newcommand{\sam}[1]{}
+\newcommand{\colin}[1]{}
+\newcommand{\scott}[1]{}
+\newcommand{\barath}[1]{}
+
+% Delta-debugging symbols:
+\newcommand{\PASS}{\text{\ding{52}}\xspace}
+\newcommand{\DFAIL}{\text{\ding{56}}\xspace}
+\newcommand{\cpass}{{T_{\scriptscriptstyle \PASS}}}
+\newcommand{\cfail}{{T_{\scriptscriptstyle \DFAIL}}}
+\newcommand{\dpass}{{T'_{\scriptscriptstyle \PASS}}}
+\newcommand{\dfail}{{T'_{\scriptscriptstyle \DFAIL}}}
+\newcommand{\done}{{T_{\scriptscriptstyle 1}}}
+\newcommand{\dtwo}{{T_{\scriptscriptstyle 2}}}
+\newcommand{\test}{\textit{replay}\xspace}
+\newcommand{\ddmin}{\textit{ddmin}\xspace}
+
+\sloppy
+\begin{document}
+
+\title{Formalisizing Minimal Causal Sequences}
+   \date{}
+   \maketitle
+   \thispagestyle{empty}
+
+\section{Introduction}
+\label{sec:intro}
+\input{introduction}
+
+% TODO: Include acknowledgements section
+
+\renewcommand{\baselinestretch}{0.97}
+\footnotesize{\input{tail}}
+
+%\input{appendix}
+
+%\theendnotes
+
+\end{document}
