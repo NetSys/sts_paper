@@ -150,7 +150,7 @@ Simply exploring subsequences of $E_L$ is insufficient for finding MCSes: the
 timing of the inputs within those subsequences during $replay()$ is crucial for reliably
 reproducing the
 invariant violation. The most natural approach would be to maintain the original
-timings between the remaining original inputs for each subsequence.
+timings between the remaining inputs of each subsequence.
 \eat{\ie~if we
 define $t_i$ as the timestamp of the $i^{th}$ input from the original run and $t'_i$ as the
 replay clock value when it injects that same input
@@ -164,8 +164,9 @@ t'_i = t'_{i-1} + |t_{i} - t_{i-1}|
 }
 }
 Unfortunately, this approach does not work in practice because it can violate
-causal dependencies from the original execution, due to changes in the behavior
-of the control software induced by the modified inputs. %\eat{: when we replay only a
+causality: the control software may react to remaining inputs differently as a result of us
+pruning other inputs.
+%\eat{: when we replay only a
 %subsequence of the original inputs, the reaction of the control software
 %can change, such that it behaves differently or takes a different amount of
 %time to respond to the remaining inputs events.
@@ -188,8 +189,8 @@ We obtain visibility into (a) by interposing on all messages within the test
 environment (to be described in \S\ref{sec:systems_challenges}).
 We optionally obtain visibility into (b) by instrumenting controller
 software with a simple interposition layer (to be described in \S\ref{subsec:mitigating}).
-With visibility into internal events and control over input events, the
-\tester~records a totally-ordered trace by logging an event only after
+With visibility into internal events and control over input events, we
+record a totally-ordered trace during testing by logging an event only after
 all prior events are completed.
 
 %\subsection{Preserving Causality}
@@ -253,9 +254,10 @@ of control packets may all differ) when replaying a subsequence of the original 
 We observe that many internal events are {\em functionally
 equivalent}, in the sense that they
 have the same effect on the state of the system with respect to triggering the
-invariant violation (despite syntactic differences). For example, \emph{flow\_mod}
+invariant violation (despite syntactic differences). For example,
+\verb=flow_mod=
 messages may cause switches to make the same change to their forwarding behavior
-even if the transaction ids differ.
+even if their transaction ids differ.
 
 We leverage this observation by defining
 masks over semantically extraneous fields of
@@ -331,8 +333,7 @@ transition to and from \emph{Send Flush}.}
 We handle this by attempting to infer the presence of internal
 events before we replay each subsequence. Our algorithm (called {\sc Peek()}) for inferring the
 presence of internal events is depicted in
-Figure~\ref{fig:peek}. The algorithm injects each input, takes a
-snapshot\footnote{We discuss the implementation details of snapshotting
+Figure~\ref{fig:peek}. The algorithm injects each input, records a checkpoint\footnote{We discuss the implementation details of checkpointing
 in~\ref{subsec:snapshotting}.} of
 the network and the control software's state, allows the system to proceed up
 until the following input (plus a small time $\epsilon$), records the observed

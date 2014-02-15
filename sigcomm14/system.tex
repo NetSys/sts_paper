@@ -40,7 +40,7 @@ behavior of network devices in lightweight software switches and hosts (with
 support for minimal data plane forwarding).
 We then run the control software on
 top of this \tester~and connect the software switches to the
-controllers. This design is similar to commercial software QA testbeds. % as if they were true network devices
+controllers. This design is similar to production software QA testbeds. % as if they were true network devices
 %, such that the controllers believe they are configuring a true %network.
 Our \tester~also implements delta debugging and interposes and buffers messages on all communication
 channels, allowing it to delay, drop, or reorder
@@ -131,15 +131,14 @@ trying to improve, do not attempt to mitigate non-determinism.
 %inspecting the raw execution logs.
 \projectname's main approach to coping with non-determinism
 is to replay each subsequence chosen
-by delta debugging multiple times. If observing the bug
-is an independent and identically distributed random variable (an optimistic
-but not completely unreasonable assumption) with some
-underlying probability $p$, then $r$
-replays will observe the bug with probability $1-(1-p)^{r}$. This exponential
+by delta debugging multiple times. If the non-deterministic bug occurs with
+probability $p$, we can model the probability that we will observe it within $r$ replays as $1-(1-p)^{r}$. This exponential
 works strongly in our favor; for example, even if the original bug is
 triggered in only 20\% of replays, the probability that we will not trigger
 it during an intermediate replay is approximately
-1\% if we replay 20 times per subsequence.\colin{Mention optimizing for reproducibility?}
+1\% if we replay 20 times per subsequence.\footnote{See
+\S\ref{subsec:multiple_replays} for an experimential evaluation of this model.}
+\colin{Mention optimizing for reproducibility?}
 
 \subsection{Mitigating Non-Determinism}
 \label{subsec:mitigating}
@@ -161,7 +160,7 @@ distributed system.
 %replay in all cases without full visibility into internal events--a daunting
 %instrumentation task.
 
-We therefore aimed to balance resilience to non-determinism and the need
+We therefore strived to balance resilience to non-determinism and the need
 to modify control software. We placed \projectname~in a position to
 record and replay all network events in serial order, and ensured that all
 data structures within \projectname~were unaffected by randomness. For example,
@@ -169,12 +168,12 @@ we avoid using hashmaps that hash keys according to their memory address,
 and sort all list return values.
 
 We also optionally interpose on the controller software itself.
-Routing the {\tt gettimeofday()} syscall through \projectname~helps ensure timer accuracy.\footnote{When the pruned trace differs from the original, we make a
+Routing the {\tt gettimeofday()} syscall through \projectname~helps ensure timer
+accuracy.\footnote{When the pruned trace differs from the original, we make a
 best-effort guess at what the return values of these calls should be. For example,
 if the altered execution invokes {\tt gettimeofday()} more times than we recorded
 in the initial run, we interpolate the timestamps of neighboring events.}\footnote{Only
-supported for POX and Floodlight at the moment.}
-When sending data over multiple sockets, the operating system exhibits
+supported for POX and Floodlight at the moment.} When sending data over multiple sockets, the operating system exhibits
 non-determinism in the order it schedules I/O operations.
 \projectname~optionally ensures a deterministic order of messages
 by multiplexing all sockets
@@ -230,9 +229,9 @@ a factor of $n$. Alternatively, they can
 avoid {\sc Peek()} and solely use the event scheduling heuristics described in \S\ref{subsec:timing_heuristics}.
 
 Beyond its use in {\sc Peek()}, snapshotting has three advantages.
-As mentioned in \S\ref{subsec:complexity}, replaying from a
-recent checkpoint rather than the beginning of the trace can reduce runtime.
-By shortening the replay time, checkpointing coincidentally helps cope
+As mentioned in \S\ref{subsec:complexity}, only considering events starting
+from a recent checkpoint rather than the beginning of the execution decreases the number of events to
+be minimized. By shortening the replay time, checkpointing coincidentally helps cope
 with the effects of non-determinism, as there is less opportunity for
 divergence in timing. Lastly, checkpointing can improve the runtime of delta
 debugging, since many of the subsequences chosen throughout delta debugging's
@@ -243,7 +242,7 @@ execution share common input prefixes.
 \colin{TODO: add more experiments here}
 
 We have found a number of
-heuristics useful for ensuring that invariant violations are reliably reproduced during replay.
+heuristics useful for ensuring that invariant violations are consistently reproduced during replay.
 These heuristics may be used alongside or instead of {\sc Peek()}. We evaluated the effectiveness
 of these heuristics using visualization tools
 (described in \S\ref{subsec:root_causing}) to compare replay executions with and
@@ -255,7 +254,7 @@ the happens-before relation. Unfortunately this is impractical.
 
 We find that keeping the wall-clock spacing between replay events
 close to the recorded timing helps (but does not alone suffice) to
-ensure that invariant violations are reliably
+ensure that invariant violations are consistently
 reproduced. When replaying events, we \verb=sleep()= between each
 event for the same duration that was recorded in the original trace,
 less the time it takes to replay each event. Accounting for the
@@ -316,7 +315,7 @@ similar to OFRewind~\cite{ofrewind} that allows troubleshooters to query the
 state of the network throughout replay, filter subsets of the events, check
 additional invariants, and
 even induce new events that were not part of the original event trace.
-Similar to OFRewind, we do not run concurrent controller processes while the
+\colin{Cut if we need space:} Similar to OFRewind, we do not run concurrent controller processes while the
 user is interactively performing replay, since proper replay across
 concurrent processes requires precise timing.
 Instead, \projectname~replays the exact OpenFlow commands from the

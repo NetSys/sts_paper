@@ -18,7 +18,7 @@ that suggest the presence of a bug in the control plane software,
 software developers need to identify which events are triggering
 this apparent bug before they can begin to isolate and fix it.
 This act of ``troubleshooting'' (which precedes the act of debugging the
-underlying code) is extremely time-consuming, as developers spend hours poring
+underlying code) is highly time-consuming, as developers spend hours poring
 over multigigabyte execution traces.\footnote{Software developers in general spend roughly half (49\% according to one
 study~\cite{msoft_concurrency}) of their time troubleshooting and debugging, and spend
 considerable time troubleshooting bugs that are difficult to trigger (the same study found
@@ -39,16 +39,17 @@ can serve as a test case to prevent regression,
 and can help identify redundant bug reports where the MCSes are the same.
 
 Our goal of minimizing test cases is in the spirit of
-delta debugging~\cite{Zeller:1999:YMP:318773.318946}, but our
-problem is harder in two dimensions: SDN control software is distributed
-across multiple machines, and the input is distributed in time (\ie, the
-input is not a single file, but an ongoing sequence of events).
-We are therefore forced to cope with asynchrony and non-determinism while
-we speculatively perturb the original execution,
+delta debugging~\cite{Zeller:1999:YMP:318773.318946}, but our problem is
+complicated by the distributed nature of SDN control software:
+our test input is not a single file fed to a single point of execution, but an ongoing
+sequence of events involving
+multiple actors. Therefore we must carefully
+control timings of events in the face of asynchrony and non-determinism
+while we specutively perturb the original execution,
 without making assumptions about the language
-or instrumentation of the control software under test.
-We are not aware of any other system that tackles these
-challenges (though we discuss the vast amount of related work in \S\ref{sec:related_work}).
+or instrumentation of the control software. % under test.
+As far as we know we are the first to minimize inputs to a distributed
+system (discussed in \S\ref{sec:related_work}).
 
 Our troubleshooting system, which we call {\projectname} ({\projectmeaning}),
 consists of 21,000 lines of Python, and is designed so that organizations can
@@ -66,5 +67,5 @@ Second, we demonstrate the
 boundaries of where \projectname~works well by
 finding MCSes for previously known and synthetic bugs that span a range of bug
 types. In our evaluation, we quantitatively show that \projectname~is able to
-minimize traces by up to 98\% (for the new bugs), and we anecdotally found that reducing
+minimize traces by up to 98\% (of the new bugs), and we anecdotally found that reducing
 traces to MCSes made it easy to understand the root causes of the bugs.

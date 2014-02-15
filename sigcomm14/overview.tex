@@ -2,12 +2,12 @@
 %
 %\subsection{SDN Control Planes}
 Network operating systems, the key component of SDN software
-infrastructure, consist of controller software running on a replicated set of
+infrastructure, consist of control software running on a replicated set of
 servers, each running a controller instance. Controllers coordinate between
 themselves, and receive input events and
 statistics from switches (either physical or virtual), configuration and
-policy changes via a management interface, and possibly packets from the data
-plane. In response to these events, the
+policy changes via a management interface, and possibly packets from the dataplane.
+In response to these events, the
 controllers issue forwarding instructions to switches. All input
 events are asynchronous, and individual controllers may fail at any
 time. The controller instances may communicate
@@ -36,7 +36,7 @@ invariants~\cite{hsa} are specified separately.}
 In commercial SDN development, software developers work with a team of QA engineers whose
 job is to find bugs. The QA engineers exercise automated test scenarios that involve
 sequences of external events such as failures, migrations, or policy changes
-on large network testbeds (either real or emulated).
+on large (software emulated or hardware) network testbeds.
 If they detect an invariant violation, they hand the resulting trace to a developer for analysis.
 
 The space of possible bugs is enormous, and it is difficult and time
