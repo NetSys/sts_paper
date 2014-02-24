@@ -1,3 +1,35 @@
-Contrast ourselves against program flow analysis~\cite{zhang2006dynamic}.
+Contrast ourselves against program flow analysis~\cite{zhang2006dynamic}. Partial visibility!
 
-Partial visibility!
+\textbf{Inputs}
+\begin{align*}
+    E_l &= \left\{ e_1, e_2, \ldots, e_n  \right\} && \text{External log where $e_j$ is an external event: link up,
+down, etc.}\\
+    I_l &= \left\{ i_1, i_2, \ldots, i_n \right\} && \text{Internal log where $i_j$ is an internal events: \newline received
+or sent messages, etc.}\\
+    T_l &= \left\{ (e_k, t) \right\} &&\text{Time at which external event $e_k$ happens}\\
+    \tau_l &= e_1\rightarrow i_1\rightarrow \ldots e_2\rightarrow i_m \ldots && \text{Schedule: Causal order of events}
+\end{align*}
+
+\textbf{Given functions}
+\begin{align*}
+    Replay&: E\times T  &&\text{Replay function used to simulate system and discover final state}
+\end{align*}
+
+\textbf{Assumptions}
+The replay of a particular set of external events and times results in a particular set of internal events (which we can
+observe) which can be potentially reordered causally. In particular:
+\begin{align*}
+    Replay(E_l, T) &\implies I_l
+\end{align*}
+
+That is when replaying the original schedule with the original timing we get the original set of internal events.
+
+At each step when doing delta debugging we compute $E\subseteq E_l$. Assume $E$ is such that all logically dependent
+events occur, i.e., a link goes down before coming up, hosts migrate correctly etc. This $E$ trivially results in
+$T\subseteq T_l$.
+
+\begin{align*}
+    Replay(E, T) &\implies I\\
+    I \nsubseteq I_l\\
+    I\cap I_l \neq \emptyset
+\end{align*}

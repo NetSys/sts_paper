@@ -1,5 +1,11 @@
 \documentclass{article}
 
+\usepackage{graphicx, xspace, subfigure,outlines,framed, subfigure, paralist,multirow,times,amsmath,
+amssymb}
+\usepackage[ruled,vlined]{algorithm2e}
+\usepackage{xcolor}
+\usepackage[footnotesize]{caption}
+
 %\usepackage{times}
 \usepackage{xcolor}
 \usepackage{xspace}
@@ -66,7 +72,7 @@
 \label{sec:intro}
 \input{introduction}
 
-\section{Problem Statment}
+\section{Problem Statement}
 \label{sec:problem_statement}
 \input{problem_statement}
 
@@ -78,25 +84,19 @@
 \label{sec:unexpected}
 \input{unexpected}
 
+\section{What Systems This Works Well On}
+\label{sec:systems}
+\input{systems}
+
 \section{Partial Program Flow Analysis}
 \label{sec:program_flow}
 \input{program_flow}
 
-\section{Timing Heuristics}
-\label{sec:timing_heuristics}
-\input{timing_heuristics}
-
-\section{What systems this works well on}
-\label{sec:systems}
-\input{systems}
-
 % TODO: Include acknowledgements section
-
 \renewcommand{\baselinestretch}{0.97}
 \footnotesize{\input{tail}}
 
 %\input{appendix}
-
 %\theendnotes
 
 \end{document}
