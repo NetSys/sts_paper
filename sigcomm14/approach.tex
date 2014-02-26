@@ -147,8 +147,8 @@ holds.
 \subsection{Searching for Timings}
 \label{subsec:algorithm}
 
-Simply exploring subsequences of $E_L$ is insufficient for finding MCSes: the
-timing of the inputs within those subsequences during $replay()$ is crucial for
+Simply exploring subsequences $E_S$ of $E_L$ is insufficient for finding MCSes: the
+timing $T$ during $replay(E_S, T)$ is crucial for
 reproducing the invariant violation. The most natural approach would be to maintain the original
 timings between the remaining inputs of each subsequence.
 \eat{\ie~if we
@@ -172,8 +172,8 @@ pruning other inputs.
 %time to respond to the remaining inputs events.
 %In practice we have observed that simply maintaining relative timings can
 %result in injecting the remaining inputs too early or late.}
-To reproduce the invariant violation
-we need to inject an input event $e$ only after all other
+To reproduce the invariant violation (whenever $E_S$ is a superset of an MCS)
+we need to inject each input event $e$ only after all other
 events, including internal events triggered by the control software itself,
 that precede it in the
 happens-before~\cite{Lamport:1978:TCO:359545.359563}
