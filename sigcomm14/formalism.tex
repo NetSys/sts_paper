@@ -2,38 +2,43 @@ We represent the forwarding state of the network
 at a particular time as a configuration $c$, which contains all the forwarding
 entries in the network
 as well as the liveness of the various network elements.
-The network control plane is a system that takes a sequence of
+The control software is a system % (consisting of one or more controller processes)
+that takes a sequence of
 external network events $E = e_1,e_2,\dots,e_m$ (such as link failures) as input,
 and produces a sequence of network configurations
-$C = c_1,c_2,\dots,c_n$.
+$C = c_1,c_2,\dots,c_n$.% Note that the network configuration $c$ does not
+%include the internal state of the control software.
 
 An invariant is a predicate $P$ over forwarding state (a safety
 condition, such as having no loops or blackholes). We say that a configuration
 $c$ violates the invariant if $P(c)$ does not
 hold, denoted as $\overline{P}(c)$.
 
-In our formalism a log $L$ of a system execution is a triplet of external events $E_L$,
-timing information $T_L$ of the external events, and the resulting sequence of forwarding
-configurations $C_L$.
+We are given a log $L$ of a system execution generated
+by a centralized QA test orchestrator.\footnote{We
+discuss how these logs are generated in \S\ref{sec:systems_challenges}.}
+The log $L$ contains external
+events $E_L = e_1,e_2,\dots,e_m$, and
+timestamps $T_L = \left\{ (e_k, t_k) \right\}$ of when the external events
+occurred, recorded from the test orchestrator's clock.
 A replay of log $L$ involves replaying the external events along with a
 particular timing $T$,
-which need not be identical to the original timings $T_L$ captured in the log.
-We need to account for timings $T$ because as we prune events we
-are unable to use the original timings $T_L$.
-We denote a replay attempt by $replay(E_L,T)$.
+which need not be identical to the original timings $T_L$ captured in the
+log. We
+denote a replay attempt by $replay(E_L,T)$.
 The output of $replay$ is a sequence of forwarding state configurations
 $C_R = \hat{c}_1,\hat{c}_2,\dots,\hat{c}_n$. In the ideal case $replay(E_L,T_L)$ reproduces the same
-sequence of network configurations as occurred in the original run
-(\ie~$\forall_i. c_i = \hat{c}_i$), but as we discuss later in the paper
+sequence of network configurations as occurred in the original execution, but as we discuss later
 this does not always hold.
 
-If the original log $(E_L, T_L, C_L)$ violated predicate $P$
+If the configuration sequence $C_L = c_1,c_2,\dots,c_n$ associated with the log $(E_L, T_L)$ violated predicate $P$
 (\ie~$\exists_{c_i \in C_L}. \overline{P}(c_i)$)
 then we say $replay(E_L,T) = C_R$ reproduces that invariant violation if
 $\exists_{\hat{c}_i \in C_R}. \overline{P}(\hat{c}_i)$.
 
-The goal of our work is, when given a log $(E_L, T_L, C_L)$ that violates a predicate $P$, to find a small sequence of events that reproduces that
-invariant violation.  More formally, we define a minimal causal sequence (MCS)
+The goal of our work is, when given a log $(E_L, T_L)$ that exhibited an
+invariant violation, to find a small sequence of events that reproduces that
+invariant violation. Formally, we define a minimal causal sequence (MCS)
 to be a subsequence $E_M$
 of $E_L$ and a timing $T_M$ such
 that $replay(E_M,T_M)$ reproduces the invariant violation, but for all proper
@@ -43,20 +48,17 @@ That is, an MCS is a sequence and timing of external events that reproduces the 
 where one cannot find a subsequence of the MCS that reproduces the violation.
 Note that an MCS is not necessarily {\em globally} minimal, in that there could be smaller
 sequences that reproduce this violation, but are not a subsequence of this MCS.
-\colin{Problem with this definition: our approach does not provably find
-MCSes, since we don't explore all timings!}
 
-Given a log $(E_L, T_L, C_L)$ exhibiting an invariant violation,\footnote{We
-discuss how these logs are generated in \S\ref{sec:systems_challenges}.}
-our goal is to identify its MCS. We could do this through brute force, trying
+We might find MCSes through brute force, trying
 all subsequence and timings, but this is clearly impractical given the large size of logs and the
 infinitely large set of possible timings. Thus, we must approximate MCSes by finding heuristics
 for which events to eliminate and, more importantly, which timings to test.
 
-In the next section we describe our heuristics for finding (approximate) MCSes
-for use in troubleshooting, and then
-describe the system we built in \S\ref{sec:systems_challenges} to implement these heuristics.
-The key component of this system is a \tester~that can execute $replay()$.
+In the next section we describe our heuristics for finding MCSes,
+and then
+describe the system we built in \S\ref{sec:systems_challenges} to implement
+our heuristics.
+%The key component of this system is a \tester~that can execute $replay()$.
 %Because we do not have access to operational QA or production logs, our focus is on
 %using the \tester~to generate random inputs (shown in
 %Table~\ref{tab:inputs}), detecting bugs in control software,
