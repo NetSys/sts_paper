@@ -1,5 +1,3 @@
-\colin{Perhaps we shouldn't assume SDN?}
-
 We represent the forwarding state of the network
 at a particular time as a configuration $c$, which contains all the forwarding
 entries in the network
@@ -41,7 +39,7 @@ $\exists_{\hat{c}_i \in C_R}. \overline{P}(\hat{c}_i)$.
 \subsection{Internal Events}
 
 Unfortunately, $replay(E_L, T_L)$ is not guaranteed to reproduce the
-original violation (even if $E_S$ is a superset of some MCS), since it can violate
+original violation, since it can violate
 causality: the control software may behave
 differently during replay.
 
@@ -59,12 +57,12 @@ happens-before~\cite{Lamport:1978:TCO:359545.359563}
 relation ($\{i \mid i \rightarrow e\}$) from the original execution have
 occurred~\cite{tel2000introduction}.
 
-While it is not practically feasible to observe and record all state
+While it is not practically feasible for us to to observe and record all state
 transitions within control software, we can feasibly record message delivery
 events. We can therefore augment the original log $(E_L, T_L)$ with a schedule
 $\tau_L = e_1\rightarrow~i_1\rightarrow~\dots~e_2~\rightarrow~\dots$, where
 each $i$ is a message delivery event observed in the original execution.
-We assume that we can control (through interposition) the schedule during
+We further assume that we can arbitrarily reorder or drop message delivery events (through interposition) during
 $replay$.
 
 \subsection{Minimization}
@@ -85,16 +83,24 @@ subsequences that reproduce this violation, but are not a subsequence of this MC
 
 In the process of minimizing, we employ delta debugging~\cite{Zeller:1999:YMP:318773.318946}
 to iteratively compute
-subsequences $E_S\subseteq E_L$, and then replay each $E_S$. Assume each $E_S$ is such
+subsequences $E_S\subseteq E_L$, and then replay each $E_S$ and check for an
+invariant violation. Assume each $E_S$ is such
 that all logically dependent events occur, \eg~links go down before coming up,
-hosts migrate correctly etc. $E_S$ trivially results in
+and hosts migrate correctly. $E_S$ trivially results in
 $T_S\subseteq T_L$.
 
-As stated above, $replay(E_S, T_S)$ does not necessarily reproduce the
+As explained above, $replay(E_S, T_S)$ does not necessarily reproduce the
 invariant violation (even if $E_S$ is a superset of an MCS), since it may
-violate the happens-before relation $\tau_L$. Maintaining the
-happens-before relation throughout replay of subsequences of the
-trace involves three issues: coping with syntactic differences in internal
+violate the happens-before relation $\tau_L$. We need to produce a
+schedule $\tau_S$ such that all events in $\tau_L$ are arranged in $\tau_S$ such that:
+
+If $a, b\in \tau_S$ and $a, b\in \tau_L$ then $a \rightarrow b$ in $\tau_S$ if
+and only if $a \rightarrow b$ in $\tau_L$. \\
+
+\noindent~This just says that $\tau_S$ follows the causal order reflected in the
+original log.
+
+Constructing $\tau_S$ involves three issues: coping with syntactic differences in internal
 events across replay runs (\S\ref{sec:functional_equivs}),
 handling internal events from the original
 execution that may not occur after pruning (dealt with in~\cite{sts}),

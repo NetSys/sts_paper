@@ -2,15 +2,15 @@ In this document we attempt to formalize some of the questions left open by
 STS~\cite{sts}, a system for finding minimal causal sequences of inputs from
 buggy executions of software-defined networks.
 
-In terms of problem statements, the closest work to ours is program flow-based
-log reduction~\cite{zhang2006dynamic,tallam2007enabling,Lee:2011:TGR:1993498.1993528,huang2012lean},
+In terms of problem statements, the closest work to ours is log reduction
+based on program flow analysis~\cite{zhang2006dynamic,tallam2007enabling,Lee:2011:TGR:1993498.1993528},
 which seeks to remove irrelevant events from deterministic replay logs
 (consisting of syscall return values, asynchronous signals, and a thread
 schedule) by analyzing the
 software to infer which events trigger code paths that do not effect whether
 the bug occurs. The crucial difference in our problem statement is that
-we do not have access to the internal behavior of control software, and
-instead can only observe which messages the software sends in response to input events.
+we treat the control software as a blackbox, and
+can only observe which messages the software sends in response to input events.
 
 We start in \S\ref{sec:problem_statement} by formulating our own problem
 statement in detail.
