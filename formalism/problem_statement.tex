@@ -1,5 +1,102 @@
-Contrast ourselves against program flow analysis~\cite{zhang2006dynamic}. Partial visibility!
+\colin{Perhaps we shouldn't assume SDN?}
 
+We represent the forwarding state of the network
+at a particular time as a configuration $c$, which contains all the forwarding
+entries in the network
+as well as the liveness of the various network elements.
+The control software is a system % (consisting of one or more controller processes)
+that takes a sequence of
+external network events $E = e_1,e_2,\dots,e_m$ (such as link failures) as input,
+and produces a sequence of network configurations
+$C = c_1,c_2,\dots,c_n$. Note that the network configuration $c$ does not
+include the internal state of the control software.
+
+An invariant is a predicate $P$ over forwarding state (a safety
+condition, such as having no loops or blackholes). We say that a configuration
+$c$ violates the invariant if $P(c)$ does not
+hold, denoted as $\overline{P}(c)$.
+
+\noindent{\bf Log Input.} We are given a log $L$ of a system execution generated
+by a centralized QA test orchestrator. The log $L$ contains external
+events $E_L = e_1,e_2,\dots,e_m$, and
+timestamps $T_L = \left\{ (e_k, t_k) \right\}$ of when the external events
+occurred, recorded from the test orchestrator's clock.
+A replay of log $L$ involves replaying the external events along with a
+particular timing $T$,
+which need not be identical to the original timings $T_L$ captured in the
+log. We
+denote a replay attempt by $replay(E_L,T)$.
+The output of $replay$ is a sequence of forwarding state configurations
+$C_R = \hat{c}_1,\hat{c}_2,\dots,\hat{c}_n$. In the ideal case $replay(E_L,T_L)$ reproduces the same
+sequence of network configurations as occurred in the original execution, but as we discuss later
+this does not always hold.
+
+If the configuration sequence $C_L = c_1,c_2,\dots,c_n$ associated with the log $(E_L, T_L)$ violated predicate $P$
+(\ie~$\exists_{c_i \in C_L}. \overline{P}(c_i)$)
+then we say $replay(E_L,T) = C_R$ reproduces that invariant violation if
+$\exists_{\hat{c}_i \in C_R}. \overline{P}(\hat{c}_i)$.
+
+\noindent{\bf Internal Events.} As stated, the log $(E_L, T_L)$ does not include
+information about events that are internal to the control software, including
+(a) message delivery events, either between controllers (\eg~database
+synchronization messages) or
+between controllers and switches (\eg~OpenFlow commands), and (b) state transitions
+within controllers (\eg~a backup node deciding to become master).
+To reproduce the invariant violation,
+we need to inject an input event $e$ only after all other
+events, including internal events,
+that precede it in the
+happens-before~\cite{Lamport:1978:TCO:359545.359563}
+relation ($\{i \mid i \rightarrow e\}$) from the original execution have
+occurred~\cite{tel2000introduction}.
+
+While it is not practically feasible to observe and record all state
+transitions within control software, we can feasibly record message delivery
+events. We can therefore augment the original log $(E_L, T_L)$ with a schedule
+$\tau_L = e_1\rightarrow~i_1\rightarrow~\dots~e_2~\rightarrow~\dots$, where
+each $i$ is a message delivery event observed in the original run.
+We assume that we can control (through interposition) the schedule during
+$replay$.
+
+\noindent{\bf Minimization.} The goal of our work is, when given a log $(E_L,
+T_L, \tau_L)$ that exhibited an
+invariant violation, to find a small sequence of events that reproduces that
+invariant violation. Formally, we define a minimal causal sequence (MCS)
+to be a subsequence $E_M$
+of $E_L$ and a timing $T_M$ such
+that $replay(E_M,T_M)$ reproduces the invariant violation, but for all proper
+subsequences $E_N$ of $E_M$
+there is no timing $T$ s.t. $replay(E_N,T)$ reproduces the violation.
+That is, an MCS is a sequence and timing of external events that reproduces the violation,
+where one cannot find a subsequence of the MCS that reproduces the violation.
+Note that an MCS is not necessarily {\em globally} minimal, in that there could be smaller
+subsequences that reproduce this violation, but are not a subsequence of this MCS.
+
+In the process of minimizing, we employ delta debugging~\cite{Zeller:1999:YMP:318773.318946}
+to iteratively compute
+subsequences $E_S\subseteq E_L$, and then replay each $E_S$. Assume each $E_S$ is such
+that all logically dependent events occur, \eg~links go down before coming up,
+hosts migrate correctly etc. $E_S$ trivially results in
+$T_S\subseteq T_L$.
+
+Unfortunately, $replay(E_S, T_S)$ is not guaranteed to reproduce the
+original violation (even if $E_S$ is a superset of some MCS), since it can violate
+the happens-before relation from the original trace: the control software may react to remaining inputs
+differently as a result of us
+pruning other inputs.
+
+Maintaining the happens-before relation from the original trace
+(which reproduces the violation) throughout replay of subsequences of the
+trace (which may or may not reproduce that
+violation) involves three issues: coping with syntactic differences in internal
+events across runs (\S\ref{sec:functional_equivs}),
+handling internal events from the original
+execution that may not occur after pruning (dealt with in~\cite{sts}),
+and dealing with new internal events that were not
+observed at all in the original execution (\S\ref{sec:unexpected}).
+
+% ---------------------------------------------------------------
+\eat{
 \textbf{Inputs}
 \begin{align*}
     E_l &= \left\{ e_1, e_2, \ldots, e_n  \right\} && \text{External log where $e_j$ is an external event: link up,
@@ -24,12 +121,11 @@ observe) which can be potentially reordered causally. In particular:
 
 That is when replaying the original schedule with the original timing we get the original set of internal events.
 
-At each step when doing delta debugging we compute $E\subseteq E_l$. Assume $E$ is such that all logically dependent
-events occur, i.e., a link goes down before coming up, hosts migrate correctly etc. This $E$ trivially results in
-$T\subseteq T_l$.
 
 \begin{align*}
     Replay(E, T) &\implies I\\
     I \nsubseteq I_l\\
     I\cap I_l \neq \emptyset
 \end{align*}
+
+}
