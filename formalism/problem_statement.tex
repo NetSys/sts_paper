@@ -16,7 +16,9 @@ condition, such as having no loops or blackholes). We say that a configuration
 $c$ violates the invariant if $P(c)$ does not
 hold, denoted as $\overline{P}(c)$.
 
-\noindent{\bf Log Input.} We are given a log $L$ of a system execution generated
+\subsection{Log Input}
+
+We are given a log $L$ of a system execution generated
 by a centralized QA test orchestrator. The log $L$ contains external
 events $E_L = e_1,e_2,\dots,e_m$, and
 timestamps $T_L = \left\{ (e_k, t_k) \right\}$ of when the external events
@@ -36,7 +38,14 @@ If the configuration sequence $C_L = c_1,c_2,\dots,c_n$ associated with the log 
 then we say $replay(E_L,T) = C_R$ reproduces that invariant violation if
 $\exists_{\hat{c}_i \in C_R}. \overline{P}(\hat{c}_i)$.
 
-\noindent{\bf Internal Events.} As stated, the log $(E_L, T_L)$ does not include
+\subsection{Internal Events}
+
+Unfortunately, $replay(E_L, T_L)$ is not guaranteed to reproduce the
+original violation (even if $E_S$ is a superset of some MCS), since it can violate
+causality: the control software may behave
+differently during replay.
+
+As stated, the log $(E_L, T_L)$ does not include
 information about events that are internal to the control software, including
 (a) message delivery events, either between controllers (\eg~database
 synchronization messages) or
@@ -54,11 +63,13 @@ While it is not practically feasible to observe and record all state
 transitions within control software, we can feasibly record message delivery
 events. We can therefore augment the original log $(E_L, T_L)$ with a schedule
 $\tau_L = e_1\rightarrow~i_1\rightarrow~\dots~e_2~\rightarrow~\dots$, where
-each $i$ is a message delivery event observed in the original run.
+each $i$ is a message delivery event observed in the original execution.
 We assume that we can control (through interposition) the schedule during
 $replay$.
 
-\noindent{\bf Minimization.} The goal of our work is, when given a log $(E_L,
+\subsection{Minimization}
+
+The goal of our work is, when given a log $(E_L,
 T_L, \tau_L)$ that exhibited an
 invariant violation, to find a small sequence of events that reproduces that
 invariant violation. Formally, we define a minimal causal sequence (MCS)
@@ -79,17 +90,12 @@ that all logically dependent events occur, \eg~links go down before coming up,
 hosts migrate correctly etc. $E_S$ trivially results in
 $T_S\subseteq T_L$.
 
-Unfortunately, $replay(E_S, T_S)$ is not guaranteed to reproduce the
-original violation (even if $E_S$ is a superset of some MCS), since it can violate
-the happens-before relation from the original trace: the control software may react to remaining inputs
-differently as a result of us
-pruning other inputs.
-
-Maintaining the happens-before relation from the original trace
-(which reproduces the violation) throughout replay of subsequences of the
-trace (which may or may not reproduce that
-violation) involves three issues: coping with syntactic differences in internal
-events across runs (\S\ref{sec:functional_equivs}),
+As stated above, $replay(E_S, T_S)$ does not necessarily reproduce the
+invariant violation (even if $E_S$ is a superset of an MCS), since it may
+violate the happens-before relation $\tau_L$. Maintaining the
+happens-before relation throughout replay of subsequences of the
+trace involves three issues: coping with syntactic differences in internal
+events across replay runs (\S\ref{sec:functional_equivs}),
 handling internal events from the original
 execution that may not occur after pruning (dealt with in~\cite{sts}),
 and dealing with new internal events that were not

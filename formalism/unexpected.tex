@@ -1,10 +1,10 @@
-One possible change induced by pruning inputs is the occurrence of new
+Another change induced by pruning inputs is the occurrence of new
 internal events that were not observed in the original log.
 New events present multiple possibilities for where
-we should inject the next input. Consider the following case:
+we should inject the subsequent input. Consider the following case:
 if $i_2$ and $i_3$ are internal events observed
 during replay that are both in the same equivalence class as a single event $i_1$ from the
-original run, we could inject the next input after $i_2$ or after $i_3$.
+original run, we could inject the subsequent input after $i_2$ or after $i_3$.
 
 % TODO: figure this figure out
 %\begin{wrapfigure}{c}{1.3\linewidth}
@@ -19,16 +19,15 @@ we inject the next input
 event. In other words, to be guaranteed to traverse any existing suffix that leads
 to the invariant violation, we must recursively branch, trying both
 possibilities for every new internal event. This implies an exponential number of
-possibilities to be explored in the worst case.
-
+possibilities to be explored in the worst case.\footnote{
 In our system, exponential search over these possibilities is not a practical option.
 The heuristic our system uses when waiting for expected internal
 events is to proceed normally if there are new internal events,
 always injecting the next input when its last expected predecessor
-either occurs or times out.
+either occurs or times out.}
 
-We would like to gain a better understanding of why this heuristic does (or
-does not) work, and whether it can be improved.
+If we assume a model of the control software's behavior, we can potentially
+avoid exponential blowup.
 
 \noindent{\bf Problem statement.} Given a predicate $\Phi(a, b)$ which for a pair of events $a$, $b$ 
 (either external or internal), internal events $I$, external event $E$ we want to produce a schedule $\tau$ such that all $e\in E$ and $i\in
@@ -41,6 +40,7 @@ For all $a\rightarrow b\in \tau$ $\Phi(a, b)$ is true. The later is used to enco
 well behaved with respect to events in $\tau_l$.
 
 Two ideas for obtaining $\Phi$:
+
 \noindent{\bf Extrapolate from complete model.} There was a paper in PLDI~\cite{vericon} that
 wrote their own controller and model checked its entire state space. We could issue queries on their
 state machine to compute $\Phi$, and then extrapolate $\Phi$ for other controllers assuming they are sufficiently similar.
