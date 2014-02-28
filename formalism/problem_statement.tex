@@ -38,37 +38,51 @@ $\exists_{\hat{c}_i \in C_R}. \overline{P}(\hat{c}_i)$.
 
 \subsection{Internal Events}
 
-Unfortunately, $replay(E_L, T_L)$ is not guaranteed to reproduce the
-original violation, since it can violate
-causality: the control software may behave
-differently during replay.
-
 As stated, the log $(E_L, T_L)$ does not include
 information about events that are internal to the control software, including
 (a) message delivery events, either between controllers (\eg~database
 synchronization messages) or
 between controllers and switches (\eg~OpenFlow commands), and (b) state transitions
 within controllers (\eg~a backup node deciding to become master).
-To reproduce the invariant violation,
-we need to inject an input event $e$ only after all other
-events, including internal events,
-that precede it in the
-happens-before~\cite{Lamport:1978:TCO:359545.359563}
-relation ($\{i \mid i \rightarrow e\}$) from the original execution have
-occurred~\cite{tel2000introduction}.
+
+Internal events are important for ensuring that $replay$ reproduces the
+original invariant violation. In particular, if the following (conservative) condition holds~\cite{tel2000introduction}, $replay(E_L, \cdot)$ will be
+guaranteed to reproduce the original violation:
+
+%\begin{adjustwidth}{1cm}{}
+\begin{condition}
+\label{happens_before}
+Each input $e$ is injected only after all other events, including internal events, that precede it in the
+happens-before~\cite{Lamport:1978:TCO:359545.359563} relation ($\{i \mid i \rightarrow e\}$) from the
+original execution have occurred.
+\end{condition}
+%\end{adjustwidth}
+
+\noindent Note that $replay(E_L, T_L)$ does not necessarily meet this condition, since the control software may behave
+differently during replay due to non-determinism,\footnote{As we explain
+later, the control software may also behave differently as a result of
+pruning inputs from the original run.} and simply maintaining the timings may not suffice
+to account for those difference in behavior.
 
 While it is not practically feasible for us to to observe and record all state
 transitions within control software, we can feasibly record message delivery
 events. We can therefore augment the original log $(E_L, T_L)$ with a schedule
 $\tau_L = e_1\rightarrow~i_1\rightarrow~\dots~e_2~\rightarrow~\dots$, where
-each $i$ is a message delivery event observed in the original execution.
-We further assume that we can arbitrarily reorder or drop message delivery events (through interposition) during
-$replay$.
+each $i$ is a message delivery event observed in the original
+execution.\footnote{We further assume that we can arbitrarily reorder or
+drop message delivery events (through interposition) during $replay$.}
+
+With the schedule $\tau_L$, we schedule input events and message delivery
+events during $replay$ so that we enforce an order
+of events that is consistent with $\tau_L$. While this does not imply that
+Condition~\ref{happens_before} holds (since we do not observe all internal
+events), enforcing an order consistent with
+$\tau_L$ is a necessary condition for ensuring that
+Condition~\ref{happens_before} holds.
 
 \subsection{Minimization}
 
-The goal of our work is, when given a log $(E_L,
-T_L, \tau_L)$ that exhibited an
+The goal of our work is, when given a log $(E_L, T_L, \tau_L)$ that exhibited an
 invariant violation, to find a small sequence of events that reproduces that
 invariant violation. Formally, we define a minimal causal sequence (MCS)
 to be a subsequence $E_M$
@@ -86,24 +100,27 @@ to iteratively compute
 subsequences $E_S\subseteq E_L$, and then replay each $E_S$ and check for an
 invariant violation. Assume each $E_S$ is such
 that all logically dependent events occur, \eg~links go down before coming up,
-and hosts migrate correctly. $E_S$ trivially results in
-$T_S\subseteq T_L$.
+and hosts migrate correctly. Each subsequence of events $E_S$ corresponds with
+timings for those events $T_S\subseteq T_L$.
 
 As explained above, $replay(E_S, T_S)$ does not necessarily reproduce the
 invariant violation (even if $E_S$ is a superset of an MCS), since it may
-violate the happens-before relation $\tau_L$. We need to produce a
-schedule $\tau_S$ such that all events in $\tau_L$ are arranged in $\tau_S$ such that:
+violate Condition~\ref{happens_before}. Rather than replaying with $T_S$, we attempt to produce a
+schedule $\tau_S$ such that all events in $\tau_L$ are arranged in $\tau_S$
+such that: \\
 
 If $a, b\in \tau_S$ and $a, b\in \tau_L$ then $a \rightarrow b$ in $\tau_S$ if
 and only if $a \rightarrow b$ in $\tau_L$. \\
 
-\noindent~This just says that $\tau_S$ follows the causal order reflected in the
-original log.
+\noindent This just says that $\tau_S$ follows the happens-before order reflected in the
+original log.\footnote{But not necessarily the full happens-before order from
+the original execution, since we do not have visibility into all internal
+events.}
 
 Constructing $\tau_S$ involves three issues: coping with syntactic differences in internal
 events across replay runs (\S\ref{sec:functional_equivs}),
 handling internal events from the original
-execution that may not occur after pruning (dealt with in~\cite{sts}),
+execution that may not occur after pruning (dealt with in~\cite{sts}, Section 2),
 and dealing with new internal events that were not
 observed at all in the original execution (\S\ref{sec:unexpected}).
 

@@ -1,6 +1,14 @@
-Internal events may differ syntactically (\eg~sequence numbers
-of control packets may all differ) when replaying a subsequence of the original log.
-Nonetheless, we observe that often these altered internal events are {\em functionally
+By choosing a subsequence of inputs to replay (pruning some of the original inputs),
+we may cause the messages sent by the control software to differ syntactically
+from those in the original run. For example, consider the sequence numbers of control
+messages: if we prune an input at the beginning of the execution, then the
+control software's sequence number counter may increment one less time than it
+did in the original execution, and all
+control packets sent by it will therefore carry a different sequence number
+than they did in the original trace. These syntactic differences complicate
+our goal of ensuring an event ordering that is consistent with $\tau_L$.
+
+We observe that often these altered internal events are {\em functionally
 equivalent}, in the sense that they
 have the same effect on the state of the system with respect to triggering the
 invariant violation (despite syntactic differences).

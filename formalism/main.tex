@@ -8,6 +8,7 @@
 \usepackage{xspace}
 \usepackage{pifont}
 \usepackage{pseudocode}
+\usepackage{changepage}
 
 \definecolor{MyDarkBlue}{rgb}{0,0.08,0.45}
 \usepackage[pdftex]{hyperref}
@@ -55,6 +56,12 @@
 \newcommand{\dtwo}{{T_{\scriptscriptstyle 2}}}
 \newcommand{\test}{\textit{replay}\xspace}
 \newcommand{\ddmin}{\textit{ddmin}\xspace}
+
+%\newenvironment{condition}[1][Condition]{\begin{trivlist}
+%\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{condition}[theorem]{Condition}
 
 \sloppy
 \begin{document}
