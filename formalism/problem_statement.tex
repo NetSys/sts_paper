@@ -74,7 +74,9 @@ drop message delivery events (through interposition) during $replay$.}
 
 With the schedule $\tau_L$, we schedule input events and message delivery
 events during $replay$ so that we enforce an order
-of events that is consistent with $\tau_L$. While this does not imply that
+of events that is consistent with $\tau_L$, \ie~we ensure that
+if $a \rightarrow b\in \tau_L$ then $a \rightarrow b$ during replay.
+While this does not imply that
 Condition~\ref{happens_before} holds (since we do not observe all internal
 events), enforcing an order consistent with
 $\tau_L$ is a necessary condition for ensuring that
