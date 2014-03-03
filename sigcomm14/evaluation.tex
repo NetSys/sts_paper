@@ -52,7 +52,7 @@
 \multirow{3}{*}{\rotatebox[origin=c]{90}{\bf Known}}
 & Floodlight failover bug & 2 switch mesh & - & 202 & 2 & Yes \\
 & ONOS master election & 2 switch mesh & 6325.2 & 30 & 3 & Yes \\
-& POX load balancer error checking & 3 switch mesh & 2396.7 & 106 & 24 (N+1) & Yes \\
+& POX load balancer error checking & 3 switch mesh & 2396.7 & 106 & 24  & Yes \\
 % Predates the experiment directory
 % Ahmed
 % load_balancer_fuzzer_mcs/
@@ -625,11 +625,11 @@ for each of these flows. Eventually the switches ran out of flow entry
 space and responded with error messages. As a result, POX began randomly load
 balancing each subsequent packet for a given flow over the servers, causing
 session state to be lost. We were able to minimize the MCS for this
-bug to 24 elements (two auxiliary flow entries, plus 22 flows needed to
-overflow the routing tables). A notable aspect of this MCS is that its
-size is directly proportional to the flow table space, and developers would
-find across multiple fuzz runs that the MCS was always 24
-elements.
+bug to 24 elements (there were two preexisting auxiliary flow entries in each
+routing table, so 24 additional flows made the 26 (N+1) entries needed to
+overflow the table). A notable aspect of this MCS is that its size is directly
+proportional to the flow table space, and developers would find across multiple
+fuzz runs that the MCS was always 24 elements.
 
 \subsection{Synthetic bugs}
 Lastly, we injected synthetic bugs across a range of bug types into POX. For space
