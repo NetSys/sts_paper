@@ -45,7 +45,7 @@ synchronization messages) or
 between controllers and switches (\eg~OpenFlow commands), and (b) state transitions
 within controllers (\eg~a backup node deciding to become master).
 
-Internal events are important for ensuring that $replay$ reproduces the
+The interleaving of internal events and input events is important for ensuring that $replay$ reproduces the
 original invariant violation. In particular, if the following (conservative) condition holds~\cite{tel2000introduction}, $replay(E_L, \cdot)$ will be
 guaranteed to reproduce the original violation:
 
@@ -58,11 +58,12 @@ original execution have occurred.
 \end{condition}
 %\end{adjustwidth}
 
-\noindent Note that $replay(E_L, T_L)$ does not necessarily meet this condition, since the control software may behave
+\noindent Note that $replay(E_L, T_L)$ does not necessarily meet
+condition~\ref{happens_before}, since the control software may behave
 differently during replay due to non-determinism,\footnote{As we explain
 later, the control software may also behave differently as a result of
-pruning inputs from the original run.} and simply maintaining the timings may not suffice
-to account for those difference in behavior.
+pruning inputs from $E_L$.} and using the original timings might
+cause the inputs to interleave improperly with internal events.
 
 While it is not practically feasible for us to to observe and record all state
 transitions within control software, we can feasibly record message delivery
@@ -72,7 +73,7 @@ each $i$ is a message delivery event observed in the original
 execution.\footnote{We further assume that we can arbitrarily reorder or
 drop message delivery events (through interposition) during $replay$.}
 
-With the schedule $\tau_L$, we schedule input events and message delivery
+With this information, we schedule input events and message delivery
 events during $replay$ so that we enforce an order
 of events that is consistent with $\tau_L$, \ie~we ensure that
 if $a \rightarrow b\in \tau_L$ then $a \rightarrow b$ during replay.
@@ -82,7 +83,7 @@ events), enforcing an order consistent with
 $\tau_L$ is a necessary condition for ensuring that
 Condition~\ref{happens_before} holds.
 
-\subsection{Minimization}
+\subsection{Minimizing Inputs}
 
 The goal of our work is, when given a log $(E_L, T_L, \tau_L)$ that exhibited an
 invariant violation, to find a small sequence of events that reproduces that
@@ -97,15 +98,27 @@ where one cannot find a subsequence of the MCS that reproduces the violation.
 Note that an MCS is not necessarily {\em globally} minimal, in that there could be smaller
 subsequences that reproduce this violation, but are not a subsequence of this MCS.
 
-In the process of minimizing, we employ delta debugging~\cite{Zeller:1999:YMP:318773.318946}
+We employ delta debugging~\cite{Zeller:1999:YMP:318773.318946}
 to iteratively compute
 subsequences $E_S\subseteq E_L$, and then replay each $E_S$ and check for an
-invariant violation. Assume each $E_S$ is such
+invariant violation. The responsibility of delta debugging is to efficiently
+search through the space of possible subsequences; the remaining task is to
+pick replay timings $T$ such that, whenever delta debugging chooses a
+subsequence $E_S$ that is a superset of some MCS, then $replay(E_S, T)$
+reproduces the invariant. This is crucial to ensuring that delta debugging's
+final output is minimal. Since we do not know which subsequences are a
+superset of some MCS, our task is to always pick a timing $T$ that
+could reproduce the invariant violation.
+
+\subsection{Selecting Timings}
+
+Assume each $E_S$ is such
 that all logically dependent events occur, \eg~links go down before coming up,
-and hosts migrate correctly. Each subsequence of events $E_S$ corresponds with
+and hosts migrate along a coherent sequence of locations. Each subsequence of events $E_S$ corresponds with
 timings for those events $T_S\subseteq T_L$.
 
-As explained above, $replay(E_S, T_S)$ does not necessarily reproduce the
+As explained
+above, $replay(E_S, T_S)$ does not necessarily reproduce the
 invariant violation (even if $E_S$ is a superset of an MCS), since it may
 violate Condition~\ref{happens_before}. Rather than replaying with $T_S$, we attempt to produce a
 schedule $\tau_S$ such that all events in $\tau_L$ are arranged in $\tau_S$
@@ -122,7 +135,8 @@ events.}
 Constructing $\tau_S$ involves three issues: coping with syntactic differences in internal
 events across replay runs (\S\ref{sec:functional_equivs}),
 handling internal events from the original
-execution that may not occur after pruning (dealt with in~\cite{sts}, Section 2),
+execution that may not occur after pruning (dealt with in~\cite{sts}, section
+4.2),
 and dealing with new internal events that were not
 observed at all in the original execution (\S\ref{sec:unexpected}).
 
