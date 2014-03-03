@@ -42,7 +42,9 @@ $\hat{s}$ is reachable from $s$ along a sequence of labeled state transitions
 $\alpha$, where the labels in $\alpha$
 that correspond to external events are a subsequence of the remaining external inputs $E_S
 \backslash \left\{ e \in \tau_P \right\}$. \colin{May want to remove the
-requirement that $\alpha$ be a subsequence of external events.}
+requirement that $\alpha$ be a subsequence of external events. Alternatively,
+have $\Phi$ tell us whenever injecting $a$ before $b$ would lead us {\bf off}
+the original path (or an coarse-grained version of the original path)}
 Here, a buggy state refers to
 a state that produces a network configuration $c$ that violates a given
 invariant.
