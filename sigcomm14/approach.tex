@@ -163,9 +163,11 @@ t'_i = t'_{i-1} + |t_{i} - t_{i-1}|
 \end{align*}
 }
 }
-Unfortunately, this approach does not work in practice because it can violate
-causality: the control software may react to remaining inputs differently as a result of us
-pruning other inputs.
+We tried this simple approach on several buggy executions, but were unable to reproduce
+their invariant violations. The reason is that the control software may react
+differently to
+remaining inputs as a result of pruning inputs, such that the remaining inputs
+are injected at improper points.
 %\eat{: when we replay only a
 %subsequence of the original inputs, the reaction of the control software
 %can change, such that it behaves differently or takes a different amount of
@@ -249,7 +251,6 @@ Log statements & varargs parameters to printf \\
 \label{tab:fingerprints}
 \vspace{-0.5cm}
 \end{table}
-
 
 \noindent {\bf Functional Equivalence. } Internal events may differ syntactically (\eg~sequence numbers
 of control packets may all differ) when replaying a subsequence of the original log.
