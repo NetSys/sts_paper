@@ -150,7 +150,7 @@ holds.
 Simply exploring subsequences $E_S$ of $E_L$ is insufficient for finding MCSes: the
 timing $T$ during $replay(E_S, T)$ is crucial for
 reproducing the invariant violation. The most natural approach would be to maintain the original
-timings between the remaining inputs of each subsequence.
+wall-clock timings between the remaining inputs of each subsequence.
 \eat{\ie~if we
 define $t_i$ as the timestamp of the $i^{th}$ input from the original run and $t'_i$ as the
 replay clock value when it injects that same input
@@ -163,17 +163,18 @@ t'_i = t'_{i-1} + |t_{i} - t_{i-1}|
 \end{align*}
 }
 }
-We tried this simple approach on several buggy executions, but were unable to reproduce
-their invariant violations. The reason is that the control software may react
+We tried this simple approach on several buggy executions, but were rarely
+able to reproduce their invariant violations. The reason is that the control software may react
 differently to
 remaining inputs as a result of pruning inputs, such that the remaining inputs
-are injected at improper points.
+are injected at improper times.
 %\eat{: when we replay only a
 %subsequence of the original inputs, the reaction of the control software
 %can change, such that it behaves differently or takes a different amount of
 %time to respond to the remaining inputs events.
 %In practice we have observed that simply maintaining relative timings can
 %result in injecting the remaining inputs too early or late.}
+
 To reproduce the invariant violation (whenever $E_S$ is a superset of an MCS)
 we need to inject each input event $e$ only after all other
 events, including internal events triggered by the control software itself,
@@ -187,15 +188,23 @@ Internal events include
 synchronization messages) or
 between controllers and switches (\eg~OpenFlow commands), and (b) state transitions
 within controllers (\eg~a backup node deciding to become master).
-We obtain visibility into (a) by interposing on all messages within the test
+Our test orchestrator obtains visibility into (a) by interposing on all messages within the test
 environment (to be described in \S\ref{sec:systems_challenges}).
-We optionally obtain partial visibility into (b) by instrumenting controller
+It optionally obtains partial visibility into (b) by instrumenting controller
 software with a simple interposition layer (to be described in \S\ref{subsec:mitigating}).
-With visibility into internal events and control over input events, we
+With this visibility, we
 record a totally-ordered trace during testing by logging an event only after
 all prior events are completed. We thereby augment the log $(E_L, T_L)$ with a schedule
 $\tau_L = e_1\rightarrow~i_1\rightarrow~\dots~e_2~\rightarrow~\dots$, where
 each $i$ is an internal event observed in the original run.
+
+During replay our test orchestrator may use its interposition on
+messages to reorder or drop messages as necessary to
+remain consistent with the original happens-before relation. With this
+interposition in place, the final MCS produced by our system includes a schedule
+$\tau_S = e_1\rightarrow~i_1\rightarrow~\dots~e_2~\rightarrow~\dots$
+reflecting how the minimal subsequence of inputs should be interleaved
+with internal events in order to reproduce the invariant violation.
 
 %\subsection{Preserving Causality}
 
