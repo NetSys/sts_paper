@@ -40,7 +40,7 @@ and can help identify redundant bug reports where the MCSes are the same.
 
 Our goal of minimizing test cases is in the spirit of
 delta debugging~\cite{Zeller:1999:YMP:318773.318946}, but our problem is
-complicated by the distributed nature of SDN control software:
+complicated by the distributed nature of control software:
 our test input is not a single file fed to a single point of execution, but an ongoing
 sequence of events involving
 multiple actors. Therefore we must carefully
@@ -48,7 +48,7 @@ control timings of events in the face of asynchrony and non-determinism
 while we speculatively perturb the original execution,
 without making assumptions about the language
 or instrumentation of the control software. % under test.
-As far as we know we are the first to minimize inputs to a distributed
+As far as we know we are the first to minimize inputs to a blackbox distributed
 system (discussed in \S\ref{sec:related_work}).
 
 Our troubleshooting system, which we call {\projectname} ({\projectmeaning}),
