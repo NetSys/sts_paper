@@ -267,7 +267,8 @@ failed during replay, when it had not done so in the original execution.
 Upon further examination we found in these cases that LLDP and OpenFlow echo
 packets periodically sent by the control software were
 staying in \projectname's buffers too long during replay, such that the
-control software would time out on them. We therefore added an option to always pass through
+control software would time out on them. To avoid these differences in timing
+we added an option to always pass through
 keepalive messages that mitigates the issue. The limitation of this
 heuristic is that it cannot be used on bugs involving keepalive messages.
 
