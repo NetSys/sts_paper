@@ -167,7 +167,9 @@ We tried this simple approach on several buggy executions, but were rarely
 able to reproduce their invariant violations. The reason is that the control software may react
 differently to
 remaining inputs as a result of pruning inputs, such that the remaining inputs
-are injected at improper times.
+are injected at improper times. For example, a backup controller may elevate itself
+to master at a different time during replay than it did with the original unmodified
+inputs.
 %\eat{: when we replay only a
 %subsequence of the original inputs, the reaction of the control software
 %can change, such that it behaves differently or takes a different amount of
@@ -215,7 +217,9 @@ violation) involves three issues: coping with syntactic differences in internal
 events across runs,
 handling internal events from the original
 execution that may not occur after pruning, and dealing with new internal events that were not
-observed at all in the original execution.
+observed at all in the original execution. We address each of these issues
+while we replay each subsequence so that we can report invariant violations
+(minimization opportunities) to delta debugging as often as possible.
 
 \eat{
 \colin{Somewhat redundant. Maybe wait until use cases.}
