@@ -562,7 +562,7 @@ We ran two Floodlight controller
 instances connected to two switches, and injected 200 extraneous link
 and switch failures, with the controller crash and switch connect event\footnote{We used a switch connect
 event rather than a link failure event for logistical reasons, but both
-can trigger the race condition} that triggered the blackhole interleaved among them.
+can trigger the race condition.} that triggered the blackhole interleaved among them.
 We were able to successfully isolate the two-event MCS: the controller crash
 and the link failure.\\[0.5ex]
 %On ten repeated runs, the algorithm successfully pruned all extraneous
@@ -1003,7 +1003,7 @@ simulator was able to identify the correct correctness violation.
 
 \noindent{\bf Floodlight: Distributed controller failover race condition}
 We were able to reproduce the problem shown in Figure~\ref{fig:example} in our
-simulation environment,\footnote{The code is publicly available}
+simulation environment,\footnote{The code is publicly available.}
 and apply \projectname~successfully.
 We modified the Floodlight software to provide an interface for extracting its
 physical view. We did not interpose on internal events of the controller, but instead used a
@@ -1012,7 +1012,7 @@ controllers to fully react. We ran two of the modified Floodlight controller
 instances, connected to two simulated switches, and injected 200 extraneous link
 and switch failures, with the controller crash and switch connect event\footnote{We used a switch connect
 event rather than a link failure event for logistical reasons, but both
-can trigger the race condition} that triggered the blackhole interleaved among them.
+can trigger the race condition.} that triggered the blackhole interleaved among them.
 On ten repeated runs, the algorithm successfully pruned all extraneous
 inputs despite non-determinism in the Floodlight internal events. With full determinism and
 interposition, we expect that the algorithm should work well for less

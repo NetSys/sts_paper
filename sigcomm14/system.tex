@@ -173,7 +173,7 @@ accuracy.\footnote{When the pruned trace differs from the original, we make a
 best-effort guess at what the return values of these calls should be. For example,
 if the altered execution invokes {\tt gettimeofday()} more times than we recorded
 in the initial run, we interpolate the timestamps of neighboring events.}\footnote{Only
-supported for POX and Floodlight at the moment.} When sending data over multiple sockets, the operating system exhibits
+supported for POX and Floodlight at the moment.\label{fn:pox_fl}} When sending data over multiple sockets, the operating system exhibits
 non-determinism in the order it schedules I/O operations.
 \projectname~optionally ensures a deterministic order of messages
 by multiplexing all sockets
@@ -188,8 +188,7 @@ could be achieved transparently with a libc shim layer~\cite{Geels:2006:RDD:1267
 \projectname~may need visibility into the control software's internal state
 transitions to properly maintain happens-before relations during replay. We
 gain visibility by making a
-small change to the control software's logging library\footnote{Only supported
-for POX and Floodlight at the moment.}: whenever a control process executes a log
+small change to the control software's logging library\footref{fn:pox_fl}: whenever a control process executes a log
 statement, which often indicates that an important state transition is about to take
 place, we notify \projectname. Such coarse-grained visibility into internal
 state transitions does not handle all cases, but we find it suffices in practice.\footnote{We discuss this limitation further in \S\ref{subsec:non_goals}.}
