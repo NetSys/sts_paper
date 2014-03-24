@@ -35,13 +35,15 @@ behavior of network devices in lightweight software switches and hosts (with
 support for minimal data plane forwarding).
 We then run the control software on
 top of this \tester~and connect the software switches to the
-controllers. This design is similar to production software QA testbeds, and is
-depicted in Figure~\ref{fig:architecture}.
-The \tester~interposes on all communication
+controllers. The \tester~manages the execution of events from a single location,
+which allows it to record a serial
+event ordering. This design is similar to production software QA testbeds, and is
+depicted in Figure~\ref{fig:architecture}. One distinguishing feature of our
+design (which we return to later) is that
+the \tester~interposes on all communication
 channels, allowing it to delay, drop, or reorder
-messages as needed to induce failure modes. This interposition
-allows us to replicate many of the failure modes caused by asynchrony in real
-networks in a more deterministic manner.
+messages as needed to induce failure modes that might be seen in
+real, asynchronous networks.
 
 \begin{figure}[tb]
     %\hspace{-10pt}
@@ -53,23 +55,15 @@ networks in a more deterministic manner.
 \end{figure}
 
 We use our \tester~to perform testing on controllers to find
-bugs. Most commonly we generate randomly chosen input
-sequences~\cite{Miller:1990:ESR:96267.96279} (shown in
-Table~\ref{tab:inputs}) and periodically monitor invariants.\footnote{We currently support the following invariants:
+bugs. Most commonly we generate random input
+sequences~\cite{Miller:1990:ESR:96267.96279} and periodically monitor invariants.\footnote{We currently support the following invariants:
   (a) all-to-all reachability, (b) loop freeness, (c) blackhole freeness, (d) controller
 liveness, and (e) POX ACL compliance.
   %The full list of invariants currently supported is shown in Table~\ref{tab:invariants}
 }
-As an example,
-the \tester~injects link failures
-by disconnecting the edge in the topology, and sending an
-\verb=ofp_port_status=~\cite{openflow} message from the adjacent switches to their parent controller(s).
 We also run the \tester~interactively
 so that we can examine the state of any part of the network,
 and follow our intuition to induce event orderings that we believe may trigger bugs.
-Controlling the inputs from a single location
-allows our test framework to record a serial
-event ordering.
 
 \noindent{\bf Performing Minimization.} After discovering an invariant
 violation of interest, we apply delta debugging to minimize the trace. We use the
@@ -77,15 +71,12 @@ testing infrastructure itself to $replay()$ each intermediate subsequence.
 During $replay()$ the \tester~enforces event orderings as needed to maintain the original happens-before
 relation. It does this by using its interposition on message channels to
 manage the order in which (functionally equivalent) messages are let through,
-and waiting until the appropriate time to inject inputs.
-
-Engineering organizations with existing
-QA testbeds can add delta debugging to their test
-orchestrator, and optionally add interposition points throughout the
-testbed to control event ordering during replay.
-In this way they can continue simulating large scale networks with
-the switches, middleboxes, hosts, and routing protocols they had already
-chosen to include in their QA testbed.
+and waiting until the appropriate time to inject inputs. For example, if the
+original trace included a link failure preceded by the arrival of a heartbeat
+message from the controller, during $replay()$ \tester~waits until it observes
+a functionally equivalent ping probe to arrive, allows the probe
+through, then tells the switch to fail its link and send a \verb=ofp_port_status=
+message to its parent controller(s).
 
 % \begin{table}
 % \centering
@@ -100,13 +91,28 @@ chosen to include in their QA testbed.
 % \label{tab:invariants}
 % \end{table}
 
-\projectname~is our own realization of this system and is implemented in more than 21,000 lines of Python in
+\projectname~is our realization of this system and is implemented in more than 21,000 lines of Python in
 addition to the Hassel network invariant checking library~\cite{hsa}.
 \projectname~also optionally makes use of Open vSwitch~\cite{pfaff2009extending} as an interposition point for
 messages sent between controllers. We have
-made the code
-for \projectname~publicly available at \href{http://ucb-sts.github.com/sts}{ucb-sts.github.com/sts}.
+made the code for \projectname~publicly available at \href{http://ucb-sts.github.com/sts}{ucb-sts.github.com/sts}.
 % and have discussed the logistics of deploying it with several SDN companies.
+
+\noindent{\bf Existing Testbeds.} In designing \projectname~we aimed to make
+it possible for engineering organizations to
+implement the technology within their existing QA test infrastructure.
+Organizations can add delta debugging to their test
+orchestrator, and optionally add interposition points throughout the
+testbed to control event ordering during replay.
+In this way they can continue simulating large scale networks with
+the switches, middleboxes, hosts, and routing protocols they had already
+chosen to include in their QA testbed.
+
+In general we avoid making strong assumptions about the language or instrumentation of the
+software under test. Many of the heuristics we describe below are
+approximations that might be made more precise if we had more visibility and
+control over the system, \eg~if we could specify the thread schedule of each
+controller in a deterministic fashion.
 
 \colin{TODO: Discuss the value of replay for root causing here? Or just let
 the use cases speak for themselves?}
