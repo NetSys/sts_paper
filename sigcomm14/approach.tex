@@ -169,7 +169,8 @@ differently to
 remaining inputs as a result of pruning inputs, such that the remaining inputs
 are injected at improper times. For example, a backup controller may elevate itself
 to master at a different time during replay than it did with the original unmodified
-inputs.
+inputs, and we might consequently inject a preceding input after this master
+change has occurred.
 %\eat{: when we replay only a
 %subsequence of the original inputs, the reaction of the control software
 %can change, such that it behaves differently or takes a different amount of
@@ -190,6 +191,13 @@ Internal events include
 synchronization messages) or
 between controllers and switches (\eg~OpenFlow commands), and (b) state transitions
 within controllers (\eg~a backup node deciding to become master).
+Note that we do not control the occurrence of internal events, and therefore do
+not attempt to minimize them. Crucially though, we need to ensure that the ordering
+of input and internal events during
+$replay()$ of each subsequence is consistent with the happens-before relation,
+so that we can report invariant violations
+(minimization opportunities) to delta debugging as often as possible.
+
 Our test orchestrator obtains visibility into (a) by interposing on all messages within the test
 environment (to be described in \S\ref{sec:systems_challenges}).
 It optionally obtains partial visibility into (b) by instrumenting controller
@@ -218,9 +226,8 @@ violation) involves three issues: coping with syntactic differences in internal
 events across runs,
 handling internal events from the original
 execution that may not occur after pruning, and dealing with new internal events that were not
-observed at all in the original execution. We address each of these issues
-while we replay each subsequence so that we can report invariant violations
-(minimization opportunities) to delta debugging as often as possible.
+observed at all in the original execution. 
+
 
 \eat{
 \colin{Somewhat redundant. Maybe wait until use cases.}
