@@ -54,7 +54,7 @@ us determine how to best trade off improved simulation fidelity against degraded
 with engineers and our own industrial experience,
 two facts seem to hold. First, companies dedicate
 a substantial portion of their best engineers' time on troubleshooting bugs.
-Second, the larger the trace, the more effort is spent on debugging, as humans
+Second, the larger the trace, the more effort is spent on debugging, since humans
 can only keep a small number of facts in working memory~\cite{miller56seven}.
 As one developer puts it, ``Automatically shrinking test cases to the minimal
 case is immensely helpful''~\cite{riak_quote}.
@@ -63,6 +63,7 @@ case is immensely helpful''~\cite{riak_quote}.
 %divide and conquer approach taken by delta debugging which is
 %$O(n^2)$ in the worst case for $n$ inputs, yet human time is highly valuable.
 
+\eat{
 \noindent{\bf Will this approach work on all controllers?} We make limited
 assumptions about the controller software in use. Three of the five platforms
 we investigated were exercised with \projectname~without any modifications.
@@ -70,6 +71,7 @@ Limited changes to the controller platforms (\eg~overriding
 {\tt gettimeofday()}) can increase replay accuracy further.
 In general, we expect \projectname~to support controllers conforming to
 OpenFlow~1.0. % out of the box.
+}
 
 \noindent{\bf Why do you focus on SDN?} SDN represents both an
 opportunity and a challenge. In terms of a challenge,
@@ -106,6 +108,7 @@ In future work we hope to validate our
 technique on other such systems. % such as replicated state machines or NAS
 % controllers.
 
+\eat{
 \noindent{\bf Dataflow analysis.} Another avenue for future work would be to apply
 dataflow
 analysis~\cite{Lee:2011:TGR:1993498.1993528,tallam2007enabling}
@@ -125,6 +128,7 @@ analyzing the control software itself.
 %to reason about which inputs have a causal linkage to the bug of interest.
 % Maybe just try to apply dataflow analysis to the mock network's code, not to
 % the control software code. That way we aren't language dependent.
+}
 
 %Along a similar vein, dataflow analysis has the potential to help address the
 %problem described in~\ref{subsec:timing_heuristics} of timeouts adversely affecting replay;
@@ -132,11 +136,13 @@ analyzing the control software itself.
 %occur, \projectname's replay scheduler would not need to timeout
 %unnecessarily.
 
+\eat{
 \noindent{\bf Optimizing delta debugging.} Delta debugging is agnostic to how
 input sequences are split. Currently we
 split by time, but it may be more effective to split events by type or by location in the network
 topology.% may yield faster minimization, since bugs will often only involve a
 %small number of nodes in the distributed system.
+}
 
 \noindent{\bf Enabling analysis of production logs.} \projectname~does
 not currently support minimization of production (as opposed

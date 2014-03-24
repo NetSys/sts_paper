@@ -44,14 +44,14 @@ and dataflow dependencies in the control software.
 \noindent{\bf Instrumentation.} Unstructured
 log files collected at each node are the most common form of diagnostic information. The goal of
 tracing frameworks~\cite{pip,fonseca2007x,Chen02pinpoint:problem,ndb14,barham2004using}
-is to produce structured logs that can be easily analyzed, such as DAGs tracking the events triggered by
+is to produce structured logs that can be easily analyzed, such as DAGs tracking
 requests passing through the distributed system. An example within the SDN
 problem space is NetSight~\cite{ndb14}, which
 allows users to retroactively examine the paths dataplane packets
 take through OpenFlow networks. Tools like NetSight allow developers to understand
 how, when, and where the dataplane broke. In contrast, we focus on making it
 easier for developers to understand why the control software
-misconfigured the network. %in the first place.
+misconfigured the network.%in the first place.
 
 \vspace{0.05in}
 \noindent{\bf Bug Detection.} With instrumentation available, it becomes possible
@@ -115,6 +115,7 @@ seeks to reconstruct those unknown events from limited monitoring data.
 Here we know exactly which events occurred, but
 seek to identify the minimal sequence of events that trigger a particular bug.
 
+\eat{
 \colin{Cut if we need space:}
 \vspace{0.05in}
 It is worth mentioning another goal outside the purview of distributed systems, but
@@ -127,7 +128,7 @@ code dimension.
 %except that our `program' is a distributed event schedule,
 %and the result we are interested in is the network misconfiguration at
 %the end of the execution.
-\eat{ % Most recent version 
+} \eat{ % Most recent version 
 Our work spans three fields: software engineering, programming languages, and
 systems and networking.
 

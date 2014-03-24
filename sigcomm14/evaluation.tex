@@ -216,27 +216,25 @@ trace it produced made for a simple integration test.
 %We illustrate type errors to show how STS is a useful framework for exploring
 %code paths that you forget to unit tests.
 \noindent{\bf POX Premature PacketIn.} We discovered this bug accidentally
-while working on a synthetic test case. During a particular fuzzing run, the
+During a particular fuzzing run, the
 \verb=l2_multi= module failed unexpectedly with a \verb=KeyError=. The initial trace
-had $102$ input events. Within 6 iterations and 249 seconds,
-\projectname~reduced it to an MCS of 2 input events, as shown in
+had $102$ input events, and \projectname~reduced it to an MCS of 2 input events as shown in
 Figure~\ref{fig:pox_handshake}.
 
-To analyze the root cause, we repeatedly replayed the MCS trace while adding
+We repeatedly replayed the MCS while adding
 instrumentation to the POX code. The root cause was a race
 condition in POX's handshake state machine. The OpenFlow standard
-requires a 2-message handshake.\footnote{\texttt{ofp\_hello} and
-\texttt{ofp\_feature\_(request|reply)}} Afterwards, the switch is free to send
+requires a 2-message handshake. Afterwards, the switch is free to send
 arbitrary messages. POX, however, requires an additional series of message
 exchanges before considering the switch fully connected and notifying the
 application modules of its presence via a \emph{SwitchUp} event.
 
 In this case, the switch was slow in completing the second part
 of the handshake, causing the \emph{SwitchUp} to be delayed. During this window,
-a \emph{PacketIn} event related to an LLDP packet was forwarded to POX's
-\emph{discovery} module, which in turned raised a \emph{LinkEvent} to
-\verb=l2_multi=, which would then fail because it expected \emph{SwitchUp} to occur first.
-We verified with the lead developer of POX that this was indeed a bug.
+a \emph{PacketIn} (LLDP packet) was forwarded to POX's
+\verb=discovery= module, which in turned raised a \emph{LinkEvent} to
+\verb=l2_multi=, which then failed because it expected \emph{SwitchUp} to occur first.
+We verified with the lead developer of POX that is a true bug.
 
 This case study demonstrates how even a simple handshake state machine can
 behave unexpectedly and in a non-trivial manner that is hard to understand
@@ -537,7 +535,6 @@ The bug appears to depend on fine-grained thread-level races
 conditions that are difficult to guarantee. Still, \projectname was instrumental
 in pointing out a previously unknown bug, and reducing the input size.
 } % ----------------------
-
 \subsection{Known bugs}
 
 In addition to our troubleshooting case studies, we evaluate
