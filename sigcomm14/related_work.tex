@@ -14,9 +14,8 @@ been applied in a blackbox fashion to test the synchronous part of
 telecommunications protocols~\cite{arts2006testing}, where it fed sequences of
 commands to a switch and waited for a response. For our test cases we
 tried replaying only wall-clock timings of external events and waiting for the
-violation to appear, but we were not able to reproduce the violations without
-interleaving our external events with the (sometimes asynchronous) internal
-events that we cannot control.
+violation to appear, but we were not able to dependably reproduce the violations without
+accounting for internal event interleavings.
 
 We characterize the other approaches taken by the troubleshooting literature
 as (i) program flow analysis (ii) instrumentation (tracing),
