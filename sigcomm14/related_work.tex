@@ -1,12 +1,22 @@
-Our goal is to transform
-event traces into minimal sequences of inputs.
-To achieve this we are the first to our knowledge to extend delta debugging~\cite{Zeller:1999:YMP:318773.318946,Zeller:2002:SIF:506201.506206}
-to a distributed system where there is an ongoing sequence of inputs
-involving multiple entities rather than a single file fed to a single
-entity. Delta debugging has been applied to minimize thread context switches
-leading up to race conditions~\cite{choi2002isolating} and to
-prune irrelevant threads from execution traces~\cite{huang2012lean}, but these
-applications still involve injecting a single input (the thread schedule) to a single entity (the scheduler).
+Our primary contribution, a technique for interleaving modified events,
+made it possible for us to apply input minimization algorithms (\cf~Delta
+Debugging~\cite{Zeller:1999:YMP:318773.318946,Zeller:2002:SIF:506201.506206} and
+QuickCheck's ``shrinking'' algorithm~\cite{claessen2000quickcheck}) to bugs
+found in blackbox distributed systems.
+In the context of concurrency bugs, input minimization algorithms have been applied
+to minimize thread context switches
+leading up to race conditions~\cite{choi2002isolating,claessen2009finding} and to
+prune irrelevant threads from execution traces~\cite{huang2012lean}. These
+applications still involve injecting a single input (the thread schedule) to a
+single entity (a deterministic scheduler), and assume a high degree of
+control over the system execution. QuickCheck has also
+been applied in a blackbox fashion to test the synchronous part of
+telecommunications protocols~\cite{arts2006testing}, where it fed sequences of
+commands to a switch and waited for a response. For our test cases we
+tried replaying only wall-clock timings of external events and waiting for the
+violation to appear, but we were not able to reproduce the violations without
+interleaving our external events with the (sometimes asynchronous) internal
+events that we cannot control.
 
 We characterize the other approaches taken by the troubleshooting literature
 as (i) program flow analysis (ii) instrumentation (tracing),
