@@ -197,7 +197,7 @@ It optionally obtains partial visibility into (b) by instrumenting controller
 software with a simple interposition layer (to be described in \S\ref{subsec:mitigating}).
 We record a totally-ordered trace of all events during testing by logging an event only after
 all prior events are completed. We thereby augment the log $(E_L, T_L)$ with a schedule
-$\tau_L = e_1\rightarrow~i_1\rightarrow~\dots~e_2~\rightarrow~\dots$, where
+$\tau_L\!=\!e_1\!\rightarrow\!i_1\!\rightarrow\!\dots\!e_2\!\rightarrow\!\dots$, where
 each $i$ is an internal event observed in the original run.
 
 Note that we do not control the occurrence of internal events, and therefore do
@@ -209,7 +209,7 @@ so that we can report invariant violations
 To meet this requirement our test orchestrator may use its interposition on
 messages to reorder or drop messages as necessary during replay.
 The final MCS produced by our system therefore includes a schedule
-$\tau_S = e_1\rightarrow~i_1\rightarrow~\dots~e_2~\rightarrow~\dots$
+$\tau_S\!=\!e_1\!\rightarrow\!i_1'\!\rightarrow\!\dots\!e_2\!\rightarrow\!\dots$
 reflecting how the minimal subsequence of inputs should be interleaved
 with internal events in order to reproduce the invariant violation. This
 schedule supersedes the timings $T$ described in \S\ref{sec:formalism}.
