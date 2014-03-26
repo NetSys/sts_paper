@@ -191,27 +191,24 @@ Internal events include
 synchronization messages) or
 between controllers and switches (\eg~OpenFlow commands), and (b) state transitions
 within controllers (\eg~a backup node deciding to become master).
+Our test orchestrator obtains visibility into (a) by interposing on all messages within the test
+environment (to be described in \S\ref{sec:systems_challenges}).
+It optionally obtains partial visibility into (b) by instrumenting controller
+software with a simple interposition layer (to be described in \S\ref{subsec:mitigating}).
+We record a totally-ordered trace of all events during testing by logging an event only after
+all prior events are completed. We thereby augment the log $(E_L, T_L)$ with a schedule
+$\tau_L = e_1\rightarrow~i_1\rightarrow~\dots~e_2~\rightarrow~\dots$, where
+each $i$ is an internal event observed in the original run.
+
 Note that we do not control the occurrence of internal events, and therefore do
 not attempt to minimize them. Crucially though, we need to ensure that the ordering
 of input and internal events during
 $replay()$ of each subsequence is consistent with the happens-before relation,
 so that we can report invariant violations
 (minimization opportunities) to delta debugging as often as possible.
-
-Our test orchestrator obtains visibility into (a) by interposing on all messages within the test
-environment (to be described in \S\ref{sec:systems_challenges}).
-It optionally obtains partial visibility into (b) by instrumenting controller
-software with a simple interposition layer (to be described in \S\ref{subsec:mitigating}).
-With this visibility, we
-record a totally-ordered trace during testing by logging an event only after
-all prior events are completed. We thereby augment the log $(E_L, T_L)$ with a schedule
-$\tau_L = e_1\rightarrow~i_1\rightarrow~\dots~e_2~\rightarrow~\dots$, where
-each $i$ is an internal event observed in the original run.
-
-During replay our test orchestrator may use its interposition on
-messages to reorder or drop messages as necessary to
-remain consistent with the original happens-before relation. With this
-interposition in place, the final MCS produced by our system includes a schedule
+To meet this requirement our test orchestrator may use its interposition on
+messages to reorder or drop messages as necessary during replay.
+The final MCS produced by our system therefore includes a schedule
 $\tau_S = e_1\rightarrow~i_1\rightarrow~\dots~e_2~\rightarrow~\dots$
 reflecting how the minimal subsequence of inputs should be interleaved
 with internal events in order to reproduce the invariant violation. This
@@ -226,8 +223,7 @@ violation) involves three issues: coping with syntactic differences in internal
 events across runs,
 handling internal events from the original
 execution that may not occur after pruning, and dealing with new internal events that were not
-observed at all in the original execution. 
-
+observed at all in the original execution.
 
 \eat{
 \colin{Somewhat redundant. Maybe wait until use cases.}
