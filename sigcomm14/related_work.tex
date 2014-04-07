@@ -4,10 +4,10 @@ Debugging~\cite{Zeller:1999:YMP:318773.318946,Zeller:2002:SIF:506201.506206} and
 QuickCheck's ``shrinking'' algorithm~\cite{claessen2000quickcheck}) to bugs
 in blackbox distributed systems.
 In another domain, parallel computing, these input minimization algorithms have
-been applied to minimize thread context switches
-leading up to race conditions~\cite{choi2002isolating,claessen2009finding} and to
-prune irrelevant threads from execution traces~\cite{huang2012lean}. These
-approaches still involve injecting a single input (the thread schedule) to a
+been applied to minimize thread
+interleavings~\cite{choi2002isolating,claessen2009finding,huang2012lean} (but
+not inputs) leading up to race conditions.
+These approaches still involve injecting a single input (the thread schedule) to a
 single entity (a deterministic scheduler), and assume a high degree of
 control over the system execution. QuickCheck has also
 been applied in a blackbox fashion to test the synchronous part of
