@@ -1,21 +1,21 @@
-Our primary contribution, a technique for interleaving modified events,
+Our primary contribution, a technique for interleaving events,
 made it possible for us to apply input minimization algorithms (\cf~Delta
 Debugging~\cite{Zeller:1999:YMP:318773.318946,Zeller:2002:SIF:506201.506206} and
-QuickCheck's ``shrinking'' algorithm~\cite{claessen2000quickcheck}) to bugs
+QuickCheck's ``shrinking''~\cite{claessen2000quickcheck}) to bugs
 in blackbox distributed systems.
-In another domain, parallel computing, these input minimization algorithms have
+In the domain of parallel computing these input minimization algorithms have
 been applied to minimize thread
-interleavings~\cite{choi2002isolating,claessen2009finding,huang2012lean} (but
-not inputs) leading up to race conditions.
+interleavings (but not inputs) leading up to race
+conditions~\cite{choi2002isolating,claessen2009finding,huang2012lean}.
 These approaches still involve injecting a single input (the thread schedule) to a
 single entity (a deterministic scheduler), and assume a high degree of
 control over the system execution. QuickCheck has also
 been applied in a blackbox fashion to test the synchronous part of
-telecommunications protocols~\cite{arts2006testing}, where it fed sequences of
+telecommunications protocols~\cite{arts2006testing}, where it fed
 commands to a switch and waited for a response. For our test cases we
-tried replaying only wall-clock timings of external events, but we were not able to
-dependably reproduce the violations without
-accounting for internal event interleavings.
+tried replaying only wall-clock timings of external events but found that this
+did not dependably reproduce invariant violations.
+%without accounting for internal event interleavings.
 
 We characterize the other approaches taken by the troubleshooting literature
 as (i) program flow analysis (ii) instrumentation (tracing),
