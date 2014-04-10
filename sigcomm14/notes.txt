@@ -1,0 +1,47 @@
+Problem statement:
+- Need to be clear that we don't have all internal events.
+- If we don't have all internal events, can't simply minimize entire trace.
+- System isn't deterministic, in the sense that the timings of the inputs
+  matter. The system is concurrent, but that's not the crucial point -- if it
+  were serializable then timings wouldn't matter. If it has timers, it's not
+  deterministic.
+  Or, call it "timing matters", i.e. not serializable
+  This is distinct from determinism, in the sense that non-determinism just means
+  that with even with exact same timings and inputs, the result may differ.
+- In the problem statement, need to point out that our goal is (or is not) to
+  be able to find equivalent invariant violation states. This is for both
+  greybox and DPOR.
+
+
+Differentiating ourselves from thread schedule minimization:
+- In describing how thread schedule minimization works, very important to
+  point out that we need an "oracle" that will tell us whether the subsequence
+  is well-formed or not (i.e. indeterminate)
+- Delta debugging + DPOR is novel!
+- Three differences between us and thread schedule minimization works:
+  - Different optimization metric. They care about length of execution, we
+    care about number of inputs.
+  - DPOR will find alternate states that exhibit the same violation
+    signature. thread schedule minimization never goes off-path, i.e. it only
+    finds *Exactly* the original end-state.
+  - Runtime of thread schedule min. << DPOR
+
+
+Random insights:
+- A scheduler for distributed processes (including interposing on the network) is really equivalent to a schedule
+  on a single machine. The order messages are delivered (i.e. asynchrony) is
+  encoded in the thread schedule.
+- Practically speaking, mention that two (equivalent) states may exhibit the same bug. That's fine:
+  just run it twice.
+- IDEA: systematically/algorithmically explore levels of interposition. Start
+  with blackbox, if that doesn't work, try with network interposition, etc.
+  all the way up to DPOR.
+
+
+Need to be added to the SIGCOMM paper:
+  - Does it work with blackbox?
+  - (already basically included:) how much non-determinsim there was, i.e.
+    what we needed to set max_replays_per_subsequence to.
+  - Point out that we can crank out more synthetic bugs at the drop of a hat.
+    Perhaps also point out why we didn't have more previously reported bugs
+    (b/c SDN is too immature!)
