@@ -1,0 +1,29 @@
+\eat{ % Is the motivation not having visilbity into internal state transitions, or is non-determinism?
+The schedule reflected in our log
+$\tau_L = e_1\rightarrow~i_1\rightarrow~\dots~e_2~\rightarrow~\dots$ does not
+include internal state transitions (within the control software).
+
+Due to non-determinism,
+replay may exhibit non-determinism, \ie~we are not be guaranteed to
+reproduce the invariant violation even if we maintain the happens-before
+relation for all events we can observe.
+}
+
+Completely coping with non-determinism involves two issues:
+\begin{enumerate}
+\item Obtaining visibility into internal state transitions.
+\item Having control over internal state transitions during replay.
+\end{enumerate}
+
+Let's assume that we have deterministic replay logging enabled during runtime. This gives us
+visibility.
+
+Let's further assume that the OS under the control software provides us with primitives for enforcing determinism,
+as in dOS~\cite{bergan2010deterministic} or Determinator~\cite{aviram2012efficient}.
+
+With these primitives, how would we completely cope with non-determinism?
+
+Not clear that we can completely cope with it. Consider "control flow
+volitility": random number
+generators, decisions based on clock readings, hash tables that use
+non-trivial hashing functions, and control flow depends on order to make decisions.
