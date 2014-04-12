@@ -21,6 +21,44 @@
 }
 \usepackage[sort]{cite}
 
+\usepackage{tikz}
+\newcommand{\external}[1]{
+\tikz[baseline=-0.5ex]\draw[black,fill=white] (0,0)
+node[rounded corners,fill=red!60,draw,inner sep=0pt,minimum size=0.4cm] {$e_{#1}$};}%
+\newcommand{\internal}[1]{
+\tikz[baseline=-0.5ex]\draw[black,fill=white] (0,0)
+node[circle,fill=green!80,draw,inner sep=0pt] {$i_{#1}$};}%
+
+\makeatletter
+% Functional foreach construct
+% #1 - Function to call on each comma-separated item in #3
+% #2 - Parameter to pass to function in #1 as first parameter
+% #3 - Comma-separated list of items to pass as second parameter to function #1
+\def\foreach#1#2#3{%
+  \@test@foreach{#1}{#2}#3,\@end@token%
+}
+
+% Internal helper function - Eats one input
+\def\@swallow#1{}
+
+% Internal helper function - Checks the next character after #1 and #2 and
+% continues loop iteration if \@end@token is not found
+\def\@test@foreach#1#2{%
+  \@ifnextchar\@end@token%
+    {\@swallow}%
+    {\@foreach{#1}{#2}}%
+}
+
+% Internal helper function - Calls #1{#2}{#3} and recurses
+% The magic of splitting the third parameter occurs in the pattern matching of the \def
+\def\@foreach#1#2#3,#4\@end@token{%
+  #1{#2}{#3}%
+  \@test@foreach{#1}{#2}#4\@end@token%
+}
+\makeatother
+
+\def\connect#1#2{#1$\!\rightarrow\!$#2}
+
 \newcommand{\tbd}[1]{{\bf [[TBD: {#1}]]}}
 \newcommand{\ie}{{\it i.e.}}
 \newcommand{\eg}{{\it e.g.}}
