@@ -3,8 +3,10 @@ at a particular time as a configuration $c$, which contains all the forwarding
 entries in the network
 as well as the liveness of the various network elements.
 The control software is a system % (consisting of one or more controller processes)
-that takes a sequence of
-external network events $E = e_1,e_2,\dots,e_m$ (such as link failures) as input,
+that takes a sequence of external network events
+$E = $\chain{\external{1},\external{2}}{\external{m}}
+%$E = \chain{\external{1}}{\external{2}}\dots\connect{\external{m}}$
+(such as link failures) as input,
 and produces a sequence of network configurations
 $C = c_1,c_2,\dots,c_n$. Note that the network configuration $c$ does not
 include the internal state of the control software.
@@ -18,8 +20,8 @@ hold, denoted as $\overline{P}(c)$.
 
 We are given a log $L$ of a system execution generated
 by a centralized QA test orchestrator. The log $L$ contains external
-events $E_L = e_1,e_2,\dots,e_m$, and
-timestamps $T_L = \left\{ (e_k, t_k) \right\}$ of when the external events
+events $E_L = $\chain{\external{1},\external{2}}{\external{m}}
+and timestamps $T_L = \left\{ (e_k, t_k) \right\}$ of when the external events
 occurred, recorded from the test orchestrator's clock.
 A replay of log $L$ involves replaying the external events along with a
 particular timing $T$,
@@ -46,14 +48,16 @@ between controllers and switches (\eg~OpenFlow commands), and (b) state transiti
 within controllers (\eg~a backup node deciding to become master).
 
 The interleaving of internal events and input events is important for ensuring that $replay$ reproduces the
-original invariant violation. In particular, if the following (conservative) condition holds~\cite{tel2000introduction}, $replay(E_L, \cdot)$ will be
+original invariant violation. In particular, if the following (conservative) condition
+holds~\cite{tel2000introduction}, $replay(E_L, \cdot)$ will be
 guaranteed to reproduce the original violation:
 
 %\begin{adjustwidth}{1cm}{}
 \begin{condition}
 \label{happens_before}
-Each input $e$ is injected only after all other events, including internal events, that precede it in the
-happens-before~\cite{Lamport:1978:TCO:359545.359563} relation ($\{i \mid i \rightarrow e\}$) from the
+Each input \external{} is injected only after all other events, including internal events, that precede it in the
+happens-before~\cite{Lamport:1978:TCO:359545.359563} relation
+($\{\internal{} \mid $\connect{\internal{}}\external{}$\}$) from the
 original execution have occurred.
 \end{condition}
 %\end{adjustwidth}
@@ -67,9 +71,12 @@ cause the inputs to interleave improperly with internal events.
 
 While it is not practically feasible for us to to observe and record all state
 transitions within control software, we can feasibly record message delivery
-events. We can therefore augment the original log $(E_L, T_L)$ with a schedule
-$\tau_L = e_1\rightarrow~i_1\rightarrow~\dots~e_2~\rightarrow~\dots$, where
-each $i$ is a message delivery event observed in the original
+events. We can therefore augment the original log $(E_L, T_L)$ with a
+schedule:
+\begin{align*}
+\tau_L = \text{\chain{\external{1},\internal{1},\internal{2},\external{2}}{\internal{m}}}
+\end{align*}
+where each $i$ is a message delivery event observed in the original
 execution.\footnote{We further assume that we can arbitrarily reorder or
 drop message delivery events (through interposition) during $replay$.}
 

@@ -21,13 +21,16 @@
 }
 \usepackage[sort]{cite}
 
+% Macros for generating graphical event sequences:
 \usepackage{tikz}
+% External event. Takes label as parameter.
 \newcommand{\external}[1]{
 \tikz[baseline=-0.5ex]\draw[black,fill=white] (0,0)
 node[rounded corners,fill=red!60,draw,inner sep=0pt,minimum size=0.4cm] {$e_{#1}$};}%
+% Internal event. Takes label as parameter.
 \newcommand{\internal}[1]{
 \tikz[baseline=-0.5ex]\draw[black,fill=white] (0,0)
-node[circle,fill=green!80,draw,inner sep=0pt] {$i_{#1}$};}%
+node[rounded corners,fill=green!80,draw,inner sep=0pt,minimum size=0.4cm] {$i_{#1}$};}%
 
 \makeatletter
 % Functional foreach construct
@@ -55,9 +58,23 @@ node[circle,fill=green!80,draw,inner sep=0pt] {$i_{#1}$};}%
   #1{#2}{#3}%
   \@test@foreach{#1}{#2}#4\@end@token%
 }
+
 \makeatother
 
-\def\connect#1#2{#1$\!\rightarrow\!$#2}
+% Helper method, prepends a rightarrow before a node, throws away first
+% argument
+% TODO(cs): figure out how to make this a private method.
+\def\connecthelper#1#2{#2$\mathtt{\rightarrow\!\!}$}
+% Prepend a rightarrow before a node
+\def\connect#1{\connecthelper{}{#1}}
+
+% Chain together a list of nodes. Takes two parameters:
+% #1: a comma-delimited list of the of everything in the list *except* the
+% last element.
+% #2: the *tail* of the chain
+% TODO(cs): figure out how to delimit the first comma so that tail doesn't
+% need to be specified separately.
+\def\chain#1#2{\foreach{\connecthelper}{}{#1}$\mathtt{\;\cdot\!\!\cdot\!\!\cdot\!}$#2}
 
 \newcommand{\tbd}[1]{{\bf [[TBD: {#1}]]}}
 \newcommand{\ie}{{\it i.e.}}
