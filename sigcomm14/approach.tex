@@ -1,8 +1,9 @@
-Given a log $(E_L, T_L)$ generated from testing infrastructure,\footref{fn:log_gen}
+Given a log $L$ generated from testing infrastructure,\footref{fn:log_gen}
 our goal is to identify its MCS, so that a human can examine the MCS
 rather than the full log. This involves two tasks:
-searching through subsequences of $E_L$, and searching for replay timings for those
-subsequences that, if possible, trigger the original invariant violation.
+searching through subsequences of $E_L$, and deciding when to inject external
+events for each subsequences so that, whenever possible, the invariant
+violation is retriggered.
 
 \eat{
 We introduce our approach using an example bug in the Floodlight open-source control
