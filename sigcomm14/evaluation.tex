@@ -698,7 +698,7 @@ manual log inspection or source level debugging ineffective.
 \projectname~proved effective in this case, reducing a larger trace to
 exactly the 2 events responsible for the crash.
 
-\subsection{Overall Results and Discussion}
+\subsection{Overall Results \& Discussion}
 
 We show our overall results in
 Table~\ref{tab:case_studies}. We note that with the exception of `Delicate timer
@@ -882,12 +882,14 @@ how long a invariant violation should persist before
 threshold depends on the network and the invariants of
 interest.\\[0.5ex]
 % \colin{Cut if need space (this is more-or-less superceded by peek():}
+\eat{
 \noindent{\bf Setting \textepsilon.} Our algorithm leaves an open question as to what value
 \textepsilon~should be set to. We experimentally varied \textepsilon~on the
 POX in-flight blackhole bug.
 We found for both cases that the number of events we timed out on while isolating the MCS became stable for values above 25 milliseconds.
 For smaller values, the number of timed out events increased rapidly. We
 currently set \textepsilon~to 100 milliseconds.
+}
 
 \eat{
 In general, larger values of \textepsilon~are preferable to

@@ -13,8 +13,8 @@ minimizing them.
 \noindent{\bf Obtaining Traces.} All three of the commercial SDN companies
 that we know of employ a team of QA
 engineers to fuzz test their controller software on network testbeds.
-As depicted in Figure~\ref{fig:qa_cluster},
-this fuzz testing infrastructure
+%As depicted in Figure~\ref{fig:qa_cluster},
+This fuzz testing infrastructure
 consists of the controller software under test, the network testbed (which may
 be software or hardware), and a centralized
 test orchestrator
@@ -22,6 +22,7 @@ that chooses input sequences, drives the behavior of the testbed,
 and periodically checks invariants.% and manages log files.%When a bug is discovered, an
 %engineer triages it and then sends logs to a developer for further troubleshooting.
 
+\eat{
 \begin{figure}[tb]
     \hspace{-10pt}
     \includegraphics[width=3.25in]{../diagrams/architecture/qa_cluster.pdf}
@@ -29,6 +30,7 @@ and periodically checks invariants.% and manages log files.%When a bug is discov
     orchestrator injects inputs and checks invariants}
     \vspace{-1em}
 \end{figure}
+}
 
 We do not have access to such a QA testbed, and instead built our own.
 Our testbed mocks out the control plane
@@ -322,12 +324,14 @@ similar to OFRewind~\cite{ofrewind} that allows troubleshooters to query the
 state of the network throughout replay, filter subsets of the events, check
 additional invariants, and
 even induce new events that were not part of the original event trace.
+\eat{
 \colin{Cut if we need space:} Similar to OFRewind, we do not run concurrent controller processes while the
 user is interactively performing replay, since proper replay across
 concurrent processes requires precise timing.
 Instead, \projectname~replays the exact OpenFlow commands from the
 original trace to the switches, and creates mock TCP connections that drop
 whatever messages the switches attempt to send back to the controllers.
+}
 
 \noindent{\bf Packet Tracing}. Especially for SDN controllers that react to
 flow events, we found it useful to trace the path of individual
