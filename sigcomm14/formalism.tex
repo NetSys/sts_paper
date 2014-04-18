@@ -11,9 +11,8 @@ $C = c_1,c_2,\dots,c_n$.% Note that the network configuration $c$ does not
 %include the internal state of the control software.
 
 An invariant is a predicate $P$ over forwarding state (a safety
-condition, such as having no loops or blackholes). We say that a configuration
-$c$ violates the invariant if $P(c)$ does not
-hold, denoted as $\overline{P}(c)$.
+condition, \eg~loop-freedom). We say that configuration
+$c$ violates the invariant if $P(c)$ is false, denoted $\overline{P}(c)$.
 
 We are given a log $L$ generated
 by a centralized QA test orchestrator.\footnote{We discuss how these logs are generated in \S\ref{sec:systems_challenges}.\label{fn:log_gen}}
@@ -28,9 +27,9 @@ $E_L = $\eventlist{\external{1},\external{2}}{\external{m}}
 injected by
 the orchestrator, and internal events
 $I_L = $\eventlist{\internal{1},\internal{2}}{\internal{p}}
-triggered by the control software in response to external events.
+triggered by the control software (\eg~OpenFlow messages).
 The external events include timestamps $\left\{ (\text{\external{k}}, t_k) \right\}$ recorded from the
-test orchestrator's clock.% of when the test orchestrator injected them.
+orchestrator's clock.% of when the test orchestrator injected them.
 
 A replay of log $L$ involves replaying the external events $E_L$, possibly
 taking into account the occurrence of internal events $I_L$.

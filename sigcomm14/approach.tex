@@ -2,7 +2,7 @@ Given a log $L$ generated from testing infrastructure,\footref{fn:log_gen}
 our goal is to identify its MCS, so that a human can examine the MCS
 rather than the full log. This involves two tasks:
 searching through subsequences of $E_L$, and deciding when to inject external
-events for each subsequences so that, whenever possible, the invariant
+events for each subsequence so that, whenever possible, the invariant
 violation is retriggered.
 
 \eat{
@@ -41,7 +41,7 @@ is the conjunction of the two external inputs (E1,E3).
 \label{subsec:delta_debugging}
 
 Checking random subsequences of $E_L$ would be one viable but inefficient
-approach to achieving our first task. We do better by leveraging
+approach to achieving our first task. We do better by employing
 %divide-and-conquer search technique from the software engineering community:
 the delta debugging algorithm~\cite{Zeller:1999:YMP:318773.318946}, a
 divide-and-conquer algorithm for
@@ -148,10 +148,20 @@ holds.
 \subsection{Searching for Timings}
 \label{subsec:algorithm}
 
-Simply exploring subsequences $E_S$ of $E_L$ is insufficient for finding MCSes: the
-timing $T$ during $replay(E_S, T)$ is crucial for
-reproducing the invariant violation. The most natural approach would be to maintain the original
-wall-clock timings between the remaining inputs of each subsequence.
+Simply exploring subsequences $E_S$ of $E_L$ is insufficient for finding
+MCSes: the timing of when we inject the external events during replay is crucial for
+reproducing violations.
+
+\noindent {\bf Existing Approaches.} The most natural approach to scheduling
+external events is to maintain the original wall-clock timing intervals
+between them.
+If this is able to find all minimization opportunities,
+\ie~reproduce the violation for all
+subsequences that are a superset of some MCS, we say that the system execution is serializable.
+The original applications of delta debugging~\cite{Zeller:1999:YMP:318773.318946} assume serializable executions (where a
+single input file is fed to a single program), as well as QuickCheck's input ``shrinking'' algorithm~\cite{claessen2000quickcheck}
+when applied to blackbox systems such as the synchronous part of
+telecommunications protocols~\cite{arts2006testing}.
 \eat{\ie~if we
 define $t_i$ as the timestamp of the $i^{th}$ input from the original run and $t'_i$ as the
 replay clock value when it injects that same input
@@ -164,14 +174,14 @@ t'_i = t'_{i-1} + |t_{i} - t_{i-1}|
 \end{align*}
 }
 }
-We tried this simple approach on several buggy executions, but were rarely
-able to reproduce their invariant violations. The reason is that the control software may react
-differently to
-remaining inputs as a result of pruning inputs, such that the remaining inputs
-are injected at improper times. For example, a backup controller may elevate itself
-to master at a different time during replay than it did with the original unmodified
-inputs, and we might consequently inject a preceding input after this master
-change has occurred.
+
+We tried this approach for minimizing our executions, but were rarely
+able to reproduce invariant violations. We believe this is due
+to the concurrent, asynchronous nature of distributed systems; consider that the network
+is liable to reorder or delay messages, or that
+controllers often trigger events based on internal timers.
+Inputs injected according to wall-clock time are not guaranteed to
+coincide correctly with the current state of the control software.
 %\eat{: when we replay only a
 %subsequence of the original inputs, the reaction of the control software
 %can change, such that it behaves differently or takes a different amount of
@@ -179,15 +189,94 @@ change has occurred.
 %In practice we have observed that simply maintaining relative timings can
 %result in injecting the remaining inputs too early or late.}
 
-To reproduce the invariant violation (whenever $E_S$ is a superset of an MCS)
-we need to inject each input event $e$ only after all other
+We must therefore consider the internal events of the control software. To deterministically
+reproduce bugs, we would need visibility into every I/O request and response (\eg~clock
+values or network messages), as well as all thread scheduling
+decisions for each controller. This information is the starting point for thread schedule
+minimization
+techniques~\cite{choi2002isolating,claessen2009finding,jalbert2010trace},
+which seek to minimize thread interleavings leading up to race conditions.
+These approaches involve iteratively feeding a single input (the thread
+schedule) to a single entity (a deterministic scheduler).
+
+A crucial constraint of these approaches is that they must keep the inputs
+fixed; that is, the controller behavior must depend uniquely on the thread
+schedule. Otherwise, the controllers may take a divergent code path. If this
+occurs some processes might issue a previously unobserved I/O request, and the replayer will not
+have a recorded response; worse yet, a divergent process might deschedule
+itself at a different point than it did originally, so that the remainder of
+the recorded thread schedule is unusable to the replayer (since the original preemption points
+may no longer be executed).
+
+By fixing the inputs, these approaches are forced to stay on the same code
+path from the original run, and are unable to find alternate paths that still
+trigger the invariant violation. They can only indirectly
+minimize inputs by truncating thread executions (\ie~causing them to
+exit early), or by removing threads that are entirely extraneous.
+They consequently strive for a subtly different goal than ours:
+minimization of thread context switches rather than input events.
+
+%\noindent{\bf Program Flow Analysis.} Other than delta debugging,
+%the closest work to ours involves reasoning about
+%control- and dataflow dependencies
+%(which may be recorded at runtime~\cite{Lee:2011:TGR:1993498.1993528},
+%or dynamically inferred~\cite{, tallam2007enabling})
+%in order to reduce the length of deterministic replay executions.
+%%decision processes of control software. % Our Peek() algorithm is a
+%% contribution in how to infer dependencies without access to software internals
+%Moreover, our application of functional equivalence to the space of
+%possible inputs allows us to minimize
+%inputs more aggressively, whereas they are forced to consider all controlflow
+%and dataflow dependencies in the control software.
+
+A related line of work, program flow reduction, takes thread schedule
+minimization a step further~\cite{Lee:2011:TGR:1993498.1993528, tallam2007enabling, huang2012lean}.
+The internal events they consider are individual instructions executed by the
+programs (obtained by instrumenting the language runtime), in addition to I/O responses and the thread schedule.
+With access to the instruction-level execution, they can compute
+program flow dependencies, and thereby remove input events from anywhere in the trace as long as they
+can prove that doing so cannot possibly cause the faulty execution path (\ie~the program slice) to diverge.
+
+While program flow reduction is able to minimize inputs rather than thread context switches,
+these techniques are still not able to find alternate states that still
+trigger the invariant violation. They are also overly conservative in
+removing inputs (\eg~EFF takes the transitive closure of all possible
+dependencies~\cite{Lee:2011:TGR:1993498.1993528}) causing them to miss opportunities to
+remove dependencies that actually semantically commute.
+
+\noindent {\bf Allowing Divergence.} Rather than recording all
+I/O requests and thread scheduling decisions during testing, our approach is
+to dynamically respond to I/O requests during minimization. This has several advantages. Unlike
+the other approaches, we can find shorter alternate code paths that still
+trigger the invariant violation, since we are not constrained to executing the exact code path
+from the original run. We also avoid the runtime overhead of recording all I/O
+requests and later replaying them (\eg~EFF incurs roughly 10x slowdown during
+replay due to the overhead of code tracing~\cite{Lee:2011:TGR:1993498.1993528}). Lastly,
+we avoid the extensive effort required to instrument the control software's language runtime,
+needed by the other approaches to implement a deterministic thread scheduler
+and perform program flow analysis. By avoiding assumptions about the language of the control software,
+we were able to easily apply our system to five different control platforms
+written in three different languages.\footnote{Some of the controllers
+actually comprise multiple languages, for example those that depend on
+databases.}
+
+As far as we know, we are the first to minimize inputs by dynamically
+responding to I/O requests. We empirically show in \S\ref{sec:evaluation}
+that this approach works well.
+
+%To get guarantees on minimality, we could model checking / DPOR to exhaustively explore all thread
+%interleavings for each subsequence tested by delta debugging.
+%This has problems foo, bar and baz.
+
+\noindent {\bf Accounting for Interleavings.} To reproduce the invariant violation (whenever $E_S$ is a superset of an MCS)
+we need to inject each input event \external{} only after all other
 events, including internal events triggered by the control software itself,
 that precede it in the
 happens-before~\cite{Lamport:1978:TCO:359545.359563}
-relation ($\{i \mid i \rightarrow e\}$) from the original execution have
+relation ($\{i \mid i \rightarrow \text{\external{}}\}$) from the original execution have
 occurred~\cite{tel2000introduction}.
 
-Internal events include
+The internal events we consider are
 (a) message delivery events, either between controllers (\eg~database
 synchronization messages) or
 between controllers and switches (\eg~OpenFlow commands), and (b) state transitions
@@ -196,10 +285,10 @@ Our test orchestrator obtains visibility into (a) by interposing on all messages
 environment (to be described in \S\ref{sec:systems_challenges}).
 It optionally obtains partial visibility into (b) by instrumenting controller
 software with a simple interposition layer (to be described in \S\ref{subsec:mitigating}).
-We record a totally-ordered trace of all events during testing by logging an event only after
-all prior events are completed. We thereby augment the log $(E_L, T_L)$ with a schedule
-$\tau_L\!=\!e_1\!\rightarrow\!i_1\!\rightarrow\!\dots\!e_2\!\rightarrow\!\dots$, where
-each $i$ is an internal event observed in the original run.
+We record the totally-ordered trace $\tau_L$ during testing by logging an event only after
+all prior events are completed. %We thereby augment the log $(E_L, T_L)$ with a schedule
+%$\tau_L\!=\!e_1\!\rightarrow\!i_1\!\rightarrow\!\dots\!e_2\!\rightarrow\!\dots$, where
+%each $i$ is an internal event observed in the original run.
 
 Note that we do not control the occurrence of internal events, and therefore do
 not attempt to minimize them. Crucially though, we need to ensure that the ordering
@@ -209,11 +298,11 @@ so that we can report invariant violations
 (minimization opportunities) to delta debugging as often as possible.
 To meet this requirement our test orchestrator may use its interposition on
 messages to reorder or drop messages as necessary during replay.
-The final MCS produced by our system therefore includes a schedule
-$\tau_S\!=\!e_1\!\rightarrow\!i_1'\!\rightarrow\!\dots\!e_2\!\rightarrow\!\dots$
-reflecting how the minimal subsequence of inputs should be interleaved
-with internal events in order to reproduce the invariant violation. This
-schedule supersedes the timings $T$ described in \S\ref{sec:formalism}.
+%The final MCS produced by our system therefore includes a schedule
+%$\tau_S\!=\!e_1\!\rightarrow\!i_1'\!\rightarrow\!\dots\!e_2\!\rightarrow\!\dots$
+%reflecting how the minimal subsequence of inputs should be interleaved
+%with internal events in order to reproduce the invariant violation. This
+%schedule supersedes the timings $T$ described in \S\ref{sec:formalism}.
 
 %\subsection{Preserving Causality}
 

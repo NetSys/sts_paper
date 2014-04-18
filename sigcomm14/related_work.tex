@@ -2,43 +2,14 @@ Our primary contribution, a technique for interleaving events,
 made it possible for us to apply input minimization algorithms (\cf~Delta
 Debugging~\cite{Zeller:1999:YMP:318773.318946,Zeller:2002:SIF:506201.506206} and
 QuickCheck's ``shrinking''~\cite{claessen2000quickcheck}) to bugs
-in blackbox distributed systems.
-In the domain of parallel computing these input minimization algorithms have
-been applied to minimize thread
-interleavings (but not inputs) leading up to race
-conditions~\cite{choi2002isolating,claessen2009finding,jalbert2010trace,huang2012lean}.
-These approaches still involve injecting a single input (the thread schedule) to a
-single entity (a deterministic scheduler), and assume a high degree of
-control over the system execution. QuickCheck has also
-been applied in a blackbox fashion to test the synchronous part of
-telecommunications protocols~\cite{arts2006testing}, where it fed
-commands to a switch and waited for a response. For our test cases we
-tried replaying only wall-clock timings of external events but found that this
-did not dependably reproduce invariant violations.
-%without accounting for internal event interleavings.
+in blackbox distributed systems. We described the closest work to us, thread schedule
+minimization and program flow reduction, in \S\ref{subsec:algorithm}.
 
 We characterize the other approaches taken by the troubleshooting literature
-as (i) program flow analysis (ii) instrumentation (tracing),
-(iii) bug detection (invariant checking),
-(iv) replay (of buggy executions), and
-(v) root cause analysis (of network device failures).
-
-\vspace{0.05in}
-\noindent{\bf Program Flow Analysis.} Other than delta debugging,
-the closest work to ours involves reasoning about
-control- and dataflow dependencies
-(which may be recorded at runtime~\cite{Lee:2011:TGR:1993498.1993528},
-or dynamically inferred~\cite{huang2012lean, tallam2007enabling})
-in order to reduce the length of deterministic replay executions. These
-techniques are tied to a single language because of the extensive effort
-required for instrumentation and annotation. We avoid making assumptions about
-the language or instrumentation of the controller software.
-%decision processes of control software. % Our Peek() algorithm is a
-% contribution in how to infer dependencies without access to software internals
-Moreover, our application of functional equivalence to the space of
-possible inputs allows us to minimize
-inputs more aggressively, whereas they are forced to consider all controlflow
-and dataflow dependencies in the control software.
+as (i) instrumentation (tracing),
+(ii) bug detection (invariant checking),
+(iii) replay, and
+(iv) root cause analysis (of network device failures).
 
 \vspace{0.05in}
 \noindent{\bf Instrumentation.} Unstructured
@@ -98,7 +69,6 @@ record and replay of OpenFlow channels between controllers and switches.
 Manually examining long system executions can be tedious, and our goal is to
 minimize such executions so that developers find it easier to identify the
 problematic code through replay or other means.
-
 %Rx~\cite{qin2005rx} is a technique for improving availability: upon
 %encountering a crash, it starts from a previous checkpoint, fuzzes
 %the environment (\eg~random number generator seeds) to avoid triggering the same bug,
@@ -115,7 +85,7 @@ seeks to reconstruct those unknown events from limited monitoring data.
 Here we know exactly which events occurred, but
 seek to identify the minimal sequence of events that trigger a particular bug.
 
-\eat{
+\eat{ % -------------------- OLD TEXT --------------------------
 \colin{Cut if we need space:}
 \vspace{0.05in}
 It is worth mentioning another goal outside the purview of distributed systems, but
@@ -230,7 +200,8 @@ of the overall distributed system.
 % Debug Determinism~\cite{zamfir2011debug}: suggests that replay debuggers should not seek to achieve
 % perfect fidelity -- the utility of the replay can still be high, even if all failure modes can't be reproduced.
 % Our approach follows this argument: can't catch everything, but it's still useful!
-} % \eat most recent version
 
 \colin{Reviewer OD: read Knowledge Plane For The
 Internet~\cite{Clark:2003:KPI:863955.863957}}
+} % \eat most recent version
+

@@ -9,7 +9,8 @@ Flow:
  - If we just replay subsequences of those, with the same relative timing, and it works,
    then we say the system is serializable.
    QuickCheck assumes this [including the PULSE paper?]
- - But that doesn't always work. If the system isn't serializable, then
+ - But that doesn't always work. If the system isn't serializable (often due
+   to concurrency!), then
    changing the inputs may perturb the way the system reacts to events, e.g.
    it might read clock values, and react differently as a result of different
    timings. We need to consider internal events.
@@ -88,6 +89,8 @@ Need to be added to the SIGCOMM paper:
   - Point out that we can crank out more synthetic bugs at the drop of a hat.
     Perhaps also point out why we didn't have more previously reported bugs
     (b/c SDN is too immature!)
+  - Comparison against the other techniques, thread schedule reduction /
+    program flow (provenance) reduction?
 
 Random insights:
 - A scheduler for distributed processes (including interposing on the network) is really equivalent to a schedule
