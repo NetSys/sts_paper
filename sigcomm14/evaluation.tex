@@ -51,10 +51,10 @@
 \hline
 \multirow{3}{*}{\rotatebox[origin=c]{90}{\bf Known}}
 & Floodlight failover bug & 2 switch mesh & - & 202 & 2 & Yes \\
-& ONOS master election & 2 switch mesh & 6325.2 & 30 & 3 & Yes \\
-& POX load balancer error checking & 3 switch mesh & 2396.7 & 106 & 24 (N+1) & Yes \\
 % Predates the experiment directory
+& ONOS master election & 2 switch mesh & 6325.2 & 30 & 3 & Yes \\
 % Ahmed
+& POX load balancer error checking & 3 switch mesh & 2396.7 & 106 & 24 (N+1) & Yes \\
 % load_balancer_fuzzer_mcs/
 % Total original inputs: 106
 % --------
@@ -868,7 +868,7 @@ such that we avoided bugs that were not of interest to developers.
 For example, in one case we discovered that a high dataplane
 packet drop rate dropped too many LLDP packets, preventing the controller from successfully discovering the topology.
 Setting fuzzing parameters remains an important
-part of experiment setup.% \\[0.5ex]
+part of experiment setup.\\[0.5ex]
 %
 \noindent{\bf Differentiating persistent and transient violations.} In
 networks there is a fundamental delay between the initial occurrence of an
@@ -880,7 +880,7 @@ developers. We therefore provide a threshold parameter in \projectname~for
 how long a invariant violation should persist before
 \projectname~reports it as a problem. In general, setting this
 threshold depends on the network and the invariants of
-interest.\\[0.5ex]
+interest.%\\[0.5ex]
 % \colin{Cut if need space (this is more-or-less superceded by peek():}
 \eat{
 \noindent{\bf Setting \textepsilon.} Our algorithm leaves an open question as to what value
