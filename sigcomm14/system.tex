@@ -155,14 +155,16 @@ it during an intermediate replay is approximately
 \subsection{Mitigating Non-Determinism}
 \label{subsec:mitigating}
 
-When non-determinism acutely impacts replay, one might seek to mitigate or prevent non-determinism altogether.
-Deterministic replay techniques~\cite{Dunlap:2002:REI:844128.844148,Geels:2006:RDD:1267359.1267386},
-which precisely record and replay syscall return values and process
-scheduling decisions,
-may be deployed to reliably produce bugs in exchange for runtime overhead.
-Unfortunately these techniques do not easily allow any modifications to the inputs fed to the
-processes during replay, and our goal is precisely to modify the inputs fed to the
-distributed system.
+When non-determinism acutely impacts replay, one might seek to prevent non-determinism altogether.
+As discussed in \S\ref{subsec:algorithm} though, fully deterministic replay techniques~\cite{Dunlap:2002:REI:844128.844148,Geels:2006:RDD:1267359.1267386},
+force the minimization process to stay on the original code path, and incur
+extensive runtime overhead.
+%which precisely record and replay syscall return values and process
+%scheduling decisions,
+%may be deployed to reliably produce bugs in exchange for runtime overhead.
+%Unfortunately these techniques do not easily allow any modifications to the inputs fed to the
+%processes during replay, and our goal is precisely to modify the inputs fed to the
+%distributed system.
 %This precludes the possibility of employing (fully) deterministic replay techniques in
 %\projectname,
 %And even if these sources were
@@ -170,9 +172,8 @@ distributed system.
 %replay in all cases without full visibility into internal events--a daunting
 %instrumentation task.
 
-We therefore strived to balance resilience to non-determinism and the need
-to modify control software. We placed \projectname~in a position to
-record and replay all network events in serial order, and ensured that all
+We therefore do not implement full determinism. We do place \projectname~in a position to
+record and replay all network events in serial order, and ensure that all
 data structures within \projectname~were unaffected by randomness. For example,
 we avoid using hashmaps that hash keys according to their memory address,
 and sort all list return values.
