@@ -1,0 +1,2833 @@
+% $Id: tse.tex,v 1.3 2002/11/28 12:39:48 zeller Exp $
+% ISOLATING FAILURE-INDUCING INPUT
+
+\documentclass{acm_proc_article-sp}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtime}
+\usepackage{xspace}
+\usepackage{boxedminipage}
+\usepackage{alltt}
+\usepackage{epsfig}
+\usepackage{verbatim}
+% \usepackage{varioref}
+\usepackage{pifont}
+\usepackage{theorem}
+% \usepackage{a4}
+\usepackage{pstcol}
+
+% \onecolumn
+
+% Some upper-case abbreviations
+\newcommand{\ADVENTURE}  {{\small ADVENTURE}\xspace}
+\newcommand{\CAD}        {{\small CAD}\xspace}
+\newcommand{\COL}        {{\small COL}\xspace}
+\newcommand{\CPU}        {{\small CPU}\xspace}
+\newcommand{\CRTPLOT}    {{\small CRTPLOT}\xspace}
+\newcommand{\CSS}        {{\small CSS}\xspace}
+\newcommand{\PATCH}      {{\small PATCH}\xspace}
+\newcommand{\DIFF}       {{\small DIFF}\xspace}
+\newcommand{\FLEX}       {{\small FLEX}\xspace}
+\newcommand{\GNU}        {{\small GNU}\xspace}
+\newcommand{\GNUCC}      {{\small GNU~CC}\xspace}
+\newcommand{\GCC}        {{\small GCC}\xspace}
+\newcommand{\HTML}       {{\small HTML}\xspace}
+\newcommand{\IEEE}       {{\small IEEE}\xspace}
+\newcommand{\ISSTA}      {{\small ISSTA}\xspace}
+\newcommand{\NROFF}      {{\small NROFF}\xspace}
+\newcommand{\POSIX}      {{\small POSIX}\xspace}
+\newcommand{\SQL}        {{\small SQL}\xspace}
+\newcommand{\TROFF}      {{\small TROFF}\xspace}
+\newcommand{\TSE}        {{\small TSE}\xspace}
+\newcommand{\UNIX}       {{\small UNIX}\xspace}
+\newcommand{\UL}         {{\small UL}\xspace}
+\newcommand{\UNITS}      {{\small UNITS}\xspace}
+\newcommand{\WWW}        {{\small WWW}\xspace}
+\newcommand{\WYNOT}      {{\small WYNOT}\xspace}
+\newcommand{\XLAB}       {{\small XLAB}\xspace}
+
+\newcommand{\AX}{{\small $\,\;\FAIL^A$}}
+\newcommand{\SF}{{\small $\;\FAIL^S$}}
+\newcommand{\BE}{{\small $\;\FAIL^B$}}
+
+
+% Make \* break ligatures like "| in german.sty
+\makeatletter
+\def\*{\penalty\@M\discretionary{-}{}{\kern.03em}}
+\makeatother
+
+% Colors
+\definecolor{grey}{gray}{.5}
+\definecolor{black}{gray}{0}
+
+% The symbols for OK and failure
+\newcommand{\PASS}{\text{\ding{52}}\xspace}
+\newcommand{\FAIL}{\text{\ding{56}}\xspace}
+\newcommand{\UNRESOLVED}{\lower0.1ex\hbox{\epsfig{file=question.ps, 
+      height=1.7ex}}}
+
+% Some mathematical abbreviations
+\newcommand{\CC}{{\cal C}}
+\newcommand{\RR}{{\cal R}}
+
+\newcommand{\rpass}{{r_{\scriptscriptstyle \PASS}}}
+\newcommand{\rfail}{{r_{\scriptscriptstyle \FAIL}}}
+
+\newcommand{\cpass}{{c_{\scriptscriptstyle \PASS}}}
+\newcommand{\cfail}{{c_{\scriptscriptstyle \FAIL}}}
+
+% \newcommand{\dpass}{{d_{\scriptscriptstyle \PASS}}}
+% \newcommand{\dfail}{{d_{\scriptscriptstyle \FAIL}}}
+\newcommand{\dpass}{{c'_{\scriptscriptstyle \PASS}}}
+\newcommand{\dfail}{{c'_{\scriptscriptstyle \FAIL}}}
+
+
+\newcommand{\edd}{\textit{dd}^+\xspace}
+\newcommand{\dd}{\textit{dd}\xspace}
+\newcommand{\rtest}{\textit{rtest}\xspace}
+\newcommand{\test}{\textit{test}\xspace}
+\newcommand{\ddmin}{\textit{ddmin}\xspace}
+\newcommand{\ddmax}{\textit{ddmax}\xspace}
+
+% \mathid is used to denote identifiers and slots in formulas
+\newcommand{\mathid}[1]{\text{\rmfamily\textit{#1}}}
+
+% But usually, we shall use \|name| instead.
+\def\|#1|{\mathid{#1}}
+
+% \codeid is used to denote computer code identifiers
+\newcommand{\codeid}[1]{\text{\upshape\texttt{#1}}}
+
+% But usually, we shall use \<name> instead.
+\def\<#1>{\codeid{#1}}
+
+% Hard spaces
+\newcommand{\s}{\char32}
+
+% Quotes
+\newenvironment{Quote}{%
+\smallskip
+\begin{minipage}[t]{\columnwidth}
+\begin{flushright}%
+\itshape%
+\samepage%
+}{\end{flushright}\end{minipage}\par}
+
+\newcommand{\By}[2]{\\[1mm]---~\mbox{\textnormal{#1}} \mbox{\textsl{#2}}}
+
+% Theorems
+\theoremstyle{plain}
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}[definition]{Proposition}
+\newtheorem{theorem}[definition]{Theorem}
+\newtheorem{corollary}[definition]{Corollary}
+\newtheorem{lemma}[definition]{Lemma}
+\newtheorem{algorithm}[definition]{Algorithm}
+\newtheorem{axiom}[definition]{Axiom}
+% \newenvironment{proof}{\ifhmode\\\fi\begin{upshape}{P\scriptsize
+%       ROOF.}}{\end{upshape}}
+
+% Make \small even smaller in \footnote's
+\let\oldfootnote=\footnote
+\renewcommand{\footnote}[1]{\oldfootnote{\let\small=\scriptsize #1}}
+
+
+\begin{document}
+
+%
+% If you want to print drafts of the paper with a draft 
+% notice in the copyright space, comment out the \copyrightspace
+% line above and include the \submitspace line below instead.
+%
+\toappear{This is an expanded and revised version of the \ISSTA 2000
+  paper ``Simplifying Failure-Inducing
+  Input''~\cite{hildebrandt/zeller/2000/issta}; it has been submitted
+  to \IEEE Transactions on Software Engineering.}
+
+
+% Page number on the initial page can be omitted in both the review and
+% final submission (and should be removed in the final submission).  The
+% line below does that.
+
+% \thispagestyle{empty}  % suppresses page number on first page
+
+% In the review submission, page numbers should appear (they can be omitted
+%  from the first page).  The pagestyle command below puts them in.
+% In the final submission of accepted papers, page numbers should be
+%  omitted; remove or comment out the pagestyle line below to omit them. 
+
+\pagenumbering{arabic}
+
+% Use \section* instead of \section to suppress numbering for
+% the abstract, acknowledgements, and references.
+
+% \title{Finding and Minimizing Failure-Inducing Input}
+% \title{Decomposing Bug Reports into Minimal Test Cases}
+
+\title{Simplifying and Isolating Failure-Inducing Input}
+\numberofauthors{2}  % If you change this, check for `the author...', below!
+
+\author{
+  \alignauthor
+  Andreas Zeller\thanks{This work was carried out at Universit{\"a}t Passau, 
+    Lehrstuhl Software-Systeme, Passau, Germany. \newline
+    This work was supported by 
+    Deutsche Forschungsgemeinschaft, grant Sn 11/8-1.}
+  \and
+  Ralf Hildebrandt
+  \\
+  \affaddr{Lehrstuhl Softwaretechnik} \\
+  \affaddr{Universit{\"a}t des Saarlandes} \\
+  \affaddr{66041 Saarbr{\"u}cken, Germany} \\
+  \email{zeller@computer.org}
+}
+\maketitle
+
+\begin{abstract}
+  Given some test case, a program fails.  Which circumstances of the
+  test case are responsible for the particular failure?  The
+  \emph{Delta Debugging} algorithm generalizes and simplifies some
+  failing test case to a \emph{minimal test case} that still produces
+  the failure; it also isolates the \emph{difference} between a
+  passing and a failing test case.
+
+  In a case study, the Mozilla web browser crashed after 95~user
+  actions.  Our prototype implementation automatically simplified the
+  input to 3~relevant user actions.  Likewise, it simplified 896~lines
+  of HTML to the single line that caused the failure.  The case study
+  required 139~automated test runs, or 35~minutes on a 500~MHz PC.
+
+\textbf{Index Terms}---automated debugging, debugging aids, 
+testing tools, combinatorial testing, diagnostics, tracing.
+\end{abstract}
+
+\section{Introduction}
+\label{sec:introduction}
+\begin{Quote}
+  Often people who encounter a bug spend a lot of time investigating
+  which changes to the input file will make the bug go away and which
+  changes will not affect it.
+  \By{Richard Stallman,}{Using and Porting \GNUCC}
+\end{Quote}
+
+\noindent
+If you browse the Web with Netscape~6, you actually use a variant of
+\emph{Mozilla}, Netscape's open source web browser
+project~\cite{mozilla.org}.  As a work in progress with big exposure,
+the Mozilla project receives several dozens of bug reports a day.  The
+first step in processing any bug report is \emph{simplification,} that
+is, eliminating all details that are irrelevant for producing the
+failure.  Such a simplified bug report not only facilitates debugging,
+but it also subsumes several other bug reports that only differ in
+irrelevant details.
+
+In July 1999, \emph{Bugzilla,} the Mozilla bug database, listed more
+than 370~open bug reports---bug reports that were not even simplified.
+With this queue growing further, the Mozilla engineers ``faced
+imminent doom''~\cite{mozilla.org/bugathon}.  Overwhelmed with work,
+the Netscape product manager sent out the \emph{Mozilla BugAThon call
+  for volunteers}~\cite{mozilla.org/bugathon}: people who would help
+process bug reports. For 5~bug reports simplified, a volunteer would
+be invited to the launch party; 20~bugs would earn her or him a
+T-shirt signed by the grateful engineers.  ``Simplifying'' meant:
+turning these bug reports into \emph{minimal test cases}, where every
+part of the input would be significant in reproducing the failure.
+
+As an example, consider the \HTML input in
+Figure~\ref{fig:bugzilla-html}.  Loading this \HTML page into Mozilla
+and printing it causes a segmentation fault.  Somewhere in this \HTML
+input is something that makes Mozilla fail---but where?  If we were
+Netscape programmers, what we wanted here is the simplest \HTML page
+that still produces the failure.
+
+Decomposing specific bug reports into simple test cases does not
+trouble only the Mozilla engineers.  The problem arises from generally
+conflicting issues:
+\begin{itemize}
+\item A \emph{bug report} should be as \emph{specific} as possible, such that
+  the engineer can recreate the context in which the program failed.
+\item On the other hand, a \emph{test case} should be as \emph{simple}
+  as possible, because a minimal test case implies a most general
+  context.
+\end{itemize}
+Thus, a minimal test case not only allows for short problem
+descriptions and valuable problem insights, but it also subsumes
+several current and future bug reports.
+
+The striking thing about test case simplification is that no one so
+far has thought to \emph{automate} this task.  Several textbooks and
+guides about debugging are available that tell how to use binary
+search in order to isolate the problem---based on the assumption that
+tests are carried out manually, too.  With an automated test, however,
+we can automate this \emph{simplification of test cases,} and we can
+automatically \emph{isolate the difference that causes the failure.}
+
+\begin{figure*}[t]
+{\ttfamily\scriptsize
+<td align=left valign=top> \\
+<SELECT NAME="op\_sys" MULTIPLE SIZE=7> \\
+<OPTION VALUE="All">All<OPTION VALUE="Windows 3.1">Windows 3.1<OPTION VALUE="Windows 95">Windows 95<OPTION VALUE="Windows 98">Windows 98<OPTION VALUE="Windows ME">Windows ME<OPTION VALUE="Windows 2000">Windows 2000<OPTION VALUE="Windows NT">Windows NT<OPTION VALUE="Mac System 7">Mac System 7<OPTION VALUE="Mac System 7.5">Mac System 7.5<OPTION VALUE="Mac System 7.6.1">Mac System 7.6.1<OPTION VALUE="Mac System 8.0">Mac System 8.0<OPTION VALUE="Mac System 8.5">Mac System 8.5<OPTION VALUE="Mac System 8.6">Mac System 8.6<OPTION VALUE="Mac System 9.x">Mac System 9.x<OPTION VALUE="MacOS X">MacOS X<OPTION VALUE="Linux">Linux<OPTION VALUE="BSDI">BSDI<OPTION VALUE="FreeBSD">FreeBSD<OPTION VALUE="NetBSD">NetBSD<OPTION VALUE="OpenBSD">OpenBSD<OPTION VALUE="AIX">AIX<OPTION VALUE="BeOS">BeOS<OPTION VALUE="HP-UX">HP-UX<OPTION VALUE="IRIX">IRIX<OPTION VALUE="Neutrino">Neutrino<OPTION VALUE="OpenVMS">OpenVMS<OPTION VALUE="OS/2">OS/2<OPTION VALUE="OSF/1">OSF/1<OPTION VALUE="Solaris">Solaris<OPTION VALUE="SunOS">SunOS<OPTION VALUE="other">other</SELECT>
+
+</td> \\
+<td align=left valign=top> \\
+<SELECT NAME="priority" MULTIPLE SIZE=7> \\
+<OPTION VALUE="--">--<OPTION VALUE="P1">P1<OPTION VALUE="P2">P2<OPTION VALUE="P3">P3<OPTION VALUE="P4">P4<OPTION VALUE="P5">P5</SELECT>
+
+</td> \\
+<td align=left valign=top> \\
+<SELECT NAME="bug\_severity" MULTIPLE SIZE=7> \\
+<OPTION VALUE="blocker">blocker<OPTION VALUE="critical">critical<OPTION VALUE="major">major<OPTION VALUE="normal">normal<OPTION VALUE="minor">minor<OPTION VALUE="trivial">trivial<OPTION VALUE="enhancement">enhancement</SELECT> \\
+</tr> \\
+</table>
+
+}
+\vspace{-\baselineskip}
+\caption{Printing this \HTML page makes Mozilla crash (excerpt)}
+\label{fig:bugzilla-html}
+\end{figure*}
+
+\begin{description}
+  
+\item[Simplification of test cases.]  Our \emph{minimizing delta
+    debugging algorithm}~$\ddmin$ is fed with a failing test case,
+  which it simplifies by successive testing.  It stops when a
+  \emph{minimal test case} is reached, where removing any single input
+  entity would cause the failure to disappear.
+  
+  As an analogon from the real world, consider a \emph{flight test:}
+  an air plane crashes a few seconds after taking off.  By repeating
+  the situation over and over again under changed circumstances, we
+  can find out what is relevant and what not.  For instance, we may
+  leave away the passenger seats and find that the plane still
+  crashes.  We may leave away the coffee machine and the plane still
+  crashes.  Eventually, only the relevant ``simplified'' skeleton
+  remains, including a test pilot, the wings, the runway, the fuel,
+  and the engines.  Each part of this skeleton is relevant for
+  reproducing the crash.
+  
+  In the real world, no one with a sane mind would consider such a way
+  to simplify the circumstances of test flights.  However, for
+  \emph{simulations} of flight tests, or, more generally, for
+  arbitrary computer programs, such an approach comes at a far lesser
+  cost.  The cost may be so low that we can easily use a large amount
+  of tests just to simplify a test case.
+  
+  Figure~\ref{fig:simplify-html} sketches how the $\ddmin$~procedure
+  minimizes a test case: Starting with the \HTML input in
+  Figure~\ref{fig:bugzilla-html}, the $\ddmin$ algorithm simplifies
+  the input by testing subsets with removed characters (shown in
+  grey): The test fails ($\FAIL$) if Mozilla crashes on the given test
+  case and passes ($\PASS$) otherwise.  After 57~tests, the original
+  896-line \HTML input is reduced to the minimal failing test case
+  \texttt{<SELECT>}.\footnote{Section~\ref{sec:mozilla} has more
+    details on this example.}  Each character in the minimal failing
+  test case is relevant for producing the failure.
+
+\begin{figure}[t]
+\renewcommand{\a}[1]{%
+{\textbf{\color{black}#1}}}
+\newcommand{\n}[1]{{\tiny #1}}
+\renewcommand{\t}[1]{\texttt{\color{grey}#1}}
+\scriptsize
+
+$$
+\begin{array}{@{}l@{}}
+\left\Downarrow
+\begin{tabular}{r@{\;\;}l@{\;\;}l}
+% Granularity: 40
+\n{1} & \t{\a{<SELECT{\s}NAME="priority"{\s}MULTIPLE{\s}SIZE=7>}}   & \FAIL \\
+% Granularity: 20
+\n{2} & \t{<SELECT{\s}NAME="priori\a{ty"{\s}MULTIPLE{\s}SIZE=7>}}   & \PASS \\
+\n{3} & \t{\a{<SELECT{\s}NAME="priori}ty"{\s}MULTIPLE{\s}SIZE=7>}   & \PASS \\
+% Granularity: 10
+\n{4} & \t{<SELECT{\s}NA\a{ME="priority"{\s}MULTIPLE{\s}SIZE=7>}}   & \PASS \\
+\n{5} & \t{\a{<SELECT{\s}NA}ME="priori\a{ty"{\s}MULTIPLE{\s}SIZE=7>}} & \FAIL \\
+\n{6} & \t{\a{<SELECT{\s}NA}ME="priority"{\s}MULTIP\a{LE{\s}SIZE=7>}} & \FAIL \\
+\n{7} & \t{\a{<SELECT{\s}NA}ME="priority"{\s}MULTIPLE{\s}SIZE=7>} & \PASS \\
+% Granularity: 5
+\n{8} & \t{<SELE\a{CT{\s}NA}ME="priority"{\s}MULTIP\a{LE{\s}SIZE=7>}} & \PASS \\
+\n{9} & \t{\a{<SELE}CT{\s}NAME="priority"{\s}MULTIP\a{LE{\s}SIZE=7>}} & \PASS \\
+\n{10} & \t{\a{<SELECT{\s}NA}ME="priority"{\s}MULTIPLE{\s}SI\a{ZE=7>}} & \FAIL \\
+\n{11} & \t{\a{<SELECT{\s}NA}ME="priority"{\s}MULTIPLE{\s}SIZE=7>}     & \PASS \\
+% Granularity: 2
+\n{12} & \t{<S\a{ELECT{\s}NA}ME="priority"{\s}MULTIPLE{\s}SI\a{ZE=7>}} & \PASS \\
+\n{13} & \t{\a{<S}EL\a{ECT{\s}NA}ME="priority"{\s}MULTIPLE{\s}SI\a{ZE=7>}} & \PASS \\
+%\end{tabular}
+%\right.
+%\quad
+%\left\Downarrow
+%\begin{tabular}{r@{\;\;}l@{\;\;}l}
+\n{14} & \t{\a{<SEL}EC\a{T{\s}NA}ME="priority"{\s}MULTIPLE{\s}SI\a{ZE=7>}} & \PASS \\
+\n{15} & \t{\a{<SELEC}T{\s}\a{NA}ME="priority"{\s}MULTIPLE{\s}SI\a{ZE=7>}} & \PASS \\
+\n{16} & \t{\a{<SELECT{\s}}NAME="priority"{\s}MULTIPLE{\s}SI\a{ZE=7>}} & \FAIL \\
+\n{17} & \t{\a{<SELECT{\s}}NAME="priority"{\s}MULTIPLE{\s}SIZE\a{=7>}} & \FAIL \\
+\n{18} & \t{\a{<SELECT{\s}}NAME="priority"{\s}MULTIPLE{\s}SIZE=7\a{>}} & \FAIL \\
+% Granularity: 1
+\n{19} & \t{<\a{SELECT{\s}}NAME="priority"{\s}MULTIPLE{\s}SIZE=7\a{>}} & \PASS \\
+\n{20} & \t{\a{<}S\a{ELECT{\s}}NAME="priority"{\s}MULTIPLE{\s}SIZE=7\a{>}} & \PASS \\
+\n{21} & \t{\a{<S}E\a{LECT{\s}}NAME="priority"{\s}MULTIPLE{\s}SIZE=7\a{>}} & \PASS \\
+\n{22} & \t{\a{<SE}L\a{ECT{\s}}NAME="priority"{\s}MULTIPLE{\s}SIZE=7\a{>}} & \PASS \\
+\n{23} & \t{\a{<SEL}E\a{CT{\s}}NAME="priority"{\s}MULTIPLE{\s}SIZE=7\a{>}} & \PASS \\
+\n{24} & \t{\a{<SELE}C\a{T{\s}}NAME="priority"{\s}MULTIPLE{\s}SIZE=7\a{>}} & \PASS \\
+\n{25} & \t{\a{<SELEC}T\a{\strut{} }NAME="priority"{\s}MULTIPLE{\s}SIZE=7\a{>}} & \PASS \\
+\n{26} & \t{\a{<SELECT} NAME="priority"{\s}MULTIPLE{\s}SIZE=7\a{>}} & \FAIL \\
+\end{tabular}
+\right.
+\end{array}
+$$
+\caption{Simplifying failure-inducing \HTML input}
+\label{fig:simplify-html}
+\end{figure}
+
+\item[Isolating failure-inducing differences.]  
+  In the case where a \emph{passing test case} exists as well, it is
+  generally more efficient to isolate the \emph{failure-inducing
+    difference} between a failing and a passing test case.  This is
+  what the \emph{general Delta Debugging~algorithm}~$\dd$ does.
+  $\dd$~is a generalization of~$\ddmin$.
+  
+  Again, as an analogon, take the flight test example.  Now, we try to
+  isolate the difference between the crash and a working flight.  We
+  may find that if we replace the engines of the crashing machine by
+  the engines of a working machine, the change does not matter;
+  consequently, we find this difference to be irrelevant.  By reducing
+  differences further and further, we may eventually isolate a piece
+  of metal on the runway that is relevant for the crash---everything
+  else may stay the same, but having this piece of metal on the runway
+  or not induces whether there is a crash or a perfect flight.
+  
+  Again, nobody wants to crash planes over and over.
+  Figure~\ref{fig:isolate-html-diff} shows how $\dd$~works on \HTML
+  input: Rather than only minimizing the failing input, $\dd$ also
+  \emph{maximizes} the passing \HTML input until a minimal
+  failure-inducing difference is obtained.  In our case, this is the
+  first character \texttt{<} of the failure-inducing \texttt{<SELECT>}
+  tag, pinpointed after only seven~tests: This one-character difference
+  makes Mozilla fail.
+\end{description}
+
+
+\begin{figure}[t]
+\renewcommand{\a}[1]{%
+{\textbf{\color{black}#1}}}
+\newcommand{\n}[1]{{\tiny #1}}
+\renewcommand{\t}[1]{\texttt{\color{grey}#1}}
+\newcommand{\f}[1]{\frame{\rule[-0.1em]{0pt}{0.8em}#1}}
+\scriptsize
+
+$$
+\begin{array}{@{}l@{}}
+\left\Downarrow
+\begin{tabular}{r@{\;\;}l@{\;\;}l}
+\n{2} & \t{\a{<SELECT{\s}NAME="priority"{\s}MULTIPLE{\s}SIZE=7>}}   & \FAIL \\
+\n{4} & \t{\a{\f{<}SELECT{\s}NA}ME="priori\a{ty"{\s}MULTIPLE{\s}SIZE=7>}} & \FAIL \\
+\end{tabular}
+\right.
+\\
+\strut
+\\
+\left\Uparrow
+\begin{tabular}{r@{\;\;}l@{\;\;}l}
+\n{7} & \t{\f{<}\a{SELECT{\s}NA}ME="priori\a{ty"{\s}MULTIPLE{\s}SIZE=7>}} & \PASS \\
+\n{6} & \t{<S\a{ELECT{\s}NA}ME="priori\a{ty"{\s}MULTIPLE{\s}SIZE=7>}} & \PASS \\
+\n{5} & \t{<SELE\a{CT{\s}NA}ME="priori\a{ty"{\s}MULTIPLE{\s}SIZE=7>}} & \PASS \\
+\n{3} & \t{<SELECT{\s}NAME="priori\a{ty"{\s}MULTIPLE{\s}SIZE=7>}}   & \PASS \\
+\n{1} & \t{<SELECT{\s}NAME="priority"{\s}MULTIPLE{\s}SIZE=7>}       & \PASS \\
+\end{tabular}
+\right.
+\end{array}
+$$
+\caption{Isolating a failure-inducing difference}
+\label{fig:isolate-html-diff}
+\end{figure}
+
+% Both algorithms require at most $O(n^2)$ tests for~$n$ input
+% entities~(for the $\ddmin$ algorithm) or $n$~differences~(for the
+% $\dd$ algorithm); if the number of failure causes is small, the number
+% of tests is significantly lower.
+
+% Under most conditions, though, the actual number of
+% tests is $O(m \log n)$, where $m$~is the size of the minimized
+% input~($\ddmin$) or the minimized number of differences~($\dd$).
+
+Delta Debugging as a technique for simplifying or isolating failure
+causes is not limited to \HTML input, to character input, nor to
+program input in general: Delta Debugging can be applied to \emph{all
+  circumstances that in any way affect the program execution.}  Delta
+Debugging is fully automatic: whenever some regression test fails, an
+additional Delta Debugging run automatically determines the
+failure-inducing circumstances.
+
+In earlier work~\cite{zeller/99/esec}, we have shown how Delta
+Debugging is applied to isolate failure-inducing code changes; our
+current research includes application domains like failure-inducing
+thread schedules or failure-inducing program statements.  In this
+paper, however, we will concentrate on \emph{program input}.
+
+The remainder of this paper is organized as follows: We begin with
+formal definitions of passing and failing test cases
+(Section~\ref{sec:tests-and-changes}).  We first introduce the basic
+$\ddmin$ algorithm in Section~\ref{sec:minimizing-test-cases} which
+simplifies failing test cases.  The case studies
+(Section~\ref{sec:ddmin-case-studies}) include \GCC, Mozilla, and
+\UNIX utilities subjected to random fuzz input.
+
+In Section \ref{sec:isolating-differences}, we extend $\ddmin$ to
+$\dd$ to isolate the difference between a passing and a failing test
+case.  Section~\ref{sec:fuzz-revisited} evaluates $\dd$ by repeating
+the \GCC and fuzz case studies.  Sections
+\ref{sec:related-work}~and~\ref{sec:future-work} close with
+discussions of related and future work.
+
+
+\section{Testing for Change}
+\label{sec:tests-and-changes}
+
+\begin{Quote}
+  Software features that can't be demonstrated by automated tests
+  simply don't exist.
+\By{Kent Beck,}{Extreme Programming Explained} % p. 45
+\end{Quote}
+
+In general, we assume that the execution of a specific program is
+determined by a number of \emph{circumstances.}  These circumstances
+include the program code, data from storage or input devices, the
+program's environment, the specific hardware, and so on.
+
+In our context, we are only interested in the \emph{changeable
+  circumstances}---that is, those circumstances whose change may cause
+a different program behaviour.  (In fact, we are even only interested
+in those circumstances that actually may cause a different test
+outcome.)  These changeable circumstances make up the program's input
+(in the most general sense).  In the remainder of this paper,
+``circumstances'' will always refer to changeable circumstances.
+
+\subsection{The Change that Causes a Failure}
+
+Let us denote the set of possible configurations of circumstances
+by~$\RR$.  Each $r \in \RR$ determines a specific program run.  Let us
+assume now a specific run~$\rfail \in \RR$ that fails.\footnote{Read
+  $\rfail$ and $\rpass$ as ``$r$-fail'' and ``$r$-pass'',
+  respectively.}  Typically, we do not consider all circumstances of
+this run as a whole.  Instead, we focus on the \emph{difference}
+between~$\rfail$ and some run~$\rpass \in \RR$ that works.  This
+difference is the change which causes the failure, and the smaller
+this change, the better it qualifies as failure cause.
+
+Formally, the difference between $\rpass$~and~$\rfail$ is expressed as
+a mapping~$\delta$ which \emph{changes the circumstances} of a program run:
+
+\begin{definition}[Change]
+  A \emph{change}~$\delta$ is a mapping~$\delta : \RR \to \RR$.  The set of
+  changes is $\CC = \RR^\RR$.  The \emph{relevant change} between
+  two runs $\rpass, \rfail \in \RR$ is a change~$\delta \in \CC$ such that
+  $\delta(\rpass) = \rfail$.
+\end{definition}
+
+In the remainder of this paper, $\delta$~will always stand for the relevant
+change between the two given program runs $\rpass$~and~$\rfail$.  The
+exact definition of~$\delta$ and its application is, of course, specific to
+the given problem and its circumstances.  In the Mozilla example
+sketched in Section~\ref{sec:introduction}, applying $\delta$~means to
+expand a trivial (empty) \HTML input to the full failure-inducing
+\HTML page.
+
+
+\subsection{Decomposing Changes}
+
+We now assume that the relevant change~$\delta$ can be \emph{decomposed}
+into a number of elementary changes $\delta_1, \dots, \delta_n$.  This
+decomposition of~$\delta$ into individual changes~$\delta_i$ is
+problem-specific.  As an example, think of a \DIFF output~$\delta$
+consisting of several individual changes~$\delta_i$, each affecting a
+particular place in the text.  
+
+Our approach does not suggest a specific way of decomposing changes.
+In general, though, we expect the decomposition to follow the
+structure of the change, which again follows the structure of the
+circumstances being changed.  In the Mozilla example from
+Section~\ref{sec:introduction}, there are many ways to decompose the
+change~$\delta$: it may be decomposed into changes adding single
+characters, or changes adding \HTML tags, or changes adding lines,
+depending on whether we see the input of being composed from
+characters, tags, or lines.  In doubt, an \emph{atomic}
+decomposition---that is, a decomposition into changes that can no
+further be decomposed---is the way to go.
+
+To express (de-)composition formally, we write $\delta = \delta_1 \circ \delta_2 \circ \dots
+\circ \delta_n$, where the composition~$\delta_i \circ \delta_j$ groups two changes
+$\delta_i$~and~$\delta_j$ into a larger whole:
+
+\begin{definition}[Composition of changes]
+  The \emph{change composition}~$\circ : \CC \times \CC \to \CC$ is defined as
+  $(\delta_i \circ \delta_j)(r) = \delta_i\bigl(\delta_j(r)\bigr)$.
+\end{definition}
+
+We do not assume any particular properties of~$\circ$.  In practice,
+$\circ$~is typically realized as a \emph{union} of two change sets~$\delta_i$.
+
+
+\subsection{Test Cases and Tests}
+\label{sec:test-cases-and-tests}
+
+To relate program runs to failures, we need a testing function that
+takes a program run and tests whether it produces the failure.
+According to the \POSIX~{\small 1003.3} standard for testing
+frameworks~\cite{ieee/91/posix1003.3}, we distinguish three outcomes:
+
+\begin{itemize}
+\item The test \emph{succeeds} ({\small PASS}, written here as $\PASS$)
+\item The test has \emph{produced the failure} it was intended to capture
+      ({\small FAIL}, written here as $\FAIL$)
+\item The test produced \emph{indeterminate results}
+  ({\small UNRESOLVED}, written here as
+  $\UNRESOLVED$).\footnote{\POSIX~{\small 1003.3} also lists
+    {\small UNTESTED} and {\small UNSUPPORTED} outcomes, which
+    are of no relevance here.}
+\end{itemize}
+
+\begin{definition}[$\rtest$]
+  The function $\rtest: \RR \to \{\FAIL, \PASS, \UNRESOLVED\}$ determines
+  for a program run $r \in \RR$ whether some specific failure
+  occurs~(\FAIL) or not~(\PASS) or whether the test is
+  unresolved~(\UNRESOLVED).
+\end{definition}
+
+\begin{axiom}[Passing and failing run]
+\label{ax:runs}
+$\rtest(\rpass) = \PASS$ and $\rtest(\rfail) = \FAIL$ hold.
+\end{axiom}
+
+In the remainder of this paper, we shall consider not only
+$\rpass$~and~$\rfail$, but also several runs that are the product of
+changes being applied to~$\rpass$.  For convenience, we identify each
+run by \emph{the set of changes being applied to~$\rpass$.}  That is,
+we define $\cpass$ as the empty set $\cpass = \emptyset$ which
+identifies~$\rpass$ (no changes applied).  The set of all changes
+$\cfail = \{\delta_1, \delta_2, \dots, \delta_n\}$ identifies $\rfail = (\delta_1 \circ \delta_2 \circ
+\dots \circ \delta_n)(\rpass)$.
+
+We call the subsets of $\cfail$ \emph{test cases:}
+
+\begin{definition}[Test case]
+  A subset $c \subseteq \cfail$ is called a \emph{test case.}
+\end{definition}
+
+Test cases are related to program runs by means of the $\test$
+function, which applies the set of changes to~$\rpass$ and tests the
+resulting run.
+
+\begin{definition}[$\test$]
+  The function $\test: 2^\cfail \to \{\FAIL, \PASS, \UNRESOLVED\}$ is
+  defined as follows: Let $c \subseteq \cfail$ be a test case with $c = \{\delta_1,
+  \delta_2, \dots, \delta_n\}$.  Then, $\test(c) = \rtest\bigl((\delta_1 \circ \delta_2 \circ \dots \circ
+  \delta_n)(\rpass)\bigr)$ holds.\footnote{To make the application of
+    change sets unambiguous, $\test$ must sort the applied changes
+    $\delta_i$ in some canonical way.}
+\end{definition}
+
+Using Axiom~\ref{ax:runs}, we can deduce the results of
+$\test(\cpass)$~and~$\test(\cfail)$:
+
+\begin{corollary}[Passing and failing test case] The following holds:
+\label{cor:wynot}
+$$
+\begin{array}{l@{}ll}
+\test(\cpass) &= \test(\emptyset) = \PASS & \text{(``passing test case'') and} \\
+\test(\cfail) &= \test\bigl(\{\delta_1, \delta_2, \dots, \delta_n\}\bigr) = \FAIL & \text{(``failing test case'').}
+\end{array}
+$$
+\end{corollary}
+
+
+\section{Minimizing Test Cases}
+\label{sec:minimizing-test-cases}
+
+\begin{Quote}
+  Proceed by binary search.  Throw away half the input and see if the
+  output is still wrong; if not, go back to the previous state and
+  discard the other half of the input.
+\By{Brian Kernighan and Rob Pike,}{The Practice of Programming}
+\end{Quote}
+
+Let us now model our initial scenario.  We have a test case~$\cpass$
+that works fine and a test case~$\cfail$ that fails.  Let us assume
+that~$\cpass$ stands for some trivial program run (such as a run on an
+empty input).  Then, minimizing the difference between
+$\cpass$~and~$\cfail$ becomes \emph{minimizing $\cfail$ itself}---that
+is, \emph{simplification} of~$\cfail$.
+
+\subsection{Minimal Test Cases}
+
+A test case~$c \subseteq \cfail$ being a minimum means that there is no
+smaller subset of~$\cfail$ that causes the test to fail.  Formally:
+
+\begin{definition}[Global minimum]
+\label{def:global-minimum}
+A set $c \subseteq \cfail$ is called the \emph{global minimum} of $\cfail$ if\:
+$
+\forall c' \subseteq \cfail \cdot \bigl(|c'| < |c| \Rightarrow \test(c') \neq \FAIL\bigr)
+$
+holds.
+\end{definition}
+
+In practice, this would be nice to have, but it is practically
+impossible to compute: Relying on \test alone to determine the global
+minimum of~$\cfail$ requires testing all~$2^{|\cfail|}$ subsets
+of~$\cfail$, which obviously has exponential complexity.\footnote{To
+  be precise, Corollary~\ref{cor:wynot} tells us the results of
+  $\test(\emptyset)$~and~$\test(\cfail)$, such that only $2^{|\cfail|} - 2$
+  subsets need to be tested, but this does not help much.}
+
+Resorting to the idea of a \emph{local minimum} helps a little.  We
+call a test case \emph{minimal} if none of its subsets causes the test
+to fail.  That is, if a test case~$c$ is minimal, there may be some
+other test case that is even smaller (i.e.\ a global minimum), but at
+least we know that each element of~$c$ is relevant in producing the
+failure---nothing can be removed without making the failure disappear.
+
+\begin{definition}[Local minimum]
+\label{def:minimal-test-case}
+A test case $c \subseteq \cfail$ is a \emph{local minimum} of $\cfail$ or 
+\emph{minimal} if\:
+$
+\forall c' \subset c \cdot \bigl(\test(c') \neq \FAIL\bigr)
+$
+holds.
+\end{definition}
+
+\noindent
+This is what we want: a failing test case whose elements are all
+significant.  However, determining that a test case~$c$ is a local
+minimum still requires $2^{|c|} - 2$ tests.
+
+What we can determine, however, is an \emph{approximation}---for
+instance, a test case where removing a small set of changes is still
+significant in producing the failure, but we do not check whether
+removing several changes at once might make the test case even
+smaller.  Formally, we define this property as \emph{$n$-minimality:}
+removing any combination of up to~$n$ changes causes the failure to
+disappear.  If $c$ is $|c|$-minimal, then $c$~is minimal in the sense
+of Definition~\ref{def:minimal-test-case}.
+
+The approximation which interests us most is \emph{1-minimality}.  A
+failing test case~$c$ composed of $|c|$~changes would be 1-minimal if
+removing any single change would cause the failure to disappear.
+While removing two or more changes at once may result in an even
+smaller, still failing test case, every single change on its own is
+\emph{significant in reproducing the failure.}
+
+\begin{definition}[$n$-minimal test case]
+\label{def:n-minimal-test-case}
+A test case $c \subseteq \cfail$ is \emph{$n$-minimal} if\:
+$
+\forall c' \subset c \cdot |c| - |c'| \leq n \Rightarrow \bigl(\test(c') \neq \FAIL\bigr)
+$
+holds.  Consequently, $c$ is \emph{1-minimal} if\:
+$
+\forall \delta_i \in c \cdot \test\bigl(c - \{\delta_i\}\bigr) \neq \FAIL
+$
+holds.
+\end{definition}
+
+1-minimality is what we should be aiming at.  However, given, say, a
+failure-inducing input of 100,000 lines, we cannot simply remove each
+individual line in order to minimize it.  Thus, we need an effective
+algorithm to reduce our test case efficiently.
+
+
+\subsection{A Minimizing Algorithm}
+\label{sec:ddmin}
+
+\noindent
+What do humans do in order to minimize test cases?  One possibility:
+they use \emph{binary search.}  If~$\cfail$ contains only one change,
+then~$\cfail$ is minimal by definition.  Otherwise, we
+\emph{partition}~$\cfail$ into two subsets $\Delta_1$~and~$\Delta_2$ with
+similar size and test each of them.  This gives us three possible
+outcomes:
+
+\begin{description}
+\item[Reduce to $\Delta_1$.] The test of $\Delta_1$ fails---$\Delta_1$ is a smaller
+  test case.\footnote{Since $\Delta_1$ and $\Delta_2$ have similar size, there
+    is no need for testing $\Delta_2$ as well if testing~$\Delta_1$ already fails.}
+\item[Reduce to $\Delta_2$.] Testing~$\Delta_1$ does not fail, but testing $\Delta_2$
+  fails---$\Delta_2$ is a smaller test case.
+\item[Ignorance.] Both tests pass, or are unresolved---neither 
+  $\Delta_1$ nor $\Delta_2$ qualify as possible simplifications.
+\end{description}
+
+\begin{figure}[t]
+\begin{center}
+\begin{tabular}{r|c|cccccccc|cl}
+Step & \multicolumn{9}{l|}{Test case} & $\test$ \\
+\cline{1-11}
+     1 & $\Delta_1$ & 1 & 2 & 3 & 4 & . & . & . & . & $\UNRESOLVED$ \\
+     2 & $\Delta_2$ & . & . & . & . & 5 & 6 & 7 & 8 & $\FAIL$ \\ \cline{1-11}
+     3 & $\Delta_1$ & . & . & . & . & 5 & 6 & . & . & $\PASS$ \\
+     4 & $\Delta_2$ & . & . & . & . & . & . & 7 & 8 & $\FAIL$ \\ \cline{1-11}
+     5 & $\Delta_1$ & . & . & . & . & . & . & 7 & . & $\FAIL$ & Done \\
+\cline{1-11}
+    \multicolumn{2}{l|}{Result} & . & . & . & . & . & . & 7 & . & \\
+\end{tabular}
+\end{center}
+\vspace{-0.25cm}
+\caption{Quick minimization of test cases}
+\label{fig:divide}
+\end{figure}
+
+\noindent
+In the first two cases, we can simply continue the search in the
+failing subset, as illustrated in Figure~\ref{fig:divide}.  Each line
+of the diagram shows a configuration.  A number~$i$ stands for an
+included change~$\delta_i$; a dot stands for an excluded change.  Change~7
+is the minimal failing test case---and it is isolated in just a few
+steps.
+
+\begin{figure*}[t]
+\begin{boxedminipage}{\textwidth}
+\subsection*{Minimizing Delta Debugging Algorithm}
+\medskip
+
+Let $\test$ and $\cfail$ be given such that $\test(\emptyset) = \PASS \land
+\test(\cfail) = \FAIL$ hold.
+
+The goal is to find $\dfail = \ddmin(\cfail)$ such that $\dfail \subseteq
+\cfail$, $\test(\dfail) = \FAIL$, and~$\dfail$ is 1-minimal.
+
+The \emph{minimizing Delta Debugging algorithm} $\ddmin(c)$ is 
+\begin{align*}
+\ddmin(\cfail) &= \ddmin_2(\cfail, 2) \quad \text{where} \\
+\ddmin_2(\dfail, n) &= 
+\begin{cases}
+\ddmin_2(\Delta_i, 2) & \text{\hphantom{else }if $\exists i \in \{1, \dots, n\} \cdot \test(\Delta_i) = \FAIL$ (``reduce to subset'')} \\
+\ddmin_2\bigl(\nabla_i, \max(n - 1, 2)\bigr) & 
+\text{else if $\exists i \in \{1, \dots, n\} \cdot \test(\nabla_i) = \FAIL$ (``reduce to complement'')} \\
+\ddmin_2\bigl(\dfail, \min(|\dfail|, 2n)\bigr) & \text{else if $n < |\dfail|$ (``increase granularity'')} \\
+\dfail & \text{otherwise (``done'').}
+\end{cases}
+\end{align*}
+where $\nabla_i = \dfail - \Delta_i$, $\dfail = \Delta_1 \cup \Delta_2 \cup \dots \cup \Delta_n$, all
+$\Delta_i$ are pairwise disjoint, and $\forall \Delta_i \cdot |\Delta_i| \approx |\dfail| / n$
+holds.
+
+The recursion invariant (and thus precondition) for $\ddmin_2$ is 
+$\test(\dfail) = \FAIL \land n \leq |\dfail|$.
+\end{boxedminipage}
+\caption{Minimizing Delta Debugging algorithm}
+\label{fig:ddmin}
+\end{figure*}
+
+Given sufficient knowledge about the nature of our input, we can
+certainly partition any test case into \emph{two} subsets such that at
+least one of them fails the test.  But what if this knowledge is
+insufficient, or not present at all?
+
+Let us begin with the worst case: after splitting up~$\cfail$ into
+subsets, all tests pass or are unresolved---ignorance is complete.
+All we know is that~$\cfail$ as a whole is failing.  How do we
+increase our chances of getting a failing subset?
+
+\begin{itemize}
+\item By testing \emph{larger} subsets of~$\cfail$, we increase the
+  chances that the test fails---the difference from~$\cfail$ is
+  smaller.  On the other hand, a smaller difference means a slower
+  progression---the test case is not halved, but reduced by a smaller
+  amount.
+\item By testing \emph{smaller} subsets of~$\cfail$, we get a faster
+  progression in case the test fails.  On the other hand, the chances
+  that the test fails are smaller.
+\end{itemize}
+
+\noindent
+These specific methods can be combined by partitioning~$\cfail$ into a
+\emph{larger number of subsets} and testing each (small)~$\Delta_i$ as well
+as its (large) complement~$\nabla_i = \cfail - \Delta_i$---until each subset contains
+only one change, which gives us the best chance to get a failing test
+case.  The disadvantage, of course, is that more subsets means more
+testing.
+
+This is what can happen.  Let~$n$ be the number of subsets $\Delta_1, \ldots,
+\Delta_n$.  Testing each~$\Delta_i$ and its complement $\nabla_i = \cfail - \Delta_i$, we
+have four possible outcomes (Figure~\ref{fig:ddmin}):
+
+\begin{figure*}[t]
+% \begin{boxedminipage}{\textwidth}
+% \bigskip
+  \begin{center}%\footnotesize
+    \begin{tabular}{r|c|cccccccc|ll}
+      Step & \multicolumn{9}{l|}{Test case} & $\test$ \\
+      \cline{1-11}
+      1 & $\Delta_1 = \nabla_2$ & 1 & 2 & 3 & 4 & . & . & . & . & $\UNRESOLVED$ & Testing $\Delta_1, \Delta_2$\\
+      2 & $\Delta_2 = \nabla_1$ & . & . & . & . & 5 & 6 & 7 & 8 & $\UNRESOLVED$ & 
+          $\Rightarrow$ Increase granularity \\ \cline{1-11}
+      3 & $\Delta_1$ & 1 & 2 & . & . & . & . & . & . & $\UNRESOLVED$ & Testing $\Delta_1, \ldots, \Delta_4$ \\
+      4 & $\Delta_2$ & . & . & 3 & 4 & . & . & . & . & $\PASS$ \\ 
+      5 & $\Delta_3$ & . & . & . & . & 5 & 6 & . & . & $\PASS$ \\
+      6 & $\Delta_4$ & . & . & . & . & . & . & 7 & 8 & $\UNRESOLVED$ \\
+      7 & $\nabla_1$ & . & . & 3 & 4 & 5 & 6 & 7 & 8 & $\UNRESOLVED$ & Testing complements \\
+      8 & $\nabla_2$ & 1 & 2 & . & . & 5 & 6 & 7 & 8 & $\FAIL$ & 
+          $\Rightarrow$ Reduce to $\dfail = \nabla_2$; continue with $n = 3$ \\ \cline{1-11}
+      9 & $\Delta_1$ & 1 & 2 & . & . & . & . & . & . & $\UNRESOLVED^*$ & Testing $\Delta_1, \Delta_2, \Delta_3$ \\
+     10 & $\Delta_2$ & . & . & . & . & 5 & 6 & . & . & $\PASS^*$ &     ${}^*$ same \test carried out in an earlier step \\
+     11 & $\Delta_3$ & . & . & . & . & . & . & 7 & 8 & $\UNRESOLVED^*$ \\
+     12 & $\nabla_1$ & . & . & . & . & 5 & 6 & 7 & 8 & $\UNRESOLVED$ & Testing complements \\
+     13 & $\nabla_2$ & 1 & 2 & . & . & . & . & 7 & 8 & $\FAIL$ & 
+        $\Rightarrow$ Reduce to $\dfail = \nabla_2$; continue with $n = 2$ \\ \cline{1-11}
+     14 & $\Delta_1 = \nabla_2$ & 1 & 2 & . & . & . & . & . & . & $\UNRESOLVED^*$ & Testing $\Delta_1, \Delta_2$ \\
+     15 & $\Delta_2 = \nabla_1$ & . & . & . & . & . & . & 7 & 8 & $\UNRESOLVED^*$ & $\Rightarrow$ Increase granularity \\ \cline{1-11}
+     16 & $\Delta_1$ & 1 & . & . & . & . & . & . & . & $\UNRESOLVED$ & Testing $\Delta_1, \ldots, \Delta_4$ \\ 
+     17 & $\Delta_2$ & . & 2 & . & . & . & . & . & . & $\PASS$ \\
+     18 & $\Delta_3$ & . & . & . & . & . & . & 7 & . & $\UNRESOLVED$ \\
+     19 & $\Delta_4$ & . & . & . & . & . & . & . & 8 & $\UNRESOLVED$ \\
+     20 & $\nabla_1$ & . & 2 & . & . & . & . & 7 & 8 & $\UNRESOLVED$ & Testing complements \\
+     21 & $\nabla_2$ & 1 & . & . & . & . & . & 7 & 8 & $\FAIL$ & 
+          $\Rightarrow$ Reduce to $\dfail = \nabla_2$; continue with $n = 3$ \\ \cline{1-11}
+     22 & $\Delta_1$ & 1 & . & . & . & . & . & . & . & $\UNRESOLVED^*$ & Testing $\Delta_1, \ldots, \Delta_3$ \\
+     23 & $\Delta_2$ & . & . & . & . & . & . & 7 & . & $\UNRESOLVED^*$ \\
+     24 & $\Delta_3$ & . & . & . & . & . & . & . & 8 & $\UNRESOLVED^*$ \\
+     25 & $\nabla_1$ & . & . & . & . & . & . & 7 & 8 & $\UNRESOLVED$ & Testing complements \\
+     26 & $\nabla_2$ & 1 & . & . & . & . & . & . & 8 & $\UNRESOLVED$ \\
+     27 & $\nabla_3$ & 1 & . & . & . & . & . & 7 & . & $\UNRESOLVED$ & Done \\
+\cline{1-11}
+    \multicolumn{2}{l|}{Result} & 1 & . & . & . & . & . & 7 & 8 & &  \\
+  \end{tabular}
+
+\end{center}
+\vspace{-0.25cm}
+% \bigskip
+% \end{boxedminipage}
+\caption{Minimizing a test case with increasing granularity}
+\label{fig:minimize}
+\end{figure*}
+
+\begin{description}
+\item[Reduce to subset.]  If testing any $\Delta_i$~fails, then $\Delta_i$~is a
+  smaller test case.  Continue reducing~$\Delta_i$ with $n = 2$~subsets.
+  
+  This reduction rule results in a classical ``divide and conquer''
+  approach.  If one can identify a smaller part of the test case that
+  is failure-inducing on its own, then this rule helps in narrowing
+  down the test case efficiently.
+  
+\item[Reduce to complement.]  If testing any $\nabla_i = \cfail -
+  \Delta_i$~fails, then $\nabla_i$~is a smaller test case.  Continue
+  reducing~$\nabla_i$ with $n - 1$~subsets.
+  
+  Why do we continue with $n - 1$~and not two subsets here?  Because
+  the granularity stays the same: Splitting~$\nabla_i$ into $n - 1$ subsets
+  means that the subsets of~$\nabla_i$ are identical to the subsets~$\Delta_i$
+  of~$\cfail$.  Every subset of~$\cfail$ eventually gets tested.
+  
+  As an example, assume $n = 32$ and $\nabla_{30}$ fails.  If we continue
+  with $n = 31$, the recursive $\ddmin$ call splits $\nabla_{30}$ into $n =
+  31$ subsets.  The subsets $\Delta_1$~to~$\Delta_{30}$ have already been tested
+  before.  If we realize the $\test$ function such that it keeps track
+  of tests that already have been run, the next new test would be one
+  of the complements~$\nabla_i$---we'd simply continue removing small
+  chunks.
+
+  If we continued with two~subsets instead, we would have to work our
+  way down with $n = 2, 4, 8, \dots$ until the initial granularity of
+  $n = 32$ is reached again.
+  
+\item[Increase granularity.]  Otherwise (that is, no test failed), try
+  again with $2n$~subsets.  (Should $2n > |\cfail|$ hold, try again
+  with $|\cfail|$ subsets instead, each containing one change.)  This
+  results in at most twice as many tests, but increases chances for
+  failure.
+  
+\item[Done.]  The process is repeated until granularity can no longer
+  be increased (that is, the next $n$ would be larger than
+  $|\cfail|$).  In this case, we have already tried removing every
+  single change individually without further failures: the resulting
+  change set is minimal.
+\end{description}
+
+As an example, consider Figure~\ref{fig:minimize}, where the minimal
+test case consists of the changes 1,~7,~and~8.  Any test case that
+includes only a subset of these changes results in an unresolved test
+outcome; a test case that includes none of these changes passes the
+test.
+
+We begin with partitioning the total set of changes in two
+halves---but none of them passes the test.  We continue with
+granularity increased to 4~subsets (Step~3--6).  When testing the
+complements, the set $\nabla_2$ fails, thus removing changes 3~and~4.  We
+continue with splitting $\nabla_2$ into three subsets.  The next three
+tests (Steps~9--11) have already been carried out and need not be
+repeated (marked with~${}^*$).  When testing $\nabla_2$ (Step 13), changes
+5~and~6 can be eliminated.  We increase granularity to 4~subsets and
+test each (Steps~16--19), before the last complement $\nabla_2$ (Step 21)
+eliminates change~2.  Only changes 1, 7,~and~8 remain; Steps 25--27
+show that none of these changes can be eliminated.  To minimize this
+test case, a total of 19~different tests was required.
+
+\subsection{Properties of ddmin}
+\label{sec:ddmin-complexity}
+
+We close with some formal properties of $\ddmin$.  First, $\ddmin$
+eventually returns a 1-minimal test case:
+
+\begin{proposition}[$\ddmin$ minimizes]
+\label{pro:ddmin-minimizes}
+For any $c \subseteq \cfail$,
+$\ddmin(c)$ is 1-minimal in the sense of 
+definition~\ref{def:n-minimal-test-case}.
+\begin{proof}
+  According to the $\ddmin$ definition (Figure~\ref{fig:ddmin}),
+  $\ddmin(\dfail)$ returns $\dfail$ only if $n \geq |\dfail|$ and
+  $\test(\nabla_i) \neq \FAIL$ for all $\Delta_1, \dots, \Delta_n$ where $\nabla_i
+  = \dfail - \Delta_i$.  If $n \geq |\dfail|$, then $|\Delta_i| = 1$ and
+  $|\nabla_i| = |c| - 1$.  Since all subsets of $c' \subset \dfail$ with
+  $|\dfail| - |c'| = 1$ are in $\{\nabla_1, \dots, \nabla_n\}$ and
+  $\test(\nabla_i) \neq \FAIL$ for all $\nabla_i$, the condition of
+  definition~\ref{def:n-minimal-test-case} applies and~$c$ is 1-minimal.
+\end{proof}
+\end{proposition}
+
+\noindent
+In the worst case, $\ddmin$ takes $|\cfail|^2 + 3|\cfail|$ tests:
+
+\begin{proposition}[$\ddmin$ complexity, worst case]
+\label{pro:ddmin-worst-complexity}
+The number of tests carried out by $\ddmin(\cfail)$ is $|\cfail|^2 + 3|\cfail|$ 
+in the worst case.
+\begin{proof}
+  The worst case can be divided into two phases: First, every test has
+  an unresolved result until we have a maximum granularity of $n =
+  |\cfail|$; then, testing only the last complement results in a
+  failure until $n = 2$ holds.
+  \begin{itemize}
+  \item
+    In the first phase, every test has an unresolved result.  
+    This results in a re-invocation of $\ddmin_2$ with a doubled 
+    number of subsets, until $|\Delta_i| = 1$ holds.  
+    The number of tests to be carried out is $
+    2 + 4 + 8 + \cdots + 2|\cfail| 
+    = 2|\cfail| + |\cfail| + \frac{|\cfail|}{2} + \frac{|\cfail|}{4} + \cdots 
+    = 4|\cfail|$.
+    
+  \item In the second phase, the worst case is that testing the
+    \emph{last} complement~$\nabla_n$ fails; consequently, $\ddmin_2$ is
+    re-invoked with $\ddmin_2(\nabla_n, |\cfail| - 1)$.  This results in
+    $|\cfail| - 1$ calls of $\ddmin$, with two tests per call, or $
+    2(|\cfail| - 1) + 2(|\cfail| - 2) + \cdots + 2 = 2 + 4 + 6 + \cdots +
+    2(|\cfail| - 1) = |\cfail|(|\cfail| - 1) = |\cfail|^2 - |\cfail| $
+    tests.
+  \end{itemize}
+  The overall number of tests is thus $4|\cfail| + |\cfail|^2 - |\cfail| 
+  =  |\cfail|^2 + 3|\cfail|$.
+\end{proof}
+\end{proposition}
+
+\noindent
+In practice, however, it is unlikely that an $n$-character input
+requires $n^2 + 3n$ tests.  The ``divide and conquer'' rule of
+$\ddmin$ takes care of quickly narrowing down failure-inducing parts
+of the input:
+
+\begin{proposition}[$\ddmin$ complexity, best case]
+\label{pro:ddmin-best-complexity}
+If there is only one failure-inducing change $\Delta_i \in \cfail$, and all
+test cases that include~$\Delta_i$ cause a failure as well, then the number
+of tests~$t$ is limited by $t \leq 2\log_2(|\cfail|)$.
+\begin{proof}
+  Under the given conditions, the test of either initial subset
+  $\Delta_1$~or~$\Delta_2$ will fail; $n = 2$ always holds.  Thus, the
+  overall complexity is that of a binary search.
+\end{proof}
+\end{proposition}
+
+% Monotony? Average complexity? ...
+
+\noindent
+Whether this ``best case'' efficiency applies depends on our ability
+to break down the input into smaller chunks that result in determined
+(or better: failing) test outcomes.  Consequently, the more knowledge
+about the structure of the input we have, the better we can
+identify possibly failure-inducing subsets, and the better is the
+overall performance of $\ddmin$.
+
+The surprising thing, however, is that even with \emph{no knowledge
+  about the input structure at all,} the $\ddmin$ algorithm has
+sufficient per\-for\-mance---at least in the case studies we have
+examined.  This is illustrated in the following section.
+
+\begin{figure}[!t]
+\begin{boxedminipage}{\columnwidth}
+\begin{alltt}\rmfamily
+\#define \text{SIZE} 20\medskip
+double \textbf{mult}(double \textit{z}[], int \textit{n})
+\{
+   int \(i\), \(j\);\medskip
+   \(i = 0\);
+   for (\(j\) = 0; \(j < \textit{n}\); \(j\)\text{++}) \{
+      \(i = i + j + 1\);
+      \(\textit{z}[i] = \textit{z}[i] * (\textit{z}[0] + 1.0)\);
+   \}\smallskip
+   return \textit{z}[\textit{n}];
+\}\medskip
+void \textbf{copy}(double \textit{to}[], double \textit{from}[], int \textit{count})
+\{
+    int \textit{n} = \((\textit{count} + 7) / 8\);
+    switch \((\textit{count} \% 8)\) do \{
+        case 0: \(\text{*}\textit{to}\text{++} = \text{*}\textit{from}\text{++}\);
+        case 7: \(\text{*}\textit{to}\text{++} = \text{*}\textit{from}\text{++}\);
+        case 6: \(\text{*}\textit{to}\text{++} = \text{*}\textit{from}\text{++}\);
+        case 5: \(\text{*}\textit{to}\text{++} = \text{*}\textit{from}\text{++}\);
+        case 4: \(\text{*}\textit{to}\text{++} = \text{*}\textit{from}\text{++}\);
+        case 3: \(\text{*}\textit{to}\text{++} = \text{*}\textit{from}\text{++}\);
+        case 2: \(\text{*}\textit{to}\text{++} = \text{*}\textit{from}\text{++}\);
+        case 1: \(\text{*}\textit{to}\text{++} = \text{*}\textit{from}\text{++}\);
+    \} while \((--\textit{n} > 0)\);\smallskip
+    return mult(\textit{to}, 2);
+\}\medskip
+int \textbf{main}(int \textit{argc}, char *\textit{argv}[])
+\{
+    double \(x\)[SIZE], \(y\)[SIZE];
+    double \(\text{*}\textit{px} = x\);\medskip
+    while \((\textit{px} < x + \text{SIZE})\)
+        \(\text{*}\textit{px}\text{++} = (\textit{px} - x) * (\text{SIZE} + 1.0)\);\smallskip
+    return copy(\(y\), \(x\), SIZE);
+\}\end{alltt}
+\vspace{-0.25cm}
+\end{boxedminipage}
+\caption{The \<bug.c> program that crashes \GNUCC}
+\label{fig:bug.c}
+\end{figure}
+
+
+\section{Case Studies}
+\label{sec:ddmin-case-studies}
+
+\begin{Quote}
+  When you've cut away as much \HTML, \CSS, and JavaScript as you can, and
+  cutting away any more causes the bug to disappear, you're done.
+  \By{}{Mozilla BugAThon call}
+\end{Quote}
+
+Let us now turn to some real-life failures and simplify
+failure-inducing input.  We discuss examples from the \GNU C~compiler,
+Mozilla, and various \UNIX utilities subjected to random fuzz input.
+
+\subsection{GCC~gets~a~Fatal~\mbox{Signal}}
+\label{sec:gcc}
+
+\noindent
+The C program in Figure~\ref{fig:bug.c} not only demonstrates some
+particular nasty aspects of the language, it also causes the \GNU
+C~compiler (\GCC) to crash---at least, when using version 2.95.2 on
+Intel-Linux with optimization enabled.
+
+Before crashing, \GCC grabs all available memory for its stack, such
+that other processes may run out of resources and die.\footnote{The
+  author denies any liability for damage caused by repeating this
+  experiment.}  The latter can be prevented by limiting the stack
+memory available to \GCC, but the effect remains:
+
+\begin{alltt}\small\ttfamily
+\$ \textbf{(ulimit -H -s 256; gcc -O bug.c)}
+gcc: Internal compiler error:
+     program cc1 got fatal signal 11
+\$ _
+\end{alltt}
+
+\noindent
+The \GCC error message (and the resulting core dump) help \GCC
+maintainers only; as ordinary users, we must now narrow down the
+failure-inducing input in \<bug.c>---and \emph{minimize} \<bug.c> in
+order to file in a bug report.
+
+In the case of \GCC, the passing program run is the empty input.  For
+the sake of simplicity, we modeled a \emph{change} as the
+\emph{insertion of a single character.}  This means that
+\begin{itemize}
+\item $\rpass$ is running \GCC with an empty input
+\item $\rfail$ means running \GCC with~\<bug.c>
+\item each change $\delta_i$ inserts the $i$-th character of \<bug.c>
+\item partitioning $\cfail$ means partitioning the input into parts.
+\end{itemize}
+No special effort was made to exploit syntactic or semantic knowledge
+about C~programs; consequently, we expected a large number of test
+cases to be invalid C~programs.
+
+To minimize~\<bug.c>, we implemented the $\ddmin$ algorithm of
+Figure~\ref{fig:ddmin} into our \WYNOT prototype\footnote{\WYNOT $=$
+  ``Worked Yesterday, NOt Today''}.  The \test procedure would create
+the appropriate subset of \<bug.c>, feed it to \GCC, return $\FAIL$
+iff \GCC had crashed, and $\PASS$ otherwise.  The results of this
+\WYNOT run are shown in Figure~\ref{fig:gcc-log}.
+
+\begin{figure}[t]
+\vspace{-1.1cm}
+\epsfig{file=bug3.c.run.ps,width=\columnwidth}
+\vspace{-0.5cm}
+\caption{Minimizing \GCC input \<bug.c>}
+\label{fig:gcc-log}
+\end{figure}
+
+After the first two tests, \WYNOT has already reduced the input size
+from 755 characters to 377 and 188 characters, respectively---the test
+case now only contains the \|mult| function.  Reducing \|mult|, however,
+takes time: only after 731 more tests (and 34~seconds)\footnote{All
+  times were measured on a Linux PC with a 500 MHz Pentium~III
+  processor.  The time given is the \CPU user time of our \WYNOT
+  prototype as measured by the \UNIX kernel; it includes all spawned
+  child processes (such as the \GCC run in this example).}  do we get
+a test case that can not be minimized any further.  Only 77~characters
+are left:%, as shown in Figure~\ref{fig:gcc-min}.
+
+%\begin{figure}[h]
+\begin{quote}
+\begin{alltt}\rmfamily
+\textbf{t}(double \(z\)[],int \(n\))\{int \(i\),\(j\);for(;;)\{\(i=i+j+1\);\(z[i]=z[i]*(z[0]+0)\);\}return \(z[n]\);\}
+\end{alltt}
+\end{quote}
+%\vspace{-\baselineskip}
+%\caption{Minimized \<bug.c> program}
+%\label{fig:gcc-min}
+%\end{figure}
+
+\begin{figure*}[t]
+\renewcommand{\a}[1]{{\textnormal{\texttt{\color{grey}{#1}}}}}
+\newcommand{\n}[1]{{\tiny #1}}
+\renewcommand{\t}[1]{\texttt{\textbf{\color{black}#1}}}
+\scriptsize
+$$
+\left\Downarrow
+\begin{tabular}{c@{\;\;}c@{\;\;}l}
+\n{714} & \t{t(double z[],int n)\{int i,j;for(;;)\{i=i+j+1;z[i]=z[i]*(\a{z}[0]+0);\}return z[n];\}} & \UNRESOLVED \\
+\n{714} & \t{t(double z[],int n)\{int i,j;for(;;)\{i=i+j+1;z[i]=z[i]*(z\a[0]+0);\}return z[n];\}} & \UNRESOLVED \\
+\n{715} & \t{t(double z[],int n)\{int i,j;for(;;)\{i=i+j+1;z[i]=z[i]*(z[\a0]+0);\}return z[n];\}} & \UNRESOLVED \\
+\n{716} & \t{t(double z[],int n)\{int i,j;for(;;)\{i=i+j+1;z[i]=z[i]*(z[0\a]+0);\}return z[n];\}} & \UNRESOLVED \\
+\n{717} & \t{t(double z[],int n)\{int i,j;for(;;)\{i=i+j+1;z[i]=z[i]*(z[0]\a+0);\}return z[n];\}} & \UNRESOLVED \\
+\n{718} & \t{t(double z[],int n)\{int i,j;for(;;)\{i=i+j+1;z[i]=z[i]*(z[0]+\a0);\}return z[n];\}} & \UNRESOLVED \\
+\n{719} & \t{t(double z[],int n)\{int i,j;for(;;)\{i=i+j+1;z[i]=z[i]*(z[0]+0\a);\}return z[n];\}} & \UNRESOLVED \\
+\n{720} & \t{t(double z[],int n)\{int i,j;for(;;)\{i=i+j+1;z[i]=z[i]*(z[0]+0)\a;\}return z[n];\}} & \UNRESOLVED \\
+\n{721} & \t{t(double z[],int n)\{int i,j;for(;;)\{i=i+j+1;z[i]=z[i]*(z[0]+0);\a\}return z[n];\}} & \UNRESOLVED \\
+\n{722} & \t{t(double z[],int n)\{int i,j;for(;;)\{i=i+j+1;z[i]=z[i]*(z[0]+0);\}\a{r}eturn z[n];\}} & \UNRESOLVED \\
+\vdots & \vdots & \UNRESOLVED \\
+\hline
+\n{733} & \t{t(double z[],int n)\{int i,j;for(;;)\{i=i+j+1;z[i]=z[i]*(z[0]+0);\}return z[n];\}} & \FAIL \\
+\end{tabular}
+\right.
+$$
+\vspace{-\baselineskip}
+\caption{Minimizing \GCC input \<bug.c>}
+\label{fig:gcc}
+\end{figure*}
+
+This test case is 1-minimal---no single character can be removed
+without removing the failure.  Even every single superfluous
+white\-space has been removed, and the function name has shrunk from
+\|mult| to a single $t$.  (At least, we now know that neither
+whitespace nor function name were failure-inducing!)
+
+Figure~\ref{fig:gcc} shows an excerpt of the Delta Debugging log:
+From ``$z[0]$'' to ``return'', we see how the $\ddmin$ algorithm tries
+to remove every single change (= character) in order to minimize the
+input even further---but each test results in a syntactically invalid
+program.
+
+As \GCC users, we can now file in the one-liner as a minimal bug
+report.  But where in \GCC does the failure actually occur?  We
+already know that the failure is associated with optimization: If we
+remove the \<-O> option to turn off optimization, the failure
+disappears.  Could it be possible to keep optimization turned on, but
+to influence it in a way that the failure disappears?
+
+The \GCC documentation lists 31~options that can be used to influence
+optimization on Linux, shown in Table~\ref{tab:gcc-options}.
+It turns out that applying \emph{all of these options} causes the
+failure to disappear:
+
+\begin{table}[t]
+{\small\it
+\begin{tabular}{@{}l@{\:\:\:\:}l@{\:\:\:\:}l@{}}
+--f\*float-store &
+--f\*no-default-inline &
+--f\*no-defer-pop \\
+--f\*force-mem &
+--f\*force-addr &
+--f\*omit-frame-pointer \\
+--f\*no-inline &
+--f\*inline-functions &
+--f\*keep-inline-functions \\
+--f\*keep-static-consts &
+--f\*no-function-cse &
+--f\*fast-math \\
+--f\*strength-reduce &
+--f\*thread-jumps &
+--f\*cse-follow-jumps \\
+--f\*cse-skip-blocks &
+--f\*rerun-cse-after-loop &
+--f\*rerun-loop-opt \\
+--f\*gcse &
+--f\*expensive-optimizations &
+--f\*schedule-insns \\
+--f\*schedule-insns2 &
+--f\*function-sections &
+--f\*data-sections \\
+--f\*caller-saves &
+--f\*unroll-loops &
+--f\*unroll-all-loops \\
+--f\*move-all-movables &
+--f\*reduce-all-givs &
+--f\*no-peephole \\
+--f\*strict-aliasing
+\end{tabular}
+}
+\caption{\GCC optimization options}
+\label{tab:gcc-options}
+\end{table}
+
+\begin{alltt}\small\ttfamily
+   \$ \textbf{gcc -O -ffloat-store -fno-default-inline \(\backslash\)
+       -fno-defer-pop \dots{}-fstrict-aliasing bug.c}
+   \$ _
+\end{alltt}
+
+\noindent
+This means that some option(s) in the list \emph{prevent} the failure.
+We can use test case minimization in order to find the preventing
+option(s).  This time, each~$\delta_i$ stands for \emph{removing} a \GCC
+option from Table~\ref{tab:gcc-options}: Having all~$\delta_i$ applied
+means to run \GCC with no option (failing), and having no~$\delta_i$
+applied means to run \GCC with all options (passing).
+
+This \WYNOT run is a straight-forward ``divide and conquer'' search,
+shown in Figure~\ref{fig:gccopts-log}.  After 7~tests (and less than
+a second), the single option \textit{--f\*fast-math} is found which
+prevents the failure:
+
+\begin{alltt}\small\ttfamily
+   \$ \textbf{gcc -O -ffast-math bug.c}
+   \$ _
+\end{alltt}
+
+\noindent
+Unfortunately, the \textit{--f\*fast-math} option is a bad candidate
+for working around the failure, because it may alter the semantics of
+the program.  We remove \textit{--f\*fast-math} from the list of
+options and make another \WYNOT run.  Again after 7~tests,
+it turns out the option \textit{--f\*force-addr} also prevents the
+failure:
+
+\begin{alltt}\small\ttfamily
+   \$ \textbf{gcc -O -fforce-addr bug.c}
+   \$ _
+\end{alltt}
+
+\noindent
+Are there any other options that prevent the failure?  Running \GCC
+with the remaining 29~options shows that the failure is still there;
+so it seems we have identified all failure-preventing options.  And
+this is what we can send to the \GCC maintainers: 
+\begin{enumerate}
+\item The minimal test case
+\item ``The failure occurs only with optimization.''
+\item ``\textit{--f\*fast-math} and \textit{--f\*force-addr} prevent 
+  the failure.''
+\end{enumerate}
+Still, we cannot identify a place in the \GCC code that causes the
+problem.  On the other hand, we have identified as many \emph{failure
+  circumstances} as we can.  In practice, program maintainers can
+easily enhance their automated regression test suites such that the
+failure circumstances are automatically simplified for any failing
+test case.
+
+\begin{figure}[t]
+\vspace{-1.5cm}
+\epsfig{file=gccopts.ps,width=\columnwidth}
+\vspace{-0.5cm}
+\caption{Minimizing \GCC options}
+\label{fig:gccopts-log}
+\end{figure}
+
+\subsection{Mozilla Cannot Print}
+\label{sec:mozilla}
+
+\noindent
+As a further case study, we wanted to simplify a real-world Mozilla
+test case and thus contribute to the Mozilla BugAThon.  A search in
+Bugzilla, the Mozilla bug database, shows us bug~\#24735, reported by
+\emph{anantk@yahoo.com}:
+
+\begin{quotation}\small
+\noindent
+Ok the following operations cause mozilla to crash consistently on my machine
+
+\begin{itemize}
+\item[$\to$] Start mozilla
+\item[$\to$] Go to bugzilla.mozilla.org
+\item[$\to$] Select search for bug
+\item[$\to$] Print to file setting the bottom and right margins to .50 
+(I use the file /var/tmp/netscape.ps)
+\item[$\to$] Once it's done printing do the exact same thing again on 
+the same file (/var/tmp/netscape.ps)
+\item[$\to$] This causes the browser to crash with a segfault
+\end{itemize}
+\end{quotation}
+
+\noindent
+In this case, the Mozilla input consists of two items: The
+\emph{sequence of input events}---that is, the succession of mouse
+motions, pressed keys, and clicked buttons---and the \emph{\HTML code}
+of the erroneous \WWW page.  We used the \XLAB \emph{capture/replay}
+tool~\cite{vertes/98/xlab} to run Mozilla while capturing all user
+actions and logging them to a file.  We could easily reproduce the
+error, creating an \XLAB log with 711~recorded X events.  Our \WYNOT
+tool would now use \XLAB to \emph{replay} the log and feed Mozilla
+with the recorded user actions, thus automating Mozilla execution.
+
+In a first run, we wanted to know whether all actions in the bug
+report were actually necessary.  We thus subjected the log to test
+case minimization, in order to find a \emph{failure-inducing minimum
+  of user actions.}  Out of the 711~X events, only 95~were induced by
+user actions---that is, moving the mouse pointer, pressing or
+releasing the mouse button, and pressing or releasing a key on the
+keyboard.  (The other events were induced by the X server, such as
+notifications that the window should be redrawn.)  These 95~user
+actions could easily be filtered out automatically by event type and
+were then subjected to minimization.
+
+The $\test$ function would start Mozilla and use \XLAB to replay the
+given set of user actions and then wait for a few seconds.  If Mozilla
+crashed during this interval, $\test$ would return $\FAIL$; otherwise,
+$\test$ would terminate Mozilla and return~$\PASS$.\footnote{As in all
+  testing, it is always a good idea to set an upper time bound for
+  test cases.}
+
+\begin{figure}[t]
+\vspace{-1.1cm}
+\epsfig{file=mozilla.1st.run.ps,width=\columnwidth}
+\vspace{-0.5cm}
+\caption{Minimizing Mozilla user actions}
+\label{fig:mozilla-events}
+\vspace{-\baselineskip}
+\end{figure}
+
+The results of this run are shown in Figure~\ref{fig:mozilla-events}.
+After 82 test runs (or 21~minutes), only 3 out of~95 user actions are
+left:
+\begin{enumerate}
+\item Press the \emph{P} key while the \emph{Alt} modifier key is held.
+  (Invoke the \emph{Print} dialog.)
+\item Press \emph{mouse button 1}
+  on the \emph{Print} button without a modifier.
+  (Arm the \emph{Print} button.)
+\item Release \emph{mouse button 1}.  (Start printing.)
+\end{enumerate}
+User actions removed include moving the mouse pointer, selecting the
+\emph{Print to file} option, altering the default file name, setting
+the print margins to \emph{.50}, and releasing the \emph{P} key
+before clicking on \emph{Print}---all this is irrelevant in producing the
+failure.\footnote{It is relevant, though, that the mouse button be
+  pressed before it is released.}
+
+Since the user actions can hardly be further generalized, we turn our
+attention to another input source--the failure-inducing \HTML code.
+The original \emph{Search for bug} page has a length of 39094
+characters or 896~lines; an excerpt is shown in
+Figure~\ref{fig:bugzilla-html}. In order to minimize the \HTML code,
+we chose a \emph{hierarchical} approach: In a first run, we wanted to
+minimize the \emph{number of lines} (that is, each $\Delta_i$ was
+identified with a line); in a later run, we wanted to minimize the
+failure-inducing line(s) according to single characters.
+
+The results of the \emph{lines} run are shown in
+Figure~\ref{fig:mozilla-html}.  After 57~test runs, the $\ddmin$
+algorithm minimizes the original 896~lines to a 1-line input:
+\begin{alltt}
+    <SELECT{\s}NAME="priority"{\s}MULTIPLE{\s}SIZE=7>
+\end{alltt}
+
+
+\noindent
+This is the \HTML input which causes Mozilla to crash when being
+printed.  As in the \GCC~example of Section~\ref{sec:gcc}, the actual
+failure-inducing input is very small.  It should be noted, though,
+that the original \HTML code contains multiple \<SELECT> tags; Delta
+Debugging returns only one of them.\footnote{If desired, one could
+  easily re-invoke Delta Debugging on the remainder to search for
+  other independent failure causes.  In practice, though, we expect
+  that after Delta Debugging has simplified a test case, first the
+  error is fixed.  Then, the test is repeated with the fixed program.
+  If the failure persists, then Delta Debugging can find the next
+  failure cause.}
+Further minimization by characters, as shown in
+Figure~\ref{fig:simplify-html}, reveals that the attributes of the
+\<SELECT> tag are not relevant for reproducing the failure,
+either---the single input
+\begin{alltt}
+    <SELECT>
+\end{alltt}
+already suffices for reproducing the failure.  Overall, we obtain 
+the following self-contained minimized bug report:
+\begin{itemize}
+\item[$\to$] Create an \HTML page containing ``\texttt{<SELECT>}''
+\item[$\to$] Load the page and print it using \emph{Alt+P} and \emph{Print}.
+\item[$\to$] The browser crashes with a segmentation fault.
+\end{itemize}
+or even simpler:
+\begin{itemize}
+\item[$\to$] Printing ``\texttt{<SELECT>}'' causes a crash.
+\end{itemize}
+
+\begin{figure}
+\vspace{-1.1cm}
+\epsfig{file=query.2nd.run.ps,width=\columnwidth}
+\vspace{-0.5cm}
+\caption{Minimizing Mozilla \HTML input}
+\label{fig:mozilla-html}
+\vspace{-\baselineskip}
+\end{figure}
+
+\noindent
+In principle, this minimization procedure could easily be applied
+automatically on the 12,479~open bugs listed in the Bugzilla
+database\footnote{as of 15 February 2001, 13:00 GMT}---provided that
+the bug reports can be reproduced automatically.  All one needs is an
+\HTML input, a sequence of user actions, an observable failure---and a
+little time to let the computer simplify the failure-inducing input.
+
+
+\subsection{Minimizing Fuzz}
+\label{sec:fuzz}
+
+\noindent
+In a classical experiment~\cite{miller/etal/90/cacm,
+  miller/etal/95/fuzz}, Bart Miller and his team examined the
+robustness of \UNIX utilities and services by sending them \emph{fuzz
+  input}---a large number of random characters.  The studies showed
+that, in the worst case, 40\% of the basic programs crashed or went
+into infinite loops when being fed with fuzz input.
+
+
+\begin{figure}[t]
+\vspace{-1.1cm}
+\epsfig{file=flex-t16.run.ps,width=\columnwidth}
+\vspace{-0.5cm}
+\caption{Minimizing \FLEX fuzz input}
+\label{fig:flex-fuzz}
+%\vspace{-\baselineskip}
+\end{figure}
+
+
+We wanted to know how well the $\ddmin$ algorithm performs in minimizing
+the fuzz input sequences.  We examined a subset of the \UNIX utilities
+listed in Miller's paper: 
+\NROFF (format documents for display),
+\TROFF (format documents for typesetter), 
+% \COL (reverse line feed filter), 
+\FLEX (fast lexical analyzer generator), 
+\CRTPLOT (graphics filter for various plotters), 
+\UL (underlining filter), and
+\UNITS (convert quantities).
+
+We set up 16~different fuzz inputs, differing in size ($10^3$ to
+$10^6$ characters) and content (whether all characters or only
+printable characters were included, and whether NUL characters were
+included or not).  As shown in Table~\ref{tab:fuzz-ddmin}(b), Miller's
+results still apply---at least on Sun's Solaris 2.6 operating system:
+out of $6 \times 16 = 96$~test runs, the utilities crashed 42~times (43\%).
+
+We applied our \WYNOT tool in all 42~cases to minimize the
+failure-inducing fuzz input.  In a first series, our $\test$ function
+would simply return~$\FAIL$ if the input made the program crash,
+and~$\PASS$, otherwise.  Table~\ref{tab:fuzz-ddmin}(c) shows the
+resulting input sizes; Table~\ref{tab:fuzz-ddmin}(d) lists the number
+of tests required.  Depending on the crash cause, the programs could
+be partitioned into two groups:
+
+\begin{table*}[tp]
+\begin{center}
+\let\f=\footnotesize
+\input{fuzz-ddmin.tex}
+\end{center}
+\vspace{-0.25cm}
+\caption{Minimizing failure-inducing fuzz input}
+\label{tab:fuzz-ddmin}
+\end{table*}
+
+\begin{itemize}
+\item The first group of programs shows obvious \emph{buffer
+  overrun} problems.
+
+\begin{itemize}
+\item \FLEX, the most robust utility, crashes on sequences of
+  2,121~or more non-newline and non-NUL characters ($t_{14}$--$t_{15}$).
+\item \UL crashes on sequences of 516~or more printable non-newline
+  characters ($t_5$--$t_8$, $t_{13}$--$t_{16}$).
+\item \UNITS crashes on sequences of 77~or more 8-bit characters
+  ($t_2$--$t_4$ and $t_{11}$--$t_{12}$).
+\end{itemize}
+Figure~\ref{fig:flex-fuzz} shows the first 500~tests of the \WYNOT run
+for \FLEX and $t_{16}$.  After 494~tests, the remaining size of
+2,122~characters is already close to the final size; however, it takes
+more than 10,000~further tests to eliminate one more character.
+
+\item The second group of programs appears
+  vulnerable to \emph{random commands}.
+\begin{itemize}
+\item \NROFF and \TROFF crash 
+  \begin{itemize}
+    \item
+      on \emph{malformed commands}
+      like \verb:"\\D^J%0F":\footnote{All input is shown in C string notation.}
+      \\ (\NROFF, $t_6$), and
+    \item
+      on \emph{8-bit input} such as \verb:"\302\n": (\TROFF, $t_1$)
+    % \item on \emph{control characters} like \verb:"\016n\017!": (\COL, $t_2$).
+    \end{itemize}
+\item \CRTPLOT crashes on the one-letter inputs \verb:"t": ($t_1$) and
+  \verb:"f": ($t_5$, $t_9$, $t_{13}$--$t_{16}$).
+\end{itemize}
+The \WYNOT run for \CRTPLOT and $t_{16}$ is shown in
+Figure~\ref{fig:crtplot-fuzz}.  It takes 24~tests to minimize the fuzz 
+input of $10^6$ characters to the single failure-inducing character.
+\end{itemize}
+
+
+\begin{figure}[t]
+\vspace{-1.1cm}
+\epsfig{file=crtplot-t16.run.ps,width=\columnwidth}
+\vspace{-0.5cm}
+\caption{Minimizing \CRTPLOT fuzz input}
+\label{fig:crtplot-fuzz}
+%\vspace{-\baselineskip}
+\end{figure}
+
+Again, all test runs can be (and have been) entirely automated.  This
+allows for \emph{massive automated stochastic testing}, where programs
+are fed with fuzz input in order to reveal defects.  As soon as a
+failure is detected, input minimization can generalize the large fuzz
+input to a minimal bug report.
+
+
+\subsection{The Precision Effect}
+\label{sec:precise-fuzz}
+
+\noindent
+In the fuzz examples from Section~\ref{sec:fuzz}, our \test function
+would return~$\FAIL$ whenever a program crashed---regardless of
+further circumstances.  This ignorance may lead to a problem: the
+minimized input may cause a \emph{different failure} than the original
+test case.  
+
+In the fuzz examples, a different failure may be tolerable: Just as in
+the Mozilla case study (Section~\ref{sec:mozilla}), there may be
+multiple independent failure causes, and eventually, we must fix them
+all.  In the context of debugging, though, it is important that the
+causes for the \emph{original failure} be isolated.
+
+As a consequence, we repeated our test runs with an \emph{increased
+  precision,} which would also compare the location of the failure.
+As location, we used the \emph{backtrace}---that is, the current
+program counter and the stack of calling functions at the moment of
+the crash; the values of arguments and local variables were not part
+of the backtrace, though.
+
+\begin{itemize}
+\item The $\test$ function would return~$\FAIL$ only if the program
+  crashed and if the backtrace of the failure was identical to the
+  original backtrace.
+\item If the program failed, but with a different backtrace, $\test$
+  would return $\UNRESOLVED$.
+\item If the program did not crash, $\test$ would return~$\PASS$.
+\end{itemize}
+
+As shown in Table~\ref{tab:fuzz-ddmin}(e), this increase in precision
+resulted in larger minimized test cases for \NROFF, \TROFF, and \FLEX;
+the other three programs are unchanged.  As an example, the \NROFF
+input~$t_1$ has been minimized from~$10^3$ to 60~characters; with
+lower precision (Table~\ref{tab:fuzz-ddmin}(c)), only 2~characters
+were left.  This indicates that the 2~characters from
+Table~\ref{tab:fuzz-ddmin}(c) induce a failure different from the
+original one; only the 60~characters in Table~\ref{tab:fuzz-ddmin}(e)
+induce the same backtrace.
+
+Besides the backtrace, there is more one could compare: the entire
+memory contents, for instance, or the full execution traces.  One will
+find, though, that higher precision will always increase the size of
+the minimized test case.  This is so because only the complete
+original input can induce the complete original failure; and a
+complete comparison of behavior will make all of the original input
+significant (except for those parts, of course, which do not have any
+impact on the final program state at all).  In practice, a simple
+backtrace as in our setting should provide sufficient precision.
+
+
+\section{Isolating \\
+  Failure-Inducing Differences}
+\label{sec:isolating-differences}
+
+\begin{Quote}
+  So assess them to find out their plans, \\
+  both the successful ones and the failures. \\
+  Incite them to action in order to find out \\
+  the patterns of movement and rest.
+\By{Sun Tzu,}{The Art of War}
+\end{Quote}
+
+The case studies as discussed in Sections
+\ref{sec:fuzz}~and~\ref{sec:precise-fuzz} exhibit a major weakness of
+the~$\ddmin$ algorithm: The larger the size of the simplified input,
+the higher is the number of tests required.  This is pretty obvious,
+because determining the 1-minimality of a test case with $n$~entities
+requires at least $n$~tests---each entity is individually removed and
+tested.  Consequently, with the simplified \FLEX input of
+2121~characters, the number of tests (Table~\ref{tab:fuzz-ddmin}(d))
+varies between~11589 (fuzz input of $10^4$~characters) and~17960
+($10^5$ fuzz input characters); with high precision, the number of
+tests is between 34450~and~37454 (Table~\ref{tab:fuzz-ddmin}(f)).
+
+36,000~tests are not much of an issue if each individual test is fast.
+If a single test takes about 0.1~seconds, as in the \FLEX case, the
+entire simplification requires 1~hour.  However, if the tests are less
+trivial, or if the size of the simplified input is larger, we have a
+serious problem.
+
+There are many pragmatic approaches to resolve this issue, such as
+stopping simplification as soon as a time limit is reached or as soon
+as the original test case is reduced by a certain amount.  However,
+there is a better strategy.  Rather than only cutting away while the
+failure persists, one can also \emph{add differences} while the
+program still passes the test.  To get the best efficiency, one can
+combine both approaches and \emph{narrow down the set of differences}
+whenever a test either passes or fails.
+
+
+\subsection{Isolation Illustrated}
+\label{sec:isolation-illustrated}
+
+This idea of \emph{isolating the failure-inducing differences} is best
+illustrated in comparison to the ``simplification'' approach discussed
+so far.  Figure~\ref{fig:simplify-html} shows how~$\ddmin$ simplifies
+the failure-inducing \HTML line presented in
+Section~\ref{sec:mozilla}: After 26~steps, the line is reduced to the
+single \texttt{<SELECT>} tag.
+
+Figure~\ref{fig:isolate-html-diff} shows the alternative ``isolation''
+approach.  Again, as in~$\ddmin$, each time a test case fails, the
+smaller test case is used as a new failing test case.  This minimizes
+the failing test case as well as the difference between the failing
+test case and the (initially empty) passing test case.  However, each
+time a test case \emph{passes,} the larger test case is used as
+\emph{new passing test case,} thus minimizing the difference as well.
+
+Before going into details of the algorithm, let us look at the
+results: After seven tests, the failure-inducing difference is
+narrowed down to one \texttt{<} character.  Prefixing the passing test
+\begin{alltt}
+    SELECT{\s}NAty"{\s}MULTIPLE{\s}SIZE=7>
+\end{alltt}
+with a \texttt{<} character changes the \<SELECT> text to an \HTML
+\texttt{<SELECT>} tag, causing the failure when being printed.
+This example demonstrates the basic difference between simplification and
+isolation:
+\begin{itemize}
+\item \emph{Simplification} means to make each part of the simplified
+  test case relevant: removing any part makes the failure go away.
+\item \emph{Isolation} means to find one relevant part of the test
+  case: removing this particular part makes the failure go away.
+\end{itemize}
+
+In general, isolation is much more efficient than simplification.  If
+we have a large failure-inducing input, isolating the difference will
+pinpoint a failure cause much faster than minimizing the test
+case---in Figure~\ref{fig:isolate-html-diff}, isolating requires only
+7~tests, while minimizing (Figure~\ref{fig:simplify-html}) required
+26~tests.
+
+On the other hand, focusing on the difference requires the programmer
+to keep the \emph{common context} of both test cases in mind---that
+is, the passing test case.  This imposes an extra load on the
+programmer.  In the future, though, we might have debugging tools that
+highlight differences and commonalities between multiple runs.  For
+such tools, having two test cases with a minimal difference is far
+preferable to having only one simplified test case.  Already today, if
+the isolated difference consists of, say, two items to keep in mind,
+while the minimized test case consists of, say, a hundred items to
+keep in mind, the isolated difference may lead much faster to the fix.
+
+Another important point is that the running time of the program is
+frequently proportional to the size of its input.  In some cases,
+simplification may require a larger amount of tests, but a lower total
+running time, due to the smaller input.  Consequently, even when
+isolating differences, we should take care to prefer simple test
+cases.  In practice, intended use and available resources may result
+in a mix of both simplification and isolation.
+
+
+
+
+\begin{figure*}[t]
+\begin{boxedminipage}{\textwidth}
+\subsection*{General Delta Debugging Algorithm}
+\medskip
+
+Let $\test$ and $\cfail$ be given such that $\test(\emptyset) = \PASS \land
+\test(\cfail) = \FAIL$ hold.
+
+The goal is to find $(\dpass, \dfail) = \dd(\cfail)$ such that $\emptyset =
+\cpass \subseteq \dpass \subset \dfail \subseteq \cfail$, $\test(\dpass) = \PASS$,
+$\test(\dfail) = \FAIL$, and $\Delta = \dfail - \dpass$ is 1-minimal.
+
+The \emph{general Delta Debugging algorithm} $\dd(\cfail)$ is 
+\begin{align*}
+\dd(\cfail) &= \dd_2(\emptyset, \cfail, 2) \quad \text{where} \\
+\dd_2(\dpass, \dfail, n) &= 
+\begin{cases}
+  \dd_2(\dpass, \dpass \cup \Delta_i, 2) & \text{\hphantom{else }if $\exists i \in \{1, \dots, n\} \cdot \test(\dpass \cup \Delta_i) = \FAIL$ (``reduce to subset'')} \\
+  \dd_2(\dfail - \Delta_i, \dfail, 2) & \text{else if $\exists i \in \{1, \dots, n\} \cdot \test(\dfail - \Delta_i) = \PASS$ (``increase to complement'')} \\
+  \dd_2\bigl(\dpass \cup \Delta_i, \dfail, \max(n - 1, 2)\bigr) & \text{else if $\exists i \in \{1, \dots, n\} \cdot \test(\dpass \cup \Delta_i) = \PASS$ (``increase to subset'')} \\
+  \dd_2\bigl(\dpass, \dfail - \Delta_i, \max(n - 1, 2)\bigr) & \text{else if $\exists i \in \{1, \dots, n\} \cdot \test(\dfail - \Delta_i) = \FAIL$ (``reduce to complement'')} \\
+  \dd_2\bigl(\dpass, \dfail, \min(2n, |\Delta|)\bigr) & \text{else if $n < |\Delta|$  (``increase granularity'')} \\
+  (\dpass, \dfail) & \text{otherwise (``done'')}
+\end{cases}
+\end{align*}
+where $\Delta = \dfail - \dpass = \Delta_1 \cup \Delta_2 \cup \dots \cup \Delta_n$, all $\Delta_i$ are
+pairwise disjoint, and $\forall \Delta_i \cdot |\Delta_i| \approx |\Delta| / n$ holds.
+
+The recursion invariant (and thus precondition) for $\dd_2$ is 
+$\test(\dfail) = \FAIL \land \test(\dpass) = \PASS \land n \leq |\Delta|$.
+\end{boxedminipage}
+\caption{General Delta Debugging algorithm}
+\label{fig:dd}
+\end{figure*}
+
+\subsection{An Isolating Algorithm}
+\label{sec:dd}
+
+Let us now formally define the algorithm that isolates
+failure-inducing differences.  How can we extend the
+$\ddmin$~algorithm to obtain the behavior as sketched in
+Figure~\ref{fig:isolate-html-diff}?  Our goal is to find two sets
+$\dpass$~and~$\dfail$ such that $\emptyset = \cpass \subseteq \dpass \subset \dfail \subseteq
+\cfail$ holds and the difference $\Delta = \dfail - \dpass$ is minimal.
+
+Again, we need to specify what we mean by minimality, now applied to
+differences instead of test cases.  The definition of minimality
+follows Definition~\ref{def:minimal-test-case}:
+
+\begin{definition}[Minimal failure-inducing difference]
+\label{def:minimal-difference}
+Let $\dpass$~and $\dfail$ be two test cases with $\emptyset = \cpass \subseteq \dpass
+\subset \dfail \subseteq \cfail$.
+Their difference $\Delta = \dfail - \dpass$ is \emph{minimal} if
+$$
+  \forall \Delta_i \subset \Delta \cdot \test(\dpass \cup \Delta_i) \neq \PASS \land \test(\dfail - \Delta_i) \neq \FAIL
+$$
+holds.
+\end{definition}
+
+Again, the number of subsets of~$\Delta$ is exponential, so we resort to
+the same pragmatic approximation as in
+Definition~\ref{def:n-minimal-test-case}:
+
+\begin{definition}[$n$-minimal difference]
+\label{def:n-minimal-difference}
+Let $\dpass$~and~$\dfail$ be defined as in
+Definition~\ref{def:minimal-difference}.  
+Their difference $\Delta = \dfail - \dpass$ is \emph{$n$-minimal} if
+$$
+\forall \Delta_i \subset \Delta \cdot |\Delta_i| \leq n \Rightarrow \bigl(\test(\dpass \cup \Delta_i) \neq \PASS \land 
+                             \test(\dfail - \Delta_i) \neq \FAIL\bigr)
+$$
+holds.  Consequently, $\Delta$ is \emph{1-minimal} if
+$$
+\forall \delta_i \in \Delta \cdot \test\bigl(\dpass \cup \{\delta_i\}\bigr) \neq \PASS \land \test\bigl(\dfail - \{\delta_i\}\bigr) \neq \FAIL
+$$
+holds.
+\end{definition}
+
+This is what we are aiming at: \emph{to isolate a 1-minimal
+  difference} between a passing and a failing test case.
+
+It turns out that the original~$\ddmin$ algorithm, as discussed in
+Section~\ref{sec:ddmin} can easily be extended to compute a 1-minimal
+difference rather than a minimal test case.  Besides reducing the
+failing test case~$\dfail$ whenever a test fails, we now also
+\emph{increase} the passing test case~$\dpass$ whenever a test passes.
+At all times, $\dpass$ and $\dfail$ act as lower and upper bound of
+the search space, which is systematically narrowed---like in a
+branch-and-bound algorithm, except that there is no backtracking.
+
+This is what we have to do to extend~$\ddmin$:
+
+\begin{enumerate}
+\item Extend $\ddmin$ such that it works on two sets at a time:
+  \begin{itemize}
+  \item The passing test case~$\dpass$ which is to be maximized
+    (initially, $\dpass = \cpass = \emptyset$ holds) and
+  \item The failing test case~$\dfail$ which is to be minimized
+    (initially, $\dfail = \cfail$ holds).
+  \end{itemize}
+  
+\item Compute subsets~$\Delta_i$ as subsets of $\Delta = \dfail - \dpass$
+  (instead of subsets of $\dfail$)
+
+\item Change the rule ``Reduce to subset'' such that $\dpass \cup \Delta_i$ is
+  tested (and passed to the recursive call) instead of~$\Delta_i$.
+
+\item Introduce two additional rules for passing test cases:
+\begin{description}
+\item[Increase to complement.]  If $\dfail - \Delta_i$ passes for any
+  subset~$\Delta_i$, then $\dfail - \Delta_i$ is a larger passing test case.
+  Continue reducing the difference between $\dfail -
+  \Delta_i$~and~$\dfail$.
+  
+  This is just the complement of the ``reduce to subset'' rule
+  in~$\ddmin$.
+  
+\item[Increase to subset.]  If $\dpass \cup \Delta_i$ passes for any
+  subset~$\Delta_i$, then $\dpass \cup \Delta_i$ is a larger passing test case.
+  
+  Again, this is just the complement of the ``reduce to complement''
+  rule in~$\ddmin$.
+\end{description}
+As a consequence of the additional rules, the ``increase granularity''
+rule only applies if all previous tests turn out unresolved.
+\end{enumerate}
+
+The full~$\dd$ algorithm is shown in Figure~\ref{fig:dd}.
+
+
+\subsection{Properties of dd}
+
+Being based on $\ddmin$, the $\dd$~algorithm inherits most properties.
+In particular, $\dd$ returns a 1-minimal difference and has the same
+worst-case number of tests:
+
+\begin{proposition}[$\dd$ minimizes]
+\label{pro:dd-minimizes}
+  For any $c \subseteq \cfail$, let $(\dpass, \dfail) = \dd(c)$.  Then, $\Delta =
+  \dfail - \dpass$ is 1-minimal in the sense of
+  definition~\ref{def:n-minimal-difference}.
+\begin{proof}
+  (Compare proof of proposition~\ref{pro:ddmin-minimizes}) According
+  to the $\dd$ definition (Figure~\ref{fig:dd}), $\dd_2(\dpass,
+  \dfail, n)$ returns $(\dpass, \dfail)$ only if $n \geq |\Delta|$ where
+  $\Delta = \dfail - \dpass = \Delta_1 \cup \dots \cup \Delta_n$; that is, $|\Delta_i| =
+  1$~and~$\Delta_i = \{\delta_i\}$ hold for all~$i$.  
+
+  Furthermore, for $\dd_2$ to return $(\dpass, \dfail)$, the conditions
+  $\test(\dpass \cup \Delta_i) \neq \FAIL$, 
+  $\test(\dfail - \Delta_i) \neq \PASS$, 
+  $\test(\dpass \cup \Delta_i) \neq \PASS$, and
+  $\test(\dfail - \Delta_i) \neq \FAIL$ must hold.  These are the conditions of
+  definition~\ref{def:n-minimal-difference}; consequently, $\Delta$ is 1-minimal.
+\end{proof}
+\end{proposition}
+
+\begin{proposition}[$\dd$ complexity, worst case]
+\label{pro:dd-worst-complexity}
+The number of tests carried out by $\dd(\cfail)$ is $|\cfail|^2 + 3|\cfail|$ 
+in the worst case.
+\begin{proof}
+  The worst case is the same as in
+  Proposition~\ref{pro:ddmin-worst-complexity}; hence, the number of
+  tests is the same.
+\end{proof}
+\end{proposition}
+
+
+Actually, $\ddmin$ is an instance of $\dd$: if $\test$ returns $\PASS$
+only for $\cpass$: in this case, $\dpass = \cpass = \emptyset$ always holds
+and only $\dfail$ is minimized.\footnote{There is another instance of
+  $\dd$, which might be called a ``maximizing'' algorithm; it
+  minimizes the difference only by extending the passing test case.
+  This~$\ddmax$ variant is obtained if $\test$ returns $\FAIL$ only
+  for $\cfail$: then, $\dfail = \cfail$ always holds and $\dpass$ is
+  maximized.}  However, $\dd$ is much more efficient than $\ddmin$ if
+there are no unresolved test cases; this ``best case'' even requires
+half as many tests as~$\ddmin$.
+
+\begin{proposition}[$\dd$ complexity, best case]
+\label{pro:dd-best-complexity}
+If all tests return either $\PASS$ or $\FAIL$, then the number
+of tests~$t$ is limited by $t \leq \log_2(|\cfail|)$.
+\begin{proof}
+  We decompose $\Delta = \Delta_1 \cup \Delta_2 = \dfail - \dpass$.  Under the given
+  conditions, the test of $\dpass \cup \Delta_1 = \dfail - \Delta_2$ will either
+  pass or fail; $n = 2$ always holds.  This is equivalent to a
+  classical binary search algorithm over a sorted array: with each
+  recursion, the difference is reduced by 1/2; the overall complexity
+  is the same.
+\end{proof}
+\end{proposition}
+
+Proposition~\ref{pro:dd-best-complexity} tells us what makes the
+search for the \<SELECT> tag so efficient: There were no unresolved
+test outcomes in the Mozilla test case.  In fact, when there are no
+unresolved test outcomes, $\dd$~always returns a single
+failure-inducing change:
+
+\begin{corollary}[Size of failure-inducing difference, best case]
+\label{cor:dd-size}
+If all tests return either $\PASS$ or $\FAIL$, then $|\dd(\cfail)| =
+1$ holds.
+\begin{proof}
+  Follows directly from the equivalence to binary search, as shown in
+  Proposition~\ref{pro:dd-best-complexity}.
+\end{proof}
+\end{corollary}
+
+However, these ``best cases'' need not always be given---the more
+unresolved test outcomes we have, the more tests will be required.
+Let us see how~$\dd$ behaves in practice when there are unresolved
+test outcomes.
+
+
+\section{Case Studies Revisited}
+\label{sec:fuzz-revisited}
+
+\begin{Quote}
+--~How do they know the load limit on bridges, Dad? \\
+--~They drive bigger and bigger trucks over the bridge 
+   until it breaks. Then they weigh the last truck 
+   and rebuild the bridge.
+\By{Bill Watterson,}{Calvin and Hobbes}
+\end{Quote}
+
+To demonstrate the difference in performance between
+$\dd$~and~$\ddmin$, we have repeated the \GCC and fuzz case studies
+with the~$\dd$ algorithm.  
+
+\subsection{Isolating GCC Input}
+
+As a first example, reconsider the \GCC example from
+Section~\ref{sec:gcc}.  Since we are not interested in programs with
+invalid syntax, we set up the $\test$ function such that it would
+return $\PASS$ if the compilation succeeded, $\FAIL$ if the compiler
+crashed, and $\UNRESOLVED$ in all other cases (notably if the
+compilation failed).
+
+With $\ddmin$, it took us 731~tests to minimize the entire program.
+Isolating the difference requires but 59~tests
+(Figure~\ref{fig:bug.c-dd-plot}), but nonetheless pinpoints to a
+relevant difference of 2~characters.  As shown in
+Figure~\ref{fig:bug.c-dd} it suffices to remove the assignment to $i$
+in the \<mult> function to make the program work
+(Figure~\ref{fig:bug.c-dd}(b)).  This suggests a problem with inlining
+the expression $i + j + 1$ in the array accesses~$z[i]$ on the
+following line.
+
+\begin{figure}[t]
+\vspace{-1.1cm}
+\epsfig{file=bug3.c-dd.ps,width=\columnwidth}
+\vspace{-0.5cm}
+\caption{Narrowing down the failure-inducing difference}
+\label{fig:bug.c-dd-plot}
+\end{figure}
+
+\subsection{Isolating Fuzz Input}
+
+In a second example, we have repeated the high-precision fuzz
+experiments of Section~\ref{sec:precise-fuzz} with the
+$\dd$~algorithm---that is, the test outcome was $\UNRESOLVED$ if the
+failure backtrace was different from the original backtrace.\footnote{We
+  also repeated the low-precision experiments.  But since the test
+  outcome was always $\PASS$ or $\FAIL$, the experiments outcome just
+  confirmed the predictions of
+  Proposition~\ref{pro:dd-best-complexity} and
+  Corollary~\ref{cor:dd-size}.}
+
+As shown in Table~\ref{tab:fuzz-dd}(b), the number of test runs is
+much smaller for~$\dd$ than for~$\ddmin$.  Except for \NROFF, the
+minimal failure-inducing difference is always just 1~character.  Only
+\NROFF, \TROFF, and \FLEX have any unresolved test outcomes
+(Table~\ref{tab:fuzz-dd}(d)); for all others, the number of test runs
+(Table~\ref{tab:fuzz-dd}(c)) is logarithmic in proportion to the input
+size as predicted in Proposition~\ref{pro:dd-best-complexity}.
+
+Table~\ref{tab:fuzz-dd}(e) shows the size of the common context---that
+is, the size of the maximized passing input~$\dpass$.  In the \UL
+example, for instance, we can see that adding one more character to
+the 515 passing ones causes the failure.  Likewise, the \FLEX buffer
+is overrun after adding one more character to a base of 7804~to~7811
+characters.  In all cases, the number of tests is significantly lower
+than with the~$\ddmin$ algorithm.
+
+\begin{table*}[t]
+\begin{center}
+\let\f=\footnotesize
+\input{fuzz-dd.tex}
+\end{center}
+\vspace{-0.25cm}
+\caption{Isolating failure-inducing differences in fuzz input}
+\label{tab:fuzz-dd}
+\end{table*}
+
+
+
+\section{Related Work}
+\label{sec:related-work}
+
+\begin{Quote}
+When you have two competing theories which make exactly the same predictions,
+the one that is simpler is the better.
+\By{}{Occam's Razor}
+% Cited after http://math.ucr.edu/home/baez/physics/occam.html
+\end{Quote}
+
+As stated in the introduction, we are unaware of any other technique
+that would automatically simplify test cases to determine
+failure-inducing input.  One important exception is the simplification
+of test cases which have been \emph{artificially produced.}
+In~\cite{slutz/98/vldb}, Don Slutz describes how to stress-test
+databases with generated \SQL statements.  After a failure has been
+produced, the test cases had to be simplified---after all, a failing
+1,000-line \SQL statement would not be taken seriously by the database
+vendor, but a 3-line statement would.  This simplification was
+realized simply by undoing the earlier production steps and testing
+whether the failure still occurred.
+
+In general, Delta Debugging determines circumstances that are relevant
+for producing a failure (in our case, parts of the program input).
+Such work has been conducted before.  However, the previous work was
+always specific to a particular domain, and always only as simple
+binary search for a single circumstance.  An example for such work is
+detecting a single failure-inducing component in an optimizing
+compiler~\cite{whalley/94/toplas}.
+
+The $\dd$~algorithm presented in this paper is a successor to the
+$\edd$~algorithm presented in~\cite{zeller/99/esec}.  Like $\dd$,
+$\edd$ takes a set of changes and minimizes it according to a given
+test; in~\cite{zeller/99/esec}, these changes affected the program
+code and were obtained by comparing two program versions.
+
+\begin{figure}[t]
+\begin{minipage}{0.48\columnwidth}
+\begin{alltt}\rmfamily
+\textbf{(a) failing program}\medskip
+\#define \text{SIZE} 20\medskip
+double \textbf{mult}(double \textit{z}[], int \textit{n})
+\{
+   int \(i\), \(j\);\medskip
+   \(i = 0\);
+   for (\(j\) = 0; \(j < \textit{n}\); \(j\)\text{++}) \{
+      \frame{\(i = i + j + 1\);}
+      \(\textit{z}[i] = \textit{z}[i] * (\textit{z}[0] + 1.0)\);
+   \}\smallskip
+   return \textit{z}[\textit{n}];
+\}\end{alltt}
+\end{minipage}
+\begin{minipage}{0.48\columnwidth}
+\begin{alltt}\rmfamily
+\textbf{(b) passing program}\medskip
+\#define \text{SIZE} 20\medskip
+double \textbf{mult}(double \textit{z}[], int \textit{n})
+\{
+   int \(i\), \(j\);\medskip
+   \(i = 0\);
+   for (\(j\) = 0; \(j < \textit{n}\); \(j\)\text{++}) \{
+      \frame{\(i + j + 1\);}
+      \(\textit{z}[i] = \textit{z}[i] * (\textit{z}[0] + 1.0)\);
+   \}\smallskip
+   return \textit{z}[\textit{n}];
+\}\end{alltt}
+\end{minipage}
+\caption{A failure-inducing difference}
+\label{fig:bug.c-dd}
+\end{figure}
+
+The main differences between~$\dd$ and~$\edd$ are:
+\begin{itemize}
+\item $\edd$ is not well-suited for failures induced by a large
+  combination of changes.  In particular, $\edd$ does not guarantee a
+  1-minimal subset, which is why it is not suited for minimizing test
+  cases.
+\item $\edd$ assumes \emph{monotonicity:} that is, whenever $\test(c) =
+  \PASS$ holds, then $\test(c') = \PASS$ holds for every subset $c' \subseteq
+  c$ as well.  This assumption, which was found to be useful for
+  changes to program code, gave $\edd$ a better performance when most
+  tests produced determinate results.
+\end{itemize}
+We recommend $\dd$ as a general replacement for~$\edd$.  To exploit
+monotonicity in $\dd$, one can make $\test(c)$ return $\PASS$ whenever a
+superset of~$c$ has already passed the test, and $\FAIL$ whenever a
+subset of~$c$ has already failed the test.
+
+% The properties of the $\ddmin$ algorithm must still be stated 
+% and proven formally.
+
+\section{Future Work}
+\label{sec:future-work}
+
+\begin{Quote}
+If you get all the way up to the group-signed T-Shirt, you \emph{can}
+qualify for a stuffed animal as well by doing 12 more.  
+\By{}{Mozilla BugAThon call}
+\end{Quote}
+
+\noindent
+Our future work will concentrate on the following topics:
+\begin{description}
+\item[Domain-specific simplification methods.]  Knowledge about the
+  input structure can very much enhance the performance of the Delta
+  Debugging algorithms.  For instance, valid program inputs are
+  frequently described by \emph{grammars}; it would be nice to rely on
+  such grammars in order to exclude syntactically invalid input right
+  from the start.  Also, with a formal input description, one could
+  replace input by smaller \emph{alternate input} rather than simply
+  cutting it away.  In the \GCC example, one could try to replace
+  arithmetic expressions by constants, or program blocks by no-ops;
+  \HTML input could be reduced according to \HTML structure rules.
+  Besides grammars, changes may also be constrained by explicit change
+  constraints, as established in version
+  control~\cite{zeller/snelting/97/tosem}.
+  
+\item[Optimization.]  In general, the abstract description of the
+  Delta Debugging algorithms leaves a lot of flexibility in the actual
+  implementation and thus provides ``hooks'' for several
+  domain-specific optimizations:
+\begin{itemize}
+\item The implementation can choose how to \emph{partition} the
+  difference~$\Delta$ into subsets~$\Delta_i$.  This is the place where
+  knowledge about the structure of the input comes in handy.
+\item The implementation can choose \emph{which subset to test first.}
+  Some subsets may be more likely to cause a failure than others.
+\item The implementation can choose whether and how to handle
+  \emph{multiple independent failure-inducing inputs}---that is, the
+  case where there are several subsets~$\Delta_i$ with
+  $\test(\dpass \cup \Delta_i) = \FAIL$.  Options include
+  \begin{itemize}
+  \item to continue with the first failing subset,
+  \item to continue with the smallest failing one, or 
+  \item to simplify each individual failing subset.
+  \end{itemize}
+  Our implementation currently goes for the first failing subset only
+  and thus reports only one subset.  The reason is economy: it is
+  wiser to fix the first failure before checking for further similar
+  failures.
+% Predict test outcomes?  - doesn't make much sense with test cases,
+% since the test is already cheap and the lightweight predictor (such
+% as CVS in ``classic'' Delta Debugging need not be cheaper.
+\end{itemize}
+
+\item[Undoing changes.]  Delta Debugging assumes that \emph{failure is
+    monotone:} Once a failure occurs, one cannot make it disappear by
+  adding more ``undoing'' changes.  (Formally, there is no $\bar{\delta_i}$
+  such that $(\delta_i \circ \bar{\delta_i})(r) = r$.)  As an example, assume a
+  program that processes \HTML tags: whenever its input contains only
+  the opening \HTML tag, but not the closing one, it fails.  In the
+  input \texttt{<A></A><B>}, for instance, the \HTML tag \texttt{<B>}
+  lacks a closing \texttt{</B>}.
+  
+  If we use Delta Debugging to simplify this failure-inducing input,
+  then it may partition the input into \texttt{<A>} and
+  \texttt{</A><B>}, resulting in the simplified input
+  \texttt{<A>}---although in the concrete example, this failure cause
+  was undone by \texttt{</A>}; it was \texttt{<B>} that had no closing
+  \HTML tag.  To identify undoing changes, one cannot use $\test$
+  alone (this would require testing up to $2^{|\cfail|}$ supersets of
+  the minimized test case), so we investigate whether increased
+  precision (Section~\ref{sec:precise-fuzz}) or domain-specific
+  knowledge help in practice.
+  
+\item[Program analysis.]  In the field of general automated debugging,
+  failure-inducing circumstances have almost exclusively been
+  understood as failure-inducing \emph{statements} during a program
+  execution.  The most significant method to determine statements
+  relevant for a failure is \emph{program slicing}---either the static
+  form obtained by program analysis~\cite{weiser/82/cacm, tip/95/jpl}
+  or the dynamic form applied to a specific run of the
+  program~\cite{agrawal/horgan/90/pldi, gyimothy/etal/99/esec}.
+
+  The strength of analysis is that several potential failure causes
+  can be eliminated due to lack of data or control dependency.  This
+  does not suffice, though, to check whether the remaining potential
+  causes are relevant or not for producing a given failure.  Only by
+  experiment (that is, testing) can we prove that some circumstance is
+  relevant---by showing that there is some alteration of the
+  circumstance that makes the failure disappear.  When it comes to
+  concrete failures, program analysis and testing are complementary:
+  analysis disproves causality, and testing proves it.
+
+  It would be nice to see how far systematic testing and program
+  analysis could work together and whether Delta Debugging could be
+  used to determine failure-inducing statements as well.  Just as
+  determining which parts of the input were relevant in producing the
+  failure, delta debugging could determine the failure-relevant
+  statements in the program.  \emph{Critical
+    slicing}~\cite{demillo/pan/spafford/96/issta} is a related
+  approach which is test-based like Delta Debugging; additional data
+  flow analysis is used to eliminate circumstantial positives.
+
+\item[Other failure-inducing circumstances.]  Changing the input of
+  the program is only one means to influence its execution.  As stated
+  in Section~\ref{sec:test-cases-and-tests}, a~$\delta_i$ can stand for any
+  change in the circumstances that influences the execution of the
+  program.  Our current work extends Delta Debugging to other
+  failure-inducing circumstances such as executed statements, control
+  predicates or thread schedules.
+\end{description}
+
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+\begin{Quote}
+Debugging is still, as it was 30~years ago, a~matter~of~trial~and~error.
+\By{Henry Lieberman,}{The Debugging Scandal}
+\end{Quote}
+
+\noindent
+We have shown how the Delta Debugging algorithms simplify and isolate
+failure-inducing input, based on an automated testing procedure.  The
+method can be (and has been) applied in a number of settings, finding
+failure-inducing parts in the program invocation (\GCC options), in
+the program input (\GCC, fuzz, and Mozilla input), or in the sequence
+of user interactions (Mozilla user actions).
+
+We recommend that automated test case simplification be an integrated
+part of automated testing.  Each time a test fails, Delta Debugging
+could be used to simplify and isolate the circumstances of the
+failure.  Given sufficient testing resources and a reasonable choice
+of changes~$\delta_i$ that influence the program execution, the algorithms
+presented in this paper provide simplification and isolation methods
+that are straight-forward and easy to implement.
+
+In practice, testing and debugging typically come in pairs.  However,
+in previous research on automated debugging, testing has played a very
+minor role.  This is surprising, because re-testing a program under
+changed circumstances is a common debugging approach---and the only
+way to prove that the circumstances actually cause the failure.
+Eventually, we expect that several debugging tasks can in fact be
+stated as search and minimization problems, based on automated
+testing---and thus be solved automatically.
+
+%\begin{scriptsize}
+%\let\small=\scriptsize
+\noindent
+\textbf{Acknowledgments.}  Ralf Hildebrandt, co-author of the
+original \ISSTA paper~\cite{hildebrandt/zeller/2000/issta}, carried
+out the $\ddmin$~case studies described in
+Section~\ref{sec:ddmin-case-studies}; his
+thesis~\cite{hildebrandt/2000/dipl} contains many more details.  Mirko
+Streckenbach provided helpful insights on \UNIX internals.  Tom
+Truscott pointed us to the \GCC error.  Holger Cleve, Jens Krinke and
+Gregor Snelting provided valuable comments on earlier revisions of
+this paper.  Special thanks go to the anonymous reviewers of the
+original \ISSTA paper for their constructive comments.
+
+%\end{scriptsize}
+
+Further information on Delta Debugging is available at
+\begin{center}
+\texttt{http://www.st.cs.uni-sb.de/dd/}\enspace.
+\end{center}
+\medskip
+
+\bibliographystyle{abbrv}
+\bibliography{debug,softech-e}
+
+\clearpage
+
+\section*{SUMMARY OF CHANGES}
+
+\subsection*{Changes to first TSE submission}
+\medskip
+
+This is how this paper differs from the first \TSE submission:
+
+\begin{itemize}
+\item All comments of the reviewers suggesting concrete changes have
+  been applied.  Especially,
+  \begin{itemize}
+  \item The title has been extended to be more accurate
+  \item A list of keywords has been added
+  \item Several minor clarifications have been made throughout the document.
+  \end{itemize}
+  
+\item To illustrate the difference between simplifying and isolating,
+  I have added an ``air plane crash'' analogon in
+  Section~\ref{sec:introduction}.  I find that this analogon also
+  motivates for isolation as a ``debugging alternative'' to
+  simplifying.
+  
+\item Reviewer $B$ states that ``the minimizing method is the one that
+  can be efficiently used in practice''.  Actually, I share the same
+  view, given the state of the art in practice.  Regarding isolation,
+  $B$ lists three shortcomings:
+  \begin{description}
+  \item[The test input may remain large.]  The reviewer states that
+    keeping a passing test case in mind frequently makes debugging
+    more difficult for the programmer.  This is perfectly valid
+    regarding the current state of the art.  However, the future may
+    come up with alternatives; see the discussion at the end of
+    Section~\ref{sec:isolation-illustrated}.
+    
+  \item[The actual bug may relate to another input segment.]  This
+    shortcoming is true for minimizing as well, and probably true for
+    all debugging approaches relying exclusively on testing.  In fact,
+    this is an instance of the ``Undoing changes'' problem as listed
+    in Section~\ref{sec:future-work}.
+    
+  \item[Input size may determine execution speed.]  This may indeed be
+    a limitation, although I cannot say so for all programs.  This is
+    now discussed at the end of
+    Section~\ref{sec:isolation-illustrated}.
+  \end{description}
+  
+  
+\item All reviewers found the size of the pictures too small; this
+  will be corrected in the final printed version.
+  
+\item Finally, a change of address: As of June 1st, I run my own department at
+  Saarbr{\"u}cken University.
+\end{itemize}
+
+
+
+
+\subsection*{Changes to original ISSTA version}
+\medskip
+
+This is how this revised, expanded, submitted paper differs from the
+original \ISSTA conference version:
+
+\begin{itemize}
+\item I have kept the original ACM Conference Proceedings layout
+  because it comes close to TSE layout.
+  
+\item The first paragraph of the introduction
+  (Section~\ref{sec:introduction}) was too vivid for a journal; it has
+  been rewritten.
+  
+  The introduction now distinguishes \emph{simplification} and
+  \emph{isolation,} and motivates both by early examples (Figures
+  \ref{fig:bugzilla-html}, \ref{fig:simplify-html},
+  and~\ref{fig:isolate-html-diff}).  This should help the reader work
+  through the formal sections that follow.
+  
+\item Section \ref{sec:tests-and-changes} on tests and changes has
+  been largely rewritten; it now concentrates on isolating the
+  \emph{difference} between a passing run $\rpass$ and a failing run
+  $\rfail$ rather than minimizing the input of the failing run.
+  
+  So, rather than working on, say, characters or lines of input, Delta
+  Debugging now focuses on individual changes~$\delta_i$ (whose properties
+  are defined with a lot of detail).  This gives a much more general
+  view to the problem and also motivates for the isolation approach in
+  Section~\ref{sec:isolating-differences}.
+  
+\item Section~\ref{sec:minimizing-test-cases} on minimizing test cases
+  introduces a new, hopefully more systematic notation for test cases:
+  \begin{itemize}
+  \item Passing and failing test cases and program runs are indexed
+    with $\PASS$~and~$\FAIL$, respectively.  $\cpass$~and~$\cfail$ are
+    consistently used to denote the original passing and failing test
+    cases.
+
+  \item The prime symbol ${}'$ is used for derived sets.  For
+    instance, $\dfail$ is the minimized failing test case as computed
+    by~$\ddmin(\cfail)$.
+    
+    The abundance of prime symbols and indexes may seem confusing at
+    first, but I think that the semantics of the individual sets are
+    much better expressed this way.
+
+  \item Subsets of $\cfail$ are denoted by $\Delta_i$, illustrating the
+    notion of ``difference''.
+
+  \item Complements of~$\Delta_i$ are denoted by $\nabla_i$.
+  \end{itemize}
+  
+  Definitions \ref{def:global-minimum}~and~\ref{def:minimal-test-case}
+  now make clear that the 1-minimal test case sought is only a local
+  minimum; other even smaller test cases may exist.
+  
+  Definition~\ref{def:n-minimal-test-case} gives a simplified
+  definition for 1-minimal test cases.
+  
+\item Case Studies (Section~\ref{sec:ddmin-case-studies}):
+
+\begin{itemize}
+\item The \GCC case study in Section \ref{sec:gcc} is unchanged.
+  
+\item The Mozilla case study (Section~\ref{sec:mozilla}) is mostly
+  unchanged, except for the discussion that Delta Debugging only finds
+  one failure cause (i.e.\ one of several \<SELECT> tags).
+
+  The original failure-inducing \HTML input is now shown in
+  Figure~\ref{fig:bugzilla-html}; its simplification is shown
+  in Figure~\ref{fig:simplify-html}.
+  
+\item The fuzz case study (Section~\ref{sec:fuzz}) is now presented as
+  last case study, because it motivates for the alternate approach
+  presented in Section~\ref{sec:isolating-differences}; otherwise, it
+  is unchanged.
+  
+\item Section~\ref{sec:precise-fuzz} on how the precision affects the
+  results is new and original, including the ``high precision''
+  results in Table~\ref{tab:fuzz-ddmin}.
+\end{itemize}
+
+\item Sections
+  \ref{sec:isolating-differences}~and~\ref{sec:fuzz-revisited} on
+  isolating differences are new and original.
+  
+\item Related work (Section~\ref{sec:related-work}):
+
+  \begin{itemize}
+  \item The discussion of program analysis has been moved to
+    Section~\ref{sec:future-work} on future work.  Program analysis is
+    more seen as a technology supporting future work rather than a
+    technology directly comparable with Delta Debugging (at least in
+    the context of failure-inducing input).
+  
+  \item Section~\ref{sec:related-work} now compares $\dd$~and~$\edd$
+    (instead of $\ddmin$~and~$\edd$).
+  
+  \item Except for~\cite{whalley/94/toplas}, cited in
+    Section~\ref{sec:related-work}, I am still not aware of any other
+    work that uses a search method to simplify or isolate failure
+    causes.
+  \end{itemize}
+  
+\item Section~\ref{sec:future-work} on future work has been updated:
+  \begin{itemize}
+  \item The item on maximizing passing test cases has been removed, as it is
+    now covered by Section~\ref{sec:dd}.
+    
+  \item The item on program analysis has been moved over from
+    Section~\ref{sec:related-work}.
+
+  \item The discussion of undoing changes is new and original.
+  \end{itemize}
+
+\item The conclusion (Section~\ref{sec:conclusion}) is unchanged.
+
+\end{itemize}
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+We see the future of debugging in joining program testing and program
+analysis---using analysis to guide the testing and debugging process,
+and using tests to validate the analysis results.  
+
+\begin{Quote}
+Before reporting a bug or trying to fix it yourself, try to isolate
+it to the smallest possible Makefile that reproduces the problem.
+\By{Richard Stallman and Roland McGrath,}{\GNU Make}
+\end{Quote}
+
+
+% FIXME: Mutation!
+It should be noted, though, that this test case is not minimal in the
+sense of Definition~\ref{def:minimal-test-case}: the argument $n$ can
+still be removed along with the \|return| statement.  As the $\ddmin$
+algorithm does not specify how a set of changes (in this case,
+characters) is to be partitioned, it can easily be enhanced with
+domain-specific syntactic and semantic knowledge that helps to keep
+related changes in common subsets.  However, even a domain-independent
+approach can yield satisfying results, as shown in this example.
+
+
+---------------
+From: trt@unx.sas.com (Tom Truscott)
+Subject: segv in gcc cc1 at any level of optimization
+Newsgroups: gnu.gcc.bug
+Date: Thu, 8 Apr 1999 13:38:40 -0400
+x-uunet-gateway: relay3.UU.NET from bug-gcc to gnu.gcc.bug; Thu, 8 Apr 1999 13:39:04 EDT
+Message-ID: <199904081738.AA20054@newlgn51.unx.sas.com>
+X-Mailer: ELM [version 2.4 PL23]
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Approved: bug-gcc-request@mail.gnu.org
+Sender: bug-gcc-request@mail.gnu.org
+Lines: 39
+Path: news.rz.uni-passau.de!lrz-muenchen.de!informatik.tu-muenchen.de!news.csl-gmbh.net!news-fra.pop.de!newsfeed.tli.de!newspeer.monmouth.com!news-xfer.nuri.net!uunet!wendy-fate.uu.net!bug-gcc
+
+/*
+ * Compile SEGV in gcc version 2.7.2.3 (i386-redhat-linux)
+ *
+ * If this file is named bug2.c, then this gets a SEGV:
+ *    gcc -v -O3 bug2.c
+ * Reading specs from /usr/lib/gcc-lib/i386-redhat-linux/2.7.2.3/specs
+ * gcc version 2.7.2.3
+ *  /usr/lib/gcc-lib/i386-redhat-linux/2.7.2.3/cpp -lang-c -v -undef -D__GNUC__=2 -D__GNUC_MINOR__=7 -D__ELF__ -Dunix -Di386 -Dlinux -D__ELF__ -D__unix__ -D__i386__ -D__linux__ -D__unix -D__i386 -D__linux -Asystem(unix) -Asystem(posix) -Acpu(i386) -Amachine(i386) -D__OPTIMIZE__ bug2.c /tmp/cca09611.i
+ * GNU CPP version 2.7.2.3 (i386 Linux/ELF)
+ * #include "..." search starts here:
+ * #include <...> search starts here:
+ *  /usr/local/include
+ *  /usr/i386-redhat-linux/include
+ *  /usr/lib/gcc-lib/i386-redhat-linux/2.7.2.3/include
+ *  /usr/include
+ * End of search list.
+ *  /usr/lib/gcc-lib/i386-redhat-linux/2.7.2.3/cc1 /tmp/cca09611.i -quiet -dumpbase bug2.c -O3 -version -o /tmp/cca09611.s
+ * GNU C version 2.7.2.3 (i386 Linux/ELF) compiled by GNU C version 2.7.2.3.
+ * gcc: Internal compiler error: program cc1 got fatal signal 11
+ *
+ * It also SEGVs with -O2 and -O1.
+ * This compiles okay:
+ *    gcc -O0 bug2.c
+ *
+ * Tom Truscott   SAS Institute Inc.    SAS Campus Drive, Cary, NC 27513
+ * trt@sas.com    Open Systems R&D      +1 919 677 8000 x7048
+ */
+void foo(double bar[], int n)
+{
+   int i, j;
+
+   i = 0;
+   for(j = 0; j < n; j++)
+   {
+      i += j+1;
+      bar[i] *= (1.0 + bar[0]);
+   }
+}
+---------------
+
+It should be noted, though, that changes to program text can be
+considered as changes applied to the \emph{input} of some machine, and
+that there is no difference between the changing the input given to a
+program or changing the program source itself.
+
+\footnote{The complexity statements assume that $\test$ requires
+  constant time.  In practice, it is useful to set a constant upper
+  limit on test execution, and treat tests that exceed this threshold
+  as unresolved.}
+
+\begin{comment}
+The smallest \HTML document~\cite{w3c/99/html401} is something like
+\begin{alltt}\footnotesize\tt
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<TITLE>Title</TITLE>
+\end{alltt}
+
+\item The smallest possible input for the \LaTeX{}
+  typesetting system~\cite{lamport/86/latex} 
+  is something like
+\begin{footnotesize}
+\begin{verbatim}
+\documentclass{article}
+\begin{document}
+\end{document}
+\end{verbatim}
+\end{footnotesize}
+Like the \WWW browser, \LaTeX{} is supposed to reject invalid input
+in a well-defined way.
+\end{itemize}
+
+\begin{Quote}
+  The goal of simplifying the test case is to make it so simple that
+  changing any aspect of it changes the behavior of the error.
+  \By{Steve McConnell,}{Code Complete}
+\end{Quote}
+
+
+
+
+For most programs, finding a run that works is not difficult;
+typically, this is some trivial or empty input.  Here are some
+examples:
+
+\begin{itemize}
+\item A C compiler accepts an empty translation unit (i.e., an empty C
+  program file) as smallest possible input.
+
+\item When given an empty input, a \WWW browser is supposed to produce
+  a defined error message.
+
+\item When given an empty input file, the \LaTeX{} typesetting system
+  is supposed to produce a specific error message.
+\end{itemize}
+
+\noindent
+It should be noted that the smallest \emph{possible} input is not
+necessarily the smallest \emph{valid} input; even an invalid input is
+possible as long as the program does not fail.
+
+
+
+Our first goal
+is to \emph{minimize} the failing test case $\cfail$---that is, 
+
+Let us begin with some basic definitions.  First of all, what do we
+mean by ``simplification'' and ``isolation''?
+
+We distinguish two strategies for minimizing the difference:
+
+\begin{description}
+\item[Simplification.]  Often, $\rpass$ is some trivial program run
+  (such as a run on an empty input).  Then, minimizing the difference
+  between $\rpass$~and~$\rfail$ becomes \emph{minimizing $\rfail$
+    itself}---that is, \emph{simplification} of~$\rfail$.  
+  
+  As a simple example, consider a program which processes electronic
+  mails.  On a particular e-mail (run~$\rfail$), the program fails.
+  To fix this failure, we must take every single property of the
+  e-mail into account---that is, we must simplify~$\rfail$.
+
+\item[Isolation.] In all other cases, minimizing the difference
+  between $\rpass$~and~$\rfail$ becomes \emph{isolation} of the
+  \emph{failure-inducing circumstances} that separate
+  $\rpass$~and~$\rfail$.
+  
+  In our example, if we find that the program has no trouble
+  processing the same e-mail, with the sole difference that the
+  subject line is truncated from 160~to 60~characters (run~$\rpass$),
+  we can focus on this difference---that is, the length of the subject
+  line---and isolate the specific length that makes the difference
+  between $\rpass$~and~$\rfail$.
+\end{description}
+
+
+
+
+(Isolation of
+failure-inducing differences will be discussed in
+Section~\ref{sec:isolating-differences}.)
+
+
+
+
+
+\begin{Quote}
+Most of our time should be spent applying and improving our methods,
+not selling them. The best way to sell a mouse trap is to display some
+trapped mice.
+\By{David Parnas,}{?}
+% in IEEE Computer April 1996 describing a possible reason why formal
+% methods are not used more often in software practice
+\end{Quote}
+
+
+\begin{Quote}
+\emph{I didn't change anything!} \\
+interj. An aggrieved cry often heard as bugs manifest \\
+during a regression test.
+\By{Eric S. Raymond,}{Jargon File 4.2.3}
+\end{Quote}
+
+\begin{Quote}
+If brute force doesn't solve your problem, you're just not using enough. 
+\By{Anonymous}
+% http://www.generationterrorists.com/quotes/computers.html
+\end{Quote}
+
+\begin{Quote}
+\emph{brute force} adj. \\
+Describes a primitive programming style, one in which the programmer
+relies on the computer's processing power instead of using his or her
+own intelligence to simplify the problem.
+\By{Eric S. Raymond,}{Jargon File 4.2.3}
+\end{Quote}
+
+\begin{Quote}
+  If you understand the context in which a problem occurs, \\
+  you're more likely to solve the problem completely \\
+  rather than only one aspect of it.
+  \By{Steve McConnell,}{Code Complete}
+\end{Quote}
+
+\begin{Quote}
+\emph{I didn't change anything!} interj. \\
+An aggrieved cry often heard as bugs manifest \\
+during a regression test.
+\By{Eric S. Raymond,}{Jargon File 4.2.3}
+\end{Quote}
+
+\begin{Quote}
+Experiments should be reproducible. \\
+They should all fail in the same way.
+\By{}{Finagle's Rules}
+% http://www.generationterrorists.com/quotes/1001.html
+\end{Quote}
+
+\begin{Quote}
+Random stomping seldom catches bugs.
+\By{}{Hardyman's Truism}
+% http://www.generationterrorists.com/quotes/1001.html
+\end{Quote}
+
+\begin{Quote}
+  One other obvious way to conserve programmer time is to teach
+  machines how to do more of the low-level work of programming.
+\By{Eric S. Raymond,}{The Art Of Unix Programming}
+% http://www.tuxedo.org/~esr/writings/taoup/
+\end{Quote}
+
+\begin{Quote}
+  When in doubt, use brute force.
+  \By{Ken Thompson}
+% http://www.tuxedo.org/~esr/writings/taoup/chapter1.html
+\end{Quote}
+
+\begin{Quote}
+Ian Hickson stayed up until~5:40 a.m.\ \\
+and simplified 18~bugs the first night of the BugAThon.
+\By{}{Mozilla BugAThon call}
+\end{Quote}
+
+\begin{Quote}
+  You are in a little maze of twisty passages, all different.
+  \By{Will Crowther,}{\ADVENTURE game}
+\end{Quote}
+
+\begin{Quote}
+  None of us has time to study a large program \\
+  to figure out how it would work if compiled correctly, \\
+  much less which line of it was compiled wrong.
+  \By{Richard Stallman,}{Using and Porting \GNUCC}
+\end{Quote}
+
+\begin{Quote}
+  Sometimes just a few hours of trial and error debugging \\
+  can save minutes of reading manuals.
+\By{Anonymous}{}
+% http://www.generationterrorists.com/quotes/computers.html
+\end{Quote}
+
+\begin{Quote}
+  The goal of simplifying the test case is to make it so simple that
+  changing any aspect of it changes the behavior of the error.
+  \By{Steve McConnell,}{Code Complete}
+\end{Quote}
+
+
+
+\begin{Quote}
+       Behauptung: \\
+       Jedes Programm l{\"a}{\ss}t sich um eine Anweisung k{\"u}rzen. \\
+       Jedes Programm hat mindestens einen Fehler. \\
+       Durch Induktion k{\"o}nnen wir schlie{\ss}en: \\
+       Jedes Programm ist reduzierbar auf eine Anweisung, \\
+       die nicht funktioniert... 
+
+       Auf http://www.gravenreuth.de/infor.html
+\end{Quote}
+
+
+% Local Variables:
+% mode: LaTeX
+% x-symbol-electric-input: nil
+% End:
