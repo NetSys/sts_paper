@@ -1,10 +1,12 @@
-Software bugs are inevitable in software-defined networking control software,
+Software bugs are inevitable in distributed systems,
 and troubleshooting
-is a tedious, time-consuming task. In this paper we discuss how to improve
-control software troubleshooting by presenting a technique
+is a tedious, time-consuming task. In this paper we show how to improve
+troubleshooting by presenting a technique
 for automatically identifying
-a minimal sequence of inputs responsible for triggering a given bug.
-We apply our technique to five open source SDN control
+a minimal sequence of inputs responsible for triggering a given bug, without
+making assumptions about the language or instrumentation of the
+software.
+We apply our technique to SDN control software, including five open source SDN control
 platforms---Floodlight, NOX, POX, Pyretic, ONOS---and
 illustrate how the minimal causal sequences our system found aided the
 troubleshooting process.
