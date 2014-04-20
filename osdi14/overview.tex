@@ -6,21 +6,21 @@ infrastructure, consist of control software running on a replicated set of
 servers, each running a controller instance. Controllers coordinate between
 themselves, and receive input events and
 statistics from switches (either physical or virtual), configuration and
-policy changes via a management interface, and possibly packets from the dataplane.
+policy changes via a management interface, and possibly dataplane packets.
 In response to these events, the
 controllers issue forwarding instructions to switches. All input
 events are asynchronous, and individual controllers may fail at any
-time. The controller instances may communicate
+time. The controllers may communicate
 with each other over the network they manage, or use a separate dedicated
-network. In either case, controllers may become partitioned.
+network, and may become partitioned.
 
 %\subsection{Bugs, QA Testing, and Troubleshooting}
 The goal of a network control plane is to configure the switch forwarding entries so as to
-enforce one or more invariants, such as connectivity (\ie, ensuring that a
-route exists between every endpoint pair), isolation and access control (\ie, various limitations on
-connectivity), and virtualization (\ie, ensuring that packets are handled
-in a manner consistent with what would happen in the specified virtual
-network). A bug causes an invariant to be violated. Invariants can be
+enforce one or more invariants, such as connectivity (\ie~ensuring that a
+route exists between every endpoint pair), isolation and access control (\ie~various limitations on
+connectivity), and virtualization (\ie~ensuring that packets are handled
+in a manner consistent with the specified virtual network).
+A bug causes an invariant to be violated. Invariants can be
 violated because the system was improperly configured
 %A bug causes an invariant to be violated. Bugs can occur in the
 %configuration management system, \eg~OpenStack~\cite{quantum}
@@ -35,14 +35,14 @@ test invariants~\cite{hsa} are specified separately.}
 
 In commercial SDN development, software developers work with a team of QA engineers whose
 job is to find bugs. The QA engineers exercise automated test scenarios that involve
-sequences of external events such as failures, migrations, or policy changes
+external events such as failures or migrations
 on large (software emulated or hardware) network testbeds.
 If they detect an invariant violation, they hand the resulting trace to a developer for analysis.
 
-The space of possible bugs is enormous, and it is difficult and time
+The space of possible bugs is enormous, and it is time
 consuming to link the
 symptom of a bug (\eg, a routing loop) to the sequence of events in the QA
-trace (which includes both the external events and internal monitoring data),
+trace (which includes both external events and internal monitoring data),
 since QA traces contain a wealth
 of extraneous events.
 %all of which may appear characteristic of normal

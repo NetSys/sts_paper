@@ -1,9 +1,9 @@
 \colin{Insight to add: testing/simulation is the *main* value proposition of
 SDN for Google. It is *the* main reason they have adopted it}
 
-SDN's purpose is to make networks easier to manage. SDN
-does this, however, by pushing complexity into SDN control software itself. Just
-as sophisticated compilers are hard to write, but make programming easy, SDN
+%SDN's purpose is to make networks easier to manage. SDN
+%does this, however, by pushing complexity into SDN control software itself.
+Just as sophisticated compilers are hard to write, but make programming easy, SDN
 control software makes network management easier, but only by forcing the
 developers of SDN control software to confront the challenges of asynchrony,
 partial failure, and other notoriously hard problems inherent to all distributed
@@ -11,14 +11,16 @@ systems.
 %Thus, people will be troubleshooting and debugging SDN control software for many
 %years to come, until it becomes as stable as compilers are now.
 
-Current techniques for troubleshooting SDN control software are primitive; they
-essentially involve manual inspection of logs in the hope of identifying the
-relevant inputs. Here we developed a technique for automatically
+The techniques employed in practice for troubleshooting distributed systems like SDN are
+quite primitive; they
+essentially involve manual inspection of logs. % in the hope of identifying the relevant inputs.
+Here we developed a technique for automatically
 identifying a minimal sequence of inputs responsible for triggering a given
 bug, without making assumptions about the language or instrumentation of the
-software. We believe our technique will be especially valuable for troubleshooting
-distributed controllers running complex applications, which are just now
-becoming available to the public and the broader research community.
+software under test.
+%We believe our technique will be especially valuable for troubleshooting
+%distributed controllers running complex applications, which are just now
+%becoming available to the public and the broader research community.
 
 \eat{
 \colin{Cut if we need space:}

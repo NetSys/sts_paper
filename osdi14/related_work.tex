@@ -1,5 +1,5 @@
-Our primary contribution, a technique for interleaving events,
-made it possible for us to apply input minimization algorithms (\cf~Delta
+Our primary contribution, techniques for interleaving events,
+made it possible to apply input minimization algorithms (\cf~Delta
 Debugging~\cite{Zeller:1999:YMP:318773.318946,Zeller:2002:SIF:506201.506206} and
 QuickCheck's ``shrinking''~\cite{claessen2000quickcheck}) to bugs
 in blackbox distributed systems. We described the closest work to us, thread schedule
@@ -9,7 +9,7 @@ We characterize the other approaches taken by the troubleshooting literature
 as (i) instrumentation (tracing),
 (ii) bug detection (invariant checking),
 (iii) replay, and
-(iv) root cause analysis (of network device failures).
+(iv) root cause analysis (of device failures).
 
 \vspace{0.05in}
 \noindent{\bf Instrumentation.} Unstructured
@@ -19,7 +19,7 @@ is to produce structured logs that can be easily analyzed, such as DAGs tracking
 requests passing through the distributed system. An example within the SDN
 problem space is NetSight~\cite{ndb14}, which
 allows users to retroactively examine the paths dataplane packets
-take through OpenFlow networks. Tools like NetSight allow developers to understand
+take through OpenFlow networks. These tools allow developers to understand
 how, when, and where the dataplane broke. In contrast, we focus on making it
 easier for developers to understand why the control software
 misconfigured the network.%in the first place.
@@ -28,7 +28,7 @@ misconfigured the network.%in the first place.
 \noindent{\bf Bug Detection.} With instrumentation available, it becomes possible
 to check expectations about the
 system's state (either offline~\cite{Liu07widschecker} or online~\cite{d3s,dao2009live}), or about the paths requests take through
-the system~\cite{pip}. Within the networking community, this research is
+the system~\cite{pip}. Within networking, this research is
 primarily focused on verifying routing tables~\cite{hsa,hsa_realtime,anteater,khurshid2012veriflow}
 or forwarding behavior~\cite{Zeng:2012:ATP:2413176.2413205,libra}.
 We use bug detection techniques (invariant checking) to guide delta debugging's minimization
@@ -37,8 +37,7 @@ process.
 It is also possible to infer
 performance anomalies by building probabilistic models from
 collections of traces~\cite{barham2004using,Chen02pinpoint:problem}.
-Our goal is to produce exact minimal causal sequences without
-depending on probabilistic models, and we are primarily focused on correctness
+We produce exact minimal sequences, and we focus on correctness
 instead of performance.
 
 Model checkers~\cite{killian2007life,nice} seek to
@@ -58,14 +57,13 @@ makes our problem tractable.
 \vspace{0.05in}
 \noindent{\bf Replay.} Crucial diagnostic information is often missing from traces.
 Record and replay techniques~\cite{Geels:2006:RDD:1267359.1267386,lin2013defined}
-instead allow users to step through (deterministic) executions and interactively examine the
-state of the system in exchange for runtime recording overhead.
+allow users to interactively step through (deterministic) executions in exchange for runtime recording overhead.
 %Static analysis and symbolic execution can also be applied post-hoc %, without incurring runtime performance overhead,
 %to find code paths that lead up to software
 %crashes~\cite{Yuan:2010:SED:1736020.1736038} or thread schedules that reproduce
 %race conditions~\cite{Zamfir:2010:EST:1755913.1755946}.
 Within SDN, OFRewind~\cite{ofrewind} provides
-record and replay of OpenFlow channels between controllers and switches.
+record and replay of OpenFlow channels. % between controllers and switches.
 Manually examining long system executions can be tedious, and our goal is to
 minimize such executions so that developers find it easier to identify the
 problematic code through replay or other means.
@@ -77,10 +75,9 @@ problematic code through replay or other means.
 %prior to a failure.
 
 \vspace{0.05in}
-\noindent{\bf Root Cause Analysis.} Without perfect instrumentation,
+\noindent{\bf Root Cause Analysis.} Without perfect instrumentation
 it is often not possible to know exactly what events are occurring (\eg~which
-network components have failed) in a
-distributed system. Root cause analysis~\cite{yemini1996,Kandula:2009:DDE:1592568.1592597}
+devices have failed). Root cause analysis~\cite{yemini1996,Kandula:2009:DDE:1592568.1592597}
 seeks to reconstruct those unknown events from limited monitoring data.
 Here we know exactly which events occurred, but
 seek to identify the minimal sequence of events that trigger a particular bug.

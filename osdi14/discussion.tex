@@ -80,13 +80,13 @@ that bugs are pervasive.
 
 In terms of an opportunity, SDN's architecture facilitates the implementation
 of systems like~\projectname. The
-interfaces between components of the system
+interfaces between components
 (\eg~OpenFlow for switches~\cite{openflow} and OpenStack
 Neutron for management~\cite{quantum}) are well-defined, which is
 crucial for codifying functional equivalencies. % Moreover, controllers are small in number compared
 % to the size of the overall network, making it easy to interpose on messages.
-Moreover, the control flow of SDN control software repeatedly returns to
-a quiescent state after processing inputs, which means that many inputs can be pruned.
+Moreover, control plane systems like SDN repeatedly return to
+quiescent states, which means that many inputs can be pruned.
 
 %SDN control platforms have two properties that make
 %them particularly amenable to an automated troubleshooting approach such as
@@ -150,13 +150,13 @@ to QA) logs. Production systems would need to include Lamport
 clocks on each message~\cite{Lamport:1978:TCO:359545.359563} or have
 sufficiently accurate clock synchronization to obtain a happens-before
 relation. Inputs would also
-need to need to be logged in sufficient detail for \projectname~to
+need to be logged in sufficient detail for \projectname~to
 replay a synthetic version. Finally, without care, a single
-input event may appear multiple times in the
+event may appear multiple times in the
 distributed logs. The most robust way to
 avoid redundant input events would be to employ perfect failure
 detectors~\cite{chandra1996unreliable}, which log a failure iff
-the failure actually occurred.
+it actually occurred.
 
 \eat{ % LONG VERSION
 \projectname~does not currently support minimization of production (as opposed
