@@ -4,14 +4,14 @@
 Network operating systems, the key component of SDN software
 infrastructure, consist of control software running on a replicated set of
 servers, each running a controller instance. Controllers coordinate between
-themselves, and receive input events and
+themselves, and receive input events (\eg~link failure notifications) and
 statistics from switches (either physical or virtual), configuration and
 policy changes via a management interface, and possibly dataplane packets.
-In response to these events, the
+In response, the
 controllers issue forwarding instructions to switches. All input
 events are asynchronous, and individual controllers may fail at any
 time. The controllers may communicate
-with each other over the network they manage, or use a separate dedicated
+with each other over the dataplane network, or use a separate dedicated
 network, and may become partitioned.
 
 %\subsection{Bugs, QA Testing, and Troubleshooting}
@@ -35,19 +35,18 @@ test invariants~\cite{hsa} are specified separately.}
 
 In commercial SDN development, software developers work with a team of QA engineers whose
 job is to find bugs. The QA engineers exercise automated test scenarios that involve
-external events such as failures or migrations
-on large (software emulated or hardware) network testbeds.
+external (input) events such as failures on large (software emulated or hardware) network testbeds.
 If they detect an invariant violation, they hand the resulting trace to a developer for analysis.
 
 The space of possible bugs is enormous, and it is time
 consuming to link the
-symptom of a bug (\eg, a routing loop) to the sequence of events in the QA
+symptom of a bug (\eg~a routing loop) to the sequence of events in the QA
 trace (which includes both external events and internal monitoring data),
 since QA traces contain a wealth
 of extraneous events.
 %all of which may appear characteristic of normal
 %operating conditions at first glance.
-Consider that an hour long QA fuzz test
+Consider that an hour long QA test
 emulating event rates observed in production could contain 8.5 network error events per
 minute~\cite{Greenberg:2009:VSF:1592568.1592576} and 500 VM migrations per
 hour~\cite{Soundararajan:2010:CBS:1899928.1899941},
