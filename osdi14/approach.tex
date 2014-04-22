@@ -179,7 +179,7 @@ We tried this approach for minimizing our executions, but were rarely
 able to reproduce invariant violations. We believe this is due
 to the concurrent, asynchronous nature of distributed systems; consider that the network
 can reorder or delay messages, or that
-controllers often process multiple inputs simulataneously.
+controllers often process multiple inputs simultaneously.
 Inputs injected according to wall-clock time are not guaranteed to
 coincide correctly with the current state of the control software.
 %\eat{: when we replay only a
