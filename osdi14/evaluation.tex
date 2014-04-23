@@ -62,7 +62,7 @@
 \hline
 \hline
 \multirow{7}{*}{\rotatebox[origin=c]{90}{\bf Synthetic}} & Null pointer on
-rarely used codepath & 20 switch FatTree & 2396.7 & 365 & 2 & Yes \\
+rarely used codepath & 20 switch FatTree & 157.4 & 62 & 2 & Yes \\
 % experiments/experiments/pox_null_pointer_mcs
 % total original inputs: 365
 & Overlapping flow entries & 2 switch mesh & 115.4  & 27 & 2 & Yes \\
@@ -653,9 +653,9 @@ inputs.\\[0.5ex]
 %
 \noindent{\bf Null pointer on rarely used codepath.}
 On a rarely used code path we injected a null pointer exception,
-and were able to minimize a fuzz trace of 365 events to the
-expected conditions: a switch failure followed
-by its recovery.\\[0.5ex]
+and were able to successfully minimize a fuzz trace of 62 events to the
+expected conditions that triggered that code path: control channel congestion
+followed by decongestion.\\[0.5ex]
 %
 \noindent{\bf Multithreaded race condition.}
 We created a race condition between multiple threads that was
