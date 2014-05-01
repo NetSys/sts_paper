@@ -2,6 +2,13 @@
 
 \abstract{{\it \input{abstract}}}
 
+\renewcommand{\abstractname}{Acknowledgments}
+\begin{abstract}
+\input{acknowledgements}
+\end{abstract}
+
+\tableofcontents
+
 \chapter{Introduction}
 \label{sec:intro}
 \input{introduction}
@@ -14,14 +21,14 @@
 \label{sec:formalism}
 \input{formalism}
 
-\chapter{\SIMULATOR}
+\chapter{Approach}
 \label{sec:approach}
 \input{approach}
 
 \chapter{Systems Challenges}
 \label{sec:architecture}
 \label{sec:systems_challenges}
-\input{use_cases}
+\input{system}
 
 \chapter{Evaluation}
 \label{sec:evaluation}
@@ -47,3 +54,5 @@
 %\input{appendix}
 
 %\theendnotes
+
+\end{document}

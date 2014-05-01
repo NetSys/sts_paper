@@ -1,23 +1,29 @@
 % Just realized: b/c of anonymity, the PC can't chastise us for
 % running our system on our own code -- we can't tell them that it's our code!
-Or evaluation of \simulator~leaves open several questions, which we discuss
-here. \colin{Should add a discussion of non-determinism within individual
-controllers}
 
+%Our evaluation of \projectname~leaves open several questions, which we discuss
+%here.
+
+\eat{
 \noindent{\bf Aren't SDN controllers relatively simple and bug free?}
 It is true that the freely available SDN applications we investigated are relatively simple. However, they
 are most definitely not bug-free since, in a short period of time, we were able to demonstrate bugs in all of them. 
-Production SDN platforms are far more complex than the freely available ones, for a variety of reasons. Larger deployments cannot be managed with reactive microflows, and thus
-require more complex proactive or hybrid strategies. For fault tolerance,
-controllers are replicated on multiple physical servers, and sharded for
-scalability~\cite{onix}. Multi-tenant virtualization critically requires tenant
-isolation to be preserved at all times. SDN controller platforms interact with
+Production SDN controller software is far more complex than freely
+available software, for a variety of reasons. Larger deployments cannot be managed with reactive microflows, and thus
+require more complex proactive or hybrid strategies. As described in \S\ref{sec:overview}
+fault tolerance, scale, high churn, and stringent invariants are difficult
+design requirements to uphold.
+SDN controllers also interact with
 cloud orchestration platforms and must correctly react to concurrent changes on
-their north- and southbound interfaces. Thus, we expect that these production SDN platforms will continue
-to be under active development, and have ongoing issues with bugs, for years to come. From our conversations with several SDN
+their north- and southbound interfaces~\cite{netvirt}. Thus, we expect that
+these production SDN control software will continue
+to be under active development, and have ongoing issues with bugs for years to come. From our conversations with several SDN
 controller vendors, we are aware that they all invest significant resources to troubleshooting. Several commercial players have voiced
-interest in our tool as a way to improve their troubleshooting. 
+interest in our tool as a way to improve their troubleshooting.
+}
 
+\eat{
+\colin{Hopefully not necessary:}
 \noindent{\bf Aren't the bugs described here trivial in nature?} Yes, the bugs we found were trivial, but that
 is evidence that without better troubleshooting tools tracking down even trivial bugs is difficult.
 We were particularly
@@ -27,10 +33,12 @@ through years of use. However, these bugs remained undiagnosed because they aris
 unexpected interactions between different elements in the control plane (e.g.,
 shortest path routing and topology discovery). We expect more complex bugs to
 surface once we aim our tool at more complex platforms, such as those used in production settings.
+}
 
+\eat{ % No longer relevant
 \noindent{\bf Are simulated failures really indistinguishable from actual
 failures?} There will always be some failure modes observed in practice that are
-not reproducible without adding significant complexity to the simulator. Our
+not reproducible without adding significant complexity to the \tester. Our
 approach is not particularly well-suited to model fine-grained low-level
 behavior, especially on the data plane, e.g., when switches are dropping
 packets due to memory or slow path constraints. Conversely, our approach excels at
@@ -40,46 +48,157 @@ built in software, it is in principle possible to add more fine grained
 low-level behavior simulation at the cost of performance (with logical clock
 speeds adjusted accordingly).  Additional experience with production systems will help
 us determine how to best trade off improved simulation fidelity against degraded performance.
+}
 
-\noindent{\bf Will this approach work on all control platforms?} We make limited
-assumptions about the controller platform in use. Two of the three investigated
-controller platforms were exercised with \simulator~without any modifications.
-Limited changes to the controller platforms (e.g., the possibility to override
+\noindent{\bf How much effort do MCSes really save?} Based on conversations
+with engineers and our own industrial experience,
+two facts seem to hold. First, companies dedicate
+a substantial portion of their best engineers' time on troubleshooting bugs.
+Second, the larger the trace, the more effort is spent on debugging, since humans
+can only keep a small number of facts in working memory~\cite{miller56seven}.
+As one developer puts it, ``Automatically shrinking test cases to the minimal
+case is immensely helpful''~\cite{riak_quote}.
+%If one were to consider the task of debugging a large
+%input trace, a common approach taken by engineers is in fact similar to the
+%divide and conquer approach taken by delta debugging which is
+%$O(n^2)$ in the worst case for $n$ inputs, yet human time is highly valuable.
+
+\noindent{\bf Will this approach work on all controllers?} We make limited
+assumptions about the controller software in use. Three of the five platforms
+we investigated were exercised with \projectname~without any modifications.
+Limited changes to the controller platforms (\eg~overriding
 {\tt gettimeofday()}) can increase replay accuracy further.
-In general, we expect \simulator~ to support controllers conforming to
-OpenFlow~1.0 out of the box.
+In general, we expect \projectname~to support controllers conforming to
+OpenFlow~1.0. % out of the box.
 
-\noindent{\bf Why do you focus on SDN networks?} SDN represents both an
-opportunity and a challenge. In terms of a challenge, SDN control platforms are
-in their infancy, which means that they have bugs that need to be found and
-corrected. Based on our conversations with commercial SDN developers, we are
-confident there is a real need for improved troubleshooting in this field.
+\noindent{\bf Why do you focus on SDN?} SDN represents both an
+opportunity and a challenge. In terms of a challenge,
+SDN control software---both proprietary and open source---is in its infancy, which means
+that bugs are pervasive.
 
-In terms of an opportunity, SDN control platforms have two properties that make
-them particularly amenable to an automated troubleshooting approach such as
-ours. First, and most importantly, SDN control software is designed to quickly
-converge to quiescence---that is, SDN controllers become idle when no policy or
-topology changes occur for a period of time.\footnote{Complex bugs may occur when
-several such processes overlay.} This means that most inputs are not relevant
-to triggering a given bug, since the system repeatedly returns to a valid
-quiescent state; often there is only one critical transition from the last
-quiescent valid configuration to the first invalid configuration. If this were
-not the case, it is not clear that the minimal causal subsequences found by our
-technique would be small, in which case our approach would not yield significant
-advantages.
+In terms of an opportunity, SDN's architecture facilitates the implementation
+of systems like~\projectname. The
+interfaces between components of the system
+(\eg~OpenFlow for switches~\cite{openflow} and OpenStack
+Neutron for management~\cite{quantum}) are well-defined, which is
+crucial for codifying functional equivalencies. % Moreover, controllers are small in number compared
+% to the size of the overall network, making it easy to interpose on messages.
+Moreover, the control flow of SDN control software repeatedly returns to
+a quiescent state after processing inputs, which means that many inputs can be pruned.
 
-Second, SDN's architecture facilitates the implementation of~\projectname. The
-syntax and semantics of interfaces between components of the system
-(\eg~OpenFlow between controllers and switches~\cite{openflow}, or OpenStack
-Quantum's API between the control application and the network
-hypervisor~\cite{quantum}), are open and well-defined--a property that is
-crucial for codifying functional equivalencies. Moreover, controllers are small in number compared
-to the size of overall network, which makes it much easier to superimpose on
-messages.
+%SDN control platforms have two properties that make
+%them particularly amenable to an automated troubleshooting approach such as
+%ours. First, and most importantly, SDN control software is designed to quickly
+%converge to quiescence---that is, SDN controllers become idle when no policy or
+%topology changes occur for a period of time.\footnote{Complex bugs may occur when
+%several such processes overlay.} This means that most inputs are not relevant
+%to triggering a given bug, since the system repeatedly returns to a valid
+%quiescent state; often there is only one critical transition from the last
+%quiescent valid configuration to the first invalid configuration. If this were
+%not the case, it is not clear that the minimal causal subsequences found by our
+%technique would be small, in which case our approach would not yield significant
+%advantages.
 
-In future work we hope to measure the effectiveness of our
-technique on other control plane systems such as NAS controllers
-that share the same properties.
+Although we focus on
+SDN control software, we are currently evaluating our
+technique on other distributed systems, and believe it to be generally
+applicable.
+%Although we focus on
+%troubleshooting SDN control software, we believe that our general approach can
+%be applied to other distributed systems.
+%In future work we hope to validate our
+%technique on other such systems. % such as replicated state machines or NAS
+%% controllers.
+
+\eat{
+\noindent{\bf Dataflow analysis.} Another avenue for future work would be to apply
+dataflow
+analysis~\cite{Lee:2011:TGR:1993498.1993528,tallam2007enabling}
+to further prune events.
+The simplest form of dataflow analysis involves
+reasoning about happens-before relations: if you consider a
+software-defined network as a distributed state machine,
+then one can safely prune an input event if
+it does not induce any messages before
+the occurrence of the invalid
+configuration~\cite{Lamport:1978:TCO:359545.359563}.
+% since it could not have possibly affected the outcome
+Unfortunately we found that pruning inputs in this way does not
+significantly reduce the number of inputs, but one might go further by
+analyzing the control software itself.
+%code that generates messages
+%to reason about which inputs have a causal linkage to the bug of interest.
+% Maybe just try to apply dataflow analysis to the mock network's code, not to
+% the control software code. That way we aren't language dependent.
+}
+
+%Along a similar vein, dataflow analysis has the potential to help address the
+%problem described in~\ref{subsec:timing_heuristics} of timeouts adversely affecting replay;
+%if one could infer which internal events in a subsequence are not going to
+%occur, \projectname's replay scheduler would not need to timeout
+%unnecessarily.
+
+\eat{
+\noindent{\bf Optimizing delta debugging.} Delta debugging is agnostic to how
+input sequences are split. Currently we
+split by time, but it may be more effective to split events by type or by location in the network
+topology.% may yield faster minimization, since bugs will often only involve a
+%small number of nodes in the distributed system.
+}
+
+\noindent{\bf Enabling analysis of production logs.} \projectname~does
+not currently support minimization of production (as opposed
+to QA) logs. Production systems would need to include Lamport
+clocks on each message~\cite{Lamport:1978:TCO:359545.359563} or have
+sufficiently accurate clock synchronization to obtain a happens-before
+relation. Inputs would also
+need to need to be logged in sufficient detail for \projectname~to
+replay a synthetic version. Finally, without care, a single
+input event may appear multiple times in the
+distributed logs. The most robust way to
+avoid redundant input events would be to employ perfect failure
+detectors~\cite{chandra1996unreliable}, which log a failure iff
+the failure actually occurred.
+
+\eat{ % LONG VERSION
+\projectname~does not currently support minimization of production (as opposed
+to QA) logs.
+Here we present a sketch of how \projectname~might support production logs as input.
+
+While we take as input a single, totally-ordered log of the events in the
+distributed system, production systems maintain a log at each node.
+Production systems would need to include Lamport
+clocks on each message~\cite{Lamport:1978:TCO:359545.359563} or have
+sufficiently accurate clock
+synchronization~\cite{corbett2012spanner} to obtain a partial global ordering
+consistent with the happens-before relation.\footnote{
+Note that a total ordering is not needed, since it is permissible
+to reorder concurrent events from
+the production run so long as the happens-before relation is
+maintained~\cite{Fischer:1985:IDC:3149.214121}.} Inputs would also
+need to need to be logged in sufficient detail for \projectname~to
+replay a synthetic version of the input that is indistinguishable (in terms
+of control plane messages) from the original.
+
+Without care, a single input event may appear multiple times in the
+distributed logs. A failure of the master node, for example, could be independently
+detected and logged by all other replicas. The most robust way to
+avoid redundant input events would be to employ perfect failure
+detectors~\cite{chandra1996unreliable}, which log a failure iff
+the failure actually occurred.\footnote{Perfect failure detectors can be
+implemented in partially synchronous distributed systems by explicitly killing
+nodes that are suspected to be down.} % Ensuring that a single failure detector is in charge of logging node failure
+% events guarantees that redundant events do not appear.
+Alternatively, one
+could employ root cause analysis
+algorithms~\cite{yemini1996} or manual inspection to consolidate redundant
+alarms.
+}
+
+
+%\noindent{\bf Optimizing for reproducibility, not minimality.}
+%Often non-determinsm is a killer, and a slightly inflated MCS will be better than
+%an MCS that very rarely is able to reproduce the bug.
 
 %\begin{itemize}
 %\item Aren't these types of bugs (e.g. failover logic) rare? Why should we

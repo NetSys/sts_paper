@@ -1,16 +1,12 @@
-Software bugs are inevitable in software-defined networking (SDN) control planes,
+Software bugs are inevitable in software-defined networking control software,
 and troubleshooting
-is a tedious, time-consuming task.
-In this paper we discuss how to improve
-control software troubleshooting by presenting a technique, \simulator,
+is a tedious, time-consuming task. In this thesis we discuss how to improve
+control software troubleshooting by presenting a technique
 for automatically identifying
-a minimal sequence of inputs responsible for triggering a given bug.
-%\Simulator~works by
-%iteratively pruning inputs from the history of the execution, and
-%coping with divergent histories by reasoning about the functional equivalence
-%of events.
-
-We apply \simulator~to four open source SDN control
-platforms---Floodlight, ONOS, POX, and NOX---and
-illustrate how our technique found minimal causal sequences for
-the bugs we encountered.
+a minimal sequence of inputs responsible for triggering a given bug, without
+making assumptions about the language or instrumentation of the software under
+test. We apply our technique to five open source SDN control
+platforms---Floodlight, NOX, POX, Pyretic, ONOS---and
+illustrate how the minimal causal sequences our system found aided the
+troubleshooting process.
+\colin{Include key insight?}
