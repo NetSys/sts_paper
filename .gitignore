@@ -2,6 +2,7 @@
 buildinfo.tex
 ._*
 *.aux
+*.toc
 *.bbl
 *blg
 *.cookie
