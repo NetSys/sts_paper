@@ -177,9 +177,9 @@ t'_i = t'_{i-1} + |t_{i} - t_{i-1}|
 }
 
 We tried this approach for minimizing our executions, but were rarely
-able to reproduce invariant violations. We believe this is due
+able to reproduce invariant violations. This is largely due
 to the concurrent, asynchronous nature of distributed systems; consider that the network
-can reorder or delay messages, or that controllers often
+can reorder or delay messages, or that controllers may
 process multiple inputs simultaneously.
 Inputs injected according to wall-clock time are not guaranteed to
 coincide correctly with the current state of the control software.
@@ -230,9 +230,10 @@ minimization of thread context switches rather than input events.
 %inputs more aggressively, whereas they are forced to consider all controlflow
 %and dataflow dependencies in the control software.
 
-A related line of work, program flow reduction, takes thread schedule
-minimization a step further~\cite{Lee:2011:TGR:1993498.1993528, tallam2007enabling, huang2012lean}.
-The internal events they consider are individual instructions executed by the
+With additional information obtained by program flow
+analysis~\cite{Lee:2011:TGR:1993498.1993528,tallam2007enabling,huang2012lean}
+however, the inputs no longer need to be fixed. The internal events considered by these program flow reduction
+techniques are individual instructions executed by the
 programs (obtained by instrumenting the language runtime), in addition to I/O responses and the thread schedule.
 With access to the instruction-level execution, they can compute
 program flow dependencies, and thereby remove input events from anywhere in the trace as long as they
