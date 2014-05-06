@@ -1,0 +1,18 @@
+- Clarify reviewer D's confusion: we do in fact consider concurrency, multiple controllers, multiple switches, incorrect configurations, and don't require developer intervention for minimization.
+- Clarify that we don't guarantee minimality (although AFAICT we already explicitly state that only approximate MCSes)
+- Add a few limitations to 5.6:
+    * interposition does indeed limit the max event rate, per reviewer D
+    * we don't currently consider policy changes
+    * we currently only focus on OpenFlow, per reviewer E
+    * scaling to extremely large traces/networks
+- Clarify how we performed the fuzz testing (although we intentionally downplayed the fuzz testing aspect of our work, since this is not our contribution, and previous submissions that spent too much time discussing fuzzing mislead reviewers) 
+- Clarify checkpointing and OpenFlow reduction, per reviewer D
+- We're currently rerunning our experiments to (i) triple check whether our MCSes are truly minimal, and (ii) get a comprehensive sense of which cases do/don't work just by replaying original timings
+- We're also going to run an evaluation of the performance overhead of interposition, per reviewer F.
+- I'm currently reading all of the related work mentioned by the reviewers that I was not aware of.
+- Add a link to the ONOS repository, as soon as it's open-sourced (they plan to do so in the next month or two)
+
+DONE:
+
+- Clarify discussion of why we target testing rather than formal methods / verification.
+- I may want to change the title to emphasize that we only have partial visibility into internal events.

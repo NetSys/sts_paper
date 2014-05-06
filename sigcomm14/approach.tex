@@ -160,8 +160,8 @@ If this is able to find all minimization opportunities,
 subsequences that are a superset of some MCS, we say that the inputs are
 isolated. The original applications of delta
 debugging~\cite{Zeller:1999:YMP:318773.318946} make this assumption (where a
-single input file is fed to a single program), as well as QuickCheck's input ``shrinking'' algorithm~\cite{claessen2000quickcheck}
-when applied to blackbox systems such as the synchronous part of
+single input is fed to a single program), as well as QuickCheck's input ``shrinking''~\cite{claessen2000quickcheck}
+when applied to blackbox systems like the synchronous part of
 telecommunications protocols~\cite{arts2006testing}.
 \eat{\ie~if we
 define $t_i$ as the timestamp of the $i^{th}$ input from the original run and $t'_i$ as the
@@ -195,10 +195,10 @@ reproduce bugs, we would need visibility into every I/O request and response (\e
 values or network messages), as well as all thread scheduling
 decisions for each controller. This information is the starting point for thread schedule
 minimization
-techniques~\cite{choi2002isolating,claessen2009finding,jalbert2010trace},
-which seek to minimize thread interleavings leading up to race conditions.
+techniques, which seek to minimize thread interleavings leading up to race conditions.
 These approaches involve iteratively feeding a single input (the thread
-schedule) to a single entity (a deterministic scheduler).
+schedule) to a single entity (a deterministic scheduler)~\cite{choi2002isolating,claessen2009finding,jalbert2010trace}, or
+statically analyzing feasible thread schedules~\cite{huang2011efficient}.
 
 A crucial constraint of these approaches is that they must keep the inputs
 fixed; that is, the controller behavior must depend uniquely on the thread
@@ -209,8 +209,8 @@ itself at a different point than it did originally, so that the remainder of
 the recorded thread schedule is unusable to the replayer (since the original preemption points
 may no longer be executed).
 
-By fixing the inputs, these approaches are forced to stay on the same code
-path from the original run, and are unable to find alternate paths that still
+By fixing the inputs, these approaches are forced to stay on the original code
+path, and are unable to find alternate paths that still
 trigger the invariant violation. They can only indirectly
 minimize inputs by truncating thread executions (\ie~causing them to
 exit early), or by removing threads that are entirely extraneous.
@@ -250,20 +250,26 @@ I/O requests and thread scheduling decisions during testing, our approach is
 to dynamically respond to I/O requests during minimization. This has several advantages. Unlike
 the other approaches, we can find shorter alternate code paths that still
 trigger the invariant violation, since we are not constrained to executing the exact code path
-from the original run. We also avoid the runtime overhead of recording all I/O
+from the original run. Previous {\em best-effort} execution minimization
+techniques~\cite{clause2007technique,tucek2007triage} also allow alternate
+code paths, but do not systematically
+consider concurrency and asynchrony.\footnote{Park et al.\cite{park2009pres}
+also reproduce multithreaded executions in a best-effort fashion (allowing for
+alternate code paths), but they do not minimize the execution and therefore do
+not consider modifications to the event history.}
+We also avoid the runtime overhead of recording all I/O
 requests and later replaying them (\eg~EFF incurs roughly 10x slowdown during
 replay due to the overhead of code tracing~\cite{Lee:2011:TGR:1993498.1993528}). Lastly,
 we avoid the extensive effort required to instrument the control software's language runtime,
-needed by the other approaches to implement a deterministic thread scheduler
-and perform program flow analysis. By avoiding assumptions about the language of the control software,
+needed by the other approaches to implement a deterministic thread scheduler, interpose on syscalls,
+or perform program flow analysis. By avoiding assumptions about the language of the control software,
 we were able to easily apply our system to five different control platforms
 written in three different languages.\footnote{Some of the controllers
-actually comprise multiple languages, for example those that depend on
-databases.}
+actually comprise multiple languages.} %, for example those that depend on databases.}
 
-As far as we know, we are the first to minimize inputs by dynamically
-responding to I/O requests. We empirically show in \S\ref{sec:evaluation}
-that this approach works well.
+%As far as we know, we are the first to minimize inputs by dynamically
+%responding to I/O requests. We empirically show in \S\ref{sec:evaluation}
+%that this approach works well.
 
 %To get guarantees on minimality, we could model checking / DPOR to exhaustively explore all thread
 %interleavings for each subsequence tested by delta debugging.
