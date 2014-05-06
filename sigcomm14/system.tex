@@ -219,13 +219,12 @@ until \projectname~explicitly tells the process that it may proceed.
 \label{subsec:snapshotting}
 
 To efficiently implement the {\sc Peek()} algorithm depicted in
-Figure~\ref{fig:peek} we assume the ability to record checkpoints of the state of the
+Figure~\ref{fig:peek} we assume the ability to record checkpoints (snapshots) of the state of the
 system under test. We currently implement checkpointing for the POX
 controller\footnote{We only use the event scheduling heuristics described in
 \S\ref{subsec:timing_heuristics} for the other controllers.} by telling it to \verb=fork()= itself and suspend its child,
-cloning the sockets of the parent
-(which constitute shared state between the parent and child processes,
-since the socket state is managed by the kernel),
+transparently cloning the sockets of the parent
+(which constitute shared state between the parent and child processes),
 and later resuming the child. This simple mechanism does
 not work for controllers that use other shared state such as disk.
 To handle other shared state one could checkpoint processes within
@@ -235,8 +234,8 @@ algorithm~\cite{Chandy:1985:DSD:214451.214456}, which is available in several op
 implementations~\cite{ansel2009dmtcp}.
 
 If developers do not choose to employ checkpointing,
-they can use our implementation of {\sc Peek()} that replays the prefix for each input
-interval from the beginning of the trace, thereby increasing replay runtime by
+they can use our implementation of {\sc Peek()} that replays all inputs from
+the beginning of the execution, thereby increasing replay runtime by
 a factor of $n$. Alternatively, they can
 avoid {\sc Peek()} and solely use the event scheduling heuristics described in \S\ref{subsec:timing_heuristics}.
 
@@ -345,8 +344,8 @@ similar to NetSight~\cite{ndb14} for this purpose.
 are often somewhat redundant. For example, controllers may override routing
 entries, allow them to expire, or periodically flush the
 contents of flow tables and later repopulate them. \projectname~includes a
-tool for filtering out such redundant messages,
-leaving only those commands that are directly relevant for invalid network
+tool for filtering out such redundant messages and
+displaying only those commands that are directly relevant to triggering invalid network
 configurations.
 
 \noindent{\bf Event Visualization}. Understanding the timing of messages and internal
