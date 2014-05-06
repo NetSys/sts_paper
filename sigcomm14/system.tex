@@ -144,7 +144,7 @@ trying to improve, do not mitigate non-determinism.
 \projectname's main approach to coping with non-determinism
 is to replay each subsequence chosen
 by delta debugging multiple times. If the non-deterministic bug occurs with
-probability $p$, we can model the probability\footnote{This probability could be improved further by guiding the system's thread schedule
+probability $p$, we can model the probability\footnote{This probability could be improved by guiding the thread schedule
 towards known error-prone interleavings~\cite{park2009ctrigger,park2009pres}.}
 that we will observe it within $r$ replays as $1-(1-p)^{r}$. This exponential
 works strongly in our favor; for example, even if the original bug is

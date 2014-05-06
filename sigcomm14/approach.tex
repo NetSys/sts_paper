@@ -255,8 +255,8 @@ techniques~\cite{clause2007technique,tucek2007triage} also allow alternate
 code paths, but do not systematically
 consider concurrency and asynchrony.\footnote{Park et al.\cite{park2009pres}
 also reproduce multithreaded executions in a best-effort fashion (allowing for
-alternate code paths), but they do not minimize the execution and therefore do
-not consider modifications to the event history.}
+alternate code paths), but do not minimize the execution or consider event
+modifications.}
 We also avoid the runtime overhead of recording all I/O
 requests and later replaying them (\eg~EFF incurs roughly 10x slowdown during
 replay due to the overhead of code tracing~\cite{Lee:2011:TGR:1993498.1993528}). Lastly,
