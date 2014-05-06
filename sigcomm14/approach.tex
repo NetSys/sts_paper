@@ -177,7 +177,8 @@ t'_i = t'_{i-1} + |t_{i} - t_{i-1}|
 }
 
 We tried this approach for minimizing our executions, but were rarely
-able to reproduce invariant violations. This is largely due
+able to reproduce invariant violations. As our case studies demonstrate
+(\S\ref{sec:evaluation}), this is largely due
 to the concurrent, asynchronous nature of distributed systems; consider that the network
 can reorder or delay messages, or that controllers may
 process multiple inputs simultaneously.
