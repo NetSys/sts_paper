@@ -247,9 +247,10 @@ removing inputs (\eg~EFF takes the transitive closure of all possible
 dependencies~\cite{Lee:2011:TGR:1993498.1993528}) causing them to miss opportunities to
 remove dependencies that actually semantically commute.
 
-\noindent {\bf Allowing Divergence.} Rather than recording all
-I/O requests and thread scheduling decisions during testing, our approach is
-to dynamically respond to I/O requests during minimization. This has several advantages. Unlike
+\noindent {\bf Allowing Divergence.} Our approach is
+to dynamically respond to I/O requests during minimization
+rather than recording all I/O requests and thread scheduling decisions.
+This has several advantages. Unlike
 the other approaches, we can find shorter alternate code paths that still
 trigger the invariant violation, since we are not constrained to executing the exact code path
 from the original run. Previous {\em best-effort} execution minimization
