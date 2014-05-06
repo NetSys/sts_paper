@@ -1,5 +1,4 @@
 - Clarify reviewer D's confusion: we do in fact consider concurrency, multiple controllers, multiple switches, incorrect configurations, and don't require developer intervention for minimization.
-- Clarify that we don't guarantee minimality (although AFAICT we already explicitly state that only approximate MCSes)
 - Add a few limitations to 5.6:
     * interposition does indeed limit the max event rate, per reviewer D
     * we don't currently consider policy changes
@@ -16,3 +15,4 @@ DONE:
 
 - Clarify discussion of why we target testing rather than formal methods / verification.
 - I may want to change the title to emphasize that we only have partial visibility into internal events.
+- Clarify that we don't guarantee minimality (although AFAICT we already explicitly state that only approximate MCSes)
