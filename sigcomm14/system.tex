@@ -12,14 +12,14 @@ minimizing them.
 
 \noindent{\bf Obtaining Traces.} All three of the commercial SDN companies
 that we know of employ a team of QA
-engineers to fuzz test their controller software on network testbeds.
+engineers to fuzz test their control software on network testbeds.
 %As depicted in Figure~\ref{fig:qa_cluster},
 This fuzz testing infrastructure
-consists of the controller software under test, the network testbed (which may
+consists of the control software under test, the network testbed (which may
 be software or hardware), and a centralized
 test orchestrator
 that chooses input sequences, drives the behavior of the testbed,
-and periodically checks invariants.% and manages log files.%When a bug is discovered, an
+and periodically checks invariants. % and manages log files.%When a bug is discovered, an
 %engineer triages it and then sends logs to a developer for further troubleshooting.
 
 \eat{
@@ -59,7 +59,8 @@ real, asynchronous networks.
 
 We use our \tester~to perform testing on controllers to find
 bugs. Most commonly we generate random input
-sequences~\cite{Miller:1990:ESR:96267.96279} and periodically monitor invariants.\footnote{We currently support the following invariants:
+sequences based on event probabilities that we assign (\cf~\ref{subsec:params}), and periodically
+check the network for invariant violations.\footnote{We currently support the following invariants:
   (a) all-to-all reachability, (b) loop freeness, (c) blackhole freeness, (d) controller
 liveness, and (e) POX ACL compliance.
   %The full list of invariants currently supported is shown in Table~\ref{tab:invariants}
@@ -69,17 +70,17 @@ so that we can examine the state of the network
 and follow our intuition to induce event orderings that we believe may trigger bugs.
 
 \noindent{\bf Performing Minimization.} After discovering an invariant
-violation of interest, we apply delta debugging to minimize the trace. We use the
-testing infrastructure itself to $replay()$ each intermediate subsequence.
+violation of interest, we apply delta debugging to minimize the recorded trace. We use the
+testing infrastructure itself to $replay()$ the events in each intermediate subsequence.
 During $replay()$ the \tester~enforces event orderings as needed to maintain the original happens-before
-relation. It does this by using its interposition on message channels to
+relation, by using its interposition on message channels to
 manage the order in which (functionally equivalent) messages are let through,
 and waiting until the appropriate time to inject inputs. For example, if the
 original trace included a link failure preceded by the arrival of a heartbeat
-message from the controller, during $replay()$ \tester~waits until it observes
+message from the controller, during $replay()$ the \tester~waits until it observes
 a functionally equivalent ping probe to arrive, allows the probe
-through, then tells the switch to fail its link and send a \verb=ofp_port_status=
-message to its parent controller(s).
+through, then tells the switch to fail its link. % and send a \verb=ofp_port_status=
+%message to its parent controller(s).
 
 % \begin{table}
 % \centering
@@ -101,18 +102,18 @@ messages sent between controllers. We have
 made the code for \projectname~publicly available at \href{http://ucb-sts.github.com/sts}{ucb-sts.github.com/sts}.
 % and have discussed the logistics of deploying it with several SDN companies.
 
-\noindent{\bf Existing Testbeds.} In designing \projectname~we aimed to make
+\noindent{\bf Integration With Existing Testbeds.} In designing \projectname~we aimed to make
 it possible for engineering organizations to
 implement the technology within their existing QA test infrastructure.
 Organizations can add delta debugging to their test
 orchestrator, and optionally add interposition points throughout the
 testbed to control event ordering during replay.
-In this way they can continue simulating large scale networks with
+In this way they can continue running large scale networks with
 the switches, middleboxes, hosts, and routing protocols they had already
 chosen to include in their QA testbed.
 
-In general we avoid making strong assumptions about the language or instrumentation of the
-software under test. Many of the heuristics we describe below are
+We avoid making assumptions about the language or instrumentation of the
+software under test in order to facilitate integration with preexisting software. Many of the heuristics we describe below are
 approximations that might be made more precise if we had more visibility and
 control over the system, \eg~if we could deterministically specify the thread schedule of each
 controller.
