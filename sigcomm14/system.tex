@@ -396,7 +396,7 @@ In the worst case \projectname~leaves the
 developer where they started: an unpruned log.
 
 \noindent{\bf Lack of Guarantees.} Due to partial visibility and
-non-determinism, we do not provide guarantees on minimality.
+non-determinism, we do not provide guarantees on MCS minimality.
 %although we emperically show in~\S\ref{sec:evaluation} that they are quite small.
 
 %In particular our technique is not designed to reproduce bugs
@@ -416,6 +416,13 @@ link failures). Instead, we focus on
 how the distributed system as a whole reacts to the occurrence of such inputs.
 %If there is a bug in your switch, you will need to contact your hardware vendor;
 %if you have a bug in your policy specification, you will need to take a closer look at what you specified.
+
+\noindent{\bf Interposition Overhead.} Performance overhead from interposing on
+messages may prevent \projectname~from minimizing bugs triggered by
+high message rates.\footnote{Although this might be mitigated with
+time warping~\cite{Gupta06toinfinity}.} Similarly, \projectname's design may
+prevent it from minimizing extremely large traces, as we evaluate in
+\S\ref{sec:evaluation}.
 
 \eat{
 \noindent{\bf Globally vs.\ Locally Minimal Input Sequences.}

@@ -1,10 +1,4 @@
 - Summary of how all the heuristics fit together?
-- Add a few limitations to 5.6:
-    * interposition does indeed limit the max event rate, per reviewer D
-    * we don't currently consider policy changes
-    * we currently only focus on OpenFlow, per reviewer D, E
-    * scaling to extremely large traces/networks
-    * Specificity to OpenFlow/SDN
 - We're currently rerunning our experiments to (i) triple check whether our MCSes are truly minimal, and (ii) get a comprehensive sense of which cases do/don't work just by replaying original timings
 - We're also going to run an evaluation of the performance overhead of interposition, per reviewer F.
 - Add a link to the ONOS repository, as soon as it's open-sourced (they plan to do so in the next month or two)
@@ -18,3 +12,9 @@ DONE:
 - Clarify checkpointing and OpenFlow reduction, per reviewer D
 - Clarify how we performed the fuzz testing (although we intentionally downplayed the fuzz testing aspect of our work, since this is not our contribution, and previous submissions that spent too much time discussing fuzzing mislead reviewers) 
 - Clarify reviewer D's confusion: we don't require developer intervention for minimization.
+- Is virtualization an option?
+- Add a few limitations to 5.6:
+    * we don't currently consider policy changes
+    * we currently only focus on OpenFlow, per reviewer D, E [already covered by discussion section]
+    * scaling to extremely large traces/networks
+    * interposition does indeed limit the max event rate, per reviewer D
