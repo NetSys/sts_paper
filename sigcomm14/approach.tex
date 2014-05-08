@@ -460,9 +460,7 @@ the network and the control software's state, allows the system to proceed up
 until the following input (plus a small time $\epsilon$), records the observed
 events, and matches the
 recorded events with the functionally equivalent internal events observed in
-the original trace. With these inferred causal dependencies, we then replay
-the subsequence, this time waiting to inject each input until each of its
-(functionally equivalent) predecessors have occurred.\footnote{In the
+the original trace.\footnote{In the
 case that, due
 to non-determinism, an internal event occurs during {\sc Peek()} but does not occur
 during replay, we time out on internal events after $\epsilon$ seconds of
@@ -596,6 +594,15 @@ the controllers quickly converge to a single state (either ``Master'' or
 ``Backup''), as do the switches (``Safe'').
 }
 }
+
+\noindent {\bf Recap.} We combine the above heuristics to replay each
+subsequence chosen by delta debugging: we compute functional equivalency
+for each internal event intercepted by our
+interposition layer, we invoke {\sc Peek()} to infer absent internal events,
+and with these inferred causal dependencies we replay
+the subsequence, waiting to inject each input until each of its
+(functionally equivalent) predecessors have occurred while allowing
+unexpected messages through immediately.
 
 \subsection{Complexity}
 \label{subsec:complexity}

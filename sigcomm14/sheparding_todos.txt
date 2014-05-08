@@ -1,4 +1,3 @@
-- Summary of how all the heuristics fit together?
 - We're currently rerunning our experiments to (i) triple check whether our MCSes are truly minimal, and (ii) get a comprehensive sense of which cases do/don't work just by replaying original timings
 - We're also going to run an evaluation of the performance overhead of interposition, per reviewer F.
 - Add a link to the ONOS repository, as soon as it's open-sourced (they plan to do so in the next month or two)
@@ -18,3 +17,4 @@ DONE:
     * scaling to extremely large traces/networks
     * interposition does indeed limit the max event rate, per reviewer D
 - Clarify discussion of why we target testing rather than formal methods / verification.
+- Summary of how all the heuristics fit together?
