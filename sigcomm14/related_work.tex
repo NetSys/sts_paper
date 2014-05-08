@@ -45,12 +45,15 @@ Model checkers~\cite{musuvathi2008finding,nice} seek to
 proactively find bugs by enumerating all possible code paths.
 After identifying a bug with model checking, finding a minimal code path leading to it is
 straightforward. However, the testing systems we aim to improve do not employ
-formal methods such as model checking, in part because model checking suffers from exponential
+formal methods such as model checking, in part because model checking usually suffers from exponential
 state explosion when run on large systems,\footnote{For example, NICE~\cite{nice} took 30 hours to
 model check a network with two switches, two hosts, the NOX MAC-learning
 control program (98 LoC), and five concurrent
 messages between the hosts.} and because large systems often comprise
-multiple (interacting) languages, few of which are amenable to formal methods. %Rather than exploring all
+multiple (interacting) languages, which may not be amenable to formal methods.
+We are currently exploring the use of model checking to provide provably
+minimal MCSes.
+%In future work we plan to explore the possibilities of model checking techniques with our %Rather than exploring all
 %possibilities, we discover bugs through testing of selected scenarios, which
 %makes our problem tractable.
 %which we believe fits more naturally into software engineers' chosen

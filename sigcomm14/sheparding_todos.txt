@@ -5,7 +5,6 @@
 
 DONE:
 
-- Clarify discussion of why we target testing rather than formal methods / verification.
 - I may want to change the title to emphasize that we only have partial visibility into internal events.
 - Clarify that we don't guarantee minimality (although AFAICT we already explicitly state that only approximate MCSes)
 - I'm currently reading all of the related work mentioned by the reviewers that I was not aware of.
@@ -18,3 +17,4 @@ DONE:
     * we currently only focus on OpenFlow, per reviewer D, E [already covered by discussion section]
     * scaling to extremely large traces/networks
     * interposition does indeed limit the max event rate, per reviewer D
+- Clarify discussion of why we target testing rather than formal methods / verification.
