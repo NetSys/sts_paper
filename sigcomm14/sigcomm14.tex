@@ -1,4 +1,4 @@
-\documentclass{sig-alternate-10pt}
+\documentclass{sig-alternate-2013}
 
 \usepackage{footmisc}
 \usepackage{times}
@@ -136,7 +136,11 @@ node[rounded corners,fill=green!80,draw,inner sep=0pt,minimum size=0.4cm] {$i_{#
 \newcommand{\test}{\textit{test}\xspace}
 \newcommand{\ddmin}{\textit{ddmin}\xspace}
 
+
 % ------------ OLD space tweaks: ----------------
+%\clubpenalty=10000
+%\widowpenalty=10000
+
 %\makeatletter
 %\newcommand*{\rom}[1]{\expandafter\@slowromancap\romannumeral #1@}
 %\makeatother
@@ -213,6 +217,9 @@ node[rounded corners,fill=green!80,draw,inner sep=0pt,minimum size=0.4cm] {$i_{#
 \sloppy
 \begin{document}
 
+\conferenceinfo{SIGCOMM}{'14 Chicago, Illinois USA}
+\date{19 August 2014}
+
 \title{Troubleshooting Blackbox SDN Control Software with Minimal Causal Sequences}
 
 \author{Colin Scott$^\dagger$ % \thanks{UC Berkeley}
@@ -255,19 +262,18 @@ $^+${\large\it Tshinghua University} & $^\ddagger${\large\it USC}\end{tabular}}
 %\affaddr{ICSI \& UC Berkeley}
 %}
 
-   \date{}
    \maketitle
    \thispagestyle{empty}
 
-% Advice from http://www.sigcomm.org/for-authors/hints-tips-and-guides/author-guide
-%
-%  Make sure the relevance to networking is clear. For instance, in a paper
-%  describing a wonderful new protocol verification language, it is very easy
-%  to get wrapped up in details of language syntax. Remember that SIGCOMM is a
-%  networking conference, not a language conference, and ensure that how the
-%  language improves the state of networking is made very clear.
-
 \abstract{{\it \input{abstract}}}
+
+% A category with the (minimum) three required fields
+%A category including the fourth, optional field follows...
+\category{C.2.4}{Computer-Communication Networks}{Distributed Systems}[Network
+operating systems]
+\category{D.2.5}{Software Engineering}{Testing and Debugging}[Debugging aids]
+% Not required on the first page: \terms{Theory}
+\keywords{Troubleshooting; Test case minimization; SDN}
 
 \section{Introduction}
 \label{sec:intro}
@@ -306,9 +312,14 @@ $^+${\large\it Tshinghua University} & $^\ddagger${\large\it USC}\end{tabular}}
 \label{sec:conclusion}
 \input{conclusion}
 
-% TODO: Include acknowledgements section
+\noindent {\bf Acknowledgements.} We thank the reviewers for their
+feedback, especially our shepard Nate Foster.
+We also thank Aurojit Panda, Shivaram Venkataraman, Justine Sherry, Radhika Mittal, Teemu
+Koponen, Andrew Ferguson, and Peter Bailis for providing feedback on earlier versions of this
+text. This research is supported by NSF CNS
+1040838, NSF CNS 1015459. Colin Scott is also supported by an NSF Graduate Research Fellowship.
 
-\renewcommand{\baselinestretch}{0.95}
+\renewcommand{\baselinestretch}{0.96}
 \footnotesize{\input{tail}}
 
 %\input{appendix}
