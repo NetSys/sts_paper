@@ -28,23 +28,23 @@ injected by
 the orchestrator, and internal events
 $I_L = $\eventlist{\internal{1},\internal{2}}{\internal{p}}
 triggered by the control software (\eg~OpenFlow messages).
-The external events include timestamps $\{ (\text{\external{k}}, t_k) \}$ recorded from the
+The events $E_L$ include timestamps $\{ (\text{\external{k}}, t_k) \}$ from the
 orchestrator's clock. % of when the test orchestrator injected them.
 
 A replay of log $L$ involves replaying the external events $E_L$, possibly
 taking into account the occurrence of internal events $I_L$.
 We denote a replay attempt by $replay(\tau)$.
-The output of $replay$ is a sequence of forwarding state configurations
-$C_R = \hat{c}_1,\hat{c}_2,\dots,\hat{c}_n$. Ideally $replay(\tau_L)$ produces the same
-sequence of network configurations that occurred originally, but as we discuss later
+The output of $replay$ is a sequence of forwarding configurations
+$C_R = \hat{c}_1,\hat{c}_2,\dots,\hat{c}_n$. Ideally $replay(\tau_L)$
+reproduces the original sequence of configurations, but as we discuss later
 this does not always hold.
 
 If the configuration sequence $C_L = c_1,c_2,\dots,c_n$ associated with the
 log $L$ violated predicate $P$
-(\ie$\exists_{c_i \in C_L}. \overline{P}(c_i)$)
+(\ie~$\exists_{c_i \in C_L}. \overline{P}(c_i)$)
 then we say $replay(\tau) = C_R$ reproduces that violation
 if $C_R$ contains another faulty configuration
-(\ie$\exists_{\hat{c}_i \in C_R}. \overline{P}(\hat{c}_i)$).
+(\ie~$\exists_{\hat{c}_i \in C_R}. \overline{P}(\hat{c}_i)$).
 
 The goal of our work is, when given a log $L$ that exhibited an
 invariant violation,\footref{fn:log_gen} to find a small, replayable sequence of events that reproduces that
@@ -58,7 +58,7 @@ Note that an MCS is not necessarily {\em globally} minimal, in that there could 
 subsequences of $E_L$ that reproduce this violation, but are not a subsequence of this MCS.
 
 We find approximate MCSes by deciding
-which events to eliminate and, more importantly, when to inject external
+which external events to eliminate and, more importantly, when to inject external
 events. We describe this process in the next section.
 %The key component of this system is a \tester~that can execute $replay()$.
 %Because we do not have access to operational QA or production logs, our focus is on
