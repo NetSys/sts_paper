@@ -12,10 +12,10 @@ minimizing them.
 
 \noindent{\bf Obtaining Traces.} All three of the commercial SDN companies
 that we know of employ a team of QA
-engineers to fuzz test their controller software on network testbeds,
+engineers to fuzz test their control software on network testbeds,
 as depicted in Figure~\ref{fig:qa_cluster},
 This fuzz testing infrastructure
-consists of the controller software under test, the network testbed (which may
+consists of the control software under test, the network testbed (which may
 be software or hardware), and a centralized
 test orchestrator
 that chooses input sequences, drives the behavior of the testbed,
@@ -59,7 +59,8 @@ real, asynchronous networks.
 
 We use our \tester~to perform testing on controllers to find
 bugs. Most commonly we generate random input
-sequences~\cite{Miller:1990:ESR:96267.96279} and periodically monitor invariants.\footnote{We currently support the following invariants:
+sequences based on event probabilities that we assign (\cf~\S\ref{subsec:params}), and periodically
+check the network for invariant violations.\footnote{We currently support the following invariants:
   (a) all-to-all reachability, (b) loop freeness, (c) blackhole freeness, (d) controller
 liveness, and (e) POX ACL compliance.
   %The full list of invariants currently supported is shown in Table~\ref{tab:invariants}
@@ -69,17 +70,17 @@ so that we can examine the state of the network
 and follow our intuition to induce event orderings that we believe may trigger bugs.
 
 \noindent{\bf Performing Minimization.} After discovering an invariant
-violation of interest, we apply delta debugging to minimize the trace. We use the
-testing infrastructure itself to $replay()$ each intermediate subsequence.
+violation of interest, we apply delta debugging to minimize the recorded trace. We use the
+testing infrastructure itself to $replay()$ the events in each intermediate subsequence.
 During $replay()$ the \tester~enforces event orderings as needed to maintain the original happens-before
-relation. It does this by using its interposition on message channels to
+relation, by using its interposition on message channels to
 manage the order in which (functionally equivalent) messages are let through,
 and waiting until the appropriate time to inject inputs. For example, if the
 original trace included a link failure preceded by the arrival of a heartbeat
-message from the controller, during $replay()$ \tester~waits until it observes
+message from the controller, during $replay()$ the \tester~waits until it observes
 a functionally equivalent ping probe to arrive, allows the probe
-through, then tells the switch to fail its link and send a \verb=ofp_port_status=
-message to its parent controller(s).
+through, then tells the switch to fail its link. % and send a \verb=ofp_port_status=
+%message to its parent controller(s).
 
 % \begin{table}
 % \centering
@@ -94,25 +95,25 @@ message to its parent controller(s).
 % \label{tab:invariants}
 % \end{table}
 
-\projectname~is our realization of this system and is implemented in more than 21,000 lines of Python in
+\projectname~is our realization of this system and is implemented in more than 23,000 lines of Python in
 addition to the Hassel network invariant checking library~\cite{hsa}.
 \projectname~also optionally makes use of Open vSwitch~\cite{pfaff2009extending} as an interposition point for
 messages sent between controllers. We have
 made the code for \projectname~publicly available at \href{http://ucb-sts.github.com/sts}{ucb-sts.github.com/sts}.
 % and have discussed the logistics of deploying it with several SDN companies.
 
-\noindent{\bf Existing Testbeds.} In designing \projectname~we aimed to make
+\noindent{\bf Integration With Existing Testbeds.} In designing \projectname~we aimed to make
 it possible for engineering organizations to
 implement the technology within their existing QA test infrastructure.
 Organizations can add delta debugging to their test
 orchestrator, and optionally add interposition points throughout the
 testbed to control event ordering during replay.
-In this way they can continue simulating large scale networks with
+In this way they can continue running large scale networks with
 the switches, middleboxes, hosts, and routing protocols they had already
 chosen to include in their QA testbed.
 
-In general we avoid making strong assumptions about the language or instrumentation of the
-software under test. Many of the heuristics we describe below are
+We avoid making assumptions about the language or instrumentation of the
+software under test in order to facilitate integration with preexisting software. Many of the heuristics we describe below are
 approximations that might be made more precise if we had more visibility and
 control over the system, \eg~if we could deterministically specify the thread schedule of each
 controller.
@@ -144,7 +145,9 @@ trying to improve, do not mitigate non-determinism.
 \projectname's main approach to coping with non-determinism
 is to replay each subsequence chosen
 by delta debugging multiple times. If the non-deterministic bug occurs with
-probability $p$, we can model the probability that we will observe it within $r$ replays as $1-(1-p)^{r}$. This exponential
+probability $p$, we can model the probability\footnote{This probability could be improved by guiding the thread schedule
+towards known error-prone interleavings~\cite{park2009ctrigger,park2009pres}.}
+that we will observe it within $r$ replays as $1-(1-p)^{r}$. This exponential
 works strongly in our favor; for example, even if the original bug is
 triggered in only 20\% of replays, the probability that we will not trigger
 it during an intermediate replay is approximately
@@ -217,11 +220,11 @@ until \projectname~gives explicit acknowledgment.
 \label{subsec:snapshotting}
 
 To efficiently implement the {\sc Peek()} algorithm depicted in
-Figure~\ref{fig:peek} we assume the ability to record checkpoints of the state of the
+Figure~\ref{fig:peek} we assume the ability to record checkpoints (snapshots) of the state of the
 system under test. We currently implement checkpointing for the POX
 controller\footnote{We only use the event scheduling heuristics described in
 \S\ref{subsec:timing_heuristics} for the other controllers.} by telling it to \verb=fork()= itself and suspend its child,
-cloning the sockets of the parent
+transparently cloning the sockets of the parent
 (which constitute shared state between the parent and child processes,
 since the socket state is managed by the kernel),
 and later resuming the child. This simple mechanism does
@@ -233,8 +236,8 @@ algorithm~\cite{Chandy:1985:DSD:214451.214456}, which is available in several op
 implementations~\cite{ansel2009dmtcp}.
 
 If developers do not choose to employ checkpointing,
-they can use our implementation of {\sc Peek()} that replays the prefix for each input
-interval from the beginning of the trace, thereby increasing replay runtime by
+they can use our implementation of {\sc Peek()} that replays all inputs from
+the beginning of the execution, thereby increasing replay runtime by
 a factor of $n$. Alternatively, they can
 avoid {\sc Peek()} and solely use the event scheduling heuristics described in \S\ref{subsec:timing_heuristics}.
 
@@ -340,8 +343,8 @@ similar to NetSight~\cite{ndb14} for this purpose.
 are often somewhat redundant. For example, controllers may override routing
 entries, allow them to expire, or periodically flush the
 contents of flow tables and later repopulate them. \projectname~includes a
-tool for filtering out such redundant messages,
-leaving only those commands that are directly relevant for invalid network
+tool for filtering out such redundant messages and
+displaying only those commands that are directly relevant to triggering invalid network
 configurations.
 
 \noindent{\bf Event Visualization}. Understanding the timing of messages and internal
@@ -388,6 +391,9 @@ do not have tools for reproducing non-deterministic bugs.
 In the worst case \projectname~leaves the
 developer where they started: an unpruned log.
 
+\noindent{\bf Lack of Guarantees.} Due to partial visibility and
+non-determinism, we do not provide guarantees on MCS minimality.
+
 %In particular our technique is not designed to reproduce bugs
 %involving non-determinism within a single controller (\eg~race-conditions between threads);
 %we focus on coarser granularity errors (\eg~incorrect failover logic).
@@ -403,6 +409,13 @@ link failures). Instead, we focus on
 how the distributed system as a whole reacts to the occurrence of such inputs.
 %If there is a bug in your switch, you will need to contact your hardware vendor;
 %if you have a bug in your policy specification, you will need to take a closer look at what you specified.
+
+\noindent{\bf Interposition Overhead.} Performance overhead from interposing on
+messages may prevent \projectname~from minimizing bugs triggered by
+high message rates.\footnote{Although this might be mitigated with
+time warping~\cite{Gupta06toinfinity}.} Similarly, \projectname's design may
+prevent it from minimizing extremely large traces, as we evaluate in
+\S\ref{sec:evaluation}.
 
 \noindent{\bf Globally vs.\ Locally Minimal Input Sequences.}
 Our approach is not guaranteed to find the globally minimal

@@ -1,7 +1,7 @@
 Our primary contribution, a technique for interleaving events,
 made it possible for us to apply input minimization algorithms (\cf~Delta
 Debugging~\cite{Zeller:1999:YMP:318773.318946,Zeller:2002:SIF:506201.506206} and
-QuickCheck's ``shrinking''~\cite{claessen2000quickcheck}) to bugs
+domain-specific algorithms~\cite{claessen2000quickcheck,whitaker2004configuration,regehr2012test}) to bugs
 in blackbox distributed systems. We described the closest work to us, thread schedule
 minimization and program flow reduction, in \S\ref{subsec:algorithm}.
 
@@ -27,7 +27,7 @@ misconfigured the network.%in the first place.
 \vspace{0.05in}
 \noindent{\bf Bug Detection.} With instrumentation available, it becomes possible
 to check expectations about the
-system's state (either offline~\cite{Liu07widschecker} or online~\cite{d3s,dao2009live}), or about the paths requests take through
+system's state (either offline~\cite{Liu07widschecker} or online~\cite{d3s}), or about the paths requests take through
 the system~\cite{pip}. Within the networking community, this research is
 primarily focused on verifying routing tables~\cite{hsa,hsa_realtime,anteater,khurshid2012veriflow}
 or forwarding behavior~\cite{Zeng:2012:ATP:2413176.2413205,libra}.
@@ -41,16 +41,21 @@ Our goal is to produce exact minimal causal sequences without
 depending on probabilistic models, and we are primarily focused on correctness
 instead of performance.
 
-Model checkers~\cite{killian2007life,nice} seek to
-proactively find bugs by enumerating all possible code paths.
+Model checkers~\cite{musuvathi2008finding,nice} seek to
+proactively find bugs by analyzing all possible code paths.
 After identifying a bug with model checking, finding a minimal code path leading to it is
-straightforward. However, model checking suffers from exponential
-state explosion when run on large systems. For example, NICE~\cite{nice} took 30 hours to
+straightforward. However, the testing systems we aim to improve do not employ
+formal methods such as model checking, in part because model checking usually suffers from exponential
+state explosion when run on large systems,\footnote{For example, NICE~\cite{nice} took 30 hours to
 model check a network with two switches, two hosts, the NOX MAC-learning
 control program (98 LoC), and five concurrent
-messages between the hosts. Rather than exploring all
-possibilities, we discover bugs through testing of selected scenarios, which
-makes our problem tractable.
+messages between the hosts.} and because large systems often comprise
+multiple (interacting) languages, which may not be amenable to formal methods.
+We are currently exploring the use of model checking to provide provably
+minimal MCSes.
+%In future work we plan to explore the possibilities of model checking techniques with our %Rather than exploring all
+%possibilities, we discover bugs through testing of selected scenarios, which
+%makes our problem tractable.
 %which we believe fits more naturally into software engineers' chosen
 %way of developing and testing distributed systems.
 %\colin{TODO: discuss how finding the critical transition is related to finding the MCS}
@@ -90,7 +95,8 @@ seek to identify the minimal sequence of events that trigger a particular bug.
 It is worth mentioning another goal outside the purview of distributed systems, but
 closely in line with ours: program slicing~\cite{weiser1981program} is a
 technique for finding the
-minimal subset of a program that could possibly affect the result of a particular line of code.
+minimal subset of a program that could possibly affect the result of a particular line of code,
+which can be applied to automatically generate minimal unit tests~\cite{burger2011minimizing}.
 Our goal is to slice the temporal dimension of an execution rather than the
 code dimension.
 %Our technique can be viewed as a form of program slicing,
@@ -98,7 +104,7 @@ code dimension.
 %and the result we are interested in is the network misconfiguration at
 %the end of the execution.
 
-\eat{ % -------------------- OLD TEXT --------------------------
+\eat{ % ----- OLD TEXT ---------
 Our work spans three fields: software engineering, programming languages, and
 systems and networking.
 

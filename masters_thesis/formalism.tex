@@ -47,7 +47,7 @@ if $C_R$ contains another faulty configuration
 (\ie$\exists_{\hat{c}_i \in C_R}. \overline{P}(\hat{c}_i)$).
 
 The goal of our work is, when given a log $L$ that exhibited an
-invariant violation, to find a small, replayable sequence of events that reproduces that
+invariant violation,\footref{fn:log_gen} to find a small, replayable sequence of events that reproduces that
 invariant violation. Formally, we define a minimal causal sequence (MCS)
 to be a sequence $\tau_M$ where the external events $E_M \in \tau_M$ are a
 subsequence of $E_L$ such
@@ -57,7 +57,7 @@ there is no sequence $\tau_N$ such that $replay(\tau_N)$ reproduces the violatio
 Note that an MCS is not necessarily {\em globally} minimal, in that there could be smaller
 subsequences of $E_L$ that reproduce this violation, but are not a subsequence of this MCS.
 
-We approximate MCSes by deciding
+We find approximate MCSes by deciding
 which events to eliminate and, more importantly, when to inject external
 events. The key component of this system is a \tester~that can execute $replay()$.
 Our focus is on using the \tester~to generate random inputs (shown in

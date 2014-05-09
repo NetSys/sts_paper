@@ -106,10 +106,10 @@
     howpublished = {\url{http://www.bigswitch.com/}}
 }
 
-@misc{openflow,
-    key = {openflow},
-    title = {Open{F}low},
-    howpublished = {\url{http://www.openflow.org/}}
+@inproceedings{openflow,
+  title={{OpenFlow: Enabling Innovation in Campus Networks}},
+  author={McKeown, Nick and Anderson, Tom and Balakrishnan, Hari and Parulkar, Guru and Peterson, Larry and Rexford, Jennifer and Shenker, Scott and Turner, Jonathan},
+  series={SIGCOMM CCR '08},
 }
 
 @inproceedings{nice,
@@ -230,7 +230,7 @@
 @INPROCEEDINGS{Mattern89virtualtime,
     author = {Friedemann Mattern},
     title = {Virtual {T}ime and {G}lobal {S}tates of {D}istributed {S}ystems},
-    booktitle = {Parallel and Distributed Algorithms '89},
+    series= {Parallel and Distributed Algorithms '89},
 }
 
 @INPROCEEDINGS{577079,
@@ -485,7 +485,7 @@ http://www.google.com/patents/US6654911?dq=interactive+test+generation
 @inproceedings{Dunlap:2002:REI:844128.844148,
  author = {Dunlap, George W. and King, Samuel T. and Cinar, Sukru and Basrai, Murtaza A. and Chen, Peter M.},
  title = {{ReVirt: Enabling Intrusion Analysis Through Virtual-Machine Logging and Replay}},
- series = {SIGOPS '02},
+ series = {OSDI '02},
 }
 
 @inproceedings{pfaff2009extending,
@@ -628,4 +628,59 @@ http://www.google.com/patents/US6654911?dq=interactive+test+generation
   title={{Dynamic Partial-Order Reduction for Model Checking Software}},
   author={Flanagan, Cormac and Godefroid, Patrice},
   series={POPL '05},
+}
+
+@inproceedings{regehr2012test,
+  title={{Test-case Reduction for C Compiler Bugs}},
+  author={Regehr, John and Chen, Yang and Cuoq, Pascal and Eide, Eric and Ellison, Chucky and Yang, Xuejun},
+  series={PLDI '12},
+}
+
+@inproceedings{park2009pres,
+  title={{PRES: Probabilistic Replay with Execution Sketching on Multiprocessors}},
+  author={Park, Soyeon and Zhou, Yuanyuan and Xiong, Weiwei and Yin, Zuoning and Kaushik, Rini and Lee, Kyu H and Lu, Shan},
+  series={SOSP '09},
+}
+
+@inproceedings{park2009ctrigger,
+  title={{CTrigger: Exposing Atomicity Violation Bugs from their Hiding Places}},
+  author={Park, Soyeon and Lu, Shan and Zhou, Yuanyuan},
+  series={ASPLOS '09},
+}
+
+@inproceedings{weeratunge2010analyzing,
+  title={{Analyzing Multicore Dumps to Facilitate Concurrency Bug Reproduction}},
+  author={Weeratunge, Dasarath and Zhang, Xiangyu and Jagannathan, Suresh},
+  series={ASPLOS '10},
+}
+
+@inproceedings{musuvathi2008finding,
+  title={{Finding and Reproducing Heisenbugs in Concurrent Programs}},
+  author={Musuvathi, Madanlal and Qadeer, Shaz and Ball, Thomas and Basler, Gerard and Nainar, Piramanayagam Arumuga and Neamtiu, Iulian},
+  series={SOSP '08},
+}
+
+@inproceedings{clause2007technique,
+  title={{A Technique for Enabling and Supporting Debugging of Field
+      Failures}},
+  author={Clause, James and Orso, Alessandro},
+  series={ICSE '07},
+}
+
+@inproceedings{tucek2007triage,
+  title={{Triage: Diagnosing Production Run Failures at the User's Site}},
+  author={Tucek, Joseph and Lu, Shan and Huang, Chengdu and Xanthos, Spiros and Zhou, Yuanyuan},
+  series={SOSP '07},
+}
+
+@inproceedings{burger2011minimizing,
+  title={{Minimizing Reproduction of Software Failures}},
+  author={Burger, Martin and Zeller, Andreas},
+  series={ISSTA '11},
+}
+
+@inproceedings{huang2011efficient,
+  title={{An Efficient Static Trace Simplification Technique for Debugging Concurrent Programs}},
+  author={Huang, Jeff and Zhang, Charles},
+  series={SAS '11},
 }

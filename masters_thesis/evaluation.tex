@@ -104,7 +104,7 @@ rarely used codepath & 20 switch FatTree & 157.4 & 62 & 2 & Yes \\
 We first demonstrate \projectname's viability in troubleshooting real bugs. We found
 seven new bugs by fuzz testing five open source SDN control platforms:
 ONOS~\cite{ONOS} (Java), POX~\cite{pox} (Python), NOX~\cite{nox} (C++),
-Pyretic~\cite{frenetic} (Python), and Floodlight~\cite{bigswitch} (Java), and
+Pyretic~\cite{frenetic} (Python), and Floodlight~\cite{floodlight} (Java), and
 debugged these with the help of \projectname. Second, we demonstrate the
 boundaries of where \projectname~works well and where it does not by finding
 MCSes for previously known and synthetic bugs that span a range of bug types
@@ -923,7 +923,7 @@ early on an internal event that is in fact going to occur shortly after.
 % Just realized: b/c of anonymity, the PC can't chastise us for
 % running our system on our own code -- we can't tell them that it's our code!
 We applied \projectname{} to three open source SDN control platforms:
-Frenetic~\cite{frenetic}, POX~\cite{pox}, and Floodlight~\cite{bigswitch}, and
+Frenetic~\cite{frenetic}, POX~\cite{pox}, and Floodlight~\cite{floodlight}, and
 quickly found (or reproduced) one bug in each. The bug in Frenetic demonstrates
 the utility of checking correspondence between high-level policies and
 low-level configuration (without needing to specify invariants). The bugs in
