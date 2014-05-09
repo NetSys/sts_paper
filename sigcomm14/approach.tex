@@ -593,7 +593,7 @@ the controllers quickly converge to a single state (either ``Master'' or
 \noindent {\bf Recap.} We combine these heuristics to replay each
 subsequence chosen by delta debugging: we compute functional equivalency
 for all internal events intercepted by our test orchestrator's
-interposition layer, we invoke {\sc Peek()} to infer absent internal events,
+interposition layer (\S\ref{sec:systems_challenges}), we invoke {\sc Peek()} to infer absent internal events,
 and with these inferred causal dependencies we replay
 the input subsequence, waiting to inject each input until each of its
 (functionally equivalent) predecessors have occurred while allowing

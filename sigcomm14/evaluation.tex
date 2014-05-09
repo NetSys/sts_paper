@@ -108,7 +108,7 @@ boundaries of where \projectname~works well and where it does not by finding
 MCSes for previously known and synthetic bugs that span a range of bug types
 encountered in practice.
 
-Our ultimate goal is to reduce developer effort spent on troubleshooting bugs.
+Our ultimate goal is to reduce effort spent on troubleshooting bugs.
 As this is difficult to measure,\footnote{We discuss this point further in
 \S\ref{sec:discussion}.} since developer skills and
 familiarity with code bases differs widely, we instead
@@ -179,7 +179,7 @@ We fed random sequences of events to POX's layer two routing module (\verb=l2_mu
 learns host locations and installs exact match per-flow paths between known
 hosts, after discovering links in the network. We found after some time that POX threw an exception due to
 attempting to remove an element from a list where the element was not present.
-There were $69$ randomly generated inputs in the trace leading up to the
+There were 69 randomly generated inputs in the trace leading up to the
 exception.
 
 \begin{figure}[t]
@@ -214,10 +214,9 @@ trace it produced made for a simple integration test.
 } % -----------------------------------
 %We illustrate type errors to show how STS is a useful framework for exploring
 %code paths that you forget to unit tests.
-\noindent{\bf POX Premature PacketIn.} We discovered this bug accidentally
-During a particular fuzzing run, the
-\verb=l2_multi= module failed unexpectedly with a \verb=KeyError=. The initial trace
-had $102$ input events, and \projectname~reduced it to an MCS of 2 input events as shown in
+\noindent{\bf POX Premature PacketIn.} During a POX fuzz run, the
+\verb=l2_multi= routing module failed unexpectedly with a \verb=KeyError=. The initial trace
+had 102 input events, and \projectname~reduced it to an MCS of 2 input events as shown in
 Figure~\ref{fig:pox_handshake}.
 
 We repeatedly replayed the MCS while adding
@@ -228,7 +227,7 @@ arbitrary messages. POX, however, requires an additional series of message
 exchanges before considering the switch fully connected and notifying the
 application modules of its presence via a \emph{SwitchUp} event.
 
-In this case, the switch was slow in completing the second part
+The switch was slow in completing the second part
 of the handshake, causing the \emph{SwitchUp} to be delayed. During this window,
 a \emph{PacketIn} (LLDP packet) was forwarded to POX's
 \verb=discovery= module, which in turned raised a \emph{LinkEvent} to
@@ -236,7 +235,7 @@ a \emph{PacketIn} (LLDP packet) was forwarded to POX's
 We verified with the lead developer of POX that is a true bug.
 
 This case study demonstrates how even a simple handshake state machine can
-behave unexpectedly and in a non-trivial manner that is hard to understand
+behave in a manner that is hard to understand
 without being able to repeat the experiment with a minimal trace. Making heavy
 use of the MCS replay, a developer unfamiliar with the two subsystems
 was able to root-cause the bug in \textasciitilde30 minutes.
@@ -269,13 +268,12 @@ was able to root-cause the bug in \textasciitilde30 minutes.
 \caption{Minimization results.}
 \end{figure*}
 
-\noindent{\bf POX In-flight Blackhole.} We discovered another bug
-after roughly 20 runs of randomly generated inputs. We noticed a persistent
+\noindent{\bf POX In-flight Blackhole.} We found a persistent
 blackhole while POX was bootstrapping its discovery of link and host locations.
-There were $46$ inputs in the initial trace. The initial trace was affected by
+There were initially 46 inputs. The initial trace was affected by
 non-determinism and only replayed successfully 15/20 times.
 We were able to reliably replay it by employing multiplexed sockets, overriding {\tt gettimeofday()},
-and waiting on POX's logging messages. \projectname~returned a $7$ input MCS
+and waiting on logging messages. \projectname~returned a 7 input MCS
 (runtime shown in Figure~\ref{fig:pox_discovery}).
 
 %\begin{figure}[t]
@@ -298,7 +296,7 @@ possibility of in-flight packets directly following link discovery---and
 then as a result the
 second in-flight packet
 POX failed to return out of a nested conditional that would have
-otherwise prevented the blackholed routing entries from being installed.\\[0.5ex]
+prevented the blackhole from being installed.\\[0.5ex]
 \eat{ % Maybe add this in -- it goes into much more depth. % -----------------------------------
 We encountered this bug
 on a simple topology, depicted in Figure~\ref{fig:simple_topo}, consisting of
@@ -465,8 +463,8 @@ traffic injections. We are in the process of pinpointing the exact root cause
 with NOX developers, based on the 18 input MCS. }
 % -----------------------------------
 \noindent{\bf ONOS distributed database locking.} When testing ONOS, a distributed open-source controller, we noticed
-that ONOS controllers would occasionally reject switch attempts to connect upon
-initialization. The initial trace was already minimized, as the initial input
+that ONOS controllers would occasionally reject switches' attempts to connect.
+The initial trace was already minimized, as the initial input
 was the single event of the switches connecting to the controllers with a
 particular timing. When examining the logs, we found that the particular timing
 between the switch connects caused both ONOS controllers to encounter a ``failed
@@ -493,7 +491,7 @@ Figure~\ref{fig:fl_loop}).
 %\end{figure}
 
 We repeatedly replayed the 13 event MCS while successively adding
-instrumentation and increasing the log level each run. After about 15 replay
+instrumentation and increasing the log level each run. After 15 replay
 attempts, we found that the problem was caused by interference of end-host
 traffic with ongoing link discovery packets. In our experiment, Floodlight had
 not discovered an inter-switch link due to dropped LLDP packets, causing an
@@ -502,7 +500,7 @@ end-host to flap between perceived attachment points.
 While this behavior cannot strictly be considered a bug in Floodlight,
 the case-study nevertheless highlights the benefit of
 \projectname~over traditional techniques: by repeatedly replaying
-a significantly minimized MCS, we were able to diagnose the root cause---a
+the MCS, we were able to diagnose the root cause---a
 complex interaction between the LinkDiscovery, Forwarding, and DeviceManager
 modules.
 \eat{ % ------------------
@@ -536,9 +534,9 @@ in pointing out a previously unknown bug, and reducing the input size.
 } % ----------------------
 \subsection{Known bugs}
 
-In addition to our troubleshooting case studies, we evaluate
-\projectname's ability to minimize traces on a range of bug types,
-both known and synthetically injected by us.\\[0.5ex]
+%In addition to our troubleshooting case studies, we evaluate
+%\projectname's ability to minimize traces on a range of bug types,
+%both known and synthetically injected by us.\\[0.5ex]
 %
 \noindent{\bf Floodlight failover bug.} We were able to reproduce a
 known problem in Floodlight's distributed controller failover logic~\cite{floodlight_bug} with
@@ -629,17 +627,17 @@ proportional to the flow table space, and developers would find across multiple
 fuzz runs that the MCS was always 24 elements.
 
 \subsection{Synthetic bugs}
-Lastly, we injected synthetic bugs across a range of bug types into POX. For space
-reasons we only briefly describe these bugs.\\[0.5ex]
+%Lastly, we injected synthetic bugs across a range of bug types into POX. For space
+%reasons we only briefly describe these bugs.\\[0.5ex]
 %
 \noindent{\bf Delicate timer interleaving.}
-We injected a crash on a code path that was highly dependent on the
-interleaving of internal timers triggered within POX. This is a particularly
+We injected a crash on a code path that was highly dependent on
+internal timers firing within POX. This is a
 hard case for \projectname, since we have little control of internal timers.
 We were able to trigger the code path during fuzzing, but were unable to
-reproduce the bug during replay after five attempts, and were left with the
-original 39 input trace. This is the only case where we were
-unable to replay trace.\\[0.5ex]
+reproduce the bug during replay after five attempts. %, and were left with the original 39 input trace. 
+This is the only case where we were
+unable to replay the trace.\\[0.5ex]
 %
 \noindent{\bf Algorithm misimplementation.}
 We modified POX's implementation of Floyd-Warshall to create loops.
@@ -660,16 +658,16 @@ the switch. We were able to minimize 27 inputs to the two traffic injection
 inputs necessary to trigger the routing entry overlap.\\[0.5ex]
 %
 \noindent{\bf Null pointer on rarely used codepath.}
-On a rarely used-code path, we injected a null pointer exception,
+On a rarely used code path we injected a null pointer exception,
 and were able to successfully minimize a fuzz trace of 62 events to the
-expected conditions that triggered that code path: control channel congestion followed
+expected triggering conditions: control channel congestion followed
 by decongestion.\\[0.5ex]
 %
 \noindent{\bf Multithreaded race condition.}
 We created a race condition between multiple threads that was
 triggered by any packet I/O, regardless of input. With 5 replays per
-subsequence, we were able to minimize a 1596 input in 10 hours 15 minutes to a
-replayable 2 element failure/recovery pair as an MCS.
+subsequence, we were able to minimize a 1596 input in 10 hours to a
+replayable 2 element failure/recovery pair.
 The MCS itself though may have been somewhat misleading to a developer (as
 expected), as the race condition
 was triggered randomly by any I/O, not just these two
@@ -686,12 +684,12 @@ some expected internal events, which caused POX to reject later switch
 connection attempts.\\[0.5ex]
 %
 \noindent{\bf Memory corruption.}
-We simulated a case where the receipt of
+We created a case where the receipt of
 link failure notification on a particular port causes corruption to one of
 POX's internal data
-structures. This corruption then causes a crash much later when the data structure is
-accessed during the during corresponding port up. These bugs
-are often hard to debug, because considerable time can pass between the event
+structures. This causes a crash much later when the data structure is
+accessed during the corresponding port up. These bugs
+are hard to debug, because considerable time can pass between the event
 corrupting the data structure and the event triggering the crash, making
 manual log inspection or source level debugging ineffective.
 \projectname~proved effective in this case, reducing a larger trace to
@@ -701,11 +699,10 @@ exactly the 2 events responsible for the crash.
 
 We show our overall results in
 Table~\ref{tab:case_studies}. We note that with the exception of `Delicate timer
-interleaving', \projectname~was able to significantly reduce the size of the
-input traces. As described in the case studies, we were able to
+interleaving', \projectname~was able to significantly reduce input traces.
+As described in the case studies, we were able to
 counter some sources of non-determinism
-by replaying multiple times per subsequence and adding instrumentation to
-controllers.
+by replaying multiple times per subsequence and adding instrumentation.
 %The final MCS were reliably replayable in 13 of 17 times.
 
 \eat{
@@ -836,13 +833,13 @@ triggering bugs that only appear at large scale. We ran
 On a machine with 6GB of memory, we ran POX as the controller, and measured the
 time to create successively larger FatTree
 topologies, complete the OpenFlow handshakes for each switch,
-cut $5\%$ of links, and process POX's response to the link failures. As shown in
+cut 5$\%$ of links, and process POX's response to the link failures. As shown in
 Figure~\ref{fig:scaling}, \projectname's processing time scales roughly
 linearly up to 2464 switches (a 45-pod FatTree). At that point, the machine
 started thrashing, but this limitation could easily be removed by running on a
 machine with $>$6GB of memory.
 
-Note that \projectname~is not designed for simulating high-throughput dataplane
+Note that \projectname~is not designed for high-throughput dataplane
 traffic; we only forward what is necessary to exercise the controller
 software. In proactive SDN setups, dataplane events are not
 relevant for the control software, except perhaps for host discovery.
@@ -865,7 +862,7 @@ user to set the rates different event types are triggered at. In our experiments
 \projectname~we found several times that we needed to set these parameters
 such that we avoided bugs that were not of interest to developers.
 For example, in one case we discovered that a high dataplane
-packet drop rate dropped too many LLDP packets, preventing the controller from successfully discovering the topology.
+packet drop rate dropped too many LLDP packets, preventing the controller from discovering the topology.
 Setting fuzzing parameters remains an important
 part of experiment setup.\\[0.5ex]
 %
@@ -879,16 +876,15 @@ developers. We therefore provide a threshold parameter in \projectname~for
 how long a invariant violation should persist before
 \projectname~reports it as a problem. In general, setting this
 threshold depends on the network and the invariants of
-interest.%\\[0.5ex]
+interest.\\[0.5ex]
 % \colin{Cut if need space (this is more-or-less superceded by peek():}
-\eat{
+%
 \noindent{\bf Setting \textepsilon.} Our algorithm leaves an open question as to what value
 \textepsilon~should be set to. We experimentally varied \textepsilon~on the
 POX in-flight blackhole bug.
 We found for both cases that the number of events we timed out on while isolating the MCS became stable for values above 25 milliseconds.
 For smaller values, the number of timed out events increased rapidly. We
 currently set \textepsilon~to 100 milliseconds.
-}
 
 \eat{
 In general, larger values of \textepsilon~are preferable to
