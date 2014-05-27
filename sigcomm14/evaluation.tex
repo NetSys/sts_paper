@@ -71,7 +71,7 @@ rarely used codepath & 20 switch FatTree & 157.4 & 62 & 2 & Yes \\
 & Delicate timer interleaving & 3 switch mesh & N/A & 39 & 39 & No \\
 % experiments/snapshot_demo_synthetic_link_failure
 % total original inputs: 39
-& Algorithm misimplementation & 3 switch mesh & 525.2 & 40 & 7 & Indirectly \\
+& Reactive routing misimplementation & 3 switch mesh & 525.2 & 40 & 7 & Indirectly \\
 % experiments/experiments/pox_broken_floyd_mcs
 % total original inputs: 40
 % MCS is inflated! link failure / recovery in MCS not related to triggering events.
@@ -639,15 +639,24 @@ reproduce the bug during replay after five attempts. %, and were left with the o
 This is the only case where we were
 unable to replay the trace.\\[0.5ex]
 %
-\noindent{\bf Algorithm misimplementation.}
-We modified POX's implementation of Floyd-Warshall to create loops.
-We noticed that the MCS was inflated by at least two events: a link failure
-and a link recovery that we did not believe were relevant to triggering the bug we
-induced. The final MCS also was not replayable on the first try.
-We suspect that these problems may have been introduced by the fact that the
-routing implementation depended on the discovery module to find links in the
-network, and the order in which these links are discovered is
-non-deterministic.\\[0.5ex]
+\noindent{\bf Reactive routing misimplementation.}
+We modified POX's reactive routing module to create a loop upon receiving a
+particular sequence of dataplane packets. This case is difficult for two
+reasons: the routing module's behavior depends on the (non-deterministic)
+order these links are discovered in the network, and the triggering
+events are multiple dataplane packet arrivals interleaved at a fine
+granularity.
+We found that the 7 event MCS was inflated by
+at least two events: a link failure
+and a link recovery that we did not believe were relevant to triggering the bug.
+We noticed that after {\sc Peek()} inferred expected internal events, our
+event scheduler still timed out on some link discovery messages--those that
+happened to occur during the {\sc Peek()} run but did not show up during
+replay due to non-determinism. We suspected that these timeouts
+were the cause of the inflated MCS, and
+confirmed our intuition by turning off interposition on internal events
+altogether, which yielded a 2 event MCS (although this MCS was still affected by
+non-determinism).\\[0.5ex]
 %
 \noindent{\bf Overlapping flow entries.}
 We ran two modules in POX: a capability manager in charge of providing
@@ -699,10 +708,17 @@ exactly the 2 events responsible for the crash.
 
 We show our overall results in
 Table~\ref{tab:case_studies}. We note that with the exception of `Delicate timer
-interleaving', \projectname~was able to significantly reduce input traces.
-As described in the case studies, we were able to
-counter some sources of non-determinism
-by replaying multiple times per subsequence and adding instrumentation.
+interleaving' \projectname~was able to significantly reduce input traces.
+One lesson worth noting is that in cases where non-determinism is particularly
+acute, as in the reactive routing
+misimplementation case study, \projectname's interposition on internal
+events can actually negatively effect minimization due to time outs on
+inferred internal events that do not occur during the replay run. In those cases we found
+better results by simply turning off interposition on internal events.
+Nonetheless, as described in most of the case studies, we were able to
+counter the relevant sources of non-determinism
+by replaying multiple times per subsequence and adding instrumentation. In
+most cases we found better results by interposing on internal events.
 %The final MCS were reliably replayable in 13 of 17 times.
 
 \eat{
