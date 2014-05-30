@@ -5,7 +5,7 @@ domain-specific algorithms~\cite{claessen2000quickcheck,whitaker2004configuratio
 blackbox distributed systems. We described the closest work to us, thread schedule
 minimization and program flow reduction, in \S\ref{subsec:algorithm}.
 
-We characterize the other approaches taken by the troubleshooting literature
+We characterize the other troubleshooting approaches
 as (i) instrumentation (tracing),
 (ii) bug detection (invariant checking),
 (iii) replay, and
@@ -37,9 +37,8 @@ process.
 It is also possible to infer
 performance anomalies by building probabilistic models from
 collections of traces~\cite{barham2004using,Chen02pinpoint:problem}.
-Our goal is to produce exact minimal causal sequences without
-depending on probabilistic models, and we are primarily focused on correctness
-instead of performance.
+Our goal is to produce exact minimal causal sequences, and we are primarily focused on
+correctness instead of performance.
 
 Model checkers~\cite{musuvathi2008finding,nice} seek to
 proactively find bugs by analyzing all possible code paths.
@@ -84,11 +83,11 @@ problematic code through replay or other means.
 \vspace{0.05in}
 \noindent{\bf Root Cause Analysis.} Without perfect instrumentation,
 it is often not possible to know exactly what events are occurring (\eg~which
-network components have failed) in a
+components have failed) in a
 distributed system. Root cause analysis~\cite{yemini1996,Kandula:2009:DDE:1592568.1592597}
 seeks to reconstruct those unknown events from limited monitoring data.
 Here we know exactly which events occurred, but
-seek to identify the minimal sequence of events that trigger a particular bug.
+seek to identify a minimal sequence of events.
 
 \colin{Cut if we need space:}
 \vspace{0.05in}
