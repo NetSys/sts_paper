@@ -1,30 +1,32 @@
 \label{subsec:case_studies}
 
+\setlength\extrarowheight{0.8pt}
+
 \begin{table*}
 \centering
 \footnotesize
-\begin{tabular}{|l||l|l|r|r|r|l|}
-  \cline{2-7}
+\begin{tabular}{|l||l|l|r|r|r|r|l|}
+  \cline{2-8}
   \multicolumn{1}{c|}{~} & \textbf{Bug Name} & \textbf{Topology} &
-  \textbf{Runtime (s)} & \textbf{Input Size} & \textbf{MCS Size} & \textbf{MCS
-  helpful?}  \\\cline{2-6} \hline
+  \textbf{Runtime (s)} & \textbf{Input Size} & \textbf{MCS Size} &
+  \textbf{MCS WI} & \textbf{MCS Helpful?}  \\\cline{2-8} \hline
   \multirow{7}{*}{\rotatebox[origin=c]{90}{\bf Newly Found}}
-& Pyretic loop & 3 switch mesh & 266.2 & 36 & 2 & Yes \\
+& Pyretic Loop & 3 switch mesh & 266.2 & 36 & 1 & 2 & Yes \\
 % 20/20
 % experiments/new_pyretic_loop_mcs/
 % Total original inputs: 36
-& POX premature PacketIn & 4 switch mesh & 249.1 & 102 & 2 & Yes \\
+& POX Premature PacketIn & 4 switch mesh & 249.1 & 102 & 2 & NR & Yes \\
 % 20/20
 % Andi: experiments/pox_early_packetin_mcs
 % Total inputs: 102
-& POX in-flight blackhole & 2 switch mesh & 641.1 & 46 & 7 & Yes \\
+& POX In-Flight Blackhole & 2 switch mesh & 641.1 & 46 & 7 & NR & Yes \\
 % \colin{15/20 [20/20*]}
 % Total inputs: 46
 % With DP events: 68/25
 % Original: 7ba95ed82ca4e32f12ab511d9c4301dbac2c59d5
 % MCS: 399cf861db87a65e600283d9ae7760400c4676e2
 % Updated: updated_debug_branch_loop_v3_mcs/
-& POX migration blackhole & 4 switch mesh & 1796.0 & 29 & 3 & Yes \\
+& POX Migration Blackhole & 4 switch mesh & 1796.0 & 29 & 3 & NR & Yes \\
 % 20/20
 % Total inputs: 29
 % With DP events: 117/3
@@ -34,57 +36,57 @@
 %% With DP events: 72/2
 %% Original: config/eugene_epsilon_replay.py
 %% MCS: config/eugene_epsilon_mcs.py
-& NOX discovery loop & 4 switch mesh & 4990.9 & 150 & 18 & Indirectly \\
+& NOX Discovery Loop & 4 switch mesh & 4990.9 & 150 & 18 & NR & Indirectly \\
 % 18/20
 % Total inputs: 150
 % With DP events: 358/58
 % Original: ce547fc1df3bde279b6f3dd589c909663e295f1e
 % MCS: 5f49e791b0c1a611454cf0930f54aa609dd635d3
 % Updated to new format: nox_mesh_4_loop_repro_verbose
-& Floodlight loop & 3 switch mesh & 27930.6 & 117 & 13 & Yes \\
+& ONOS Database Locking & 2 switch mesh & N/A & 1 & 1 & 1 & N/A \\
+% onos_db_lock_mcs/
+& Floodlight Loop & 3 switch mesh & 27930.6 & 117 & 13 & NR & Yes \\
 % 15/50
 % Total inputs: 284
 % zeta_final/, on floodlight branch of experiments repo
-& ONOS distributed database locking & 2 switch mesh & N/A & 1 & 1 & N/A \\
-% onos_db_lock_mcs/
 \hline
 \hline
 \multirow{3}{*}{\rotatebox[origin=c]{90}{\bf Known}}
-& Floodlight failover bug & 2 switch mesh & - & 202 & 2 & Yes \\
+& Floodlight Failover & 2 switch mesh & - & 202 & 2 & - & Yes \\
 % Predates the experiment directory
-& ONOS master election & 2 switch mesh & 6325.2 & 30 & 3 & Yes \\
+& ONOS Master Election & 2 switch mesh & 6325.2 & 30 & 3 & NR & Yes \\
 % onos_controller_id_bug_mcs/
-& POX load balancer error checking & 3 switch mesh & 2396.7 & 106 & 24 (N+1) & Yes \\
+& POX Load Balancer & 3 switch mesh & 2396.7 & 106 & 24 (N+1) & 26 & Yes \\
 % load_balancer_fuzzer_mcs/
 % Total original inputs: 106
 % --------
 %ONOS forgotten flows & TBD & TBD & TBD \\
 \hline
 \hline
-\multirow{7}{*}{\rotatebox[origin=c]{90}{\bf Synthetic}} & Null pointer on
-rarely used codepath & 20 switch FatTree & 157.4 & 62 & 2 & Yes \\
-% experiments/experiments/pox_null_pointer_mcs
-% total original inputs: 365
-& Overlapping flow entries & 2 switch mesh & 115.4  & 27 & 2 & Yes \\
-% experiments/trigger_priority_mismatch_small_mcs
-% total original inputs: 27
-& Delicate timer interleaving & 3 switch mesh & N/A & 39 & 39 & No \\
+\multirow{7}{*}{\rotatebox[origin=c]{90}{\bf Synthetic}}
+& Delicate Timer Interleaving & 3 switch mesh & N/A & 39 & NR & NR & No \\
 % experiments/snapshot_demo_synthetic_link_failure
 % total original inputs: 39
-& Reactive routing misimplementation & 3 switch mesh & 525.2 & 40 & 7 & Indirectly \\
+& Reactive Routing Trigger & 3 switch mesh & 525.2 & 40 & 7 & 2 & Indirectly \\
 % experiments/experiments/pox_broken_floyd_mcs
 % total original inputs: 40
 % MCS is inflated! link failure / recovery in MCS not related to triggering events.
-& Multithreaded race condition & 10 switch mesh & 36967.5 & 1596 & 2 & Indirectly \\
+& Overlapping Flow Entries & 2 switch mesh & 115.4  & 27 & 2 & 3 & Yes \\
+% experiments/trigger_priority_mismatch_small_mcs
+% total original inputs: 27
+& Null Pointer & 20 switch FatTree & 157.4 & 62 & 2 & 2 & Yes \\
+% experiments/experiments/pox_null_pointer_mcs
+% total original inputs: 365
+& Multithreaded Race Condition & 10 switch mesh & 36967.5 & 1596 & 2 & 2 & Indirectly \\
 % experiments/trigger_multithreading_bug_mcs
 % total original inputs: 1596
-& Memory leak & 2 switch mesh & 15022.6 & 719 & 30 (M) & Indirectly \\
+& Memory Leak & 2 switch mesh & 15022.6 & 719 & 32 (M+2) & 33 & Indirectly \\
 % experiments/trigger_memory_leak3_mcs/
 % total original inputs: 719
 %Execution-speed race condition & 3 switch mesh & - & 9 & Yes \\
 %% "floodlight" branch: experiments/floodlight_loop_2014_mcs_*
 %% Total original inputs: 157
-& Memory corruption & 4 switch mesh & 145.7 & 341 & 2 & Yes \\
+& Memory Corruption & 4 switch mesh & 145.7 & 341 & 2 & 2 & Yes \\
 % syn_mem_corruption_3switch_fuzzer_mcs
 % Total original inputs: 341
 % ----
@@ -94,10 +96,13 @@ rarely used codepath & 20 switch FatTree & 157.4 & 62 & 2 & Yes \\
 %Decision based on last byte of TCP SYN & TBD & TBD & TBD \\
 \hline
 \end{tabular}
-\caption{Overview of Case Studies.}
+\caption{Overview of Case Studies. `WI' denotes `Without Interposition', and
+`NR' denotes `Not Replayable'.}
 \label{tab:case_studies}
 \vskip -1em
 \end{table*}
+
+\setlength\extrarowheight{0pt}
 
 We first demonstrate \projectname's viability in troubleshooting real bugs. We found
 seven new bugs by fuzz testing five open source SDN control platforms:
@@ -242,34 +247,34 @@ was able to root-cause the bug in \textasciitilde30 minutes.
 \begin{figure*}[!htb]
 \begin{subfigure}{0.33\textwidth}
     \includegraphics[width=\textwidth]{../graphs/runtime/pyretic_loop.pdf}
-    \caption[]{\label{fig:pyretic_loop} Pyretic loop.}
+    \caption[]{\label{fig:pyretic_loop} Pyretic Loop.}
 \end{subfigure}\hfill
 \begin{subfigure}{0.33\textwidth}
     %\hspace{-10pt}
     \includegraphics[width=\textwidth]{../graphs/runtime/pox_early_packetin.pdf}
-    \caption[]{\label{fig:pox_handshake} POX Premature Packet-In Failure.}
+    \caption[]{\label{fig:pox_handshake} POX Premature PacketIn.}
 \end{subfigure}\hfill
 \begin{subfigure}{0.33\textwidth}
     \includegraphics[width=\textwidth]{../graphs/runtime/pox_blackhole.pdf}
-    \caption[]{\label{fig:pox_discovery} POX in-flight blackhole. }
+    \caption[]{\label{fig:pox_discovery} POX In-Flight Blackhole. }
 \end{subfigure}\hfill
 \begin{subfigure}{0.33\textwidth}
     \includegraphics[width=\textwidth]{../graphs/runtime/pox_migration_blackhole.pdf}
-    \caption[]{\label{fig:pox_migration} POX migration blackhole. }
+    \caption[]{\label{fig:pox_migration} POX Migration Blackhole. }
 \end{subfigure}\hfill
 \begin{subfigure}{0.33\textwidth}
     \includegraphics[width=\textwidth]{../graphs/runtime/nox_loop.pdf}
-    \caption[]{\label{fig:nox_discovery} NOX discovery loop. }
+    \caption[]{\label{fig:nox_discovery} NOX Discovery Loop. }
 \end{subfigure}\hfill
 \begin{subfigure}{0.33\textwidth}
     \includegraphics[width=\textwidth]{../graphs/runtime/floodlight_loop.pdf}
-    \caption[]{\label{fig:fl_loop} Floodlight loop. }
+    \caption[]{\label{fig:fl_loop} Floodlight Loop. }
 \end{subfigure}
 \caption{Minimization results.}
 \vskip -1em
 \end{figure*}
 
-\noindent{\bf POX In-flight Blackhole.} We found a persistent
+\noindent{\bf POX In-Flight Blackhole.} We found a persistent
 blackhole while POX was bootstrapping its discovery of link and host locations.
 There were initially 46 inputs. The initial trace was affected by
 non-determinism and only replayed successfully 15/20 times.
@@ -463,7 +468,7 @@ Our initial input size was 150 inputs, a minute's worth of execution.
 traffic injections. We are in the process of pinpointing the exact root cause
 with NOX developers, based on the 18 input MCS. }
 % -----------------------------------
-\noindent{\bf ONOS distributed database locking.} When testing ONOS, a distributed open-source controller, we noticed
+\noindent{\bf ONOS Database Locking.} When testing ONOS, a distributed open-source controller, we noticed
 that ONOS controllers would occasionally reject switches' attempts to connect.
 The initial trace was already minimized, as the initial input
 was the single event of the switches connecting to the controllers with a
@@ -474,7 +479,7 @@ that the ONOS controllers were attempting to concurrently insert the same key,
 which causes a known error. We modified ONOS's
 initialization logic to retry when inserting switches, and found that this
 eliminated the bug.\\[0.5ex]
-\noindent{\bf Floodlight loop.} Next we
+\noindent{\bf Floodlight Loop.} Next we
 tested Floodlight's routing application. In about 30 minutes, our fuzzing
 uncovered a 117 input sequence that caused a persistent 3-node forwarding loop.
 In this case, the controller exhibited significant non-determinism, which initially
@@ -539,7 +544,7 @@ in pointing out a previously unknown bug, and reducing the input size.
 %\projectname's ability to minimize traces on a range of bug types,
 %both known and synthetically injected by us.\\[0.5ex]
 %
-\noindent{\bf Floodlight failover bug.} We were able to reproduce a
+\noindent{\bf Floodlight Failover.} We were able to reproduce a
 known problem in Floodlight's distributed controller failover logic~\cite{floodlight_bug} with
 \projectname. In Floodlight switches maintain one hot connection to a master controller and
 several cold connections to replica controllers. The \emph{master} holds the
@@ -596,7 +601,7 @@ the switch, but without ever clearing the routing entries for
 the failed link, resulting in a persistent blackhole. In this example, the MCS
 is the conjunction of the two external inputs (E1,E3).
 }
-\noindent{\bf ONOS master election bug.} We reproduced another bug,
+\noindent{\bf ONOS Master Election.} We reproduced another bug,
 previously reported in earlier versions and later fixed, in
 ONOS's master election protocol. If two adjacent switches are connected to two
 separate controllers, the controllers must decide between themselves who will
@@ -611,7 +616,8 @@ initial IDs chosen at random, and ONOS is not instrumented to
 support deterministic replay of random values. We mitigated this
 inherent non-determinism by replaying each subsequence 5 times. With this setting,
 \projectname{} was able to minimize the trace to 3 elements.\\[0.5ex]
-\noindent{\bf POX load balancer error checking.} We are aware that POX
+%
+\noindent{\bf POX Load Balancer.} We are aware that POX
 applications do not always check error messages sent by switches
 rejecting invalid packet forwarding commands. We used this to trigger a bug in
 POX's load balancer application: we created a network where switches had only
@@ -631,7 +637,7 @@ fuzz runs that the MCS was always 24 elements.
 %Lastly, we injected synthetic bugs across a range of bug types into POX. For space
 %reasons we only briefly describe these bugs.\\[0.5ex]
 %
-\noindent{\bf Delicate timer interleaving.}
+\noindent{\bf Delicate Timer Interleaving.}
 We injected a crash on a code path that was highly dependent on
 internal timers firing within POX. This is a
 hard case for \projectname, since we have little control of internal timers.
@@ -640,7 +646,7 @@ reproduce the bug during replay after five attempts. %, and were left with the o
 This is the only case where we were
 unable to replay the trace.\\[0.5ex]
 %
-\noindent{\bf Reactive routing misimplementation.}
+\noindent{\bf Reactive Routing Trigger.}
 We modified POX's reactive routing module to create a loop upon receiving a
 particular sequence of dataplane packets. This case is difficult for two
 reasons: the routing module's behavior depends on the (non-deterministic)
@@ -659,7 +665,7 @@ confirmed our intuition by turning off interposition on internal events
 altogether, which yielded a 2 event MCS (although this MCS was still affected by
 non-determinism).\\[0.5ex]
 %
-\noindent{\bf Overlapping flow entries.}
+\noindent{\bf Overlapping Flow Entries.}
 We ran two modules in POX: a capability manager in charge of providing
 upstream DoS protection for servers, and a forwarding application. The
 capabilities manager installed drop rules upstream for servers that requested
@@ -667,13 +673,13 @@ it, but these rules had lower priority than the default forwarding rules in
 the switch. We were able to minimize 27 inputs to the two traffic injection
 inputs necessary to trigger the routing entry overlap.\\[0.5ex]
 %
-\noindent{\bf Null pointer on rarely used codepath.}
+\noindent{\bf Null Pointer.}
 On a rarely used code path we injected a null pointer exception,
 and were able to successfully minimize a fuzz trace of 62 events to the
 expected triggering conditions: control channel congestion followed
 by decongestion.\\[0.5ex]
 %
-\noindent{\bf Multithreaded race condition.}
+\noindent{\bf Multithreaded Race Condition.}
 We created a race condition between multiple threads that was
 triggered by any packet I/O, regardless of input. With 5 replays per
 subsequence, we were able to minimize a 1596 input in 10 hours to a
@@ -683,7 +689,7 @@ expected), as the race condition
 was triggered randomly by any I/O, not just these two
 inputs events.\\[0.5ex]
 %
-\noindent{\bf Memory leak.}
+\noindent{\bf Memory Leak.}
 We created a case that would take \projectname~very long to minimize: a
 memory leak that eventually caused a crash in POX. We artificially set the
 memory leak to happen quickly after allocating 30 (M) objects created upon switch
@@ -693,7 +699,7 @@ was not replayable. We suspect this was because \projectname~was timing out on
 some expected internal events, which caused POX to reject later switch
 connection attempts.\\[0.5ex]
 %
-\noindent{\bf Memory corruption.}
+\noindent{\bf Memory Corruption.}
 We created a case where the receipt of
 link failure notification on a particular port causes corruption to one of
 POX's internal data
@@ -708,18 +714,21 @@ exactly the 2 events responsible for the crash.
 \subsection{Overall Results \& Discussion}
 
 We show our overall results in
-Table~\ref{tab:case_studies}. We note that with the exception of `Delicate timer
-interleaving' \projectname~was able to significantly reduce input traces.
-One lesson worth noting is that in cases where non-determinism is particularly
-acute, as in the reactive routing
-misimplementation case study, \projectname's interposition on internal
-events can actually negatively effect minimization due to time outs on
-inferred internal events that do not occur during the replay run. In those cases we found
+Table~\ref{tab:case_studies}. We note that with the exception of Delicate Timer
+Interleaving and ONOS Database Locking, \projectname~was able to significantly reduce input traces.
+
+The MCS WI column, showing the MCS sizes we produced when ignoring internal events entirely,
+indicates that our techniques for interleaving
+events are often crucial.
+In one case however---Reactive Routing Trigger---non-determinism was particularly
+acute, and \projectname's interposition on internal
+events actually made minimization worse due to time outs on
+inferred internal events that did not occur during after {\sc
+Peek()}. In this case we found
 better results by simply turning off interposition on internal events.
-Nonetheless, as described in most of the case studies, we were able to
-counter the relevant sources of non-determinism
-by replaying multiple times per subsequence and adding instrumentation. In
-most cases we found better results by interposing on internal events.
+For all of the other case studies, either non-determinism was not problematic, or we were able to
+counteract it
+by replaying multiple times per subsequence and adding instrumentation.
 %The final MCS were reliably replayable in 13 of 17 times.
 
 \eat{
@@ -735,8 +744,8 @@ keep in mind ~$7 +/- 2$ aspects\cite{TODO_CITE_STUDY}}.
 The cases where \projectname~was most useful were those where a developer would
 have started from
 the end of the trace and worked backwards, but
-the actual root cause lies many events in the past (\eg~the Memory corruption
-example). This requires many re-iterations through the code and logs using standard
+the actual root cause lies many events in the past (as in Memory Corruption).
+This requires many re-iterations through the code and logs using standard
 debugging tools (\eg~source level debuggers), and
 is highly tedious on human timescales. In contrast, it was easy to step
 through a small event trace and manually identify the code paths responsible
@@ -790,7 +799,7 @@ times is effective in coping with non-determinism, at the cost of increased runt
 \centering
 \begin{tabular}{| >{\centering\arraybackslash}p{1in} | >{\centering\arraybackslash}p{0.7in} | >{\centering\arraybackslash}p{1.15in} |}
 \hline
-{\bf Max replays per subsequence} & {\bf Size of final MCS} & {\bf Total hours}\\\hline\hline
+{\bf Max Replays Per Subsequence} & {\bf Size of Final MCS} & {\bf Total Hours}\\\hline\hline
 1 & 65 & 6.10 \\\hline
 2 & 20 & 6.37 \\\hline
 3 & 15 & 7.78 \\\hline
@@ -899,7 +908,7 @@ interest.\\[0.5ex]
 %
 \noindent{\bf Setting \textepsilon.} Our algorithm leaves an open question as to what value
 \textepsilon~should be set to. We experimentally varied \textepsilon~on the
-POX in-flight blackhole bug.
+POX In-Flight Blackhole bug.
 We found for both cases that the number of events we timed out on while isolating the MCS became stable for values above 25 milliseconds.
 For smaller values, the number of timed out events increased rapidly. We
 currently set \textepsilon~to 100 milliseconds.
