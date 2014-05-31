@@ -50,19 +50,6 @@ speeds adjusted accordingly).  Additional experience with production systems wil
 us determine how to best trade off improved simulation fidelity against degraded performance.
 }
 
-\noindent{\bf How much effort do MCSes really save?} Based on conversations
-with engineers and our own industrial experience,
-two facts seem to hold. First, companies dedicate
-a substantial portion of their best engineers' time on troubleshooting bugs.
-Second, the larger the trace, the more effort is spent on debugging, since humans
-can only keep a small number of facts in working memory~\cite{miller56seven}.
-As one developer puts it, ``Automatically shrinking test cases to the minimal
-case is immensely helpful''~\cite{riak_quote}.
-%If one were to consider the task of debugging a large
-%input trace, a common approach taken by engineers is in fact similar to the
-%divide and conquer approach taken by delta debugging which is
-%$O(n^2)$ in the worst case for $n$ inputs, yet human time is highly valuable.
-
 \eat{
 \noindent{\bf Will this approach work on all controllers?} We make limited
 assumptions about the controller software in use. Three of the five platforms
@@ -73,6 +60,19 @@ In general, we expect \projectname~to support controllers conforming to
 OpenFlow~1.0. % out of the box.
 }
 
+\noindent{\bf How much effort do MCSes really save?} Based on conversations
+with engineers and our own industrial experience,
+two facts seem to hold. First, companies dedicate
+a substantial portion of their best engineers' time on troubleshooting bugs.
+Second, the larger the trace, the more effort is spent on debugging, since humans
+can only keep a small number of facts in working memory~\cite{miller56seven}.
+As one developer puts it, ``Automatically shrinking test cases to the minimal
+case is immensely helpful''~\cite{riak_quote}.\\[0.5ex]
+%If one were to consider the task of debugging a large
+%input trace, a common approach taken by engineers is in fact similar to the
+%divide and conquer approach taken by delta debugging which is
+%$O(n^2)$ in the worst case for $n$ inputs, yet human time is highly valuable.
+%
 \noindent{\bf Why do you focus on SDN?} SDN represents both an
 opportunity and a challenge. In terms of a challenge,
 SDN control software---both proprietary and open source---is in its infancy, which means
@@ -104,13 +104,27 @@ a quiescent state after processing inputs, which means that many inputs can be p
 Although we focus on
 SDN control software, we are currently evaluating our
 technique on other distributed systems, and believe it to be generally
-applicable.
+applicable.\\[0.5ex]
 %Although we focus on
 %troubleshooting SDN control software, we believe that our general approach can
 %be applied to other distributed systems.
 %In future work we hope to validate our
 %technique on other such systems. % such as replicated state machines or NAS
 %% controllers.
+%
+\noindent{\bf Enabling analysis of production logs.} \projectname~does
+not currently support minimization of production (as opposed
+to QA) logs. Production systems would need to include Lamport
+clocks on each message~\cite{Lamport:1978:TCO:359545.359563} or have
+sufficiently accurate clock synchronization to obtain a happens-before
+relation. Inputs would also
+need to need to be logged in sufficient detail for \projectname~to
+replay a synthetic version. Finally, without care, a single
+input event may appear multiple times in the
+distributed logs. The most robust way to
+avoid redundant input events would be to employ perfect failure
+detectors~\cite{chandra1996unreliable}, which log a failure iff
+the failure actually occurred.
 
 \eat{
 \noindent{\bf Dataflow analysis.} Another avenue for future work would be to apply
@@ -148,19 +162,6 @@ topology.% may yield faster minimization, since bugs will often only involve a
 %small number of nodes in the distributed system.
 }
 
-\noindent{\bf Enabling analysis of production logs.} \projectname~does
-not currently support minimization of production (as opposed
-to QA) logs. Production systems would need to include Lamport
-clocks on each message~\cite{Lamport:1978:TCO:359545.359563} or have
-sufficiently accurate clock synchronization to obtain a happens-before
-relation. Inputs would also
-need to need to be logged in sufficient detail for \projectname~to
-replay a synthetic version. Finally, without care, a single
-input event may appear multiple times in the
-distributed logs. The most robust way to
-avoid redundant input events would be to employ perfect failure
-detectors~\cite{chandra1996unreliable}, which log a failure iff
-the failure actually occurred.
 
 \eat{ % LONG VERSION
 \projectname~does not currently support minimization of production (as opposed

@@ -9,9 +9,8 @@ We characterize the other troubleshooting approaches
 as (i) instrumentation (tracing),
 (ii) bug detection (invariant checking),
 (iii) replay, and
-(iv) root cause analysis (of network device failures).
-
-\vspace{0.05in}
+(iv) root cause analysis (of network device failures).\\[0.5ex]
+%
 \noindent{\bf Instrumentation.} Unstructured
 log files collected at each node are the most common form of diagnostic information. The goal of
 tracing frameworks~\cite{pip,fonseca2007x,Chen02pinpoint:problem,ndb14,barham2004using}
@@ -22,9 +21,8 @@ allows users to retroactively examine the paths dataplane packets
 take through OpenFlow networks. Tools like NetSight allow developers to understand
 how, when, and where the dataplane broke. In contrast, we focus on making it
 easier for developers to understand why the control software
-misconfigured the network.%in the first place.
-
-\vspace{0.05in}
+misconfigured the network.\\[0.5ex]
+%
 \noindent{\bf Bug Detection.} With instrumentation available, it becomes possible
 to check expectations about the
 system's state (either offline~\cite{Liu07widschecker} or online~\cite{d3s}), or about the paths requests take through
@@ -32,14 +30,14 @@ the system~\cite{pip}. Within the networking community, this research is
 primarily focused on verifying routing tables~\cite{hsa,hsa_realtime,anteater,khurshid2012veriflow}
 or forwarding behavior~\cite{Zeng:2012:ATP:2413176.2413205,libra}.
 We use bug detection techniques (invariant checking) to guide delta debugging's minimization
-process.
-
+process.\\[0.5ex]
+%
 It is also possible to infer
 performance anomalies by building probabilistic models from
 collections of traces~\cite{barham2004using,Chen02pinpoint:problem}.
 Our goal is to produce exact minimal causal sequences, and we are primarily focused on
-correctness instead of performance.
-
+correctness instead of performance.\\[0.5ex]
+%
 Model checkers~\cite{musuvathi2008finding,nice} seek to
 proactively find bugs by analyzing all possible code paths.
 After identifying a bug with model checking, finding a minimal code path leading to it is
@@ -51,15 +49,14 @@ control program (98 LoC), and five concurrent
 messages between the hosts.} and because large systems often comprise
 multiple (interacting) languages, which may not be amenable to formal methods.
 We are currently exploring the use of model checking to provide provably
-minimal MCSes.
+minimal MCSes.\\[0.5ex]
 %In future work we plan to explore the possibilities of model checking techniques with our %Rather than exploring all
 %possibilities, we discover bugs through testing of selected scenarios, which
 %makes our problem tractable.
 %which we believe fits more naturally into software engineers' chosen
 %way of developing and testing distributed systems.
 %\colin{TODO: discuss how finding the critical transition is related to finding the MCS}
-
-\vspace{0.05in}
+%
 \noindent{\bf Replay.} Crucial diagnostic information is often missing from traces.
 Record and replay techniques~\cite{Geels:2006:RDD:1267359.1267386,lin2013defined}
 instead allow users to step through (deterministic) executions and interactively examine the
@@ -72,25 +69,22 @@ Within SDN, OFRewind~\cite{ofrewind} provides
 record and replay of OpenFlow channels between controllers and switches.
 Manually examining long system executions can be tedious, and our goal is to
 minimize such executions so that developers find it easier to identify the
-problematic code through replay or other means.
+problematic code through replay or other means.\\[0.5ex]
 %Rx~\cite{qin2005rx} is a technique for improving availability: upon
 %encountering a crash, it starts from a previous checkpoint, fuzzes
 %the environment (\eg~random number generator seeds) to avoid triggering the same bug,
 %and restarts the program. Our
 %approach perturbs the inputs rather than the environment
 %prior to a failure.
-
-\vspace{0.05in}
+%
 \noindent{\bf Root Cause Analysis.} Without perfect instrumentation,
 it is often not possible to know exactly what events are occurring (\eg~which
 components have failed) in a
 distributed system. Root cause analysis~\cite{yemini1996,Kandula:2009:DDE:1592568.1592597}
 seeks to reconstruct those unknown events from limited monitoring data.
 Here we know exactly which events occurred, but
-seek to identify a minimal sequence of events.
-
-\colin{Cut if we need space:}
-\vspace{0.05in}
+seek to identify a minimal sequence of events.\\[0.5ex]
+%
 It is worth mentioning another goal outside the purview of distributed systems, but
 closely in line with ours: program slicing~\cite{weiser1981program} is a
 technique for finding the
@@ -102,7 +96,7 @@ code dimension.
 %except that our `program' is a distributed event schedule,
 %and the result we are interested in is the network misconfiguration at
 %the end of the execution.
-
+%
 \eat{ % ----- OLD TEXT ---------
 Our work spans three fields: software engineering, programming languages, and
 systems and networking.

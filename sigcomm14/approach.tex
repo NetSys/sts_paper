@@ -150,8 +150,8 @@ holds.
 
 Simply exploring subsequences $E_S$ of $E_L$ is insufficient for finding
 MCSes: the timing of when we inject the external events during replay is crucial for
-reproducing violations.
-
+reproducing violations.\\[0.5ex]
+%
 \noindent {\bf Existing Approaches.} The most natural approach to scheduling
 external events is to maintain the original wall-clock timing intervals
 between them.
@@ -241,8 +241,8 @@ these techniques are not able to explore alternate code paths that still
 trigger the invariant violation. They are also overly conservative in
 removing inputs (\eg~EFF takes the transitive closure of all possible
 dependencies~\cite{Lee:2011:TGR:1993498.1993528}) causing them to miss opportunities to
-remove dependencies that actually semantically commute.
-
+remove dependencies that actually semantically commute.\\[0.5ex]
+%
 \noindent {\bf Allowing Divergence.} Our approach is
 to dynamically respond to I/O requests during minimization
 rather than recording all I/O requests and thread scheduling decisions.
@@ -262,16 +262,17 @@ needed by the other approaches to implement a deterministic thread scheduler, in
 or perform program flow analysis. By avoiding assumptions about the language of the control software,
 we were able to easily apply our system to five different control platforms
 written in three different languages.\footnote{Some of the controllers
-actually comprise multiple languages.} %, for example those that depend on databases.}
-
+actually comprise multiple languages.}\\[0.5ex]
+%, for example those that depend on databases.}
+%
 %As far as we know, we are the first to minimize inputs by dynamically
 %responding to I/O requests. We empirically show in \S\ref{sec:evaluation}
 %that this approach works well.
-
+%
 %To get guarantees on minimality, we could model checking / DPOR to exhaustively explore all thread
 %interleavings for each subsequence tested by delta debugging.
 %This has problems foo, bar and baz.
-
+%
 \noindent {\bf Accounting for Interleavings.} To reproduce the invariant violation (whenever $E_S$ is a superset of an MCS)
 we need to inject each input event \external{} only after all other
 events, including internal events,
@@ -312,35 +313,6 @@ able to totally-order the event trace $\tau_L$.
 
 %\subsection{Preserving Causality}
 
-Maintaining the happens-before relation from the original trace
-throughout replay of subsequences of the
-trace involves three issues: coping with syntactic differences in internal
-events across runs,
-handling internal events from the original
-execution that may not occur after pruning, and dealing with new internal events that were not
-observed at all in the original execution.
-
-\eat{
-\colin{Somewhat redundant. Maybe wait until use cases.}
-While the inputs and original internal events are given to us,
-we become aware of new internal events throughout replay by
-(i) monitoring
-control message receipts between controllers and switches,
-and (ii) interposing on the controllers' logging library and notifying the
-replayer whenever the control software executes a log statement (which serve to mark relevant state
-transitions). Note that to achieve truly deterministic
-replay, these log statements would need to
-be highly granular, capturing information such as thread scheduling decisions;
-we show in \S\ref{subsec:case_studies}
-however that pre-existing, course granular log statements are often sufficient to
-successfully reproduce bugs.}
-
-%\footnote{We discuss this problem further in
-%\S\ref{subsec:domain_knowledge}.}
-%Note that the developer must provide enough logging statements
-%so that relevant internal state transitions are captured and visible to our
-%tool.
-
 \begin{table}[tb]
 \centering
 \footnotesize
@@ -364,6 +336,35 @@ Log statements & varargs parameters to printf \\
 \vspace{-0.5cm}
 \end{table}
 
+Maintaining the happens-before relation from the original trace
+throughout replay of subsequences of the
+trace involves three issues: coping with syntactic differences in internal
+events across runs,
+handling internal events from the original
+execution that may not occur after pruning, and dealing with new internal events that were not
+observed at all in the original execution.\\[0.5ex]
+%
+%\eat{
+%\colin{Somewhat redundant. Maybe wait until use cases.}
+%While the inputs and original internal events are given to us,
+%we become aware of new internal events throughout replay by
+%(i) monitoring
+%control message receipts between controllers and switches,
+%and (ii) interposing on the controllers' logging library and notifying the
+%replayer whenever the control software executes a log statement (which serve to mark relevant state
+%transitions). Note that to achieve truly deterministic
+%replay, these log statements would need to
+%be highly granular, capturing information such as thread scheduling decisions;
+%we show in \S\ref{subsec:case_studies}
+%however that pre-existing, course granular log statements are often sufficient to
+%successfully reproduce bugs.}
+%
+%%\footnote{We discuss this problem further in
+%%\S\ref{subsec:domain_knowledge}.}
+%%Note that the developer must provide enough logging statements
+%%so that relevant internal state transitions are captured and visible to our
+%%tool.
+%
 \noindent {\bf Functional Equivalence. } Internal events may differ syntactically (\eg~sequence numbers
 of control packets may all differ) when replaying a subsequence of the original log.
 We observe that many internal events are {\em functionally
@@ -381,12 +382,6 @@ of applying masks is that bugs involving masked fields are outside the purview o
 our approach.} We show the fields we mask in Table~\ref{tab:fingerprints}.
 Note that these masks only need to be specified once, and can later be
 applied programmatically.
-
-We then consider an
-internal event $i'$ observed in the replay
-equivalent (in the sense of inheriting all of its happens-before relations) to an internal
-event $i$ from the original log if and only if all unmasked fields have the same value
-and $i$ occurs between $i'$'s preceding and succeeding inputs in the happens-before relation.
 
 \begin{table}[tb]
 \centering
@@ -432,6 +427,13 @@ Non-deterministic TCAMs & Modified switches \\
 \end{figure}
 }
 
+We then consider an
+internal event $i'$ observed in the replay
+equivalent (in the sense of inheriting all of its happens-before relations) to an internal
+event $i$ from the original log if and only if all unmasked fields have the same value
+and $i$ occurs between $i'$'s preceding and succeeding inputs in the
+happens-before relation.\\[0.5ex]
+%
 \noindent {\bf Handling Absent Internal Events.} Some internal events from the original
 log that ``happen before'' some external input
 may be absent when replaying a subsequence.
@@ -444,34 +446,6 @@ controllers from the Floodlight case shown in
 Figure~\ref{fig:state_machines}. If we prune the link failure input, the
 master will never receive a link failure notification and
 transition to and from \emph{Send Flush}.}
-
-We handle this by attempting to infer the presence of internal
-events before we replay each subsequence. Our algorithm (called {\sc Peek()}) for inferring the
-presence of internal events is depicted in
-Figure~\ref{fig:peek}. The algorithm injects each input, records a checkpoint\footnote{We discuss the implementation details of checkpointing
-in~\ref{subsec:snapshotting}.} of
-the network and the control software's state, allows the system to proceed up
-until the following input (plus a small time $\epsilon$), records the observed
-events, and matches the
-recorded events with the functionally equivalent internal events observed in
-the original trace.\footnote{In the
-case that, due
-to non-determinism, an internal event occurs during {\sc Peek()} but does not occur
-during replay, we time out on internal events after $\epsilon$ seconds of
-their expected occurrence.}
-
-\eat{ % Old version without peek()
-We handle this possibility by waiting for each expected internal event
-for a certain time \textepsilon. If the internal event does not occur within
-this time, we assume that it is absent and proceed. If, however, we find
-during the \textepsilon~time units we were waiting that another internal that
-happens \emph{after} our next input occurs, we know that we have waited too
-long and violated causality. In this case we need to restart the replay
-process, this time knowing which internal events in the current
-input interval are and are not going to occur before injecting the next input.
-We show our overall event scheduling algorithm
-in Figure~\ref{fig:replay}.
-}
 
 \eat{ % Somewhat redundant with peek()
 \begin{figure}
@@ -534,6 +508,34 @@ in Figure~\ref{fig:replay}.
   \vskip -1em
 \end{figure}
 
+We handle this by attempting to infer the presence of internal
+events before we replay each subsequence. Our algorithm (called {\sc Peek()}) for inferring the
+presence of internal events is depicted in
+Figure~\ref{fig:peek}. The algorithm injects each input, records a checkpoint\footnote{We discuss the implementation details of checkpointing
+in~\ref{subsec:snapshotting}.} of
+the network and the control software's state, allows the system to proceed up
+until the following input (plus a small time $\epsilon$), records the observed
+events, and matches the
+recorded events with the functionally equivalent internal events observed in
+the original trace.\footnote{In the
+case that, due
+to non-determinism, an internal event occurs during {\sc Peek()} but does not occur
+during replay, we time out on internal events after $\epsilon$ seconds of
+their expected occurrence.}\\[0.5ex]
+%
+%\eat{ % Old version without peek()
+%We handle this possibility by waiting for each expected internal event
+%for a certain time \textepsilon. If the internal event does not occur within
+%this time, we assume that it is absent and proceed. If, however, we find
+%during the \textepsilon~time units we were waiting that another internal that
+%happens \emph{after} our next input occurs, we know that we have waited too
+%long and violated causality. In this case we need to restart the replay
+%process, this time knowing which internal events in the current
+%input interval are and are not going to occur before injecting the next input.
+%We show our overall event scheduling algorithm
+%in Figure~\ref{fig:replay}.
+%}
+%
 \noindent {\bf Handling New Internal Events.} The last possible induced change is the occurrence of new
 internal events that were not observed in the original log.
 New events present multiple possibilities for where
@@ -564,32 +566,32 @@ always injecting the next input when its last expected predecessor
 either occurs or times out. This ensures that we always find state transition suffixes that
 contain a subsequence of the (equivalent) original internal events, but leaves open the
 possibility of finding divergent suffixes that lead to the invariant
-violation.
+violation.\\[0.5ex]
 %This is reasonable because not even branching on new
 %internal events is guaranteed to find the globally shortest fault-inducing input
 %sequence:
 %there may be other unknown
 %paths through the state machine leading to the invariant violation that are
 %completely disjoint from the original execution.
-
-\eat{
-Luckily, crucially ambiguous new internal events are not problematic for the
-control software we evaluated, as we show in \S\ref{sec:casestudies}.
-We conjecture that ambiguous new internal events are
-rare because SDN software is a control plane system,
-and is designed to quiesce quickly (\ie~take a small number of internal
-transitions after any input event, and stop at highly connected vertices).
-Concretely, SDN programs are often structured as (mostly independent) event
-handlers, meaning that pruning input events simply triggers a subset of the original
-event handlers.
-\eat{
-As an illustration, consider the state machines
-in Figure~\ref{fig:state_machines}:
-the controllers quickly converge to a single state (either ``Master'' or
-``Backup''), as do the switches (``Safe'').
-}
-}
-
+%
+%\eat{
+%Luckily, crucially ambiguous new internal events are not problematic for the
+%control software we evaluated, as we show in \S\ref{sec:casestudies}.
+%We conjecture that ambiguous new internal events are
+%rare because SDN software is a control plane system,
+%and is designed to quiesce quickly (\ie~take a small number of internal
+%transitions after any input event, and stop at highly connected vertices).
+%Concretely, SDN programs are often structured as (mostly independent) event
+%handlers, meaning that pruning input events simply triggers a subset of the original
+%event handlers.
+%\eat{
+%As an illustration, consider the state machines
+%in Figure~\ref{fig:state_machines}:
+%the controllers quickly converge to a single state (either ``Master'' or
+%``Backup''), as do the switches (``Safe'').
+%}
+%}
+%
 \noindent {\bf Recap.} We combine these heuristics to replay each
 subsequence chosen by delta debugging: we compute functional equivalency
 for all internal events intercepted by our test orchestrator's

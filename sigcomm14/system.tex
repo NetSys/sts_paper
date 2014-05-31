@@ -8,8 +8,8 @@
 Thus far we have assumed that we are given a faulty execution
 trace. We now provide an overview of
 how we obtain traces, and then describe our system for
-minimizing them.
-
+minimizing them.\\[0.5ex]
+%
 \noindent{\bf Obtaining Traces.} All three of the commercial SDN companies
 that we know of employ a team of QA
 engineers to fuzz test their control software on network testbeds.
@@ -67,8 +67,8 @@ liveness, and (e) POX ACL compliance.
 }
 We also run the \tester~interactively
 so that we can examine the state of the network
-and manually induce event orderings that we believe may trigger bugs.
-
+and manually induce event orderings that we believe may trigger bugs.\\[0.5ex]
+%
 \noindent{\bf Performing Minimization.} After discovering an invariant
 violation of interest, we apply delta debugging to minimize the recorded trace. We use the
 testing infrastructure itself to $replay()$ each intermediate subsequence.
@@ -99,9 +99,10 @@ through, then tells the switch to fail its link. % and send a \verb=ofp_port_sta
 addition to the Hassel network invariant checking library~\cite{hsa}.
 \projectname~also optionally makes use of Open vSwitch~\cite{pfaff2009extending} as an interposition point
 between controllers. We have
-made the code for \projectname~publicly available at \href{http://ucb-sts.github.com/sts}{ucb-sts.github.com/sts}.
+made the code for \projectname~publicly available at
+\href{http://ucb-sts.github.com/sts}{ucb-sts.github.com/sts}.\\[0.5ex]
 % and have discussed the logistics of deploying it with several SDN companies.
-
+%
 \noindent{\bf Integration With Existing Testbeds.} In designing \projectname~we aimed to make
 it possible for engineering organizations to
 implement the technology within their existing QA test infrastructure.
@@ -253,11 +254,11 @@ execution share common input prefixes.
 \colin{TODO: add more experiments here}
 
 We have found two heuristics useful for ensuring that invariant violations are consistently reproduced.
-These heuristics may be used alongside or instead of {\sc Peek()}.
+These heuristics may be used alongside or instead of {\sc Peek()}.\\[0.5ex]
 %We evaluated the effectiveness
 %of these heuristics by comparing replay executions with and
 %without the heuristics enabled.
-
+%
 \noindent{\bf Event Scheduling.} If we had perfect visibility into
 the internal state transitions of control software, we could replay inputs at precisely the correct point.
 Unfortunately this is impractical.
@@ -267,11 +268,11 @@ close to the recorded timing helps (but does not alone suffice) to
 ensure that invariant violations are consistently
 reproduced. When replaying events, we \verb=sleep()= between each
 event for the same duration that was recorded in the original trace,
-less the time it takes to replay or time out on each event.
+less the time it takes to replay or time out on each event.\\[0.5ex]
 %Accounting for the
 %extra time it takes to replay events is especially important when we
 %time out on internal events, or when input events take a long time to inject.
-
+%
 \colin{Cut if we need space:}
 \noindent{\bf Whitelisting keepalive messages.} We observed during some
 of our experiments that the control software incorrectly inferred that links or switches had
@@ -282,13 +283,14 @@ staying in \projectname's buffers too long during replay, such that the
 control software would time out on them. To avoid these differences,
 we added an option to always pass through
 keepalive messages. The limitation of this
-heuristic is that it cannot be used on bugs involving keepalive messages.
-
+heuristic is that it cannot be used on bugs involving keepalive
+messages.\\[0.5ex]
+%
 %We also tried another algorithm: let new
 %internal messages through, keep a window of what we expect. If we don't
 %expect, let it through. Problem: false positive: accidentally let through
 %internal messages too early, then we time out on them after.
-
+%
 \noindent{\bf Whitelisting dataplane events.} Dataplane forward/drop events constitute a
 substantial portion of overall events. However, for
 many of the controller applications we are interested in, dataplane
@@ -320,35 +322,32 @@ pinpoint the root causes of bugs. We therefore implemented a number of
 complementary root
 causing tools,
 which we use along with Unix utilities to finish the debugging
-process. We illustrate their use in \S\ref{sec:evaluation}.
-
+process. We illustrate their use in \S\ref{sec:evaluation}.\\[0.5ex]
+%
 \noindent{\bf OFRewind}. \projectname~supports an interactive replay mode
 similar to OFRewind~\cite{ofrewind} that allows troubleshooters to query the
 network state, filter subsets of events, check
 additional invariants, and
-even induce new events that were not part of the original event trace.
-\eat{
-\colin{Cut if we need space:} Similar to OFRewind, we do not run concurrent controller processes while the
-user is interactively performing replay, since proper replay across
-concurrent processes requires precise timing.
-Instead, \projectname~replays the exact OpenFlow commands from the
-original trace to the switches, and creates mock TCP connections that drop
-whatever messages the switches attempt to send back to the controllers.
-}
-
+even induce new events that were not part of the original event trace.\\[0.5ex]
+%\colin{Cut if we need space:} Similar to OFRewind, we do not run concurrent controller processes while the
+%user is interactively performing replay, since proper replay across
+%concurrent processes requires precise timing.
+%Instead, \projectname~replays the exact OpenFlow commands from the
+%original trace to the switches, and creates mock TCP connections that drop
+%
 \noindent{\bf Packet Tracing}. Especially for controllers that react to
 flow events, we found it useful to trace the path of individual
 packets through the network. \projectname~includes tracing instrumentation
-similar to NetSight~\cite{ndb14} for this purpose.
-
+similar to NetSight~\cite{ndb14} for this purpose.\\[0.5ex]
+%
 \noindent{\bf OpenFlow Reduction}. The OpenFlow commands sent by controller software
 are often redundant, \eg~they may override routing
 entries, allow them to expire, or periodically flush
 and later repopulate them. \projectname~includes a
 tool for filtering out such redundant messages and
 displaying only those commands that are directly relevant to triggering invalid network
-configurations.
-
+configurations.\\[0.5ex]
+%
 \noindent{\bf Trace Visualization}. We often found it informative to visualize
 the ordering of message deliveries and internal
 state transitions. We implemented
@@ -375,14 +374,14 @@ parallelized delta debugging across multiple cores or machines.
 \label{subsec:non_goals}
 
 Having detailed the specifics of our approach we now
-clarify the scope of our technique's use.
-
+clarify the scope of our technique's use.\\[0.5ex]
+%
 \noindent{\bf Partial Visibility.} Our event scheduling algorithm assumes that
 it has visibility into the occurrence of relevant internal events. For
 some software this may involve substantial instrumentation beyond
 preexisting log statements, though as we show in \S\ref{sec:evaluation}, most bugs
-we encountered can be minimized without perfect visibility.
-
+we encountered can be minimized without perfect visibility.\\[0.5ex]
+%
 \noindent{\bf Non-determinism.} Non-determinism
 is fundamental in networks. When non-determinism is present
 \projectname~(i) replays multiple times per subsequence, and (ii) employs
@@ -390,48 +389,47 @@ software techniques for mitigating non-determinism, but it may nonetheless
 output a non-minimal MCS. In the common case this is still
 better than the tools developers employ in practice.
 In the worst case \projectname~leaves the
-developer where they started: an unpruned log.
-
+developer where they started: an unpruned log.\\[0.5ex]
+%
 \noindent{\bf Lack of Guarantees.} Due to partial visibility and
-non-determinism, we do not provide guarantees on MCS minimality.
+non-determinism, we do not provide guarantees on MCS minimality.\\[0.5ex]
 %although we emperically show in~\S\ref{sec:evaluation} that they are quite small.
-
+%
 %In particular our technique is not designed to reproduce bugs
 %involving non-determinism within a single controller (\eg~race-conditions between threads);
 %we focus on coarser granularity errors (\eg~incorrect failover logic).
-
-\eat{
-\noindent{\bf Troubleshooting vs.\ Debugging.} Our technique is a troubleshooting tool, not a debugger;
-by this we mean that our approach helps identify and localize inputs that
-trigger erroneous behavior, but it does not directly identify which
-line(s) of code cause the error.
-}
-
+%
+%\noindent{\bf Troubleshooting vs.\ Debugging.} Our technique is a troubleshooting tool, not a debugger;
+%by this we mean that our approach helps identify and localize inputs that
+%trigger erroneous behavior, but it does not directly identify which
+%line(s) of code cause the error.
+%
 \noindent{\bf Bugs Outside the Control Software.} Our goal is not to find the root
 cause of individual component failures in the system (\eg~misbehaving routers,
 link failures). Instead, we focus on
-how the distributed system as a whole reacts to the occurrence of such inputs.
+how the distributed system as a whole reacts to the occurrence of such
+inputs.\\[0.5ex]
 %If there is a bug in your switch, you will need to contact your hardware vendor;
 %if you have a bug in your policy specification, you will need to take a closer look at what you specified.
-
+%
 \noindent{\bf Interposition Overhead.} Performance overhead from interposing on
 messages may prevent \projectname~from minimizing bugs triggered by
 high message rates.\footnote{Although this might be mitigated with
 time warping~\cite{Gupta06toinfinity}.} Similarly, \projectname's design may
 prevent it from minimizing extremely large traces, as we evaluate in
-\S\ref{sec:evaluation}.
-
-\eat{
-\noindent{\bf Globally vs.\ Locally Minimal Input Sequences.}
-Our approach is not guaranteed to find the globally minimal
-causal sequence from an input trace, since this involves enumerating the powerset of
-$E_L$ (a $O(2^n)$ operation).
-The delta debugging algorithm we employ does provably find a
-locally minimal causal sequence~\cite{Zeller:1999:YMP:318773.318946},
-meaning that if any input from the sequence is pruned, no invariant violation
-occurs.
-}
-
+\S\ref{sec:evaluation}.\\[0.5ex]
+%
+%\eat{
+%\noindent{\bf Globally vs.\ Locally Minimal Input Sequences.}
+%Our approach is not guaranteed to find the globally minimal
+%causal sequence from an input trace, since this involves enumerating the powerset of
+%$E_L$ (a $O(2^n)$ operation).
+%The delta debugging algorithm we employ does provably find a
+%locally minimal causal sequence~\cite{Zeller:1999:YMP:318773.318946},
+%meaning that if any input from the sequence is pruned, no invariant violation
+%occurs.
+%}
+%
 \noindent{\bf Correctness vs.\ Performance.}
 We are primarily focused on correctness bugs, not performance bugs.
 
