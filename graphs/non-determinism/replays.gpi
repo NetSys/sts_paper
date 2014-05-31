@@ -31,7 +31,7 @@ set style line 4 lt rgb "#F25900" lw 2 pt 9
 
 set key top left
 
-set xlabel "Number of Replays per Subsequence"
+set xlabel "Maximum Number of Replays per Subsequence"
 set ylabel "Size of Final MCS"
 
 set yrange [0:]
