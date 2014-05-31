@@ -19,7 +19,7 @@
 % 20/20
 % Andi: experiments/pox_early_packetin_mcs
 % Total inputs: 102
-& POX In-Flight Blackhole & 2 switch mesh & 641.1 & 46 & 7 & NR & Yes \\
+& POX In-Flight Blackhole & 2 switch mesh & 641.1 & 46 & 7 & \num{X} & Yes \\
 % \colin{15/20 [20/20*]}
 % Total inputs: 46
 % With DP events: 68/25
@@ -36,14 +36,14 @@
 %% With DP events: 72/2
 %% Original: config/eugene_epsilon_replay.py
 %% MCS: config/eugene_epsilon_mcs.py
-& NOX Discovery Loop & 4 switch mesh & 4990.9 & 150 & 18 & NR & Indirectly \\
+& NOX Discovery Loop & 4 switch mesh & 4990.9 & 150 & 18 & \num{X} & Indirectly \\
 % 18/20
 % Total inputs: 150
 % With DP events: 358/58
 % Original: ce547fc1df3bde279b6f3dd589c909663e295f1e
 % MCS: 5f49e791b0c1a611454cf0930f54aa609dd635d3
 % Updated to new format: nox_mesh_4_loop_repro_verbose
-& ONOS Database Locking & 2 switch mesh & N/A & 1 & 1 & 1 & N/A \\
+& ONOS Database Locking & 2 switch mesh & N/A & 1 & 1 & - & N/A \\
 % onos_db_lock_mcs/
 & Floodlight Loop & 3 switch mesh & 27930.6 & 117 & 13 & NR & Yes \\
 % 15/50
@@ -54,7 +54,7 @@
 \multirow{3}{*}{\rotatebox[origin=c]{90}{\bf Known}}
 & Floodlight Failover & 2 switch mesh & - & 202 & 2 & - & Yes \\
 % Predates the experiment directory
-& ONOS Master Election & 2 switch mesh & 6325.2 & 30 & 3 & NR & Yes \\
+& ONOS Master Election & 2 switch mesh & 6325.2 & 30 & 3 & \num{X} & Yes \\
 % onos_controller_id_bug_mcs/
 & POX Load Balancer & 3 switch mesh & 2396.7 & 106 & 24 (N+1) & 26 & Yes \\
 % load_balancer_fuzzer_mcs/
@@ -788,41 +788,41 @@ play.
 \subsection{Coping with Non-determinism}
 \label{subsec:multiple_replays}
 Recall that \projectname~optionally replays each subsequence multiple times
-throughout delta debugging to
-mitigate the effects of non-determinism. We evaluate the effectiveness of this
-approach on the minimization of a synthetic non-deterministic loop created by
-Floodlight. Table~\ref{tab:non-determinism} demonstrates that the size of the resulting MCS decreases
-with the number of replays per subsequence. This suggests that replaying each subsequence multiple
-times is effective in coping with non-determinism, at the cost of increased runtime.
+to mitigate the effects of non-determinism. We evaluate the effectiveness of this
+approach by varying the maximum number of replays per subsequence while
+minimizing a synthetic non-deterministic loop created by
+Floodlight. Figure~\ref{fig:non-determinism} demonstrates that the size of the resulting MCS decreases
+with the maximum number of replays, at the cost of additional runtime;
+10 replays per subsequence took 12.8 total hours, versus 6.1 hours without
+retries.
 
-\begin{table}[tb]
-\centering
-\begin{tabular}{| >{\centering\arraybackslash}p{1in} | >{\centering\arraybackslash}p{0.7in} | >{\centering\arraybackslash}p{1.15in} |}
-\hline
-{\bf Max Replays Per Subsequence} & {\bf Size of Final MCS} & {\bf Total Hours}\\\hline\hline
-1 & 65 & 6.10 \\\hline
-2 & 20 & 6.37 \\\hline
-3 & 15 & 7.78 \\\hline
-4 & 12 & 9.59 \\\hline
-5 & 9 & 6.38 \\\hline
-6 & 9 & 11.20 \\\hline
-7 & 9 & 11.83 \\\hline
-8 & 6 & 12.35 \\\hline
-9 & 6 & 11.13 \\\hline
-10 & 6 & 12.86 \\\hline
-\end{tabular}
-\caption[]{\label{tab:non-determinism} Effectiveness of replaying
-subsequences multiple times in mitigating non-determinism.}
-\vskip -1em
-\end{table}
+%\begin{table}[tb]
+%\centering
+%\begin{tabular}{| >{\centering\arraybackslash}p{1in} | >{\centering\arraybackslash}p{0.7in} | >{\centering\arraybackslash}p{1.15in} |}
+%\hline
+%{\bf Max Replays Per Subsequence} & {\bf Size of Final MCS} & {\bf Total Hours}\\\hline\hline
+%1 & 65 & 6.10 \\\hline
+%2 & 20 & 6.37 \\\hline
+%3 & 15 & 7.78 \\\hline
+%4 & 12 & 9.59 \\\hline
+%5 & 9 & 6.38 \\\hline
+%6 & 9 & 11.20 \\\hline
+%7 & 9 & 11.83 \\\hline
+%8 & 6 & 12.35 \\\hline
+%9 & 6 & 11.13 \\\hline
+%10 & 6 & 12.86 \\\hline
+%\end{tabular}
+%\caption[]{\label{tab:non-determinism} Effectiveness of replaying
+%subsequences multiple times in mitigating non-determinism.}
+%\vskip -1em
+%\end{table}
 
-\eat{
 \begin{figure}[t]
     \includegraphics[trim=0 0 0 0, width=3.25in]{../graphs/non-determinism/replays.pdf}
     \caption[]{\label{fig:non-determinism} Effectiveness of replaying
     subsequences multiple times in mitigating non-determinism.}
+\vskip -1em
 \end{figure}
-}
 
 \subsection{Instrumentation Complexity}
 
