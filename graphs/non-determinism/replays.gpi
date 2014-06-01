@@ -1,6 +1,6 @@
 # Note you need gnuplot 4.4 for the pdfcairo terminal.
 
-set terminal pdfcairo font "Helvetica, 18" linewidth 4 rounded
+set terminal pdfcairo font "Helvetica, 22" linewidth 4 rounded
 
 # Line style for axes
 set style line 80 lt rgb "#808080"
