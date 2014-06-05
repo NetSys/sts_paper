@@ -16,12 +16,12 @@ log files collected at each node are the most common form of diagnostic informat
 tracing frameworks~\cite{pip,fonseca2007x,Chen02pinpoint:problem,ndb14,barham2004using}
 is to produce structured logs that can be easily analyzed, such as DAGs tracking
 requests passing through the distributed system. An example within the SDN
-problem space is NetSight~\cite{ndb14}, which
+space is NetSight~\cite{ndb14}, which
 allows users to retroactively examine the paths dataplane packets
 take through OpenFlow networks. Tools like NetSight allow developers to understand
 how, when, and where the dataplane broke. In contrast, we focus on making it
 easier for developers to understand why the control software
-misconfigured the network.\\[0.5ex]
+misconfigured the network in the first place.\\[0.5ex]
 %
 \noindent{\bf Bug Detection.} With instrumentation available, it becomes possible
 to check expectations about the
@@ -48,7 +48,7 @@ model check a network with two switches, two hosts, the NOX MAC-learning
 control program (98 LoC), and five concurrent
 messages between the hosts.} and because large systems often comprise
 multiple (interacting) languages, which may not be amenable to formal methods.
-We are currently exploring the use of model checking to provide provably
+Nonetheless, we are currently exploring the use of model checking to provide provably
 minimal MCSes.\\[0.5ex]
 %In future work we plan to explore the possibilities of model checking techniques with our %Rather than exploring all
 %possibilities, we discover bugs through testing of selected scenarios, which
@@ -60,7 +60,7 @@ minimal MCSes.\\[0.5ex]
 \noindent{\bf Replay.} Crucial diagnostic information is often missing from traces.
 Record and replay techniques~\cite{Geels:2006:RDD:1267359.1267386,lin2013defined}
 instead allow users to step through (deterministic) executions and interactively examine the
-state of the system in exchange for runtime recording overhead.
+state of the system in exchange for performance overhead.
 %Static analysis and symbolic execution can also be applied post-hoc %, without incurring runtime performance overhead,
 %to find code paths that lead up to software
 %crashes~\cite{Yuan:2010:SED:1736020.1736038} or thread schedules that reproduce

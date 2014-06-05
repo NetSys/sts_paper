@@ -10,12 +10,12 @@ changes via a management interface, and possibly dataplane packets.
 In response, the
 controllers issue forwarding instructions to switches. All input
 events are asynchronous, and individual controllers may fail at any
-time. The controllers may communicate
+time. The controllers either communicate
 with each other over the dataplane network, or use a separate dedicated
 network, and may become partitioned.
 
 %\subsection{Bugs, QA Testing, and Troubleshooting}
-The goal of a network control plane is to configure the switch forwarding entries so as to
+The goal of the network control plane is to configure the switch forwarding entries so as to
 enforce one or more invariants, such as connectivity (\ie~ensuring that a
 route exists between every endpoint pair), isolation and access control
 (\ie~various limitations on

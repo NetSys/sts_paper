@@ -46,7 +46,7 @@ approach to achieving our first task. We do better by employing
 the delta debugging algorithm~\cite{Zeller:1999:YMP:318773.318946}, a
 divide-and-conquer algorithm for
 isolating fault-inducing inputs. We use delta
-debugging to iteratively select subsequences of $E_L$ and replay each
+debugging to iteratively select subsequences of $E_L$ and $replay$ each
 subsequence with some timing $T$. If the bug persists for a given subsequence, delta debugging ignores the
 other inputs, and proceeds with the search for an MCS within this subsequence.
 %In what follows, we use the term {\em delta debugging} to refer to our algorithm for finding relevant subsequences.
@@ -112,7 +112,7 @@ hold.
 \end{center}
 \end{boxedminipage}
 \caption{\colin{Cut if we need space} Automated Delta Debugging Algorithm
-From~\cite{Zeller:1999:YMP:318773.318946}.}
+from~\cite{Zeller:1999:YMP:318773.318946}.}
 \label{fig:ddmin}
 \vspace{-0.3cm}
 \end{figure*}
@@ -149,7 +149,7 @@ holds.
 \label{subsec:algorithm}
 
 Simply exploring subsequences $E_S$ of $E_L$ is insufficient for finding
-MCSes: the timing of when we inject the external events during replay is crucial for
+MCSes: the timing of when we inject the external events during $replay$ is crucial for
 reproducing violations.\\[0.5ex]
 %
 \noindent {\bf Existing Approaches.} The most natural approach to scheduling
@@ -254,7 +254,7 @@ code paths, but do not systematically
 consider concurrency and asynchrony.\footnote{PRES
 explores alternate code paths in best-effort replay of multithreaded
 executions, but does not minimize executions~\cite{park2009pres}.}
-We also avoid the runtime overhead of recording all I/O
+We also avoid the performance overhead of recording all I/O
 requests and later replaying them (\eg~EFF incurs \textasciitilde10x slowdown during
 replay~\cite{Lee:2011:TGR:1993498.1993528}). Lastly,
 we avoid the extensive effort required to instrument the control software's language runtime,
@@ -286,7 +286,7 @@ The internal events we consider are
 synchronization messages) or
 between controllers and switches (\eg~OpenFlow messages), and (b) state transitions
 within controllers (\eg~a backup node deciding to become master).
-Our test orchestrator obtains visibility into (a) by interposing on all messages within the test
+Our replay orchestrator obtains visibility into (a) by interposing on all messages within the test
 environment (to be described in \S\ref{sec:systems_challenges}).
 It optionally obtains partial visibility into (b) by instrumenting controller
 software with a simple interposition layer (to be described in \S\ref{subsec:mitigating}).
@@ -337,7 +337,7 @@ Log statements & varargs parameters to printf \\
 \end{table}
 
 Maintaining the happens-before relation from the original trace
-throughout replay of subsequences of the
+throughout $replay$ of subsequences of the
 trace involves three issues: coping with syntactic differences in internal
 events across runs,
 handling internal events from the original
@@ -428,7 +428,7 @@ Non-deterministic TCAMs & Modified switches \\
 }
 
 We then consider an
-internal event $i'$ observed in the replay
+internal event $i'$ observed in $replay$
 equivalent (in the sense of inheriting all of its happens-before relations) to an internal
 event $i$ from the original log if and only if all unmasked fields have the same value
 and $i$ occurs between $i'$'s preceding and succeeding inputs in the
@@ -508,8 +508,8 @@ transition to and from \emph{Send Flush}.}
   \vskip -1em
 \end{figure}
 
-We handle this by attempting to infer the presence of internal
-events before we replay each subsequence. Our algorithm (called {\sc Peek()}) for inferring the
+To avoid waiting forever we infer the presence of internal
+events before we $replay$ each subsequence. Our algorithm (called {\sc Peek()}) for inferring the
 presence of internal events is depicted in
 Figure~\ref{fig:peek}. The algorithm injects each input, records a checkpoint\footnote{We discuss the implementation details of checkpointing
 in~\ref{subsec:snapshotting}.} of
@@ -520,7 +520,7 @@ recorded events with the functionally equivalent internal events observed in
 the original trace.\footnote{In the
 case that, due
 to non-determinism, an internal event occurs during {\sc Peek()} but does not occur
-during replay, we time out on internal events after $\epsilon$ seconds of
+during $replay$, we time out on internal events after $\epsilon$ seconds of
 their expected occurrence.}\\[0.5ex]
 %
 %\eat{ % Old version without peek()
@@ -541,7 +541,7 @@ internal events that were not observed in the original log.
 New events present multiple possibilities for where
 we should inject the next input. Consider the following case:
 if $i_2$ and $i_3$ are internal events observed
-during replay that are both in the same equivalence class as a single event $i_1$ from the
+during $replay$ that are both in the same equivalence class as a single event $i_1$ from the
 original run, we could inject the next input after $i_2$ or after $i_3$.
 
 % TODO: figure this figure out
@@ -596,7 +596,7 @@ violation.\\[0.5ex]
 subsequence chosen by delta debugging: we compute functional equivalency
 for all internal events intercepted by our test orchestrator's
 interposition layer (\S\ref{sec:systems_challenges}), we invoke {\sc Peek()} to infer absent internal events,
-and with these inferred causal dependencies we replay
+and with these inferred causal dependencies we $replay$
 the input subsequence, waiting to inject each input until each of its
 (functionally equivalent) predecessors have occurred while allowing
 new internal events through the interposition layer immediately.
@@ -613,7 +613,7 @@ for an overall runtime of $\Omega(n \log n)$ best case and $O(n^2)$ worst case r
 The runtime can be decreased by parallelizing delta debugging:
 speculatively replaying subsequences in parallel, and joining the results.
 Storing periodic checkpoints of the system state throughout testing can also reduce runtime, as it
-allows us to replay starting from a recent checkpoint rather than the beginning of the
+allows us to $replay$ starting from a recent checkpoint rather than the beginning of the
 trace. % \barath{But doesn't this approach break due to non-determinism?  Sometimes we want
 %a replay run to be different from a previous replay run...}
 
