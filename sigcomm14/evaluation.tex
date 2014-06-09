@@ -19,13 +19,9 @@
 % 20/20
 % Andi: experiments/pox_early_packetin_mcs
 % Total inputs: 102
-& POX In-Flight Blackhole & 2 switch mesh & 641.1 & 46 & 7 & \num{X} & Yes \\
+& POX In-Flight Blackhole & 2 switch mesh & 1478.9 & 27 & 11 & NR & Yes \\
 % \colin{15/20 [20/20*]}
-% Total inputs: 46
-% With DP events: 68/25
-% Original: 7ba95ed82ca4e32f12ab511d9c4301dbac2c59d5
-% MCS: 399cf861db87a65e600283d9ae7760400c4676e2
-% Updated: updated_debug_branch_loop_v3_mcs/
+% Updated: experiments/pox_inflight_blackhole_mcs_dp_internal
 & POX Migration Blackhole & 4 switch mesh & 1796.0 & 29 & 3 & NR & Yes \\
 % 20/20
 % Total inputs: 29
@@ -276,10 +272,10 @@ was able to root-cause the bug in \textasciitilde30 minutes.
 
 \noindent{\bf POX In-Flight Blackhole.} We found a persistent
 blackhole while POX was bootstrapping its discovery of link and host locations.
-There were initially 46 inputs. The initial trace was affected by
+There were initially 27 inputs. The initial trace was affected by
 non-determinism and only replayed successfully 15/20 times.
 We were able to reliably replay it by employing multiplexed sockets, overriding {\tt gettimeofday()},
-and waiting on logging messages. \projectname~returned a 7 input MCS
+and waiting on logging messages. \projectname~returned a 11 input MCS
 (runtime shown in Figure~\ref{fig:pox_discovery}).
 
 %\begin{figure}[t]
