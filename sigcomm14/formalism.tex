@@ -32,12 +32,11 @@ The events $E_L$ include timestamps $\{ (\text{\external{k}}, t_k) \}$ from the
 orchestrator's clock. % of when the test orchestrator injected them.
 
 A replay of log $L$ involves replaying the external events $E_L$, possibly
-taking into account the occurrence of internal events $I_L$.
-We denote a replay attempt by $replay(\tau)$.
-The output of $replay$ is a sequence of forwarding configurations
+taking into account the occurrence of internal events $I_L$ as observed by the
+orchestrator. We denote a replay attempt by $replay(\tau)$.
+The output of $replay$ is a sequence of configurations
 $C_R = \hat{c}_1,\hat{c}_2,\dots,\hat{c}_n$. Ideally $replay(\tau_L)$
-reproduces the original sequence of configurations, but as we discuss later
-this does not always hold.
+reproduces the original configuration sequence, but this does not always hold.
 
 If the configuration sequence $C_L = c_1,c_2,\dots,c_n$ associated with the
 log $L$ violated predicate $P$
@@ -65,3 +64,4 @@ events. We describe this process in the next section.
 %using the \tester~to generate random inputs (shown in
 %Table~\ref{tab:inputs}), detecting bugs in control software,
 %and then finding MCSes that trigger them.
+\vspace{-1em}

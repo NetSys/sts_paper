@@ -16,23 +16,26 @@ essentially involve manual inspection of logs in the hope of identifying the
 triggering inputs. Here we developed a technique for automatically
 identifying a minimal sequence of inputs responsible for triggering a given
 bug, without making assumptions about the language or instrumentation of the
-software under test. We believe our technique will be especially valuable for troubleshooting
-distributed controllers running complex applications, which are just now
-becoming publicly available.
-
-We focused on SDN control software, but we believe our techniques
-are applicable to general distributed systems. As distributed systems
-proliferate, we hope that our technique helps ameliorate the dearth of
-tools in this important area.\\[0.4ex]
+software under test. While we focused on SDN control software, we believe our
+techniques are applicable to general distributed systems. \\
 %
+%We believe our technique will be especially valuable for troubleshooting
+%distributed controllers running complex applications, which are just now
+%becoming publicly available.
+%
+%We focused on SDN control software, but we believe our techniques
+%are generally applicable to concurrent systems. As distributed systems
+%proliferate, we hope that our technique helps ameliorate the dearth of
+%tools in this important area.
+%
+
 \noindent {\bf Acknowledgments.} We thank our Shepard Nate foster and the
 anonymous reviewers for their comments.
 We also thank Shivaram Venkataraman, Sangjin Han, Justine Sherry, Peter Bailis, Radhika Mittal, Teemu
 Koponen, Michael Piatek, Ali Ghodsi, and Andrew Ferguson for providing feedback on earlier versions of this
 text. This research is supported by NSF CNS
 1040838, NSF CNS 1015459, and an NSF Graduate Research Fellowship.
-\vspace{-1.5em}
-
+\vspace{-0.4em}
 %We have applied this system to three open source SDN platforms.
 %Of the five bugs we encountered in a five day investigation,
 %our technique reduced the size of the trace to 2 inputs in the best

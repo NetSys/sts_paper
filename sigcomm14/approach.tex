@@ -50,7 +50,7 @@ debugging to iteratively select subsequences of $E_L$ and $replay$ each
 subsequence with some timing $T$. If the bug persists for a given subsequence, delta debugging ignores the
 other inputs, and proceeds with the search for an MCS within this subsequence.
 %In what follows, we use the term {\em delta debugging} to refer to our algorithm for finding relevant subsequences.
-The delta debugging algorithm is shown in Figure~\ref{fig:ddmin}.
+The delta debugging algorithm we implement is shown in Figure~\ref{fig:ddmin}.
 %(with `$test$' replaced by `$replay$').
 
 The input subsequences chosen by delta debugging are not always
@@ -112,7 +112,8 @@ hold.
 \end{center}
 \end{boxedminipage}
 \caption{\colin{Cut if we need space} Automated Delta Debugging Algorithm
-from~\cite{Zeller:1999:YMP:318773.318946}.}
+from~\cite{Zeller:1999:YMP:318773.318946}. $\subseteq$ and $\subset$ denote
+subsequence relations.}
 \label{fig:ddmin}
 \vspace{-0.3cm}
 \end{figure*}
@@ -157,7 +158,7 @@ external events is to maintain the original wall-clock timing intervals
 between them.
 If this is able to find all minimization opportunities,
 \ie~reproduce the violation for all
-subsequences that are a superset of some MCS, we say that the inputs are
+subsequences that are a supersequence of some MCS, we say that the inputs are
 isolated. The original applications of delta
 debugging~\cite{Zeller:1999:YMP:318773.318946,Zeller:2002:SIF:506201.506206,regehr2012test,burger2011minimizing} make this assumption (where a
 single input is fed to a single program), as well as QuickCheck's input ``shrinking''~\cite{claessen2000quickcheck}
@@ -244,8 +245,8 @@ dependencies~\cite{Lee:2011:TGR:1993498.1993528}) causing them to miss opportuni
 remove dependencies that actually semantically commute.\\[0.5ex]
 %
 \noindent {\bf Allowing Divergence.} Our approach is
-to dynamically respond to I/O requests during minimization
-rather than recording all I/O requests and thread scheduling decisions.
+to allow processes to proceed along divergent paths
+rather than recording all low-level I/O and thread scheduling decisions.
 This has several advantages. Unlike
 the other approaches, we can find shorter alternate code paths that still
 trigger the invariant violation. Previous {\em best-effort} execution minimization
@@ -261,8 +262,7 @@ we avoid the extensive effort required to instrument the control software's lang
 needed by the other approaches to implement a deterministic thread scheduler, interpose on syscalls,
 or perform program flow analysis. By avoiding assumptions about the language of the control software,
 we were able to easily apply our system to five different control platforms
-written in three different languages.\footnote{Some of the controllers
-actually comprise multiple languages.}\\[0.5ex]
+written in three different languages.\\[0.5ex]
 %, for example those that depend on databases.}
 %
 %As far as we know, we are the first to minimize inputs by dynamically
@@ -273,7 +273,8 @@ actually comprise multiple languages.}\\[0.5ex]
 %interleavings for each subsequence tested by delta debugging.
 %This has problems foo, bar and baz.
 %
-\noindent {\bf Accounting for Interleavings.} To reproduce the invariant violation (whenever $E_S$ is a superset of an MCS)
+\noindent {\bf Accounting for Interleavings.} To reproduce the invariant
+violation (whenever $E_S$ is a supersequence of an MCS)
 we need to inject each input event \external{} only after all other
 events, including internal events,
 that precede it in the
@@ -290,8 +291,10 @@ Our replay orchestrator obtains visibility into (a) by interposing on all messag
 environment (to be described in \S\ref{sec:systems_challenges}).
 It optionally obtains partial visibility into (b) by instrumenting controller
 software with a simple interposition layer (to be described in \S\ref{subsec:mitigating}).
-By virtue of managing inputs and message deliveries from a central location, we are
-able to totally-order the event trace $\tau_L$.
+
+%From the perpsective
+%By virtue of managing inputs and message deliveries from a central location, we are
+%able to totally-order the event trace $\tau_L$.
 %We thereby augment the log $(E_L, T_L)$ with a schedule
 %$\tau_L\!=\!e_1\!\rightarrow\!i_1\!\rightarrow\!\dots\!e_2\!\rightarrow\!\dots$, where
 %each $i$ is an internal event observed in the original run.
@@ -333,16 +336,21 @@ Log statements & varargs parameters to printf \\
 %define equivalence classes.
 }
 \label{tab:fingerprints}
-\vspace{-0.5cm}
+\vspace{-0.6cm}
 \end{table}
 
-Maintaining the happens-before relation from the original trace
-throughout $replay$ of subsequences of the
-trace involves three issues: coping with syntactic differences in internal
-events across runs,
-handling internal events from the original
-execution that may not occur after pruning, and dealing with new internal events that were not
-observed at all in the original execution.\\[0.5ex]
+Given a subsequence $E_S$, our goal is to find an execution that obeys the
+original happens-before relation. We do not control the
+occurrence of internal events, but we can manipulate when they are delivered
+through our interposition layer,\footnote{In this way we totally order
+messages. Without interposition on process scheduling however, the
+system may still be concurrent.}
+and we also decide when to inject the external
+events $E_S$. The key challenges in choosing a schedule stem from the fact
+that the original execution has been modified: internal events may differ
+syntactically, some expected internal events may no
+longer occur, and new internal events may occur that were not observed at all
+in the original execution.\\[0.5ex]
 %
 %\eat{
 %\colin{Somewhat redundant. Maybe wait until use cases.}
@@ -505,7 +513,7 @@ transition to and from \emph{Send Flush}.}
   \caption{{\sc Peek} determines which internal events
   from the original sequence occur for a given subsequence.
   \label{fig:peek}}
-  \vskip -1em
+  \vskip -1.2em
 \end{figure}
 
 To avoid waiting forever we infer the presence of internal
