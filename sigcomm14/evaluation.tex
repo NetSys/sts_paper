@@ -50,7 +50,7 @@
 \multirow{3}{*}{\rotatebox[origin=c]{90}{\bf Known}}
 & Floodlight Failover & 2 switch mesh & - & 202 & 2 & - & Yes \\
 % Predates the experiment directory
-& ONOS Master Election & 2 switch mesh & 6325.2 & 30 & 3 & \num{X} & Yes \\
+& ONOS Master Election & 2 switch mesh & - & 20 & 4 & 4 & Yes \\
 % onos_controller_id_bug_mcs/
 & POX Load Balancer & 3 switch mesh & 2396.7 & 106 & 24 (N+1) & 26 & Yes \\
 % load_balancer_fuzzer_mcs/
@@ -608,10 +608,10 @@ its new ID is lower than the other controllers', both will incorrectly
 believe that they are not responsible for tracking the liveness of the link,
 and the controller with the prior higher ID will incorrectly mark the link as
 unusable such that no routes will traverse it. This bug depends on
-initial IDs chosen at random, and ONOS is not instrumented to
-support deterministic replay of random values. We mitigated this
-non-determinism by replaying each subsequence 5 times. With this configuration
-\projectname{} was able to minimize the trace to 3 elements.\\[0.5ex]
+initial IDs chosen at random, so we modified ONOS to hardcode ID values.
+With interposition we observed timeouts on LLDP messages, which are sent at
+random. Interposition was not necessary for this bug however,
+and we found an MCS more quickly without it.\\[0.5ex]
 %
 \noindent{\bf POX Load Balancer.} We are aware that POX
 applications do not always check error messages sent by switches
