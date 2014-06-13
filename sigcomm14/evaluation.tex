@@ -43,14 +43,14 @@
 % 15/50
 % Total inputs: 284
 % zeta_final/, on floodlight branch of experiments repo
-& ONOS Database Locking & 2 switch mesh & N/A & 1 & 1 & - & N/A \\
+& ONOS Database Locking & 2 switch mesh & N/A & 1 & 1 & 1 & N/A \\
 % onos_db_lock_mcs/
 \hline
 \hline
 \multirow{3}{*}{\rotatebox[origin=c]{90}{\bf Known}}
 & Floodlight Failover & 2 switch mesh & - & 202 & 2 & - & Yes \\
 % Predates the experiment directory
-& ONOS Master Election & 2 switch mesh & - & 20 & 4 & 4 & Yes \\
+& ONOS Master Election & 2 switch mesh & 2746.0 & 20 & 2 & 2 & Yes \\
 % onos_controller_id_bug_mcs/
 & POX Load Balancer & 3 switch mesh & 2396.7 & 106 & 24 (N+1) & 26 & Yes \\
 % load_balancer_fuzzer_mcs/
@@ -609,9 +609,9 @@ believe that they are not responsible for tracking the liveness of the link,
 and the controller with the prior higher ID will incorrectly mark the link as
 unusable such that no routes will traverse it. This bug depends on
 initial IDs chosen at random, so we modified ONOS to hardcode ID values.
-With interposition we observed timeouts on LLDP messages, which are sent at
-random. Interposition was not necessary for this bug however,
-and we found an MCS more quickly without it.\\[0.5ex]
+We were able to successfully minimize the trace to the master crash and
+recovery event, although we were also able to do so without any interposition on
+internal events.\\[0.5ex]
 %
 \noindent{\bf POX Load Balancer.} We are aware that POX
 applications do not always check error messages sent by switches

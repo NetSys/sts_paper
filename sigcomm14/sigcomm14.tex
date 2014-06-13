@@ -1,15 +1,20 @@
 \documentclass{sig-alternate-2013}
 
 \usepackage{footmisc}
+%\usepackage[T1]{fontenc}
+%\usepackage{fontspec}
+%\setmainfont{Times New Roman}
 \usepackage{times}
 \usepackage{xcolor}
 \usepackage{xspace}
+\usepackage{type1cm}
 \usepackage{boxedminipage}
 \usepackage{pifont}
 \usepackage{pseudocode}
 \usepackage{multirow}
 \usepackage{tabularx}
 \usepackage{caption}
+\DeclareCaptionType{copyrightbox}
 \usepackage{subcaption}
 
 \definecolor{MyDarkBlue}{rgb}{0,0.08,0.45}
@@ -214,6 +219,10 @@ node[rounded corners,fill=green!80,draw,inner sep=0pt,minimum size=0.4cm] {$i_{#
     {\signed{\usebox\mybox}\end{quote}}
 
 
+%\usepackage[affil-it]{authblk}
+%\renewcommand\Authfont{\fontsize{12}{16}\aufnt}
+%\renewcommand\Affilfont{\fontsize{12}{16}\aufnt}
+
 \newfont{\mycrnotice}{ptmr8t at 7pt}
 \newfont{\myconfname}{ptmri8t at 7pt}
 \let\crnotice\mycrnotice%
@@ -234,7 +243,6 @@ licensed to ACM.}}}
 \crdata{978-1-4503-2836-4/14/08\ ...\$15.00.\\
 http://dx.doi.org/10.1145/2619239.2626304}
 \sloppy
-\begin{document}
 
 \conferenceinfo{SIGCOMM}{'14 Chicago, Illinois USA}
 \date{19 August 2014}
@@ -254,9 +262,9 @@ http://dx.doi.org/10.1145/2619239.2626304}
 \and H.B. Acharya$^\star$
 \and Kyriakos Zarifis$^\ddagger$$^\star$ % \thanks{USC} %
 \and Scott Shenker$^\diamond$$^\star$ % \footnotemark[3]~\footnotemark[1] %
-\and {\begin{tabular}{cccccc}$^\diamond${\large\it UC Berkeley} &
-$^\dagger${\large\it Big Switch Networks} & $^\star${\large\it ICSI} &
-$^\text{\o}${\large\it Tshinghua University} & $^\sharp${\large\it EPFL} & $^\ddagger${\large\it USC}\end{tabular}}
+\and {\begin{tabular}{cccccc}$^\diamond${\it UC Berkeley} &
+$^\dagger${\it Big Switch Networks} & $^\star${\it ICSI} &
+$^\text{\o}${\it Tshinghua University} & $^\sharp${\it EPFL} & $^\ddagger${\it USC}\end{tabular}}
 }
 
 %\author{Paper \#81, 14 pages}
@@ -281,6 +289,7 @@ $^\text{\o}${\large\it Tshinghua University} & $^\sharp${\large\it EPFL} & $^\dd
 %\affaddr{ICSI \& UC Berkeley}
 %}
 
+\begin{document}
    \maketitle
    \thispagestyle{empty}
 
