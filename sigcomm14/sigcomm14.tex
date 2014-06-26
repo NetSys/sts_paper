@@ -1,5 +1,15 @@
 \documentclass{sig-alternate-2013}
 
+% Page scaling fix from
+% http://tex.stackexchange.com/questions/117816/using-us-letter-within-an-acm-paper:
+% Set letter paper size:
+\setlength{\paperheight}{11in}
+\setlength{\paperwidth}{8.5in}
+\usepackage[
+      pass,% keep layout unchanged 
+        % showframe,% show the layout
+]{geometry}
+
 \usepackage{footmisc}
 %\usepackage[T1]{fontenc}
 %\usepackage{fontspec}
@@ -244,9 +254,6 @@ licensed to ACM.}}}
 http://dx.doi.org/10.1145/2619239.2626304}
 \sloppy
 
-\conferenceinfo{SIGCOMM}{'14 Chicago, Illinois USA}
-\date{19 August 2014}
-
 \title{Troubleshooting Blackbox SDN Control Software with Minimal Causal Sequences}
 
 \author{Colin Scott$^\diamond$ % \thanks{UC Berkeley}
@@ -262,9 +269,10 @@ http://dx.doi.org/10.1145/2619239.2626304}
 \and H.B. Acharya$^\star$
 \and Kyriakos Zarifis$^\ddagger$$^\star$ % \thanks{USC} %
 \and Scott Shenker$^\diamond$$^\star$ % \footnotemark[3]~\footnotemark[1] %
-\and {\begin{tabular}{cccccc}$^\diamond${\it UC Berkeley} &
-$^\dagger${\it Big Switch Networks} & $^\star${\it ICSI} &
-$^\text{\o}${\it Tshinghua University} & $^\sharp${\it EPFL} & $^\ddagger${\it USC}\end{tabular}}
+\and {\begin{tabular}{cccccc}$^\diamond${UC Berkeley} &
+$^\dagger${Big Switch Networks} & $^\star${ICSI} &
+$^\text{\o}${Tshinghua University} & $^\sharp${EPFL} &
+$^\ddagger${USC}\end{tabular}}
 }
 
 %\author{Paper \#81, 14 pages}
