@@ -1,12 +1,10 @@
-Developers of distributed systems are forced to deal with
-notoriously difficult challenges, such as concurrency, asynchrony, and
-partial failure. An inevitable consequence of these challenges is that software
+Developers of distributed systems face notoriously difficult challenges, such as concurrency, asynchrony, and
+partial failure. A major consequence of these challenges is that software
 bugs are pervasive in distributed systems.
 
 In an effort to catch these bugs
 before they are released into production, many commercial vendors employ
-teams of QA engineers whose
-job is to find bugs. The QA engineers exercise automated test scenarios that involve
+teams of QA engineers. The QA engineers exercise automated test scenarios that involve
 sequences of external events such as failures or message delays
 on large testbeds.
 If they detect an invariant violation, they hand the resulting trace to a developer for analysis.
@@ -29,7 +27,7 @@ Our thesis is the following:
 It is possible to
 automatically identify minimal sequences of inputs
 responsible for triggering
-distributed system test case failures.
+distributed systems test case failures.
 }
 \end{quote}
 By eliminating events from buggy traces that are not related to the
@@ -84,8 +82,7 @@ providing any guarantees on the minimality of the MCSes we produce.
 The remainder of this dissertation proposal (\S\ref{sec:future_work}) fleshes out plans for research on
 (i) providing provable guarantees on minimality, (ii) developing optimizations
 to make the provable scheduling techniques practical, and (iii) showing
-that our techniques can be applied to general distributed systems in a
-practical manner.
+that our techniques can be applied to general distributed systems.
 
 We start by providing a formal problem definition (\S\ref{sec:formalism}) and
 discussing related work (\S\ref{sec:related_work}). We end by

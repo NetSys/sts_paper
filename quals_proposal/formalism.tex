@@ -1,8 +1,8 @@
 A distributed system consists of multiple
-processes that have the ability to send each other messages.
+processes that send each other messages.
 We represent the state of a distributed system
 at a particular time as a configuration $c$, containing the current state of
-each process. A distributed system takes a sequence of external network events
+each process (but not any in-flight messages). A distributed system takes a sequence of external network events
 $E = $\chain{\external{1},\external{2}}{\external{m}}
 (\eg~failures) as inputs,
 and produces a sequence of configurations

@@ -108,38 +108,53 @@ removing inputs (\eg~EFF takes the transitive closure of all possible
 dependencies~\cite{Lee:2011:TGR:1993498.1993528}) causing them to miss opportunities to
 remove dependencies that actually semantically commute.\\[0.5ex]
 %
-\noindent{\bf Our Contribution.} Our primary contribution consists in
-developing techniques for interleaving internal and external events. This makes it
-possible for us to apply input minimization algorithms (\cf~Delta
-Debugging~\cite{Zeller:1999:YMP:318773.318946,Zeller:2002:SIF:506201.506206} and
-domain-specific algorithms~\cite{claessen2000quickcheck,whitaker2004configuration,regehr2012test}) to
-distributed systems.
+\noindent{\bf Our Contribution.} For the first portion of this dissertation proposal (\S\ref{sec:past_work}) we
+discuss heuristics we have developed for interleaving internal and external
+events that we have empirically shown to work
+well for minimizing event traces. Our approach there is
+to allow processes to proceed along divergent paths
+rather than recording all low-level I/O and thread scheduling decisions.
+This has several advantages. Unlike
+the other approaches, we can find shorter alternate code paths that still
+trigger the invariant violation. Previous {\em best-effort} execution minimization
+techniques~\cite{clause2007technique,tucek2007triage} also allow alternate
+code paths, but do not systematically
+consider concurrency and asynchrony.\footnote{PRES
+explores alternate code paths in best-effort replay of multithreaded
+executions, but does not minimize executions~\cite{park2009pres}.}
+We also avoid the performance overhead of recording all I/O
+requests and later replaying them (\eg~EFF incurs \textasciitilde10x slowdown during
+replay~\cite{Lee:2011:TGR:1993498.1993528}). Lastly,
+we avoid the extensive effort required to instrument the control software's language runtime,
+needed by the other approaches to implement a deterministic thread scheduler, interpose on syscalls,
+or perform program flow analysis. By avoiding assumptions about the language of the control software,
+we were able to easily apply our system to five different control platforms
+written in three different languages.
 
-For the first portion of this dissertation proposal (\S\ref{sec:past_work}) we
-discuss heuristics we have developed that we have empirically shown to work
-well in minimizing event traces. In the latter portion of the
+Unfortunately, these heuristics do not provide us with provable guarantees
+about the minimality of our output. In the latter portion of the
 proposal (\S\ref{sec:future_work}) we outline a plan for
 developing scheduling techniques that provide provable guarantees on
-minimality.\\[0.5ex]
+minimality. As far as we know, the problem statement and approach we pose there---applying model checkers
+to {\em certify} whether each subsequence chosen by delta debugging reproduces
+the original bug---has not appeared in the literature before.\\[0.5ex]
 %
 \noindent{\bf Broadly Related Work.} We end this section by discussing
 techniques in the general area of troubleshooting. We characterize the other troubleshooting approaches
 as (i) instrumentation (tracing),
 (ii) bug detection (invariant checking),
-(iii) replay, and
-(iv) root cause analysis (of network device failures).\\[0.5ex]
+(iii) replay,
+(iv) root cause analysis (of device failures), (v) log comprehension
+(visualization), and (vi) program slicing.\\[0.5ex]
 %
 \noindent{\bf Instrumentation.} Unstructured
 log files collected at each node are the most common form of diagnostic information. The goal of
 tracing frameworks~\cite{pip,fonseca2007x,Chen02pinpoint:problem,ndb14,barham2004using}
 is to produce structured logs that can be easily analyzed, such as DAGs tracking
-requests passing through the distributed system. An example within the SDN
-space is NetSight~\cite{ndb14}, which
-allows users to retroactively examine the paths dataplane packets
-take through OpenFlow networks. Tools like NetSight allow developers to understand
-how, when, and where the dataplane broke. In contrast, we focus on making it
-easier for developers to understand why the control software
-misconfigured the network in the first place.\\[0.5ex]
+requests passing through the distributed system. These tools help developers to understand
+how, when, and where the system broke. In contrast, we focus on making it
+easier for developers to understand what lead the software
+to violate an invariant in the first place.\\[0.5ex]
 %
 \noindent{\bf Bug Detection.} With instrumentation available, it becomes possible
 to check expectations about the
@@ -180,15 +195,16 @@ to minimize existing executions.\\[0.5ex]
 %\colin{TODO: discuss how finding the critical transition is related to finding the MCS}
 %
 \noindent{\bf Replay.} Crucial diagnostic information is often missing from traces.
-Record and replay techniques~\cite{Geels:2006:RDD:1267359.1267386,lin2013defined}
+Record and replay
+techniques~\cite{Geels:2006:RDD:1267359.1267386,lin2013defined,Zamfir:2010:EST:1755913.1755946,Yuan:2010:SED:1736020.1736038}
 instead allow users to step through (deterministic) executions and interactively examine the
 state of the system in exchange for performance overhead.
 %Static analysis and symbolic execution can also be applied post-hoc %, without incurring runtime performance overhead,
 %to find code paths that lead up to software
 %crashes~\cite{Yuan:2010:SED:1736020.1736038} or thread schedules that reproduce
 %race conditions~\cite{Zamfir:2010:EST:1755913.1755946}.
-Within SDN, OFRewind~\cite{ofrewind} provides
-record and replay of OpenFlow channels between controllers and switches.
+%Within SDN, OFRewind~\cite{ofrewind} provides
+%record and replay of OpenFlow channels between controllers and switches.
 Manually examining long system executions can be tedious, and our goal is to
 minimize such executions so that developers find it easier to identify the
 problematic code through replay or other means.\\[0.5ex]
@@ -212,7 +228,7 @@ in order to make them more easily understandable by
 humans~\cite{synoptic,csight,biermann1972synthesis,lorenzoli2008automatic,lou2010mining}.
 Model synthesis does not directly modify the logs, although
 it can be fruitfully applied to our minimized logs to further facilitate the
-troubleshooting process.
+troubleshooting process.\\[0.5ex]
 %
 \noindent{\bf Program Slicing.} It is worth mentioning another goal outside the purview of distributed systems, but
 closely in line with ours: program slicing~\cite{weiser1981program} is a
