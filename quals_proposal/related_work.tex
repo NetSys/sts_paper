@@ -161,13 +161,17 @@ proactively find safety and liveness violations by analyzing all possible code p
 After identifying a bug with model checking, finding a minimal code path leading to it is
 straightforward. However, the testing systems we aim to improve do not employ
 formal methods such as model checking, in part because model checking usually suffers from exponential
-state explosion when run on large systems,\footnote{For example, NICE~\cite{nice} took 30 hours to
+state explosion when run on large systems.\footnote{For example, NICE~\cite{nice} took 30 hours to
 model check a network with two switches, two hosts, the NOX MAC-learning
 control program (98 LoC), and five concurrent
-messages between the hosts.} and because large systems often comprise
-multiple (interacting) languages, which may not be amenable to formal methods.
-Nonetheless, we are currently exploring the use of model checking to provide provably
-minimal MCSes.\\[0.5ex]
+messages between the hosts.} Nonetheless, in \S\ref{sec:future_work} we propose the
+use of model checkers to provide provably
+minimal MCSes. Crucially, we assume that we are already given a known
+execution leading to an invariant violation, rather than attempting to find all
+possible invariant violations without prior knowledge of faulty executions. We
+believe that the prior knowledge contained in failing test cases can mitigate exponential
+state explosion, and as far as we know we are the first to use model checkers
+to minimize existing executions.\\[0.5ex]
 %In future work we plan to explore the possibilities of model checking techniques with our %Rather than exploring all
 %possibilities, we discover bugs through testing of selected scenarios, which
 %makes our problem tractable.
@@ -203,14 +207,17 @@ seeks to reconstruct those unknown events from limited monitoring data.
 Here we know exactly which events occurred, but
 seek to identify a minimal sequence of events.\\[0.5ex]
 %
-It is worth mentioning another goal outside the purview of distributed systems, but
+\noindent{\bf Log Comprehension.} Model synthesis techniques attempt to summarize log files
+in order to make them more easily understandable by
+humans~\cite{synoptic,csight,biermann1972synthesis,lorenzoli2008automatic,lou2010mining}.
+Model synthesis does not directly modify the logs, although
+it can be fruitfully applied to our minimized logs to further facilitate the
+troubleshooting process.
+%
+\noindent{\bf Program Slicing.} It is worth mentioning another goal outside the purview of distributed systems, but
 closely in line with ours: program slicing~\cite{weiser1981program} is a
 technique for finding the
 minimal subset of a program that could possibly affect the result of a particular line of code.
 This can be combined with delta debugging to automatically generate minimal unit tests~\cite{burger2011minimizing}.
 Our goal is to slice the temporal dimension of an execution rather than the
 code dimension.
-
-TODO: program comprehension.
-
-TODO: rework discussion of model checkers.
