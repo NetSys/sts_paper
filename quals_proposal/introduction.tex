@@ -1,0 +1,90 @@
+Developers of distributed systems are forced to deal with
+notoriously difficult challenges, such as concurrency, asynchrony, and
+partial failure. An inevitable consequence of these challenges is that software
+bugs are pervasive in distributed systems.
+
+In an effort to catch these bugs
+before they are released into production, many commercial vendors employ
+teams of QA engineers whose
+job is to find bugs. The QA engineers exercise automated test scenarios that involve
+sequences of external events such as failures
+on large testbeds.
+If they detect an invariant violation, they hand the resulting trace to a developer for analysis.
+
+When faced with symptoms of a failing QA test (\eg~data
+corruption) software developers need to identify which events are triggering
+this apparent bug before they can begin to isolate and fix it.
+This act of ``troubleshooting'' (which precedes the act of debugging the
+code) is highly time-consuming, as developers spend hours poring
+over multigigabyte execution traces.\footnote{Software developers in general spend roughly half (49\% according to one
+study~\cite{msoft_concurrency}) of their time troubleshooting and debugging, and spend
+considerable time troubleshooting bugs that are difficult to trigger (the same study found
+that 70\% of the reported concurrency bugs take days to months to fix).}
+% Bugs are a fact of life;
+
+Our aim is to reduce effort spent on troubleshooting distributed systems.
+Our thesis is the following:
+\begin{quote}
+{\it
+It is possible to
+automatically identify minimal sequences of inputs
+responsible for triggering
+distributed system test case failures.
+}
+\end{quote}
+By eliminating events from buggy traces that are not related to the
+bug, we produce a ``minimal
+causal sequence'' (MCS) of triggering events. After the MCS has been produced, the developer embarks
+on the debugging process. We claim that the greatly reduced size of the
+trace makes it easier for the developer to figure out which code path contains
+the underlying bug, allowing them to focus their effort on
+the task of fixing the problematic code itself. After the bug has been fixed, the MCS
+can serve as a test case to prevent regression,
+and can help identify redundant bug reports where the MCSes are the same.
+
+Our goal of minimizing traces is in the spirit of
+delta debugging~\cite{Zeller:1999:YMP:318773.318946}, but our problem is
+complicated by the distributed nature of control software:
+our input is not a single file fed to a single point of execution, but an ongoing
+sequence of events involving
+multiple actors. We therefore need to carefully
+control the interleaving of events in the face of asynchrony, concurrency and non-determinism in
+order to reproduce bugs throughout the minimization process.
+
+In the first part of this dissertation proposal (\S\ref{sec:past_work}), we present research that has
+already been completed on minimizing traces without making assumptions about the language
+or instrumentation of the software~\cite{sts2014}. We evaluated this on one
+particular type of distributed system: software-defined networking
+(SDN) control software.
+
+%We have built a troubleshooting system that,
+%as far as we know, is the first to meet these challenges
+%(as we discuss further in \S\ref{sec:related_work}). %(\cf~\S\ref{sec:related_work}).
+%Our troubleshooting system, which we call {\projectname} ({\projectmeaning}),
+%consists of 23,000 lines of Python, and is designed so that organizations can
+%implement the technology within their existing QA infrastructure (discussed in
+%\S\ref{sec:architecture}); over the last year we have worked with a
+%commercial SDN company to integrate \projectname. We evaluate {\projectname} in
+%two ways. First and most significantly, we use {\projectname} to troubleshoot
+%seven previously unknown bugs---involving concurrent events,
+%faulty failover logic, broken state machines,
+%and deadlock in a distributed database---that we found
+%by fuzz testing five controllers (Floodlight~\cite{floodlight}, NOX~\cite{nox},
+%POX~\cite{pox}, Pyretic~\cite{frenetic}, ONOS~\cite{ONOS})
+%written in three different languages (Java, C++, Python).
+%Second, we demonstrate the
+%boundaries of where \projectname~works well by
+%finding MCSes for previously known and synthetic bugs that span a range of bug
+%types. In our evaluation, we quantitatively show that \projectname~is able to
+%minimize (non-synthetic) bug traces by up to 98\%, and we anecdotally found that reducing
+%traces to MCSes made it easy to understand their root causes.
+
+Unfortunately, treating the software as a blackbox disallows us from
+providing any guarentees on the minimality of the output we produce.
+The remainder of this disseration proposal (\S\ref{sec:future_work}) fleshes out plans for research on
+(i) providing provable guarentees on minimality, and (ii) showing
+that our techniques can be applied to general distributed systems in a
+practical manner.
+
+We start by overviewing related work (\S\ref{sec:related_work}), and end by
+presenting a timeline for the completion of the proposed research (\S\ref{sec:timeline}).
