@@ -7,7 +7,7 @@ In an effort to catch these bugs
 before they are released into production, many commercial vendors employ
 teams of QA engineers whose
 job is to find bugs. The QA engineers exercise automated test scenarios that involve
-sequences of external events such as failures
+sequences of external events such as failures or message delays
 on large testbeds.
 If they detect an invariant violation, they hand the resulting trace to a developer for analysis.
 
@@ -80,11 +80,12 @@ particular type of distributed system: software-defined networking
 %traces to MCSes made it easy to understand their root causes.
 
 Unfortunately, treating the software as a blackbox disallows us from
-providing any guarentees on the minimality of the output we produce.
+providing any guarentees on the minimality of the MCSes we produce.
 The remainder of this disseration proposal (\S\ref{sec:future_work}) fleshes out plans for research on
 (i) providing provable guarentees on minimality, and (ii) showing
 that our techniques can be applied to general distributed systems in a
 practical manner.
 
-We start by overviewing related work (\S\ref{sec:related_work}), and end by
+We start by providing a formal problem definition (\S\ref{sec:formalism}) and
+discussing related work (\S\ref{sec:related_work}). We end by
 presenting a timeline for the completion of the proposed research (\S\ref{sec:timeline}).
