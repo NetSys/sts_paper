@@ -3,12 +3,90 @@ providing any guarantees on the minimality of the MCSes we produce.
 In this section we flesh out plans for research on
 (i) providing provable guarantees on minimality, (ii) developing optimizations
 to make the provable scheduling techniques practical, and (iii) showing
-that our techniques can be applied to general distributed systems in a
-practical manner.
+that our techniques can be applied to general distributed systems.
 
-\noindent{\bf Providing Provable Guarantees.}
+\noindent{\bf Providing Provable Guarantees.} If we were to repeatedly
+$replay$ a
+fixed subsequence of external events $E_S$ to a blackbox distributed system,
+it is possible that it would not to produce the same output on each
+execution, even if we were to apply the heuristics outlined in
+\S\ref{sec:past_work}. The issue is that we do not have full visibility into internal
+events nor control over the internal scheduling decisions of the distributed
+system. Our approach in~\cite{sts2014} was to
+replay each subsequence multiple times, but this does not provide any
+guarantees on the minimality of the MCSes we produce, since it's possible that
+a subsequence $E_S$ that we thought did not reproduced the invariant violation
+ could have done so if the
+distributed system had interleaved its internal events in some other way.
 
-\noindent{\bf Optimizing State Exploration.}
+In order to provide provable guarantees, we plan to use a model checker to
+{\em certify} whether each subsequence $E_S$ chosen by delta debugging does or
+does not reproduce the original violation. The model checker can accomplish this
+by systematically exploring all possible interleavings of internal events
+given the fixed sequence of external events $E_S$.
 
-\noindent{\bf Applying to Other Distributed Systems.}
+In some cases however, it is not possible for the model checker to certify a
+given subsequence $E_S$. For example, suppose that the distributed system does
+not terminate (or more specifically, suppose its state space is infinite
+and non-recurring). In that case, model checking is not guaranteed to terminate.
+Crucially, if the
+model checker does not find a way to trigger the original violation in finite time,
+that does not imply that the violation cannot be triggered, and we therefore lose our guarantees on minimality.
 
+In distributed systems, non-termination means that an algorithm is not guaranteed to stop
+sending messages. The formal term for this property is `non-quiescence`. In~\cite{aguilera1997heartbeat} Aguilera et al. prove that
+all failure detectors---an important algorithmic component of distributed systems---are
+non-quiescent.
+
+Luckily, given a failure detector component, it is possible to implement many other
+distributed algorithms in a quiescent manner. Building on this observation,
+one of our proposals for coping with non-quiescence is to mark failure detector algorithms as `trusted-components`,
+and prove modified soundness and completeness properties of model checkers that control rather than check the failure detector component.
+Another option for coping with non-quiescence is to weaken our definition of soundness,
+i.e. explore enough states for us to be satisfied, even if it is not all states.
+
+\noindent{\bf Optimizing Model Checking.} Although we only use the
+model checker to find specific invariant violations rather than asking it to
+find all invariant violations, it may nonetheless need to explore an
+intractable number of event interleavings. This would make it impractical for
+use on real distributed software.
+
+We believe that we can ameliorate computational intractability by
+leveraging the prior knowledge contained in the original failing test case.
+That is, by making the $replay$ function stateful, we can develop heuristics that lead the
+model checker to quickly find interleavings that trigger the original violation, so that
+it is only forced to enumerate all interleavings for subsequence $E_S$ that do
+not trigger the original violation.
+
+As a concrete example, if we lead
+the model checker to first explore interleavings that have small edit
+distances from the original execution, we hypothesize that it will find
+violations quickly, thereby reducing the asymptotic complexity of model
+checking. We will evaluate these heuristics empirically, by measuring the number of
+interleavings that need to be explored for event traces where we know
+MCS {\em a priori}.
+
+\noindent{\bf Applying to Other Distributed Systems.} In~\cite{sts2014} we
+only applied our techniques to SDN control software. We do not however believe
+that our techniques are specific to SDN. We have already begun applying our
+techniques to other kinds of distributed systems, including distributed
+databases and consensus protocols. One contribution of our work will be to
+enumerate the properties of those systems (e.g. atomic transactions in the
+domain of distributed databases) that make them more or less amenable to
+applying our minimization techniques.
+
+% Left-behind ideas:
+
+% 1. exploring the "interposition tradeoff"? Iterate through the levels
+% programmatically -- probably the case that different bug types necessitate
+% different kinds of interposition. Also, look into modularizing model checking,
+% a la JunFeng's work on demeter.
+
+% 2. using Synoptic to generate model of the software.
+
+% 3. Are Panda's email chains on modelling computational structure relevant?
+
+% 4. Black-box delta debuggin on Jepsen.
+
+% 5. Showing how to apply the techniques to production systems rather than QA
+% tests.
