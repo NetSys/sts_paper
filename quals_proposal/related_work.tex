@@ -145,7 +145,8 @@ as (i) instrumentation (tracing),
 (ii) bug detection (invariant checking),
 (iii) replay,
 (iv) root cause analysis (of device failures), (v) log comprehension
-(visualization), and (vi) program slicing.\\[0.5ex]
+(visualization), (vi) program slicing, and (vii) automated debugging (fault
+localization).\\[0.5ex]
 %
 \noindent{\bf Instrumentation.} Unstructured
 log files collected at each node are the most common form of diagnostic information. The goal of
@@ -234,6 +235,14 @@ troubleshooting process.\\[0.5ex]
 closely in line with ours: program slicing~\cite{weiser1981program} is a
 technique for finding the
 minimal subset of a program that could possibly affect the result of a particular line of code.
-This can be combined with delta debugging to automatically generate minimal unit tests~\cite{burger2011minimizing}.
+%This can be combined with delta debugging to automatically generate minimal unit tests~\cite{burger2011minimizing}.
 Our goal is to slice the temporal dimension of an execution rather than the
-code dimension.
+code dimension.\\[0.5ex]
+%
+\noindent{\bf Automated Debugging.} Similar techniques go so far as to try to
+automatically locate the exact line(s) of code or state transitions that are responsible for a
+bug, using statistical data~\cite{zhangzhang}, test coverage
+data~\cite{coverage_localization}, constraint solving~\cite{jose11}, and
+experimentally driven executions of the failing program~\cite{zeller2005,comparative_causality}.
+These approaches aid the debugging process rather than test case minimization,
+and are therefore complementary.
