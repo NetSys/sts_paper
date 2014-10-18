@@ -228,7 +228,7 @@ seek to identify a minimal sequence of events.\\[0.5ex]
 in order to make them more easily understandable by
 humans~\cite{synoptic,csight,biermann1972synthesis,lorenzoli2008automatic,lou2010mining}.
 Model inference does not modify the logs, although
-it can be fruitfully applied to our minimized logs to further facilitate the
+it can be applied to our minimized logs to further facilitate the
 troubleshooting process.\\[0.5ex]
 %
 \noindent{\bf Program Slicing.} It is worth mentioning another goal outside the purview of distributed systems, but
@@ -242,7 +242,9 @@ code dimension.\\[0.5ex]
 \noindent{\bf Automated Debugging.} Similar techniques go so far as to try to
 automatically locate the exact line(s) of code or state transitions that are responsible for a
 bug, using statistical data~\cite{zhangzhang}, test coverage
-data~\cite{coverage_localization}, constraint solving~\cite{jose11}, and
+data~\cite{coverage_localization,xuan14}, constraint solving~\cite{jose11},
+fault injection~\cite{zhang13} and
 experimentally driven executions of the failing program~\cite{zeller2005,comparative_causality}.
-These approaches aid the debugging process rather than test case minimization,
+These approaches aid the debugging process rather than test case
+simplification,
 and are therefore complementary.
