@@ -1,9 +1,14 @@
-Unfortunately, treating the software as a blackbox disallows us from
-providing any guarantees on the minimality of the MCSes we produce.
-In this section we flesh out plans for research on
-(i) providing provable guarantees on minimality, (ii) developing optimizations
-to make the provable scheduling techniques practical, and (iii) showing
-that our techniques can be applied to general distributed systems.
+The scheduling heuristics we developed in the previous section have several
+shortcomings. Most importantly, treating the software as a blackbox disallows us
+from providing formal guarantees on the minimality of our results, nonetheless
+provide satisfactory explanations of why the heuristics work. Second,
+although we do not believe that the techniques are
+specific to SDN control software, they currently pertain only to that specific
+domain. Here we outline plans to address both of the these shortcomings.
+At a high level, we plan to (i) start with an infeasible but provably correct approach,
+(ii) find practical approximations to this approach, and (iii) empirically show that
+the approximations are effective for
+troubleshooting various classes of distributed software systems.
 
 \noindent{\bf Providing Provable Guarantees.} If we were to repeatedly
 $replay$ a
@@ -25,7 +30,7 @@ does not reproduce the original violation. The model checker can accomplish this
 by systematically exploring all possible interleavings of internal events
 given the fixed sequence of external events $E_S$.
 
-In some cases however, it is not possible for the model checker to certify a
+\noindent{\bf Working Around Impossibility.} In some cases, it is not possible for the model checker to certify a
 given subsequence $E_S$. For example, suppose that the distributed system does
 not terminate (or more specifically, suppose its state space is infinite
 and non-recurring). In that case, model checking is not guaranteed to terminate.
@@ -45,7 +50,7 @@ and prove modified soundness and completeness properties of model checkers that 
 Another option for coping with non-quiescence is to weaken our definition of soundness,
 i.e. explore enough states for us to be satisfied, even if it is not all states.
 
-\noindent{\bf Optimizing Model Checking.} Although we only use the
+\noindent{\bf Optimizing Certification.} Although we only use the
 model checker to find specific invariant violations rather than asking it to
 find all invariant violations, it may nonetheless need to explore an
 intractable number of event interleavings. This would make it impractical for

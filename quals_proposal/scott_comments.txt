@@ -1,0 +1,36 @@
+High-level comments:
+        Your summary should refer to the application to SDN earlier (even in the abstract).
+        Your future plans should make reference to two threads:
+                Broadening applicability
+                Providing a sounder foundation
+        I would *not* say "providing provable guarantees" since none of our feasible designs will be able to.  Instead, say providing a sounder foundation by (a) starting with an infeasible but provably correct approach and (b) finding practically effective approximations to this approach.  This is a fairly significant change from the impression left by the current draft.
+
+Low-level comments:
+
+*Introduction:
+        put in emdashes: — such as failures…delays — because otherwise the sentence reads strangely
+        failing a QA test: data corruption is probably not the best example: inconsistent system state is probably a better way to express it.
+        After “fix it”, say something like: That is, when faced with a QA event log containing tens of thousands of input events, the developers first must identify which of these events are relevant to the bug before they can proceed.
+        buggy trace -> a trace triggering the bug
+****    You should include more of the material buried in footnote 1.  This is good motivating material.
+
+
+* Section 2
+        forwarding state -> configuration state
+        at beginning of paragraph starting with in “Given a Log”, add “In general, finding an MCS is difficult, but the utility of an MCS does not lie in it being exactly minimal, but in it being much smaller than the original QA log. Thus, given a log..
+        In last paragraph in section 2, make clear that (ii) involves timings
+
+* Section 3
+        isolated?  I would prefer the term “independent”.  But do you use it anywhere else?
+        Explain comment at end of paragraph beginning “Because they…”
+        The mention of minimality guarantees again I think is misguided.  We want to provide a more solid footing, not raise the hopes that we are building a provably correct system.
+
+* Section 4:
+        given a policy -> given a valid policy
+        the mention of “delivering internal events” later in this section should perhaps be made clear when we first introduce internal events. That is, these are events that involve communication, etc.
+        Where are the preliminary results (i.e., the results of the SIGCOMM paper)??  These have to be in the presentation!!!
+
+* Section 5
+        the comment at the bottom of the first column on page 7 is not nearly a clear enough indication of our future directions.  In general, I think section 5 should be refactored:
+        Broader applicability:
+        Sounder foundations: and this breaks down into the (a) and (b) from above.

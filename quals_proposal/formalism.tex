@@ -9,7 +9,7 @@ and produces a sequence of configurations
 $C = c_1,c_2,\dots,c_n$. % Note that the network configuration $c$ does not
 %include the internal state of the control software.
 
-An invariant is a predicate $P$ over forwarding state (a safety
+An invariant is a predicate $P$ over configuration state (a safety
 condition). We say that configuration
 $c$ violates the invariant if $P(c)$ is false, denoted $\overline{P}(c)$.
 
@@ -26,7 +26,8 @@ $E_L = $\eventlist{\external{1},\external{2}}{\external{m}}
 injected by
 the test orchestrator, and internal events
 $I_L = $\eventlist{\internal{1},\internal{2}}{\internal{p}}
-triggered by the distributed system.
+triggered by the distributed system (e.g. messages sent between nodes, or
+state transitions within nodes).
 The events $E_L$ include timestamps $\{ (\text{\external{k}}, t_k) \}$ from the
 orchestrator's clock. % of when the test orchestrator injected them.
 
@@ -63,7 +64,10 @@ subsequences of $E_L$ that reproduce this violation, but are not a subsequence o
 
 Given a log $L$ generated from testing infrastructure,
 our goal is to find an approximate MCS, so that a human can examine the MCS
-rather than the full log. This involves two tasks:
+rather than the full log. In general, finding an MCS is difficult, but the utility of
+an MCS does not depend on its being exactly minimal, but in it being much smaller than the original QA log.
+
+Finding the MCS involves two tasks:
 (i) searching through subsequences of $E_L$, and more importantly, (ii) deciding when to inject external
-events for each subsequence so that, whenever possible, the invariant
+events (i.e. choosing a set of timings) for each subsequence so that, whenever possible, the invariant
 violation is retriggered.

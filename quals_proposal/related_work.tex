@@ -5,7 +5,10 @@ approach to achieving our first task. A better approach is
 the delta debugging algorithm~\cite{Zeller:1999:YMP:318773.318946,Zeller:2002:SIF:506201.506206}, a
 divide-and-conquer algorithm for
 isolating fault-inducing inputs. We use delta
-debugging to iteratively select subsequences of $E_L$ and $replay$ each
+debugging\footnote{Domain-specific
+minimization algorithms also
+exist~\cite{regehr2012test,claessen2000quickcheck,whitaker2004configuration},
+but we focus on the general case.} to iteratively select subsequences of $E_L$ and $replay$ each
 subsequence with some timing $T$.\\[0.5ex]
 %If the bug persists for a given subsequence, delta debugging ignores the
 %other inputs, and proceeds with the search for an MCS within this subsequence.
@@ -67,7 +70,7 @@ statically analyzing feasible thread schedules~\cite{huang2011efficient}.
 
 A crucial constraint of these approaches is that they must keep the inputs
 fixed; that is, behavior must depend uniquely on the thread
-schedule. Otherwise, the controllers may take a divergent code path. If this
+schedule. Otherwise, the nodes may take a divergent code path. If this
 occurs some processes might issue a previously unobserved I/O request, and the replayer will not
 have a recorded response; worse yet, a divergent process might deschedule
 itself at a different point than it did originally, so that the remainder of
@@ -77,7 +80,11 @@ Because they keep the inputs fixed, these approaches strive for a
 subtly different goal than
 ours: minimizing thread context switches rather than input events.
 At best, these approaches can indirectly minimize input events by truncating
-individual thread executions. % (\ie~causing them to exit early).
+individual thread executions. That is, they can cause threads to exit early
+(thereby shortening the execution trace), but they cannot remove extraneous events from
+the middle of the trace.
+
+% (\ie~causing them to exit early).
 
 %\noindent{\bf Program Flow Analysis.} Other than delta debugging,
 %the closest work to ours involves reasoning about
@@ -131,11 +138,12 @@ or perform program flow analysis. By avoiding assumptions about the language of 
 we were able to easily apply our system to five different control platforms
 written in three different languages.
 
-Unfortunately, these heuristics do not provide us with provable guarantees
-about the minimality of our output. In the latter portion of the
+Unfortunately, these heuristics do not lend themselves to solid theoretical
+explanations for why they work well. In the latter portion of the
 proposal (\S\ref{sec:future_work}) we outline a plan for
-developing scheduling techniques that provide provable guarantees on
-minimality. As far as we know, the problem statement and approach we pose there---applying model checkers
+developing scheduling strategies that are based on sound principles (starting
+with visibility into the structure of the software under test).
+As far as we know, the problem statement and approach we pose there---applying model checkers
 to {\em certify} whether each subsequence chosen by delta debugging reproduces
 the original bug---has not appeared in the literature before.\\[0.5ex]
 %

@@ -1,7 +1,5 @@
 In this section we present heuristics we previously developed and applied to one kind of
-distributed system: software-defined networking (SDN) control software. In~\cite{sts2014} we
-empirically showed that these heuristics work well.
-Here, we begin by briefly describing the behavior of SDN
+distributed system: software-defined networking (SDN) control software. Here, we begin by briefly describing the behavior of SDN
 control software.
 
 \noindent {\bf Overview of SDN Control Software.} Network operating systems, the key component of SDN software
@@ -30,7 +28,7 @@ violated because the system was improperly configured
 %configuration management system, \eg~OpenStack~\cite{quantum}
 (\eg~the management system~\cite{quantum} or a human improperly specified their goals), or
 because there is a bug within the SDN control plane itself. In this paper we focus on troubleshooting bugs in the
-SDN control plane after it has been given a policy configuration.\footnote{This does
+SDN control plane after it has been given a valid policy configuration.\footnote{This does
 not preclude us from troubleshooting misspecified policies
 so long as test
 invariants~\cite{hsa} are specified separately.}
@@ -330,6 +328,8 @@ possibilities for every new internal event. This implies an exponential worst
 case number of
 possibilities to be explored.
 
+\input{big_table}
+
 Exponential search over these possibilities is not a practical option. Our heuristic
 is to proceed normally if there are new internal events,
 always injecting the next input when its last expected predecessor
@@ -370,7 +370,51 @@ interposition layer, we invoke {\sc Peek()} to infer absent internal events,
 and with these inferred causal dependencies we $replay$
 the input subsequence, waiting to inject each input until each of its
 (functionally equivalent) predecessors have occurred while allowing
-new internal events through the interposition layer immediately.
-In~\cite{sts2014} we
-empirically showed that these heuristics work well for
-minimizing test cases.
+new internal events through the interposition layer immediately.\\[0.5ex]
+%
+\noindent {\bf Results.} We briefly describe an evaluation of these
+techniques. For a full evaluation, see~\cite{sts2014}.
+
+We summarize the results of our evaluation in Table~\ref{tab:case_studies}.
+The table contains the results of case studies we ran on
+five open source SDN control platforms:
+ONOS~\cite{ONOS} (Java), POX~\cite{pox} (Python), NOX~\cite{nox} (C++),
+Pyretic~\cite{frenetic} (Python), and Floodlight~\cite{floodlight} (Java), and
+debugged these with the help of \projectname. The case studies include seven
+bugs we found with fuzz testing, as well as a demonstration of the
+boundaries of where \projectname~works well and where it does not on
+previously known and synthetic bugs that span a range of bug types
+encountered in practice.
+
+We note that with the exception of Delicate Timer
+Interleaving and ONOS Database Locking, \projectname~was able to significantly reduce input traces.
+The MCS WI column, showing the MCS sizes we produced when ignoring internal events entirely,
+indicates that our techniques for interleaving
+events are often crucial.
+In one case however---Reactive Routing Trigger---non-determinism was particularly
+acute, and \projectname's interposition on internal
+events actually made minimization worse due to timeouts on
+inferred internal events that did not occur after {\sc
+Peek()}. In this case we found
+better results by simply turning off interposition on internal events.
+For all of the other case studies, either non-determinism was not problematic, or we were able to
+counteract it
+by replaying multiple times per subsequence and adding instrumentation.
+
+The cases where \projectname~was most useful were those where a developer would
+have started from
+the end of the trace and worked backwards, but
+the actual root cause lies many events in the past (as in Memory Corruption).
+This requires many re-iterations through the code and logs using standard
+debugging tools (\eg~source level debuggers), and
+is highly tedious on human timescales. In contrast, it was easy to step
+through a small event trace and manually identify the code paths responsible
+for a failure.
+
+Bugs that depend on fine-grained thread-interleaving or timers
+inside of the controller are the worst-case for \projectname. This
+is not surprising, as they do not directly depend on the input events from the
+network, and we do not directly control the internal scheduling and timing
+of the controllers. The fact that \projectname~has a difficult time reducing
+these traces is itself indication to the developer that fine-grained non-determinism is at
+play.

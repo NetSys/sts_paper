@@ -1,24 +1,24 @@
 Developers of distributed systems face notoriously difficult challenges, such as concurrency, asynchrony, and
-partial failure. A major consequence of these challenges is that software
+partial failure. A crucial consequence of these challenges is that software
 bugs are pervasive in distributed systems.
 
 In an effort to catch these bugs
 before they are released into production, many commercial vendors employ
 teams of QA engineers. The QA engineers exercise automated test scenarios that involve
-sequences of external events such as failures or message delays
-on large testbeds.
+sequences of external events---such as failures or message delays---on large testbeds.
 If they detect an invariant violation, they hand the resulting trace to a developer for analysis.
 
-When faced with symptoms of a failing QA test (\eg~data
-corruption) software developers need to identify which events are triggering
+When faced with symptoms of a failing QA test (\eg~inconsistent system state)
+software developers first need to identify which of the potentially tens of
+thousands of events in the QA test are relevant to triggering
 this apparent bug before they can begin to isolate and fix it.
 This act of ``troubleshooting'' (which precedes the act of debugging the
 code) is highly time-consuming, as developers spend hours poring
-over multigigabyte execution traces.\footnote{Software developers in general spend roughly half (49\% according to one
+over multigigabyte execution traces. This quantity of time spent
+troubleshooting is unsurprising, since software developers in general spend roughly half (49\% according to one
 study~\cite{msoft_concurrency}) of their time troubleshooting and debugging, and spend
 considerable time troubleshooting bugs that are difficult to trigger (the same study found
-that 70\% of the reported concurrency bugs take days to months to fix).}
-% Bugs are a fact of life;
+that 70\% of the reported concurrency bugs take days to months to fix).
 
 Our aim is to reduce effort spent on troubleshooting distributed systems.
 Our thesis is the following:
@@ -30,8 +30,8 @@ responsible for triggering
 distributed systems test case failures.
 }
 \end{quote}
-By eliminating events from buggy traces that are not related to the
-bug, we produce a ``minimal
+By eliminating events from event traces that are not related to the
+invariant violation at the end of the trace, we produce a ``minimal
 causal sequence'' (MCS) of triggering events. After the MCS has been produced, the developer embarks
 on the debugging process. We claim that the greatly reduced size of the
 trace makes it easier for the developer to figure out which code path contains
@@ -77,12 +77,14 @@ particular type of distributed system: software-defined networking
 %minimize (non-synthetic) bug traces by up to 98\%, and we anecdotally found that reducing
 %traces to MCSes made it easy to understand their root causes.
 
-Unfortunately, treating the software as a blackbox disallows us from
-providing any guarantees on the minimality of the MCSes we produce.
-The remainder of this dissertation proposal (\S\ref{sec:future_work}) fleshes out plans for research on
-(i) providing provable guarantees on minimality, (ii) developing optimizations
-to make the provable scheduling techniques practical, and (iii) showing
-that our techniques can be applied to general distributed systems.
+%Unfortunately, treating the software as a blackbox disallows us from
+%providing any guarantees on the minimality of the MCSes we produce.
+The remainder of this dissertation proposal (\S\ref{sec:future_work}) fleshes out plans for
+broadening the applicability of our techniques to other kinds of distributed systems besides SDN control
+software, and providing a stronger theoretical foundation for mechanics of the techniques.
+In particular, we plan to (i) start with an infeasible but provably correct approach,
+(ii) find practical approximations to this approach, and (iii) empirically show that the approximations are effective for
+troubleshooting various classes of distributed software systems.
 
 We start by providing a formal problem definition (\S\ref{sec:formalism}) and
 discussing related work (\S\ref{sec:related_work}). We end by

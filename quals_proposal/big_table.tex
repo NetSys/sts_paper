@@ -1,0 +1,101 @@
+\setlength\extrarowheight{0.8pt}
+
+\begin{table*}[ht!]
+\centering
+\footnotesize
+\begin{tabular}{|l||l|l|r|r|r|r|l|}
+  \cline{2-8}
+  \multicolumn{1}{c|}{~} & \textbf{Bug Name} & \textbf{Topology} &
+  \textbf{Runtime (s)} & \textbf{Input Size} & \textbf{MCS Size} &
+  \textbf{MCS WI} & \textbf{MCS Helpful?}  \\\cline{2-8} \hline
+  \multirow{7}{*}{\rotatebox[origin=c]{90}{\bf Newly Found}}
+& Pyretic Loop & 3 switch mesh & 266.2 & 36 & 1 & 2 & Yes \\
+% 20/20
+% experiments/new_pyretic_loop_mcs/
+% Total original inputs: 36
+& POX Premature PacketIn & 4 switch mesh & 249.1 & 102 & 2 & NR & Yes \\
+% 20/20
+% Andi: experiments/pox_early_packetin_mcs
+% Total inputs: 102
+& POX In-Flight Blackhole & 2 switch mesh & 1478.9 & 27 & 11 & NR & Yes \\
+% \colin{15/20 [20/20*]}
+% Updated: experiments/pox_inflight_blackhole_mcs_dp_internal
+& POX Migration Blackhole & 4 switch mesh & 1796.0 & 29 & 3 & NR & Yes \\
+% 20/20
+% Total inputs: 29
+% With DP events: 117/3
+% fuzz_pox_4mesh_blackhole_mcs, pox_blackhole branch of experiments repo
+%& POX list removal & 2 switch mesh & 20/20 & 2 & Yes \\
+%% Total inputs: 69
+%% With DP events: 72/2
+%% Original: config/eugene_epsilon_replay.py
+%% MCS: config/eugene_epsilon_mcs.py
+& NOX Discovery Loop & 4 switch mesh & 4990.9 & 150 & 18 & NR & Indirectly \\
+% 18/20
+% Total inputs: 150
+% With DP events: 358/58
+% Original: ce547fc1df3bde279b6f3dd589c909663e295f1e
+% MCS: 5f49e791b0c1a611454cf0930f54aa609dd635d3
+% Updated to new format: nox_mesh_4_loop_repro_verbose
+& Floodlight Loop & 3 switch mesh & 27930.6 & 117 & 13 & NR & Yes \\
+% 15/50
+% Total inputs: 284
+% zeta_final/, on floodlight branch of experiments repo
+& ONOS Database Locking & 2 switch mesh & N/A & 1 & 1 & 1 & N/A \\
+% onos_db_lock_mcs/
+\hline
+\hline
+\multirow{3}{*}{\rotatebox[origin=c]{90}{\bf Known}}
+& Floodlight Failover & 2 switch mesh & - & 202 & 2 & - & Yes \\
+% Predates the experiment directory
+& ONOS Master Election & 2 switch mesh & 2746.0 & 20 & 2 & 2 & Yes \\
+% onos_id_bug_fixed_ids_file_mcs4/
+& POX Load Balancer & 3 switch mesh & 2396.7 & 106 & 24 (N+1) & 26 & Yes \\
+% load_balancer_fuzzer_mcs/
+% Total original inputs: 106
+% --------
+%ONOS forgotten flows & TBD & TBD & TBD \\
+\hline
+\hline
+\multirow{7}{*}{\rotatebox[origin=c]{90}{\bf Synthetic}}
+& Delicate Timer Interleaving & 3 switch mesh & N/A & 39 & NR & NR & No \\
+% experiments/snapshot_demo_synthetic_link_failure
+% total original inputs: 39
+& Reactive Routing Trigger & 3 switch mesh & 525.2 & 40 & 7 & 2 & Indirectly \\
+% experiments/experiments/pox_broken_floyd_mcs
+% total original inputs: 40
+% MCS is inflated! link failure / recovery in MCS not related to triggering events.
+& Overlapping Flow Entries & 2 switch mesh & 115.4  & 27 & 2 & 3 & Yes \\
+% experiments/trigger_priority_mismatch_small_mcs
+% total original inputs: 27
+& Null Pointer & 20 switch FatTree & 157.4 & 62 & 2 & 2 & Yes \\
+% experiments/experiments/pox_null_pointer_mcs
+% total original inputs: 365
+& Multithreaded Race Condition & 10 switch mesh & 36967.5 & 1596 & 2 & 2 & Indirectly \\
+% experiments/trigger_multithreading_bug_mcs
+% total original inputs: 1596
+& Memory Leak & 2 switch mesh & 15022.6 & 719 & 32 (M+2) & 33 & Indirectly \\
+% experiments/trigger_memory_leak3_mcs/
+% total original inputs: 719
+%Execution-speed race condition & 3 switch mesh & - & 9 & Yes \\
+%% "floodlight" branch: experiments/floodlight_loop_2014_mcs_*
+%% Total original inputs: 157
+& Memory Corruption & 4 switch mesh & 145.7 & 341 & 2 & 2 & Yes \\
+% syn_mem_corruption_3switch_fuzzer_mcs
+% Total original inputs: 341
+% ----
+%Latency spike & TBD & TBD & TBD \\
+%Invalid sleep value & TBD & TBD & TBD \\
+%Non-deterministic TCAMs -> transient tenant isolation breach & TBD & TBD & TBD \\
+%Decision based on last byte of TCP SYN & TBD & TBD & TBD \\
+\hline
+\end{tabular}
+\caption{Overview of Case Studies. `WI' denotes `Without Interposition', and
+`NR' denotes `Not Replayable'.}
+\label{tab:case_studies}
+\vskip -1em
+\end{table*}
+
+\setlength\extrarowheight{0pt}
+
+
