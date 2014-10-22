@@ -1,16 +1,18 @@
 The scheduling heuristics we developed in the previous section have several
 shortcomings. Most importantly, treating the software as a blackbox disallows us
-from providing formal guarantees on the minimality of our results, nonetheless
-provide satisfactory explanations of why the heuristics work. Second,
+from showing formal properties of the MCSes we produce. That is, we cannot
+explain why our outputs are good approximations to truly minimal sequences, nor can we
+explain how the heuristics helped. Second,
 although we do not believe that the techniques are
 specific to SDN control software, they currently pertain only to that specific
 domain. Here we outline plans to address both of the these shortcomings.
-At a high level, we plan to (i) start with an infeasible but provably correct approach,
-(ii) find practical approximations to this approach, and (iii) empirically show that
-the approximations are effective for
-troubleshooting various classes of distributed software systems.
+At a high level, we plan to (i) start with an infeasible but provably correct
+approach, and
+(ii) find practical approximations to this approach, many of which will
+involve leveraging empirical properties of (iii) different classes of distributed software
+systems (beyond just SDN control software).
 
-\noindent{\bf Providing Provable Guarantees.} If we were to repeatedly
+\noindent{\bf Showing Formal Properties of MCSes.} If we were to repeatedly
 $replay$ a
 fixed subsequence of external events $E_S$ to a blackbox distributed system,
 it is possible that it would not to produce the same output on each
@@ -21,14 +23,18 @@ system. Our approach in~\cite{sts2014} was to
 replay each subsequence multiple times, but this does not provide any
 guarantees on the minimality of the MCSes we produce, since it's possible that
 a subsequence $E_S$ that we thought did not reproduced the invariant violation
- could have done so if the
+could have done so if the
 distributed system had interleaved its internal events in some other way.
 
-In order to provide provable guarantees, we plan to use a model checker to
+Suppose we want to show how close our outputs are to minimal. One approach would be to use a model checker to
 {\em certify} whether each subsequence $E_S$ chosen by delta debugging does or
-does not reproduce the original violation. The model checker can accomplish this
+does not reproduce the original violation, thereby producing a provably
+minimal MCS. The model checker could accomplish this
 by systematically exploring all possible interleavings of internal events
-given the fixed sequence of external events $E_S$.
+given the fixed sequence of external events $E_S$.\footnote{Note that the
+internal events are not fixed. That is, the schedule chosen by the model
+checker affects which internal events are subsequently triggered by the software under
+test.}
 
 \noindent{\bf Working Around Impossibility.} In some cases, it is not possible for the model checker to certify a
 given subsequence $E_S$. For example, suppose that the distributed system does
@@ -43,14 +49,20 @@ sending messages. The formal term for this property is `non-quiescence`. In~\cit
 all failure detectors---an important algorithmic component of distributed systems---are
 non-quiescent.
 
-Luckily, given a failure detector component, it is possible to implement many other
-distributed algorithms in a quiescent manner. Building on this observation,
-one of our proposals for coping with non-quiescence is to mark failure detector algorithms as `trusted-components`,
-and prove modified soundness and completeness properties of model checkers that control rather than check the failure detector component.
-Another option for coping with non-quiescence is to weaken our definition of soundness,
-i.e. explore enough states for us to be satisfied, even if it is not all states.
+As a fallback to non-quiescence, we can resort to
+bounded model checking, where the model checker only explores the event
+interleavings for a given subsequence $E_S$ up to a certain number of steps.
 
-\noindent{\bf Optimizing Certification.} Although we only use the
+In some cases, we can also leverage the following observation to work around
+non-quiescence:
+given a failure detector component, it is possible to implement many other
+distributed algorithms in a quiescent manner~\cite{aguilera1997heartbeat}. Building on this observation,
+one might mark failure detector algorithms as `trusted-components`,
+such that the model checker takes control of when the failure detector reports
+failures and recoveries to the application, and systematically explores when
+these reports occur.
+
+\noindent{\bf Making Certification Practical.} Although we only use the
 model checker to find specific invariant violations rather than asking it to
 find all invariant violations, it may nonetheless need to explore an
 intractable number of event interleavings. This would make it impractical for
@@ -69,16 +81,18 @@ distances from the original execution, we hypothesize that it will find
 violations quickly, thereby reducing the asymptotic complexity of model
 checking. We will evaluate these heuristics empirically, by measuring the number of
 interleavings that need to be explored for event traces where we know
-MCS {\em a priori}.
+MCS {\em a priori}. Often, we will develop these heuristics by examining the
+behavior of specific distributed systems, as we describe next.
 
 \noindent{\bf Applying to Other Distributed Systems.} In~\cite{sts2014} we
 only applied our techniques to SDN control software. We do not however believe
 that our techniques are specific to SDN. We have already begun applying our
 techniques to other kinds of distributed systems, including distributed
 databases and consensus protocols. One contribution of our work will be to
-enumerate the properties of those systems (e.g. atomic transactions in the
-domain of distributed databases) that make them more or less amenable to
-applying our minimization techniques.
+tailor our minimization strategies so that they
+leverage the properties of those systems (e.g. atomic transactions in the
+domain of distributed databases) in
+order to make the minimization process more practical.
 
 % Left-behind ideas:
 

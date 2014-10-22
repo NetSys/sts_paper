@@ -180,7 +180,7 @@ Control message delay & Controlplane interposition \\
 Non-deterministic TCAMs & Modified switches \\
 \hline
 \end{tabular}
-\caption{Input types currently supported by \projectname.}
+\caption{Input types currently supported by our troubleshooting system.}
 \label{tab:inputs}
 \vspace{-0.2cm}
 \end{table}
@@ -372,16 +372,17 @@ the input subsequence, waiting to inject each input until each of its
 (functionally equivalent) predecessors have occurred while allowing
 new internal events through the interposition layer immediately.\\[0.5ex]
 %
-\noindent {\bf Results.} We briefly describe an evaluation of these
-techniques. For a full evaluation, see~\cite{sts2014}.
+\noindent {\bf Results.} We end by briefly describing our evaluation of these
+techniques. The evaluation was carried out on our troubleshooting
+system~\projectname, which incorporates our heuristics. For a full evaluation, see~\cite{sts2014}.
 
 We summarize the results of our evaluation in Table~\ref{tab:case_studies}.
-The table contains the results of case studies we ran on
+The table summarizes case studies we ran on
 five open source SDN control platforms:
 ONOS~\cite{ONOS} (Java), POX~\cite{pox} (Python), NOX~\cite{nox} (C++),
 Pyretic~\cite{frenetic} (Python), and Floodlight~\cite{floodlight} (Java), and
 debugged these with the help of \projectname. The case studies include seven
-bugs we found with fuzz testing, as well as a demonstration of the
+real bugs we found ourselves with fuzz testing, as well as a demonstration of the
 boundaries of where \projectname~works well and where it does not on
 previously known and synthetic bugs that span a range of bug types
 encountered in practice.

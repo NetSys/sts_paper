@@ -232,7 +232,7 @@ seeks to reconstruct those unknown events from limited monitoring data.
 Here we know exactly which events occurred, but
 seek to identify a minimal sequence of events.\\[0.5ex]
 %
-\noindent{\bf Log Comprehension.} Model inference techniques attempt to summarize log files
+\noindent{\bf Log Comprehension.} Model inference techniques summarize log files
 in order to make them more easily understandable by
 humans~\cite{synoptic,csight,biermann1972synthesis,lorenzoli2008automatic,lou2010mining}.
 Model inference does not modify the logs, although
@@ -247,7 +247,8 @@ minimal subset of a program that could possibly affect the result of a particula
 Our goal is to slice the temporal dimension of an execution rather than the
 code dimension.\\[0.5ex]
 %
-\noindent{\bf Automated Debugging.} Similar techniques go so far as to try to
+\noindent{\bf Automated Debugging.} Literature following Weisers' original program
+slicing paper goes so far as to try to
 automatically locate the exact line(s) of code or state transitions that are responsible for a
 bug, using statistical data~\cite{zhangzhang}, test coverage
 data~\cite{coverage_localization,xuan14}, constraint solving~\cite{jose11},
