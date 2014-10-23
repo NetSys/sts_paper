@@ -10,14 +10,13 @@ If they detect an invariant violation, they hand the resulting trace to a develo
 
 When faced with symptoms of a failing QA test (\eg~inconsistent system state)
 software developers first need to identify which of the potentially tens of
-thousands of events
-%\footnote{Consider that an hour long QA test
-%emulating event rates observed in production could contain 8.5 network error
-%events per
-%minute~\cite{Greenberg:2009:VSF:1592568.1592576} and 500 VM migrations per
-%hour~\cite{Soundararajan:2010:CBS:1899928.1899941},
-%for a total of $8.5 \cdot 60 + 500 \approx 1000$ externally triggered events, not counting
-%internal events.}
+thousands of events\footnote{Consider that an hour long QA test
+emulating event rates observed in production could contain 8.5 network error
+events per
+minute~\cite{Greenberg:2009:VSF:1592568.1592576} and 500 VM migrations per
+hour~\cite{Soundararajan:2010:CBS:1899928.1899941},
+for a total of $8.5 \cdot 60 + 500 \approx 1000$ externally triggered events, not counting
+internal events.}
 in the QA test are relevant to triggering
 this apparent bug before they can begin to isolate and fix it.
 This act of ``troubleshooting'' (which precedes the act of debugging the
