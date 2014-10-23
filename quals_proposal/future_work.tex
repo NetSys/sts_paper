@@ -46,21 +46,25 @@ that does not imply that the violation cannot be triggered, and we therefore los
 
 In distributed systems, non-termination means that an algorithm is not guaranteed to stop
 sending messages. The formal term for this property is `non-quiescence`. In~\cite{aguilera1997heartbeat} Aguilera et al. prove that
-all failure detectors---an important algorithmic component of distributed systems---are
+all failure detectors---an important algorithmic component used by many distributed systems---are
 non-quiescent.
 
 As a fallback to non-quiescence, we can resort to
 bounded model checking, where the model checker only explores the event
-interleavings for a given subsequence $E_S$ up to a certain number of steps.
+interleavings for a given subsequence $E_S$ up to a certain number of
+execution steps. This approaches weakens the soundness (minimality) guarantees provided by
+our approach in favor of the ability to operate on real distributed
+systems implementations.
 
 In some cases, we can also leverage the following observation to work around
 non-quiescence:
 given a failure detector component, it is possible to implement many other
 distributed algorithms in a quiescent manner~\cite{aguilera1997heartbeat}. Building on this observation,
-one might mark failure detector algorithms as `trusted-components`,
+one might mark (non-quiescent) failure detector algorithms as `trusted-components`,
 such that the model checker takes control of when the failure detector reports
 failures and recoveries to the application, and systematically explores when
-these reports occur.
+these failure/recovery reports are triggered in order to certify the remaining
+(quiescent) components of the distributed system.
 
 \noindent{\bf Making Certification Practical.} Although we only use the
 model checker to find specific invariant violations rather than asking it to
@@ -77,9 +81,13 @@ not trigger the original violation.
 
 As a concrete example, if we lead
 the model checker to first explore interleavings that have small edit
-distances from the original execution, we hypothesize that it will find
-violations quickly, thereby reducing the asymptotic complexity of model
-checking. We will evaluate these heuristics empirically, by measuring the number of
+distances from the original execution, we hypothesize that its probability of
+finding the same invariant violation within the first few explored scheduled
+will increase dramatically versus randomly choosing schedules to explore.
+If the model checker can find violation-triggering schedules in $O(N)$ time rather than $O(2^N)$ time
+(where $N$ denotes the number of events to schedule),
+the asymptotic complexity of the overall minimization process can be reduced.
+We will evaluate these heuristics empirically, by measuring the number of
 interleavings that need to be explored for event traces where we know
 MCS {\em a priori}. Often, we will develop these heuristics by examining the
 behavior of specific distributed systems, as we describe next.
@@ -91,10 +99,11 @@ techniques to other kinds of distributed systems, including distributed
 databases and consensus protocols. One contribution of our work will be to
 tailor our minimization strategies so that they
 leverage the properties of those systems (e.g. atomic transactions in the
-domain of distributed databases) in
+domain of distributed databases) or their empirical behavior (e.g. a tendency
+to trigger violations along certain schedules) in
 order to make the minimization process more practical.
 
-% Left-behind ideas:
+% Left-behind ideas / lines of work:
 
 % 1. exploring the "interposition tradeoff"? Iterate through the levels
 % programmatically -- probably the case that different bug types necessitate
@@ -109,3 +118,14 @@ order to make the minimization process more practical.
 
 % 5. Showing how to apply the techniques to production systems rather than QA
 % tests.
+
+% 6. Taint tracking / provenance
+
+% 7. Dataflow analysis for filtering inputs. Possibly: dataflow analysis on
+% network , but not controllers.
+
+% 8. Optimizing delta debugging
+
+% 9. Distinguishing between persistent and transient violations.
+
+% 10. Using delta debugging to isolate differences, not just minimize whole test
